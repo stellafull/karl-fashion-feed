@@ -37,6 +37,7 @@ OPENROUTER_CHAT_URL = "https://openrouter.ai/api/v1/chat/completions"
 OPENROUTER_EMBEDDING_URL = "https://openrouter.ai/api/v1/embeddings"
 LLM_MODEL = os.environ.get("LLM_MODEL", "google/gemini-2.0-flash-001")
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "openai/text-embedding-3-large")
+REQUIRE_SEMANTIC_EMBEDDING = os.environ.get("REQUIRE_SEMANTIC_EMBEDDING", "0").strip().lower() in ("1", "true", "yes")
 
 SCRIPT_DIR = Path(__file__).parent
 PROJECT_DIR = SCRIPT_DIR.parent
@@ -441,6 +442,7 @@ def _log_cluster_stats(clusters, articles, label):
 
 def get_semantic_embeddings(texts):
     if not OPENROUTER_API_KEY:
+        logger.warning("OPENROUTER_API_KEY is empty; semantic embedding is disabled.")
         return None
     if not texts:
         return np.zeros((0, 0), dtype=np.float32)
@@ -475,6 +477,7 @@ def get_semantic_embeddings(texts):
                     time.sleep(2 * (attempt + 1))
 
         if not batch_vectors:
+            logger.warning(f"Embedding batch {batch_idx}/{total_batches} failed after retries.")
             return None
         vectors.extend(batch_vectors)
 
@@ -490,7 +493,12 @@ def cluster_with_semantic_embeddings(articles):
     texts = [_article_embedding_text(a) for a in articles]
     logger.info(f"Computing semantic embeddings via OpenRouter ({EMBEDDING_MODEL})...")
     matrix = get_semantic_embeddings(texts)
-    if matrix is None or matrix.shape[0] != len(articles):
+    if matrix is None:
+        return None
+    if matrix.shape[0] != len(articles):
+        logger.warning(
+            f"Embedding matrix row mismatch: got {matrix.shape[0]}, expected {len(articles)}"
+        )
         return None
 
     logger.info(f"Embedding matrix: {matrix.shape}")
@@ -533,7 +541,11 @@ def cluster_articles(articles):
     if clusters is not None:
         return clusters
 
-    logger.warning("Semantic embedding unavailable; falling back to TF-IDF clustering.")
+    fallback_msg = "Semantic embedding unavailable; falling back to TF-IDF clustering."
+    if REQUIRE_SEMANTIC_EMBEDDING:
+        logger.error(f"{fallback_msg} REQUIRE_SEMANTIC_EMBEDDING=1, exiting.")
+        sys.exit(2)
+    logger.warning(fallback_msg)
     return cluster_with_tfidf_fallback(articles)
 
 
