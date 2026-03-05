@@ -1,0 +1,208 @@
+# Fashion Feed — RSS 订阅源配置
+# 修改此文件即可增删改 RSS 源，无需改动 Python 脚本
+#
+# 字段说明:
+#   name:     源名称（显示在前端）
+#   url:      RSS Feed URL
+#   lang:     语言代码 (en / ja / zh / fr / ko 等)
+#   category: 默认分类（LLM 可能会重新分类）
+#   enabled:  是否启用（false 则跳过）
+#   max_articles: 每次从该源最多抓取的文章数（可选，默认 30）
+
+# ─── 英文源 ──────────────────────────────────────────
+
+# Vogue 系列
+- name: Vogue
+  url: https://www.vogue.com/feed/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+- name: Vogue Fashion
+  url: https://www.vogue.com/feed/fashion/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+- name: Vogue Business
+  url: https://www.voguebusiness.com/rss
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 20
+
+# WWD
+- name: WWD
+  url: https://wwd.com/feed/
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 30
+
+# Business of Fashion
+- name: BOF
+  url: https://www.businessoffashion.com/feed
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 30
+
+# Elle
+- name: Elle
+  url: https://www.elle.com/rss/all.xml/
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+# Harper's Bazaar
+- name: Harper's Bazaar
+  url: https://www.harpersbazaar.com/rss/all.xml/
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+# GQ
+- name: GQ
+  url: https://www.gq.com/feed/rss
+  lang: en
+  category: 男装风尚
+  enabled: true
+  max_articles: 30
+
+# Hypebeast 系列
+- name: Hypebeast
+  url: https://hypebeast.com/feed
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 30
+
+- name: Hypebeast Fashion
+  url: https://hypebeast.com/fashion/feed
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 20
+
+# Highsnobiety
+- name: Highsnobiety
+  url: https://www.highsnobiety.com/feed/
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 30
+
+# Fashionista
+- name: Fashionista
+  url: https://fashionista.com/.rss/full/
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 30
+
+# Dazed
+- name: Dazed
+  url: https://www.dazeddigital.com/rss
+  lang: en
+  category: 先锋文化
+  enabled: true
+  max_articles: 30
+
+# i-D
+- name: i-D
+  url: https://i-d.co/feed/
+  lang: en
+  category: 先锋文化
+  enabled: true
+  max_articles: 30
+
+# Fashion Dive (industry news)
+- name: Fashion Dive
+  url: https://www.fashiondive.com/feeds/news/
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 20
+
+# Glamour
+- name: Glamour
+  url: https://www.glamour.com/feed/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 20
+
+# Refinery29 Fashion
+- name: Refinery29
+  url: https://www.refinery29.com/en-us/fashion/rss.xml
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 20
+
+# The Cut (New York Magazine)
+- name: The Cut
+  url: https://www.thecut.com/feed/rss
+  lang: en
+  category: 先锋文化
+  enabled: true
+  max_articles: 20
+
+# Coveteur
+- name: Coveteur
+  url: https://coveteur.com/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 15
+
+# Who What Wear
+- name: Who What Wear
+  url: https://www.whowhatwear.com/rss
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 20
+
+# ─── 日文源 ──────────────────────────────────────────
+
+- name: WWD Japan
+  url: https://www.wwdjapan.com/feed
+  lang: ja
+  category: 行业动态
+  enabled: true
+  max_articles: 30
+
+- name: Vogue Japan
+  url: https://www.vogue.co.jp/feed/rss
+  lang: ja
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+- name: Fashionsnap
+  url: https://www.fashionsnap.com/feed/
+  lang: ja
+  category: 行业动态
+  enabled: true
+  max_articles: 20
+
+# ─── 可选源（默认关闭，按需启用）─────────────────────
+
+- name: Dezeen Fashion
+  url: https://www.dezeen.com/fashion/feed/
+  lang: en
+  category: 先锋文化
+  enabled: false
+  max_articles: 15
+
+- name: Drapers
+  url: https://www.drapersonline.com/rss
+  lang: en
+  category: 行业动态
+  enabled: false
+  max_articles: 15

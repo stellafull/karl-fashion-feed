@@ -1,7 +1,6 @@
 /*
- * Header Component — Editorial Noir Design
+ * Header Component — Editorial Noir Design (v2: Topic mode)
  * Minimal top bar with brand identity and meta info
- * Font: Playfair Display for brand, Instrument Sans for meta
  */
 
 import { Rss } from "lucide-react";
@@ -38,7 +37,8 @@ export default function Header({ meta }: HeaderProps) {
                 <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
                 {meta.sources_count} 个来源
               </span>
-              <span>{meta.total_articles} 篇资讯</span>
+              <span>{meta.total_topics} 个话题</span>
+              <span>{meta.total_articles} 篇原文</span>
               <span>
                 更新于{" "}
                 {new Date(meta.generated_at).toLocaleString("zh-CN", {

@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """
-Fashion Feed Aggregator Script
-Fetches RSS feeds from multiple fashion publications, deduplicates articles,
-uses LLM to translate/summarize/categorize, and outputs a JSON data file
-for the frontend to consume.
+Fashion Feed Aggregator v2 — Topic Clustering Mode
+====================================================
+Pipeline:
+  1. Load RSS sources from sources.yaml
+  2. Fetch articles from all enabled sources (target: 500+)
+  3. Deduplicate by URL
+  4. Batch-cluster articles into topics via LLM
+  5. For each topic: generate a comprehensive Chinese summary
+  6. Output feed-data.json for the frontend
 """
 
 import os
@@ -14,63 +19,49 @@ import re
 import datetime
 import time
 import logging
+import math
 from urllib.parse import urlparse
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import yaml
 import requests
 import feedparser
 from bs4 import BeautifulSoup
 
 # ─── Configuration ───────────────────────────────────────────────────────────
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
 logger = logging.getLogger(__name__)
 
-# OpenRouter API (compatible with OpenAI SDK format)
-OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
-OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1/chat/completions'
-LLM_MODEL = os.environ.get('LLM_MODEL', 'google/gemini-2.0-flash-001')
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
+LLM_MODEL = os.environ.get("LLM_MODEL", "google/gemini-2.0-flash-001")
 
-# Output paths
 SCRIPT_DIR = Path(__file__).parent
 PROJECT_DIR = SCRIPT_DIR.parent
-OUTPUT_DIR = PROJECT_DIR / 'client' / 'public'
-OUTPUT_FILE = OUTPUT_DIR / 'feed-data.json'
-CACHE_FILE = SCRIPT_DIR / '.feed_cache.json'
+OUTPUT_DIR = PROJECT_DIR / "client" / "public"
+OUTPUT_FILE = OUTPUT_DIR / "feed-data.json"
+SOURCES_FILE = SCRIPT_DIR / "sources.yaml"
 
-# Max articles per feed to process
-MAX_ARTICLES_PER_FEED = 5
-# Max total articles to keep
-MAX_TOTAL_ARTICLES = 50
+# Target: fetch up to this many raw articles before dedup
+MAX_TOTAL_RAW = 600
+# After dedup + filtering, keep up to this many for clustering
+MAX_ARTICLES_FOR_CLUSTERING = 500
+# Max topics in final output
+MAX_TOPICS = 120
 
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/120.0.0.0 Safari/537.36"
+    )
 }
 
-# ─── Fashion RSS Sources ─────────────────────────────────────────────────────
-
-FASHION_FEEDS = [
-    # English sources
-    {"name": "Vogue", "url": "https://www.vogue.com/feed/rss", "lang": "en", "category": "高端时装"},
-    {"name": "Vogue Fashion", "url": "https://www.vogue.com/feed/fashion/rss", "lang": "en", "category": "高端时装"},
-    {"name": "WWD", "url": "https://wwd.com/feed/", "lang": "en", "category": "行业动态"},
-    {"name": "Hypebeast", "url": "https://hypebeast.com/feed", "lang": "en", "category": "潮流街头"},
-    {"name": "Hypebeast Fashion", "url": "https://hypebeast.com/fashion/feed", "lang": "en", "category": "潮流街头"},
-    {"name": "Highsnobiety", "url": "https://www.highsnobiety.com/feed/", "lang": "en", "category": "潮流街头"},
-    {"name": "GQ", "url": "https://www.gq.com/feed/rss", "lang": "en", "category": "男装风尚"},
-    {"name": "Elle", "url": "https://www.elle.com/rss/all.xml/", "lang": "en", "category": "高端时装"},
-    {"name": "Fashionista", "url": "https://fashionista.com/.rss/full/", "lang": "en", "category": "行业动态"},
-    {"name": "BOF", "url": "https://www.businessoffashion.com/feed", "lang": "en", "category": "行业动态"},
-    {"name": "Dazed", "url": "https://www.dazeddigital.com/rss", "lang": "en", "category": "先锋文化"},
-    {"name": "i-D", "url": "https://i-d.co/feed/", "lang": "en", "category": "先锋文化"},
-    {"name": "Harper's Bazaar", "url": "https://www.harpersbazaar.com/rss/all.xml/", "lang": "en", "category": "高端时装"},
-    {"name": "Fashion Dive", "url": "https://www.fashiondive.com/feeds/news/", "lang": "en", "category": "行业动态"},
-    # Japanese sources
-    {"name": "WWD Japan", "url": "https://www.wwdjapan.com/feed", "lang": "ja", "category": "行业动态"},
-    {"name": "Vogue Japan", "url": "https://www.vogue.co.jp/feed/rss", "lang": "ja", "category": "高端时装"},
-]
-
-# Categories for the frontend
 CATEGORIES = [
     {"id": "all", "name": "全部", "icon": "Newspaper"},
     {"id": "haute-couture", "name": "高端时装", "icon": "Crown"},
@@ -89,485 +80,593 @@ CATEGORY_MAP = {
 }
 
 
-# ─── Utility Functions ───────────────────────────────────────────────────────
+# ─── YAML Source Loader ─────────────────────────────────────────────────────
+
+def load_sources():
+    """Load RSS sources from sources.yaml."""
+    if not SOURCES_FILE.exists():
+        logger.error(f"sources.yaml not found at {SOURCES_FILE}")
+        sys.exit(1)
+    with open(SOURCES_FILE, "r", encoding="utf-8") as f:
+        sources = yaml.safe_load(f)
+    enabled = [s for s in sources if s.get("enabled", True)]
+    logger.info(f"Loaded {len(enabled)} enabled sources from sources.yaml")
+    return enabled
+
+
+# ─── Utility Functions ──────────────────────────────────────────────────────
 
 def clean_html(html_content):
-    """Remove HTML tags and clean text for LLM processing."""
     if not html_content:
         return ""
     soup = BeautifulSoup(html_content, "html.parser")
-    for tag in soup.find_all(["script", "style", "img", "video", "audio", "iframe", "input", "noscript"]):
+    for tag in soup.find_all(
+        ["script", "style", "img", "video", "audio", "iframe", "input", "noscript"]
+    ):
         tag.decompose()
     text = soup.get_text(separator=" ", strip=True)
-    text = re.sub(r'\s+', ' ', text).strip()
-    return text[:3000]  # Truncate for LLM context
+    text = re.sub(r"\s+", " ", text).strip()
+    return text[:3000]
 
 
 def extract_image(entry):
     """Extract the best image URL from a feed entry."""
-    # Try media:content
-    if hasattr(entry, 'media_content') and entry.media_content:
+    if hasattr(entry, "media_content") and entry.media_content:
         for media in entry.media_content:
-            if media.get('medium') == 'image' or media.get('type', '').startswith('image'):
-                return media.get('url', '')
-        # If no explicit image type, take first media_content
-        if entry.media_content[0].get('url'):
-            return entry.media_content[0]['url']
-
-    # Try media:thumbnail
-    if hasattr(entry, 'media_thumbnail') and entry.media_thumbnail:
-        return entry.media_thumbnail[0].get('url', '')
-
-    # Try enclosures
-    if hasattr(entry, 'enclosures') and entry.enclosures:
+            if media.get("medium") == "image" or media.get("type", "").startswith("image"):
+                return media.get("url", "")
+        if entry.media_content[0].get("url"):
+            return entry.media_content[0]["url"]
+    if hasattr(entry, "media_thumbnail") and entry.media_thumbnail:
+        return entry.media_thumbnail[0].get("url", "")
+    if hasattr(entry, "enclosures") and entry.enclosures:
         for enc in entry.enclosures:
-            if enc.get('type', '').startswith('image'):
-                return enc.get('href', '')
-
-    # Try to find image in content/description
-    content = ''
-    if hasattr(entry, 'content') and entry.content:
-        content = entry.content[0].get('value', '')
-    elif hasattr(entry, 'description'):
-        content = entry.description or ''
-    elif hasattr(entry, 'summary'):
-        content = entry.summary or ''
-
+            if enc.get("type", "").startswith("image"):
+                return enc.get("href", "")
+    content = ""
+    if hasattr(entry, "content") and entry.content:
+        content = entry.content[0].get("value", "")
+    elif hasattr(entry, "description"):
+        content = entry.description or ""
+    elif hasattr(entry, "summary"):
+        content = entry.summary or ""
     if content:
-        soup = BeautifulSoup(content, 'html.parser')
-        img = soup.find('img')
-        if img and img.get('src'):
-            src = img['src']
-            if src.startswith('http'):
-                return src
-
-    return ''
-
-
-def get_article_id(link, title):
-    """Generate a unique ID for deduplication."""
-    key = (link or '') + (title or '')
-    return hashlib.md5(key.encode()).hexdigest()[:12]
+        soup = BeautifulSoup(content, "html.parser")
+        img = soup.find("img")
+        if img and img.get("src") and img["src"].startswith("http"):
+            return img["src"]
+    return ""
 
 
 def normalize_url(url):
-    """Normalize URL for dedup comparison."""
     if not url:
-        return ''
+        return ""
     parsed = urlparse(url)
-    # Remove common tracking params, fragments
-    clean = f"{parsed.scheme}://{parsed.netloc}{parsed.path}".rstrip('/')
+    clean = f"{parsed.scheme}://{parsed.netloc}{parsed.path}".rstrip("/")
     return clean.lower()
 
 
 def get_published_date(entry):
-    """Extract and format published date from entry."""
-    for attr in ['published_parsed', 'updated_parsed', 'created_parsed']:
+    for attr in ["published_parsed", "updated_parsed", "created_parsed"]:
         parsed = getattr(entry, attr, None)
         if parsed:
             try:
                 dt = datetime.datetime(*parsed[:6])
                 return dt.isoformat()
-            except:
+            except Exception:
                 pass
-    for attr in ['published', 'updated', 'created']:
+    for attr in ["published", "updated", "created"]:
         val = getattr(entry, attr, None)
         if val:
             return val
     return datetime.datetime.now().isoformat()
 
 
-# ─── LLM Processing ─────────────────────────────────────────────────────────
+def get_article_id(link, title):
+    key = (link or "") + (title or "")
+    return hashlib.md5(key.encode()).hexdigest()[:12]
 
-def call_llm(messages, temperature=0.3):
-    """Call OpenRouter API for LLM processing."""
+
+# ─── RSS Fetching (parallel) ───────────────────────────────────────────────
+
+def fetch_single_feed(feed_config):
+    """Fetch articles from a single RSS source. Returns list of article dicts."""
+    name = feed_config["name"]
+    url = feed_config["url"]
+    lang = feed_config.get("lang", "en")
+    category = feed_config.get("category", "行业动态")
+    max_articles = feed_config.get("max_articles", 30)
+
+    articles = []
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=20)
+        if resp.status_code != 200:
+            logger.warning(f"  [{name}] HTTP {resp.status_code}")
+            return articles
+
+        feed = feedparser.parse(resp.text)
+        for entry in feed.entries[:max_articles]:
+            link = getattr(entry, "link", "")
+            title = getattr(entry, "title", "")
+            if not link or not title:
+                continue
+
+            content = ""
+            if hasattr(entry, "content") and entry.content:
+                content = entry.content[0].get("value", "")
+            elif hasattr(entry, "description"):
+                content = entry.description or ""
+            elif hasattr(entry, "summary"):
+                content = entry.summary or ""
+
+            articles.append(
+                {
+                    "id": get_article_id(link, title),
+                    "title": title,
+                    "link": link,
+                    "source": name,
+                    "source_lang": lang,
+                    "category_hint": category,
+                    "category_id": CATEGORY_MAP.get(category, "industry"),
+                    "image": extract_image(entry),
+                    "published": get_published_date(entry),
+                    "content_snippet": clean_html(content)[:800],
+                }
+            )
+        logger.info(f"  [{name}] {len(articles)} articles")
+    except Exception as e:
+        logger.error(f"  [{name}] Error: {e}")
+    return articles
+
+
+def fetch_all_feeds(sources):
+    """Fetch from all sources in parallel."""
+    all_articles = []
+    seen_urls = set()
+
+    logger.info(f"Fetching from {len(sources)} sources...")
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futures = {executor.submit(fetch_single_feed, src): src for src in sources}
+        for future in as_completed(futures):
+            for art in future.result():
+                norm = normalize_url(art["link"])
+                if norm not in seen_urls:
+                    seen_urls.add(norm)
+                    all_articles.append(art)
+
+    # Sort by published date descending
+    all_articles.sort(key=lambda x: x.get("published", ""), reverse=True)
+    all_articles = all_articles[:MAX_ARTICLES_FOR_CLUSTERING]
+    logger.info(f"Total deduplicated articles: {len(all_articles)}")
+    return all_articles
+
+
+# ─── LLM Helpers ────────────────────────────────────────────────────────────
+
+def call_llm(messages, temperature=0.3, max_tokens=4000):
     if not OPENROUTER_API_KEY:
         return None
-
     headers = {
-        'Authorization': f'Bearer {OPENROUTER_API_KEY}',
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://fashion-feed.manus.space',
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://fashion-feed.manus.space",
     }
-
     payload = {
-        'model': LLM_MODEL,
-        'messages': messages,
-        'temperature': temperature,
-        'max_tokens': 1000,
+        "model": LLM_MODEL,
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
     }
+    for attempt in range(3):
+        try:
+            resp = requests.post(
+                OPENROUTER_BASE_URL, headers=headers, json=payload, timeout=60
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            return data["choices"][0]["message"]["content"].strip()
+        except Exception as e:
+            logger.warning(f"LLM attempt {attempt+1} failed: {e}")
+            if attempt < 2:
+                time.sleep(2 * (attempt + 1))
+    return None
 
-    try:
-        resp = requests.post(OPENROUTER_BASE_URL, headers=headers, json=payload, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
-        return data['choices'][0]['message']['content'].strip()
-    except Exception as e:
-        logger.error(f"LLM API error: {e}")
+
+def extract_json(text):
+    """Extract JSON object or array from LLM response text."""
+    if not text:
+        return None
+    # Try to find JSON block in markdown code fence
+    m = re.search(r"```(?:json)?\s*([\s\S]*?)```", text)
+    if m:
+        text = m.group(1).strip()
+    # Try object
+    m = re.search(r"(\{[\s\S]*\})", text)
+    if m:
+        try:
+            return json.loads(m.group(1))
+        except json.JSONDecodeError:
+            pass
+    # Try array
+    m = re.search(r"(\[[\s\S]*\])", text)
+    if m:
+        try:
+            return json.loads(m.group(1))
+        except json.JSONDecodeError:
+            pass
+    return None
+
+
+# ─── Topic Clustering Pipeline ──────────────────────────────────────────────
+
+def build_article_index(articles):
+    """Build a compact text index for clustering."""
+    lines = []
+    for i, art in enumerate(articles):
+        src = art["source"]
+        title = art["title"][:80]
+        snippet = art["content_snippet"][:120]
+        lines.append(f"[{i}] {src} | {title} | {snippet}")
+    return lines
+
+
+def cluster_batch(article_lines, batch_start_idx):
+    """Send a batch of article lines to LLM for topic clustering.
+    Returns list of cluster dicts: {topic, article_indices, category}
+    """
+    text = "\n".join(article_lines)
+    prompt = f"""你是一位专业的时尚资讯编辑。以下是一批时尚资讯文章索引，每行格式为：[编号] 来源 | 标题 | 内容片段
+
+{text}
+
+请将报道**同一事件、同一话题或高度相关**的文章归为一组。独立的文章也单独成组。
+
+输出JSON数组（不要输出其他内容）：
+[
+  {{
+    "topic": "话题简述（中文，10字以内）",
+    "indices": [0, 3, 7],
+    "category": "从以下选一个: 高端时装, 潮流街头, 行业动态, 男装风尚, 先锋文化"
+  }}
+]
+
+规则：
+1. 每篇文章只能属于一个组
+2. 报道同一品牌同一事件的文章应合并（如多家媒体报道同一场秀）
+3. 不要遗漏任何文章编号
+4. 独立文章也要单独成组（indices只有一个元素）"""
+
+    messages = [
+        {
+            "role": "system",
+            "content": "你是时尚资讯编辑，擅长识别相关新闻话题。只输出JSON数组。",
+        },
+        {"role": "user", "content": prompt},
+    ]
+    result = call_llm(messages, temperature=0.15, max_tokens=4000)
+    parsed = extract_json(result)
+
+    if isinstance(parsed, dict) and "clusters" in parsed:
+        parsed = parsed["clusters"]
+    if not isinstance(parsed, list):
         return None
 
+    # Adjust indices to global offset
+    clusters = []
+    for c in parsed:
+        if not isinstance(c, dict):
+            continue
+        indices = c.get("indices", c.get("article_indices", []))
+        clusters.append(
+            {
+                "topic": c.get("topic", ""),
+                "indices": [batch_start_idx + idx for idx in indices],
+                "category": c.get("category", "行业动态"),
+            }
+        )
+    return clusters
 
-def process_article_with_llm(title, content, source_lang, source_name):
-    """Use LLM to translate, summarize, and categorize an article."""
-    category_options = "、".join([c["name"] for c in CATEGORIES if c["id"] != "all"])
 
-    prompt = f"""你是一位专业的时尚行业编辑。请处理以下时尚资讯文章。
+def generate_topic_summary(topic_articles):
+    """Generate a comprehensive Chinese summary for a topic cluster."""
+    # Build context from all articles in the cluster
+    context_parts = []
+    for art in topic_articles:
+        context_parts.append(
+            f"来源: {art['source']} ({art['source_lang']})\n"
+            f"标题: {art['title']}\n"
+            f"内容: {art['content_snippet']}\n"
+        )
+    context = "\n---\n".join(context_parts)
 
-来源: {source_name}
-原文语言: {source_lang}
-标题: {title}
-内容摘要: {content[:2000]}
+    num_articles = len(topic_articles)
+    if num_articles == 1:
+        summary_instruction = "请将这篇文章翻译/改写为流畅的中文资讯，200-300字。"
+    else:
+        summary_instruction = (
+            f"这{num_articles}篇文章报道了同一话题。"
+            "请综合所有来源，撰写一篇全面的中文资讯摘要，300-500字。"
+            "要整合各来源的独特信息，不要简单罗列。"
+        )
 
-请严格按以下JSON格式输出（不要输出其他内容）:
+    prompt = f"""{summary_instruction}
+
+原始文章：
+{context}
+
+请严格按以下JSON格式输出（不要输出其他内容）：
 {{
-  "title_zh": "中文标题（简洁有力，15字以内）",
-  "summary_zh": "中文摘要（100-150字，包含关键信息）",
-  "category": "从以下分类中选一个最合适的: {category_options}",
+  "title": "中文标题（简洁有力，15字以内）",
+  "summary": "中文综合摘要",
+  "key_points": ["要点1", "要点2", "要点3"],
   "tags": ["标签1", "标签2", "标签3"],
   "is_sensitive": false
 }}
 
-注意:
-1. 如果原文是英文或日文，请翻译为流畅的中文
-2. 如果内容涉及政治敏感话题（如中国政治、台湾问题、领土争议等），将is_sensitive设为true
-3. tags应该是与时尚相关的中文关键词
-4. category必须是给定选项之一"""
+注意：
+1. 标题要吸引人，像杂志标题
+2. 摘要要全面整合多源信息，语言流畅自然
+3. key_points 提取3-5个核心要点
+4. 如果涉及中国政治敏感话题，is_sensitive设为true
+5. tags是中文关键词"""
 
     messages = [
-        {"role": "system", "content": "你是一位专业的时尚行业中文编辑，擅长翻译和总结时尚资讯。请只输出JSON格式的结果。"},
-        {"role": "user", "content": prompt}
+        {
+            "role": "system",
+            "content": (
+                "你是一位顶级时尚杂志的中文编辑。你的任务是将多源时尚资讯"
+                "综合为一篇高质量的中文报道。语言要专业、流畅、有杂志感。只输出JSON。"
+            ),
+        },
+        {"role": "user", "content": prompt},
     ]
-
-    result = call_llm(messages)
-    if not result:
-        return None
-
-    # Parse JSON from response
-    try:
-        # Try to extract JSON from the response
-        json_match = re.search(r'\{[\s\S]*\}', result)
-        if json_match:
-            parsed = json.loads(json_match.group())
-            return parsed
-    except json.JSONDecodeError:
-        logger.warning(f"Failed to parse LLM response for: {title}")
-
-    return None
+    result = call_llm(messages, temperature=0.3, max_tokens=2000)
+    return extract_json(result)
 
 
-# ─── News Clustering ─────────────────────────────────────────────────────────
+# ─── Main Pipeline ──────────────────────────────────────────────────────────
 
-def cluster_similar_articles(articles):
-    """Use LLM to identify and cluster similar news stories."""
-    if not OPENROUTER_API_KEY or len(articles) < 5:
-        return articles
-
-    # Build a summary of all articles for clustering
-    article_list = []
-    for i, art in enumerate(articles):
-        article_list.append(f"{i}. [{art.get('title_zh', art.get('title', ''))}] - {art.get('source', '')}")
-
-    articles_text = "\n".join(article_list)
-
-    prompt = f"""以下是今日时尚资讯列表，请识别报道同一事件/话题的文章组。
-
-{articles_text}
-
-请输出JSON格式（不要输出其他内容）:
-{{
-  "clusters": [
-    {{
-      "topic": "话题简述",
-      "article_indices": [0, 3, 7],
-      "merged_title": "合并后的中文标题",
-      "merged_summary": "综合多篇报道的摘要（150字以内）"
-    }}
-  ]
-}}
-
-注意:
-1. 只合并确实报道同一事件的文章（至少2篇）
-2. 不相关的文章不需要合并
-3. 如果没有可合并的文章，返回空clusters数组"""
-
-    messages = [
-        {"role": "system", "content": "你是时尚资讯编辑，擅长识别和合并同一话题的新闻报道。请只输出JSON。"},
-        {"role": "user", "content": prompt}
-    ]
-
-    result = call_llm(messages, temperature=0.2)
-    if not result:
-        return articles
-
-    try:
-        json_match = re.search(r'\{[\s\S]*\}', result)
-        if json_match:
-            cluster_data = json.loads(json_match.group())
-            clusters = cluster_data.get('clusters', [])
-
-            if not clusters:
-                return articles
-
-            # Mark clustered articles
-            clustered_indices = set()
-            merged_articles = []
-
-            for cluster in clusters:
-                indices = cluster.get('article_indices', [])
-                if len(indices) < 2:
-                    continue
-
-                # Use the first article as base, merge info
-                base_idx = indices[0]
-                if base_idx >= len(articles):
-                    continue
-
-                base = articles[base_idx].copy()
-                base['title_zh'] = cluster.get('merged_title', base.get('title_zh', ''))
-                base['summary_zh'] = cluster.get('merged_summary', base.get('summary_zh', ''))
-                base['is_clustered'] = True
-                base['cluster_sources'] = []
-
-                for idx in indices:
-                    if idx < len(articles):
-                        clustered_indices.add(idx)
-                        base['cluster_sources'].append({
-                            'source': articles[idx].get('source', ''),
-                            'title': articles[idx].get('title', ''),
-                            'link': articles[idx].get('link', ''),
-                        })
-
-                merged_articles.append(base)
-
-            # Add non-clustered articles
-            final = merged_articles[:]
-            for i, art in enumerate(articles):
-                if i not in clustered_indices:
-                    final.append(art)
-
-            return final
-
-    except Exception as e:
-        logger.warning(f"Clustering failed: {e}")
-
-    return articles
-
-
-# ─── Main Pipeline ───────────────────────────────────────────────────────────
-
-def load_cache():
-    """Load previously processed article IDs."""
-    if CACHE_FILE.exists():
-        try:
-            with open(CACHE_FILE, 'r') as f:
-                return json.load(f)
-        except:
-            pass
-    return {"processed_ids": [], "last_run": None}
-
-
-def save_cache(cache):
-    """Save processed article IDs."""
-    CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(CACHE_FILE, 'w') as f:
-        json.dump(cache, f, ensure_ascii=False, indent=2)
-
-
-def fetch_all_feeds():
-    """Fetch articles from all configured RSS feeds."""
-    all_articles = []
-    seen_urls = set()
-
-    for feed_config in FASHION_FEEDS:
-        name = feed_config['name']
-        url = feed_config['url']
-        lang = feed_config['lang']
-        category = feed_config['category']
-
-        logger.info(f"Fetching: {name} ({url})")
-
-        try:
-            resp = requests.get(url, headers=HEADERS, timeout=15)
-            if resp.status_code != 200:
-                logger.warning(f"  Failed ({resp.status_code})")
-                continue
-
-            feed = feedparser.parse(resp.text)
-            count = 0
-
-            for entry in feed.entries[:MAX_ARTICLES_PER_FEED]:
-                link = getattr(entry, 'link', '')
-                title = getattr(entry, 'title', '')
-
-                if not link or not title:
-                    continue
-
-                # Deduplicate by normalized URL
-                norm_url = normalize_url(link)
-                if norm_url in seen_urls:
-                    continue
-                seen_urls.add(norm_url)
-
-                # Extract content
-                content = ''
-                if hasattr(entry, 'content') and entry.content:
-                    content = entry.content[0].get('value', '')
-                elif hasattr(entry, 'description'):
-                    content = entry.description or ''
-                elif hasattr(entry, 'summary'):
-                    content = entry.summary or ''
-
-                cleaned_content = clean_html(content)
-                image_url = extract_image(entry)
-                pub_date = get_published_date(entry)
-
-                article = {
-                    'id': get_article_id(link, title),
-                    'title': title,
-                    'link': link,
-                    'source': name,
-                    'source_lang': lang,
-                    'category_hint': category,
-                    'category_id': CATEGORY_MAP.get(category, 'industry'),
-                    'image': image_url,
-                    'published': pub_date,
-                    'content_snippet': cleaned_content[:500],
-                }
-
-                all_articles.append(article)
-                count += 1
-
-            logger.info(f"  Got {count} articles from {name}")
-
-        except Exception as e:
-            logger.error(f"  Error fetching {name}: {e}")
-
-    logger.info(f"Total raw articles: {len(all_articles)}")
-    return all_articles
-
-
-def process_with_llm(articles):
-    """Process articles through LLM for translation/summary/categorization."""
+def run_clustering(articles):
+    """Cluster articles into topics using batched LLM calls."""
     if not OPENROUTER_API_KEY:
-        logger.warning("No OPENROUTER_API_KEY set, using raw data without LLM processing")
-        # Provide basic fallback without LLM
-        for art in articles:
-            art['title_zh'] = art['title']
-            art['summary_zh'] = art['content_snippet'][:150]
-            art['tags'] = []
-            art['is_sensitive'] = False
-        return articles
+        logger.warning("No API key — skipping clustering, using raw articles as topics")
+        return _fallback_no_llm(articles)
 
-    processed = []
-    for i, art in enumerate(articles):
-        logger.info(f"Processing [{i+1}/{len(articles)}]: {art['title'][:60]}...")
+    article_lines = build_article_index(articles)
+    total = len(article_lines)
+    batch_size = 50  # Process 50 articles per LLM call
+    all_clusters = []
 
-        result = process_article_with_llm(
-            art['title'],
-            art['content_snippet'],
-            art['source_lang'],
-            art['source']
+    logger.info(f"Clustering {total} articles in batches of {batch_size}...")
+    for start in range(0, total, batch_size):
+        end = min(start + batch_size, total)
+        batch = article_lines[start:end]
+        logger.info(f"  Clustering batch [{start}:{end}]...")
+
+        clusters = cluster_batch(batch, start)
+        if clusters:
+            all_clusters.extend(clusters)
+        else:
+            # Fallback: each article is its own topic
+            logger.warning(f"  Batch [{start}:{end}] clustering failed, using fallback")
+            for i in range(start, end):
+                all_clusters.append(
+                    {
+                        "topic": "",
+                        "indices": [i],
+                        "category": articles[i]["category_hint"],
+                    }
+                )
+        time.sleep(1)  # Rate limit
+
+    # Validate: ensure no article is in multiple clusters, no article is lost
+    assigned = set()
+    valid_clusters = []
+    for c in all_clusters:
+        clean_indices = [i for i in c["indices"] if i < total and i not in assigned]
+        if clean_indices:
+            assigned.update(clean_indices)
+            c["indices"] = clean_indices
+            valid_clusters.append(c)
+
+    # Add any orphaned articles as single-article topics
+    for i in range(total):
+        if i not in assigned:
+            valid_clusters.append(
+                {
+                    "topic": "",
+                    "indices": [i],
+                    "category": articles[i]["category_hint"],
+                }
+            )
+
+    logger.info(f"Formed {len(valid_clusters)} topic clusters")
+    return valid_clusters
+
+
+def generate_all_summaries(articles, clusters):
+    """Generate Chinese summaries for all topic clusters."""
+    if not OPENROUTER_API_KEY:
+        return _fallback_no_llm(articles)
+
+    # Sort clusters: multi-article clusters first, then by recency
+    def cluster_sort_key(c):
+        size = len(c["indices"])
+        newest = max(articles[i]["published"] for i in c["indices"])
+        return (-size, newest)
+
+    clusters.sort(key=cluster_sort_key, reverse=False)
+    # Actually we want multi-article first, then newest first
+    clusters.sort(key=lambda c: (-len(c["indices"]), ""))
+
+    topics = []
+    logger.info(f"Generating summaries for {min(len(clusters), MAX_TOPICS)} topics...")
+
+    for ci, cluster in enumerate(clusters[:MAX_TOPICS]):
+        topic_articles = [articles[i] for i in cluster["indices"]]
+        logger.info(
+            f"  Topic [{ci+1}/{min(len(clusters), MAX_TOPICS)}] "
+            f"({len(topic_articles)} articles): "
+            f"{topic_articles[0]['title'][:50]}..."
         )
 
-        if result:
-            art['title_zh'] = result.get('title_zh', art['title'])
-            art['summary_zh'] = result.get('summary_zh', art['content_snippet'][:150])
-            art['tags'] = result.get('tags', [])
-            art['is_sensitive'] = result.get('is_sensitive', False)
+        summary_data = generate_topic_summary(topic_articles)
 
-            # Update category if LLM suggests one
-            llm_category = result.get('category', '')
-            if llm_category in CATEGORY_MAP:
-                art['category_hint'] = llm_category
-                art['category_id'] = CATEGORY_MAP[llm_category]
+        if summary_data and not summary_data.get("is_sensitive", False):
+            # Pick the best image from the cluster
+            images = [a["image"] for a in topic_articles if a.get("image")]
+            best_image = images[0] if images else ""
+
+            # Collect all source references
+            sources_list = []
+            for a in topic_articles:
+                sources_list.append(
+                    {
+                        "name": a["source"],
+                        "title": a["title"],
+                        "link": a["link"],
+                        "lang": a["source_lang"],
+                    }
+                )
+
+            # Newest published date
+            newest_date = max(a["published"] for a in topic_articles)
+
+            category_name = cluster.get("category", topic_articles[0].get("category_hint", "行业动态"))
+            category_id = CATEGORY_MAP.get(category_name, "industry")
+
+            topics.append(
+                {
+                    "id": hashlib.md5(
+                        summary_data.get("title", "")[:30].encode()
+                    ).hexdigest()[:12],
+                    "title": summary_data.get("title", topic_articles[0]["title"]),
+                    "summary": summary_data.get("summary", ""),
+                    "key_points": summary_data.get("key_points", []),
+                    "tags": summary_data.get("tags", []),
+                    "category": category_id,
+                    "category_name": category_name,
+                    "image": best_image,
+                    "published": newest_date,
+                    "sources": sources_list,
+                    "article_count": len(topic_articles),
+                }
+            )
+        elif summary_data and summary_data.get("is_sensitive", False):
+            logger.info(f"    Skipped (sensitive content)")
         else:
-            art['title_zh'] = art['title']
-            art['summary_zh'] = art['content_snippet'][:150]
-            art['tags'] = []
-            art['is_sensitive'] = False
+            # Fallback for failed LLM call
+            a = topic_articles[0]
+            topics.append(
+                {
+                    "id": a["id"],
+                    "title": a["title"],
+                    "summary": a["content_snippet"][:300],
+                    "key_points": [],
+                    "tags": [],
+                    "category": cluster.get("category_id", a.get("category_id", "industry")),
+                    "category_name": a.get("category_hint", "行业动态"),
+                    "image": a.get("image", ""),
+                    "published": a["published"],
+                    "sources": [
+                        {
+                            "name": a2["source"],
+                            "title": a2["title"],
+                            "link": a2["link"],
+                            "lang": a2["source_lang"],
+                        }
+                        for a2 in topic_articles
+                    ],
+                    "article_count": len(topic_articles),
+                }
+            )
 
-        processed.append(art)
-
-        # Rate limiting
         time.sleep(0.5)
 
-    return processed
+    # Sort final topics by date (newest first)
+    topics.sort(key=lambda t: t.get("published", ""), reverse=True)
+    return topics
 
 
-def build_output(articles):
-    """Build the final JSON output for the frontend."""
-    # Filter out sensitive content
-    safe_articles = [a for a in articles if not a.get('is_sensitive', False)]
+def _fallback_no_llm(articles):
+    """Fallback when no LLM API key: treat each article as its own topic."""
+    topics = []
+    for a in articles[:MAX_TOPICS]:
+        topics.append(
+            {
+                "id": a["id"],
+                "title": a["title"],
+                "summary": a["content_snippet"][:300],
+                "key_points": [],
+                "tags": [],
+                "category": a.get("category_id", "industry"),
+                "category_name": a.get("category_hint", "行业动态"),
+                "image": a.get("image", ""),
+                "published": a["published"],
+                "sources": [
+                    {
+                        "name": a["source"],
+                        "title": a["title"],
+                        "link": a["link"],
+                        "lang": a["source_lang"],
+                    }
+                ],
+                "article_count": 1,
+            }
+        )
+    return topics
 
-    # Sort by published date (newest first)
-    safe_articles.sort(key=lambda x: x.get('published', ''), reverse=True)
 
-    # Limit total
-    safe_articles = safe_articles[:MAX_TOTAL_ARTICLES]
-
-    # Build output structure
+def build_output(topics, all_sources):
+    """Build the final JSON for the frontend."""
     output = {
         "meta": {
             "generated_at": datetime.datetime.now().isoformat(),
-            "total_articles": len(safe_articles),
-            "sources_count": len(set(a['source'] for a in safe_articles)),
-            "sources": list(set(a['source'] for a in safe_articles)),
+            "total_topics": len(topics),
+            "total_articles": sum(t["article_count"] for t in topics),
+            "sources_count": len(all_sources),
+            "sources": sorted(all_sources),
         },
         "categories": CATEGORIES,
-        "articles": [],
+        "topics": topics,
     }
-
-    for art in safe_articles:
-        output["articles"].append({
-            "id": art['id'],
-            "title": art.get('title_zh', art['title']),
-            "title_original": art['title'],
-            "summary": art.get('summary_zh', art.get('content_snippet', '')[:150]),
-            "link": art['link'],
-            "source": art['source'],
-            "category": art['category_id'],
-            "category_name": art.get('category_hint', ''),
-            "image": art.get('image', ''),
-            "published": art.get('published', ''),
-            "tags": art.get('tags', []),
-            "is_clustered": art.get('is_clustered', False),
-            "cluster_sources": art.get('cluster_sources', []),
-        })
-
     return output
 
 
 def main():
     logger.info("=" * 60)
-    logger.info("Fashion Feed Aggregator - Starting")
+    logger.info("Fashion Feed Aggregator v2 — Topic Clustering Mode")
     logger.info("=" * 60)
 
-    # Step 1: Fetch all feeds
-    articles = fetch_all_feeds()
+    # Step 1: Load sources
+    sources = load_sources()
 
+    # Step 2: Fetch all feeds
+    articles = fetch_all_feeds(sources)
     if not articles:
         logger.error("No articles fetched, exiting")
         sys.exit(1)
 
-    # Step 2: Process with LLM (translate, summarize, categorize)
-    articles = process_with_llm(articles)
+    all_source_names = list(set(a["source"] for a in articles))
 
-    # Step 3: Cluster similar news
-    articles = cluster_similar_articles(articles)
+    # Step 3: Cluster into topics
+    clusters = run_clustering(articles)
 
-    # Step 4: Build output
-    output = build_output(articles)
+    # Step 4: Generate summaries
+    topics = generate_all_summaries(articles, clusters)
 
-    # Step 5: Write output
+    # Step 5: Build and write output
+    output = build_output(topics, all_source_names)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-    logger.info(f"Output written to {OUTPUT_FILE}")
-    logger.info(f"Total articles: {output['meta']['total_articles']}")
+    logger.info(f"Output: {OUTPUT_FILE}")
+    logger.info(f"Topics: {output['meta']['total_topics']}")
+    logger.info(f"Articles covered: {output['meta']['total_articles']}")
     logger.info(f"Sources: {output['meta']['sources_count']}")
     logger.info("Done!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

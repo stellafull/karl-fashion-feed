@@ -1,40 +1,44 @@
 /*
- * ArticleCard — Editorial Noir Design
- * Grid card with image, title, summary, and meta
- * Hover: subtle lift + gold border accent
+ * TopicCard — Editorial Noir Design (v2: Topic mode)
+ * Card for displaying a topic cluster
+ * Variants: wide (top 2), default (grid), compact (list)
+ * Clicking opens topic detail panel
  */
 
-import { Clock, ExternalLink, Layers } from "lucide-react";
-import type { Article } from "@/hooks/useFeedData";
+import { Clock, Layers, ChevronRight } from "lucide-react";
+import type { Topic } from "@/hooks/useFeedData";
 import { formatTimeAgo } from "@/hooks/useFeedData";
 import { motion } from "framer-motion";
 
 const FALLBACK_IMAGE =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663404425913/XsRzs3R3SMWpsb8CkVUfqq/fallback-pattern-diwxooD7YAXKmRVyMjUGPW.webp";
 
-interface ArticleCardProps {
-  article: Article;
+interface TopicCardProps {
+  topic: Topic;
   index: number;
   variant?: "default" | "compact" | "wide";
+  onClick: () => void;
 }
 
-export default function ArticleCard({
-  article,
+export default function TopicCard({
+  topic,
   index,
   variant = "default",
-}: ArticleCardProps) {
-  const imageUrl = article.image || FALLBACK_IMAGE;
+  onClick,
+}: TopicCardProps) {
+  const imageUrl = topic.image || FALLBACK_IMAGE;
+  const uniqueSources = topic.sources
+    .map((s) => s.name)
+    .filter((v, i, a) => a.indexOf(v) === i);
 
   if (variant === "compact") {
     return (
-      <motion.a
-        href={article.link}
-        target="_blank"
-        rel="noopener noreferrer"
+      <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
-        className="group flex gap-4 py-4 border-b border-border last:border-0 hover:bg-secondary/30 transition-colors duration-300 px-2 -mx-2"
+        transition={{ duration: 0.5, delay: Math.min(index * 0.03, 0.5), ease: [0.22, 1, 0.36, 1] }}
+        onClick={onClick}
+        className="group flex gap-4 py-4 border-b border-border last:border-0 hover:bg-secondary/30 transition-colors duration-300 px-2 -mx-2 cursor-pointer"
       >
         {/* Thumbnail */}
         <div className="w-20 h-20 flex-shrink-0 overflow-hidden bg-muted">
@@ -52,28 +56,35 @@ export default function ArticleCard({
         {/* Content */}
         <div className="flex-1 min-w-0">
           <h3 className="font-body font-semibold text-sm text-foreground leading-snug line-clamp-2 group-hover:text-gold transition-colors duration-300">
-            {article.title}
+            {topic.title}
           </h3>
           <div className="flex items-center gap-2 mt-1.5 text-[11px] text-muted-foreground font-body">
-            <span>{article.source}</span>
+            <span>{uniqueSources.slice(0, 2).join(" · ")}</span>
             <span className="text-border">|</span>
-            <span>{formatTimeAgo(article.published)}</span>
+            <span>{formatTimeAgo(topic.published)}</span>
+            {topic.article_count > 1 && (
+              <>
+                <span className="text-border">|</span>
+                <span className="flex items-center gap-0.5 text-gold/70">
+                  <Layers className="w-2.5 h-2.5" />
+                  {topic.article_count}
+                </span>
+              </>
+            )}
           </div>
         </div>
-      </motion.a>
+      </motion.div>
     );
   }
 
   if (variant === "wide") {
     return (
-      <motion.a
-        href={article.link}
-        target="_blank"
-        rel="noopener noreferrer"
+      <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
-        className="group flex flex-col sm:flex-row gap-5 bg-card border border-border hover:border-gold/40 transition-all duration-400 overflow-hidden"
+        transition={{ duration: 0.5, delay: Math.min(index * 0.05, 0.5), ease: [0.22, 1, 0.36, 1] }}
+        onClick={onClick}
+        className="group flex flex-col sm:flex-row gap-5 bg-card border border-border hover:border-gold/40 transition-all duration-400 overflow-hidden cursor-pointer"
       >
         {/* Image */}
         <div className="sm:w-64 md:w-80 aspect-[16/10] sm:aspect-auto overflow-hidden bg-muted flex-shrink-0">
@@ -93,49 +104,47 @@ export default function ArticleCard({
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-[10px] font-body font-medium tracking-wider uppercase text-gold">
-                {article.category_name}
+                {topic.category_name}
               </span>
-              {article.is_clustered && (
+              {topic.article_count > 1 && (
                 <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
                   <Layers className="w-3 h-3" />
-                  聚合
+                  {topic.article_count} 篇聚合
                 </span>
               )}
             </div>
             <h3 className="font-display text-lg md:text-xl font-bold text-foreground leading-snug mb-2 group-hover:text-gold transition-colors duration-300">
-              {article.title}
+              {topic.title}
             </h3>
             <p className="font-body text-sm text-muted-foreground leading-relaxed line-clamp-2">
-              {article.summary}
+              {topic.summary}
             </p>
           </div>
 
           <div className="flex items-center gap-3 mt-4 text-xs text-muted-foreground font-body">
-            <span>{article.source}</span>
+            <span>{uniqueSources.slice(0, 3).join(" · ")}</span>
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              {formatTimeAgo(article.published)}
+              {formatTimeAgo(topic.published)}
             </span>
             <span className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-gold">
-              <ExternalLink className="w-3 h-3" />
-              阅读
+              <ChevronRight className="w-3 h-3" />
+              详情
             </span>
           </div>
         </div>
-      </motion.a>
+      </motion.div>
     );
   }
 
   // Default card
   return (
-    <motion.a
-      href={article.link}
-      target="_blank"
-      rel="noopener noreferrer"
+    <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
-      className="group flex flex-col bg-card border border-border hover:border-gold/40 transition-all duration-400 overflow-hidden"
+      transition={{ duration: 0.5, delay: Math.min(index * 0.03, 0.5), ease: [0.22, 1, 0.36, 1] }}
+      onClick={onClick}
+      className="group flex flex-col bg-card border border-border hover:border-gold/40 transition-all duration-400 overflow-hidden cursor-pointer"
     >
       {/* Image */}
       <div className="aspect-[4/3] overflow-hidden bg-muted relative">
@@ -149,38 +158,43 @@ export default function ArticleCard({
           }}
         />
         {/* Source badge */}
-        <div className="absolute top-3 left-3">
-          <span className="px-2 py-0.5 text-[10px] font-body font-medium bg-black/60 text-white/90 backdrop-blur-sm">
-            {article.source}
-          </span>
-        </div>
+        {topic.article_count > 1 && (
+          <div className="absolute top-3 left-3">
+            <span className="px-2 py-0.5 text-[10px] font-body font-medium bg-black/60 text-white/90 backdrop-blur-sm flex items-center gap-1">
+              <Layers className="w-2.5 h-2.5" />
+              {topic.article_count} 篇聚合
+            </span>
+          </div>
+        )}
+        {topic.article_count === 1 && (
+          <div className="absolute top-3 left-3">
+            <span className="px-2 py-0.5 text-[10px] font-body font-medium bg-black/60 text-white/90 backdrop-blur-sm">
+              {uniqueSources[0]}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
       <div className="flex-1 p-4 flex flex-col">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-[10px] font-body font-medium tracking-wider uppercase text-gold">
-            {article.category_name}
+            {topic.category_name}
           </span>
-          {article.is_clustered && (
-            <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-              <Layers className="w-3 h-3" />
-            </span>
-          )}
         </div>
 
         <h3 className="font-display text-base md:text-lg font-bold text-foreground leading-snug mb-2 group-hover:text-gold transition-colors duration-300 line-clamp-2">
-          {article.title}
+          {topic.title}
         </h3>
 
         <p className="font-body text-xs text-muted-foreground leading-relaxed line-clamp-3 flex-1">
-          {article.summary}
+          {topic.summary}
         </p>
 
         {/* Tags */}
-        {article.tags.length > 0 && (
+        {topic.tags.length > 0 && (
           <div className="flex items-center gap-1.5 mt-3 flex-wrap">
-            {article.tags.slice(0, 3).map((tag, i) => (
+            {topic.tags.slice(0, 3).map((tag, i) => (
               <span
                 key={i}
                 className="text-[10px] font-body text-muted-foreground border border-border px-1.5 py-0.5"
@@ -194,10 +208,12 @@ export default function ArticleCard({
         {/* Meta */}
         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border text-[11px] text-muted-foreground font-body">
           <Clock className="w-3 h-3" />
-          <span>{formatTimeAgo(article.published)}</span>
-          <ExternalLink className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-gold" />
+          <span>{formatTimeAgo(topic.published)}</span>
+          <span className="ml-auto text-[10px]">
+            {uniqueSources.slice(0, 2).join(" · ")}
+          </span>
         </div>
       </div>
-    </motion.a>
+    </motion.div>
   );
 }

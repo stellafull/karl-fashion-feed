@@ -1,19 +1,26 @@
 import { useState, useEffect, useMemo } from "react";
 
-export interface Article {
+// ─── Data Types (v2: Topic-based) ──────────────────────────────────────────
+
+export interface TopicSource {
+  name: string;
+  title: string;
+  link: string;
+  lang: string;
+}
+
+export interface Topic {
   id: string;
   title: string;
-  title_original: string;
   summary: string;
-  link: string;
-  source: string;
+  key_points: string[];
+  tags: string[];
   category: string;
   category_name: string;
   image: string;
   published: string;
-  tags: string[];
-  is_clustered: boolean;
-  cluster_sources: { source: string; title: string; link: string }[];
+  sources: TopicSource[];
+  article_count: number;
 }
 
 export interface Category {
@@ -24,6 +31,7 @@ export interface Category {
 
 export interface FeedMeta {
   generated_at: string;
+  total_topics: number;
   total_articles: number;
   sources_count: number;
   sources: string[];
@@ -32,14 +40,17 @@ export interface FeedMeta {
 export interface FeedData {
   meta: FeedMeta;
   categories: Category[];
-  articles: Article[];
+  topics: Topic[];
 }
+
+// ─── Hook ──────────────────────────────────────────────────────────────────
 
 export function useFeedData() {
   const [data, setData] = useState<FeedData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -57,21 +68,26 @@ export function useFeedData() {
     fetchData();
   }, []);
 
-  const filteredArticles = useMemo(() => {
+  const filteredTopics = useMemo(() => {
     if (!data) return [];
-    if (activeCategory === "all") return data.articles;
-    return data.articles.filter((a) => a.category === activeCategory);
+    if (activeCategory === "all") return data.topics;
+    return data.topics.filter((t) => t.category === activeCategory);
   }, [data, activeCategory]);
 
-  const featuredArticle = useMemo(() => {
-    // Pick the first article with an image as featured
-    return filteredArticles.find((a) => a.image) || filteredArticles[0] || null;
-  }, [filteredArticles]);
+  const featuredTopic = useMemo(() => {
+    // Pick the first multi-source topic with an image, or the first topic
+    return (
+      filteredTopics.find((t) => t.image && t.article_count > 1) ||
+      filteredTopics.find((t) => t.image) ||
+      filteredTopics[0] ||
+      null
+    );
+  }, [filteredTopics]);
 
-  const gridArticles = useMemo(() => {
-    if (!featuredArticle) return filteredArticles;
-    return filteredArticles.filter((a) => a.id !== featuredArticle.id);
-  }, [filteredArticles, featuredArticle]);
+  const gridTopics = useMemo(() => {
+    if (!featuredTopic) return filteredTopics;
+    return filteredTopics.filter((t) => t.id !== featuredTopic.id);
+  }, [filteredTopics, featuredTopic]);
 
   return {
     data,
@@ -79,11 +95,15 @@ export function useFeedData() {
     error,
     activeCategory,
     setActiveCategory,
-    filteredArticles,
-    featuredArticle,
-    gridArticles,
+    filteredTopics,
+    featuredTopic,
+    gridTopics,
+    selectedTopic,
+    setSelectedTopic,
   };
 }
+
+// ─── Utilities ─────────────────────────────────────────────────────────────
 
 export function formatTimeAgo(dateStr: string): string {
   if (!dateStr) return "";
@@ -103,4 +123,15 @@ export function formatTimeAgo(dateStr: string): string {
   } catch {
     return "";
   }
+}
+
+export function getLangLabel(lang: string): string {
+  const map: Record<string, string> = {
+    en: "英文",
+    ja: "日文",
+    zh: "中文",
+    fr: "法文",
+    ko: "韩文",
+  };
+  return map[lang] || lang;
 }

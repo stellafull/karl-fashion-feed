@@ -1,9 +1,9 @@
 /*
- * SourcesSidebar — Editorial Noir Design
- * Right sidebar showing data sources and update info
+ * SourcesSidebar — Editorial Noir Design (v2: Topic mode)
+ * Right sidebar showing stats, sources, and about info
  */
 
-import { Rss, Clock, Globe } from "lucide-react";
+import { Rss, Clock, Globe, Layers, BarChart3 } from "lucide-react";
 import type { FeedMeta } from "@/hooks/useFeedData";
 
 interface SourcesSidebarProps {
@@ -13,6 +13,7 @@ interface SourcesSidebarProps {
 const SOURCE_URLS: Record<string, string> = {
   Vogue: "https://www.vogue.com",
   "Vogue Fashion": "https://www.vogue.com/fashion",
+  "Vogue Business": "https://www.voguebusiness.com",
   WWD: "https://wwd.com",
   Hypebeast: "https://hypebeast.com",
   "Hypebeast Fashion": "https://hypebeast.com/fashion",
@@ -27,11 +28,43 @@ const SOURCE_URLS: Record<string, string> = {
   "Fashion Dive": "https://www.fashiondive.com",
   "WWD Japan": "https://www.wwdjapan.com",
   "Vogue Japan": "https://www.vogue.co.jp",
+  Glamour: "https://www.glamour.com",
+  Refinery29: "https://www.refinery29.com",
+  "The Cut": "https://www.thecut.com",
+  "Who What Wear": "https://www.whowhatwear.com",
+  Coveteur: "https://coveteur.com",
+  Fashionsnap: "https://www.fashionsnap.com",
 };
 
 export default function SourcesSidebar({ meta }: SourcesSidebarProps) {
   return (
     <aside className="space-y-6">
+      {/* Stats */}
+      <div className="p-4 border border-border bg-card">
+        <div className="flex items-center gap-2 mb-3">
+          <BarChart3 className="w-4 h-4 text-gold" />
+          <h3 className="font-body font-semibold text-sm">数据概览</h3>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="text-center p-3 bg-secondary/50">
+            <div className="font-display text-2xl font-bold text-gold">
+              {meta.total_topics}
+            </div>
+            <div className="text-[10px] text-muted-foreground font-body mt-0.5">
+              话题
+            </div>
+          </div>
+          <div className="text-center p-3 bg-secondary/50">
+            <div className="font-display text-2xl font-bold text-foreground">
+              {meta.total_articles}
+            </div>
+            <div className="text-[10px] text-muted-foreground font-body mt-0.5">
+              原始文章
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Update info */}
       <div className="p-4 border border-border bg-card">
         <div className="flex items-center gap-2 mb-3">
@@ -49,8 +82,10 @@ export default function SourcesSidebar({ meta }: SourcesSidebarProps) {
               minute: "2-digit",
             })}
           </p>
-          <p>共 {meta.total_articles} 篇资讯</p>
-          <p>来自 {meta.sources_count} 个信息源</p>
+          <p className="flex items-center gap-1">
+            <Layers className="w-3 h-3" />
+            AI 自动聚合同话题报道
+          </p>
         </div>
       </div>
 
@@ -58,7 +93,9 @@ export default function SourcesSidebar({ meta }: SourcesSidebarProps) {
       <div className="p-4 border border-border bg-card">
         <div className="flex items-center gap-2 mb-3">
           <Globe className="w-4 h-4 text-gold" />
-          <h3 className="font-body font-semibold text-sm">信息来源</h3>
+          <h3 className="font-body font-semibold text-sm">
+            信息来源 ({meta.sources_count})
+          </h3>
         </div>
         <div className="space-y-0">
           {meta.sources.sort().map((source) => (
@@ -81,7 +118,8 @@ export default function SourcesSidebar({ meta }: SourcesSidebarProps) {
         <h3 className="font-body font-semibold text-sm mb-2">关于</h3>
         <p className="text-xs text-muted-foreground font-body leading-relaxed">
           Fashion Feed 聚合全球主流时尚媒体的最新资讯，通过 AI
-          自动翻译、分类和摘要，为中文读者提供一站式时尚信息服务。每两小时自动更新。
+          自动识别同一话题的多源报道，生成综合性的中文摘要。
+          无需翻墙即可一站式了解全球时尚动态。每两小时自动更新。
         </p>
       </div>
     </aside>
