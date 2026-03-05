@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-03-05T12:48:58.468922",
-    "total_topics": 488,
-    "total_articles": 587,
+    "generated_at": "2026-03-05T14:41:14.596022",
+    "total_topics": 500,
+    "total_articles": 610,
     "sources_count": 36,
     "sources": [
       "Allure",
@@ -43,29 +43,25 @@
       "i-D"
     ],
     "incremental": {
-      "is_incremental_run": false,
-      "rebuilt_full": true,
-      "new_articles_in_2h": 725,
+      "is_incremental_run": true,
+      "rebuilt_full": false,
+      "new_articles_in_2h": 51,
       "blocked_by_tombstones": 0,
-      "evicted_topics": 0,
+      "evicted_topics": 28,
       "pipeline_stats": {
-        "stage_a_base_clusters": 557,
-        "stage_a_candidates": 557,
-        "stage_b_low_cost_reviews": 99,
-        "stage_b_high_quality_reviews": 24,
-        "stage_b_clusters_before": 557,
-        "stage_b_clusters_after": 638,
-        "cross_merge_candidates": 15,
-        "cross_merge_low_reviews": 9,
+        "incremental_assigned_to_existing": 8,
+        "incremental_new_topics_created": 41,
+        "cross_merge_candidates": 3,
+        "cross_merge_low_reviews": 3,
         "cross_merge_high_reviews": 0,
-        "cross_merge_merged_topics": 12
+        "cross_merge_merged_topics": 1
       }
     },
     "quality": {
-      "merge_rate": 0.1687,
-      "avg_sources_per_topic": 1.1496,
-      "high_confidence_topic_ratio": 0.8566,
-      "rebuild_mode": "full"
+      "merge_rate": 0.1803,
+      "avg_sources_per_topic": 1.164,
+      "high_confidence_topic_ratio": 0.866,
+      "rebuild_mode": "incremental"
     }
   },
   "categories": [
@@ -97,20 +93,1182 @@
   ],
   "topics": [
     {
-      "id": "7f537c95795a",
-      "title": "Courrèges FW26：巴黎女人的24小时",
-      "summary": "Courrèges 2026秋冬系列在巴黎时装周发布，设计师Nicolas Di Felice以“Courrèges女人的24小时”为主题，通过时装秀呈现了一位现代巴黎女性一天的生活轨迹。该系列是对品牌经典元素的重新演绎，在超现实主义氛围中，将女性从清晨到深夜的各种生活场景融入设计。亮点包括：纯白色压轴造型，黑色几何管状连衣裙，以及全新Shadow手袋。该系列旨在打造一个满足现代女性一天不同需求的衣橱，在经典廓形中融入了未来主义的创新。",
+      "id": "d61174764ff5",
+      "title": "Chloé 2026秋季：优雅新篇章",
+      "summary": "Chloé 2026秋季成衣系列，在经典法式优雅中注入了现代活力。本季设计延续品牌一贯的浪漫主义风格，同时探索了更为大胆的廓形和材质。宽松的剪裁与精致的细节相得益彰，色彩运用柔和而富有层次感，打造出兼具舒适与时尚感的全新衣橱。配饰方面，简约的包袋和精致的鞋履为整体造型增添亮点，展现了Chloé女性独立自信的魅力。",
       "key_points": [
-        "“24小时”概念",
-        "经典元素重塑",
-        "全新Shadow手袋"
+        "法式优雅",
+        "现代廓形",
+        "浪漫主义"
+      ],
+      "tags": [
+        "Chloé",
+        "2026秋季",
+        "成衣系列"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://assets.vogue.com/photos/69a9937a25dc3d34c2445ab3/master/pass/00001-chloe-fall-2026-ready-to-wear-credit-brand.jpg",
+      "published": "2026-03-05T14:35:10",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "Chloé Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/chloe",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "977a615d5de8",
+      "title": "LoveShackFancy x Crocs 联名系列：梦幻花卉与舒适洞洞鞋的浪漫邂逅",
+      "summary": "以浪漫印花著称的LoveShackFancy再次跨界合作，携手Crocs为经典洞洞鞋注入甜美基因。该系列包含经典款Crocs、厚底Crocs和芭蕾平底鞋，成人和儿童尺码均有，设计上采用LoveShackFancy标志性的粉彩色调和梦幻花卉图案，并配有金色点缀和LSF风格的Jibbitz装饰，如心形、玫瑰、珍珠、贝壳和羊角面包等。芭蕾平底鞋还配有可缠绕在腿上的缎带。该系列已于3月5日发布，价格在20美元至90美元之间，在Crocs和LoveShackFancy的网站上销售。此前，LoveShackFancy已与Stanley、Gap等多个知名品牌合作，此次与Crocs的联名无疑将再次引发时尚界的关注，为洞洞鞋爱好者带来耳目一新的选择。",
+      "key_points": [
+        "LoveShackFancy与Crocs合作推出联名系列，包含经典款Crocs、厚底Crocs和芭蕾平底鞋。",
+        "设计采用LoveShackFancy标志性的花卉印花、金色点缀和LSF风格的Jibbitz装饰。",
+        "该系列已于3月5日发布，价格在20美元至90美元之间，在Crocs和LoveShackFancy的网站上销售。"
+      ],
+      "tags": [
+        "LoveShackFancy",
+        "Crocs",
+        "联名",
+        "洞洞鞋",
+        "花卉",
+        "Jibbitz",
+        "芭蕾平底鞋",
+        "时尚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://www.refinery29.com/images/11962782.jpg?width=853&height=1024&fit=bounds&crop=853%3A1024",
+      "published": "2026-03-05T14:33:54",
+      "sources": [
+        {
+          "name": "Refinery29",
+          "title": "Oh Jibbitz! LoveShackFancy Puts A Whimsical Spin On Crocs",
+          "link": "https://www.refinery29.com/en-us/loveshackfancy-crocs-collaboration?utm_source=feed&utm_medium=rss",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "3a4e86a2f674",
+      "title": "Gucci带火“脏脏”眼线，90年代Grunge风回潮！",
+      "summary": "Gucci秀场强势宣告：野性回归！Kate Moss压轴的鲸尾礼服惊艳全场，而秀场妆容也预示着90年代Grunge风的复兴。其中，略带颓废感的“脏脏”眼线成为焦点。这股风潮不仅体现在秀场，更席卷社交媒体，引发美妆爱好者们的追捧。90年代复古风潮正以不可阻挡之势回归，在美妆领域尤为突出。",
+      "key_points": [
+        "Gucci秀场引领潮流",
+        "90年代Grunge风回潮",
+        "“脏脏”眼线成流行趋势"
+      ],
+      "tags": [
+        "Gucci",
+        "眼线",
+        "90年代",
+        "Grunge",
+        "复古"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/5/2665b186/smudged001.jpeg?w=1200&fit=max",
+      "published": "2026-03-05T14:27:00",
+      "sources": [
+        {
+          "name": "Bustle",
+          "title": "The Gucci Smudged Eyeliner Trend Is Bringing Back ’90s Grunge Glam",
+          "link": "https://www.bustle.com/beauty/smudged-eyeliner-trend-gucci",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "5a11ae76c0b2",
+      "title": "Netflix新剧《弗拉基米尔》：欲望与迷恋的校园罗生门",
+      "summary": "Netflix新剧《弗拉基米尔》改编自Julia May Jonas同名小说，由蕾切尔·薇兹主演，讲述了一位才华横溢的英语教授与年轻新同事之间充满吸引力的故事。剧情围绕着这位教授对名为弗拉基米尔（Vlad）的新同事产生的强烈迷恋展开，这种迷恋最初只是她平淡生活中的一丝慰藉。然而，随着剧情发展，故事逐渐演变成一个充满悬念和复杂情感的校园罗生门，远比想象的更加曲折离奇，挑战着观众的道德底线。",
+      "key_points": [
+        "蕾切尔·薇兹主演，演绎复杂情感",
+        "改编自同名小说，剧情反转",
+        "校园背景下的欲望与迷恋"
+      ],
+      "tags": [
+        "Netflix",
+        "蕾切尔·薇兹",
+        "校园剧",
+        "心理悬疑",
+        "小说改编"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/4/d0be3fea/vlad_108_still_01_16_59_15_r2.jpg?w=1200&fit=max",
+      "published": "2026-03-05T14:23:22",
+      "sources": [
+        {
+          "name": "Bustle",
+          "title": "'Vladimir' Book Ending & Plot Summary For New Netflix Series",
+          "link": "https://www.bustle.com/entertainment/vladimir-book-ending-plot-summary-netflix",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "295c36bb1a50",
+      "title": "马德里寻味：加泰罗尼亚烤大葱的季节限定美味",
+      "summary": "Vogue西班牙版推荐：无需远赴加泰罗尼亚，在马德里也能品尝到正宗的Calçots烤大葱！这份季节限定的美味，一旦开始就停不下来。精选马德里提供Calçots的最佳餐厅，从传统风味到创新演绎，满足你对加泰罗尼亚美食的所有想象。快来探索这份独特的味蕾体验，感受地中海阳光的味道。",
+      "key_points": [
+        "马德里美食",
+        "加泰罗尼亚料理",
+        "季节限定"
+      ],
+      "tags": [
+        "美食推荐",
+        "西班牙料理",
+        "餐厅指南"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vogue.es/photos/69a98d3dd4e86ac6554fdd74/master/pass/MARIABERNAD_PostaledesdeValencia-8.jpg",
+      "published": "2026-03-05T14:21:29",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "Calçots en Madrid: una ruta para disfrutar del plato catalán de la temporada",
+          "link": "https://www.vogue.es/articulos/mejores-restaurantes-calcots-madrid",
+          "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1bb9e120ad7e",
+      "title": "Burberry 170周年：群星演绎经典风衣，致敬英伦时尚偶像",
+      "summary": "Burberry 迎来 170 周年，发布“The Trench: Portraits of an Icon”广告大片，集结凯特·莫斯、Little Simz 等 23 位全球瞩目明星，共同演绎品牌标志性 Trench 风衣的隽永魅力。该系列旨在致敬经典单品，探讨时尚偶像的定义，展现 Burberry 作为英伦文化象征的传承与创新，以及风衣在日常生活中优雅百搭的时尚风格。",
+      "key_points": [
+        "Burberry 170 周年庆典",
+        "“The Trench: Portraits of an Icon”广告大片发布",
+        "23 位明星演绎经典 Trench 风衣",
+        "致敬经典，探讨时尚偶像",
+        "展现 Burberry 的英伦文化传承"
+      ],
+      "tags": [
+        "Burberry",
+        "170周年",
+        "Trench风衣",
+        "凯特·莫斯",
+        "Little Simz",
+        "时尚偶像",
+        "英伦风"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/0/1440329.jpg",
+      "published": "2026-03-05T14:10:00",
+      "sources": [
+        {
+          "name": "Dazed",
+          "title": "Kate Moss, Little Simz, and more celebrate 170 years of Burberry",
+          "link": "https://www.dazeddigital.com/fashion/article/69775/1/burberry-170th-anniversary-trench-coat-kate-moss-little-simz-jonathan-bailey?utm_source=Link&utm_medium=Link&utm_campaign=RSSFeed&utm_term=kate-moss-little-simz-and-more-celebrate-170-years-of-burberry",
+          "lang": "en"
+        },
+        {
+          "name": "NYLON",
+          "title": "How Many Icons Can You Count In Burberry's Latest Campaign?",
+          "link": "https://www.nylon.com/fashion/burberry-trench-coat-portrait-of-an-icon-campaign",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "c757532da50b",
+      "title": "HBX上新：Human Made复古潮流来袭",
+      "summary": "日本潮流教父NIGO®与Pharrell Williams联手打造的Human Made，以“未来在过去”为灵感，将复古美学与街头文化巧妙融合。品牌精选优质面料，结合精湛工艺和独特图案，呈现出别具一格的潮流单品。设计风格涵盖工装、军事、运动、户外等多种元素，完美诠释美式休闲风，为你的衣橱注入更多可能性。HBX现已上新，不容错过！",
+      "key_points": [
+        "NIGO®与Pharrell Williams联手品牌",
+        "复古与街头文化融合",
+        "HBX平台最新发售"
+      ],
+      "tags": [
+        "Human Made",
+        "NIGO",
+        "Pharrell Williams",
+        "复古",
+        "街头潮流",
+        "HBX"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2Fpack-tee-2-1-f53f3_1772719446.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-05T14:06:30",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "New Arrivals From HBX: Human Made",
+          "link": "https://hypebeast.com/2026/3/new-arrivals-from-hbx-human-made-4",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "13da6a29f047",
+      "title": "ChatGPT陷争议，用户抵制浪潮？",
+      "summary": "由于OpenAI与美国国防部（前身为战争部）达成一项备受争议的合作协议，上周美国卸载ChatGPT的用户数量激增295%。这一事件引发了关于科技公司与军事机构合作的伦理讨论，以及用户对于数据隐私和技术被用于军事目的的担忧。尽管OpenAI尚未对此事做出详细回应，但用户抵制行为表明，公众对于人工智能技术的应用保持着高度警惕，并呼吁科技公司承担更多社会责任。",
+      "key_points": [
+        "ChatGPT用户卸载量激增",
+        "OpenAI与美国国防部合作引争议",
+        "用户担忧技术被用于军事目的"
+      ],
+      "tags": [
+        "ChatGPT",
+        "OpenAI",
+        "抵制",
+        "国防部",
+        "人工智能",
+        "伦理"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/0/1440363.jpg",
+      "published": "2026-03-05T14:05:00",
+      "sources": [
+        {
+          "name": "Dazed",
+          "title": "Is it finally time to boycott ChatGPT?",
+          "link": "https://www.dazeddigital.com/life-culture/article/69826/1/can-you-still-use-chatgpt-clear-conscience-anthropic-claude-department-of-war?utm_source=Link&utm_medium=Link&utm_campaign=RSSFeed&utm_term=is-it-finally-time-to-boycott-chatgpt",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c566bd53b845",
+      "title": "底妆新宠：每10秒售出的全能美妆棒",
+      "summary": "《Vogue》西班牙版编辑力荐Merit The Minimalist美妆棒，声称自从发现它后，就告别了遮瑕和粉底。这款产品集遮瑕、粉底于一体，质地轻薄，易于涂抹，能快速打造自然无暇的底妆效果，非常适合追求效率和简约妆容的现代女性。其热销程度可见其受欢迎程度，是打造日常妆容的必备单品。",
+      "key_points": [
+        "Merit The Minimalist美妆棒",
+        "集遮瑕、粉底于一体",
+        "打造自然无暇底妆"
+      ],
+      "tags": [
+        "美妆棒",
+        "底妆",
+        "Merit",
+        "Minimalist",
+        "遮瑕",
+        "粉底"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vogue.es/photos/676593dea56ba1ba9ae60fbf/master/pass/LAYS_VOGUE3756OK.jpg",
+      "published": "2026-03-05T14:03:27",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "No uso corrector ni base de maquillaje desde que descubrí el stick todo-en-uno que se vende cada 10 segundos",
+          "link": "https://www.vogue.es/articulos/stick-corrector-maquillaje-multiusos-merit-sephora",
+          "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "57264e8b0d5a",
+      "title": "Cobrah《Torn》：撕裂束缚，性感宣言",
+      "summary": "瑞典歌手兼制作人Cobrah携首张专辑《Torn》强势来袭，大胆展现性解放和过往情事的诱人回忆，在柏林音乐圈掀起波澜。她以直白露骨的歌词和极具冲击力的音乐风格，挑战传统观念，引发热议。专辑不仅是对个人经历的坦诚剖析，更是对女性力量的颂扬，鼓励听众挣脱束缚，拥抱真我。",
+      "key_points": [
+        "Cobrah首张专辑《Torn》大胆前卫",
+        "性解放主题和直白歌词引人注目",
+        "挑战传统，展现女性力量"
+      ],
+      "tags": [
+        "Cobrah",
+        "专辑",
+        "音乐",
+        "性感",
+        "女性力量"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2026/2/26/646ed460/nylon_cobrah_axelahlgren7188-update.jpg?w=1200&fit=max",
+      "published": "2026-03-05T14:00:25",
+      "sources": [
+        {
+          "name": "NYLON",
+          "title": "On 'Torn,' Cobrah Sheds Her Skin",
+          "link": "https://www.nylon.com/entertainment/cobrah-torn-interview",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e525ed5add16",
+      "title": "卡洛琳婚礼前的美丽抉择",
+      "summary": "Vogue回顾了卡洛琳·贝赛特-肯尼迪婚礼前夕，她与发型师Brad Johns之间关于发色改变的对话。在人生重要时刻，卡洛琳曾认真考虑是否要做出大胆的形象转变，展现了她对美的极致追求和对自我风格的探索。这段幕后故事揭示了这位时尚偶像在光鲜外表下，对个人形象的细腻思考。",
+      "key_points": [
+        "卡洛琳婚礼前曾考虑改变发色",
+        "发型师Brad Johns回忆两人对话",
+        "展现卡洛琳对美的极致追求"
+      ],
+      "tags": [
+        "卡洛琳·贝赛特-肯尼迪",
+        "婚礼",
+        "发型",
+        "时尚偶像"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://assets.vogue.com/photos/69a620a47d05418e04e3731b/master/pass/GettyImages-97305994.jpg",
+      "published": "2026-03-05T14:00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "The Day Before Her Wedding, Carolyn Bessette-Kennedy Considered a Major Beauty Change",
+          "link": "https://www.vogue.com/article/wedding-carolyn-bessette-kennedy-hair",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "8e4f45d821f5",
+      "title": "《爱情故事》复刻CBK经典90年代金发",
+      "summary": "为了在银幕上重现卡洛琳·贝赛特-肯尼迪标志性的90年代阳光金发，《爱情故事》剧组可谓不惜工本。女演员莎拉·皮igeon原本的黑色波波头，经过长达20小时的染发过程，以及多达400束接发的精心打造，最终成功变身为CBK的迷人金发造型。这一过程不仅是对经典时尚的致敬，也展现了电影制作中对细节的极致追求。",
+      "key_points": [
+        "《爱情故事》重塑CBK金发",
+        "耗时20小时染发",
+        "使用400束接发"
+      ],
+      "tags": [
+        "卡洛琳·贝赛特-肯尼迪",
+        "90年代时尚",
+        "金发造型",
+        "电影造型"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://media.glamour.com/photos/69a85f26bfdccf45556df1f9/master/pass/LOVE%20STORY_01.jpg",
+      "published": "2026-03-05T14:00:00",
+      "sources": [
+        {
+          "name": "Glamour",
+          "title": "How Love Story Recreated Carolyn Bessette Kennedy’s Iconic ’90s Blonde Hair",
+          "link": "https://www.glamour.com/story/how-love-story-recreated-carolyn-bessette-kennedys-iconic-90s-blonde-hair",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "9751a64a4b9e",
+      "title": "Japanese Breakfast主理人联手Catbird推出珠宝系列",
+      "summary": "才华横溢的作家兼音乐人Michelle Zauner（Japanese Breakfast主理人）与知名珠宝品牌Catbird合作，推出精致的珠宝系列，将她的最新专辑以另一种形式呈现。该系列设计灵感来源于专辑的音乐和情感，每一件单品都充满了细腻的艺术感，旨在捕捉专辑的精髓。此外，Michelle Zauner透露她正在创作她的下一本书，令人期待。",
+      "key_points": [
+        "Michelle Zauner与Catbird合作推出珠宝系列",
+        "珠宝设计灵感来自Japanese Breakfast最新专辑",
+        "Michelle Zauner正在创作下一本书"
+      ],
+      "tags": [
+        "Japanese Breakfast",
+        "Michelle Zauner",
+        "Catbird",
+        "珠宝",
+        "合作系列",
+        "音乐",
+        "书籍"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/e9dbd223-989f-4c03-9c4b-3de99632cddb.jpg",
+      "published": "2026-03-05T14:00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "Japanese Breakfast’s Michelle Zauner Has a Catbird Collaboration (and a Draft for Her Next Book)",
+          "link": "https://www.elle.com/culture/music/a70606877/japanese-breakfast-michelle-zauner-catbird-collaboration-interview/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c94e855f0f22",
+      "title": "Mielle薰衣草荔枝系列：秀发新宠",
+      "summary": "Mielle最新推出的薰衣草荔枝系列引发热议。在被宝洁收购两年后，创始人Monique Rodriguez依然充满热情。尽管旅途劳顿，她对新品的信念和对品牌的坚持丝毫未减。该系列将薰衣草的舒缓与荔枝的清新完美融合，为秀发带来全新体验，令人期待。",
+      "key_points": [
+        "Mielle推出薰衣草荔枝系列",
+        "创始人Monique Rodriguez对新品充满信心",
+        "薰衣草与荔枝的独特结合"
+      ],
+      "tags": [
+        "Mielle",
+        "薰衣草荔枝",
+        "护发",
+        "新品上市"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/02_RefreshStation__0404-1-Cropped-1920x1080.jpg",
+      "published": "2026-03-05T14:00:00",
+      "sources": [
+        {
+          "name": "Essence",
+          "title": "Mielle Dropped The New Lavender & Lychee Collection–And We’re Obsessed",
+          "link": "https://www.essence.com/beauty/mielle-organics-lavender-lychee-collection/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "abc71e059399",
+      "title": "Bravo真人秀：黑人男星的挑战与机遇",
+      "summary": "在《Real Housewives》等Bravo热门真人秀中，黑人女性角色早已深入人心。然而，随着Bradley Carter等黑人男性的加入，Bravo宇宙也迎来了新的视角。Carter坦言，作为节目中为数不多的黑人男性，他面临着独特的挑战，包括被贴上“反派”标签的风险。本文探讨了Carter在真人秀中的经历，以及他在塑造自身形象、打破刻板印象方面的努力。",
+      "key_points": [
+        "Bravo真人秀的多元化",
+        "黑人男性在真人秀中的困境",
+        "Bradley Carter的个人经历"
+      ],
+      "tags": [
+        "Bravo",
+        "真人秀",
+        "黑人男性",
+        "多元化",
+        "Bradley Carter"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/NUP_208136_00386.jpg",
+      "published": "2026-03-05T14:00:00",
+      "sources": [
+        {
+          "name": "Essence",
+          "title": "Bradley Carter On Villain Labels And Being Bravo’s Only Black Man",
+          "link": "https://www.essence.com/reality-television/bradley-carter-bravo-black-male-representation/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "964dc99979e0",
+      "title": "春日度假穿搭指南：玩转四地风情",
+      "summary": "无论你是向往阳光沙滩，还是迷恋皑皑白雪，一次完美的春日假期都离不开精心准备的行李箱。本季，我们为你精选四个别具风情的度假胜地，并提供相应的穿搭建议，助你轻松应对各种场合，成为旅途中最亮眼的风景线。从轻盈飘逸的连衣裙到保暖时尚的滑雪服，让你的行李箱充满格调，尽情享受春日的美好。",
+      "key_points": [
+        "精选春日度假目的地",
+        "提供不同场景穿搭建议",
+        "打造格调满满的行李箱"
+      ],
+      "tags": [
+        "春日度假",
+        "穿搭指南",
+        "旅行时尚"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/elm-suitcase-2324-atflorencolive-69a879387614c.jpg",
+      "published": "2026-03-05T14:00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "4 Chic Spring Break Destinations—and Exactly What to Pack for Each",
+          "link": "https://www.elle.com/fashion/shopping/a70593242/spring-travel-destinations-and-what-to-pack/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "48d77ed02672",
+      "title": "维密强势反弹，业绩或创历史新高",
+      "summary": "内衣品牌维多利亚的秘密（Victoria's Secret）在经历长期低迷后迎来强势反弹。自从与L Brands分拆后，维密预计今年将迎来业绩最佳年份。品牌重塑战略，包括拥抱多元化和包容性，以及调整产品线，似乎正在奏效，重新吸引了消费者。",
+      "key_points": [
+        "维密预计业绩将创L Brands分拆后新高",
+        "品牌重塑战略初见成效",
+        "多元化和包容性是关键"
+      ],
+      "tags": [
+        "维多利亚的秘密",
+        "业绩增长",
+        "品牌重塑",
+        "内衣",
+        "时尚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://img.businessoffashion.com/resizer/v2/A7TPUOLQ2RFXVG7B6ZC7JBJGLI.jpg?auth=b56512d4cb447f45d48399cdf11213b6bf3883541faa011b545e89c7645200b8&smart=true&width=1800&height=1013",
+      "published": "2026-03-05T13:48:03",
+      "sources": [
+        {
+          "name": "BOF",
+          "title": "Victoria’s Secret Forecasts Its Best Year Since L Brands Split",
+          "link": "https://www.businessoffashion.com/news/retail/victorias-secret-forecasts-its-best-year-since-l-brands-split/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "5b39508531cb",
+      "title": "Agnona：米兰时装周的低调奢华",
+      "summary": "在米兰时装周的聚光灯下，大型品牌备受瞩目。然而，意大利的中小型品牌，如Agnona，也在默默坚守着精湛工艺和悠久传统。Agnona以其卓越的面料和低调奢华的设计风格，在激烈的市场竞争中保持着独特的地位，展现了意大利制造的精髓。",
+      "key_points": [
+        "Agnona是意大利中小型品牌代表",
+        "坚守传统工艺",
+        "低调奢华的设计风格"
+      ],
+      "tags": [
+        "Agnona",
+        "米兰时装周",
+        "意大利制造",
+        "奢侈品",
+        "工艺"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/300e/1925/22d5/3559/3019/ebf4/624c/db6a/e2c5/940e/208x208/940e.jpg",
+      "published": "2026-03-05T13:45:02",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Italy's Agnona brand: lamb among the fashion wolves",
+          "link": "https://ww.fashionnetwork.com/news/Italy-s-agnona-brand-lamb-among-the-fashion-wolves,1813108.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "54185e1dbfe0",
+      "title": "香氛联名美发：时尚新宠？",
+      "summary": "香氛市场持续火热，已连续四年成为美国高端美妆领域增长最快的品类。据预测，全球香氛销售额将从2024年的570亿美元增长到2030年的近800亿美元。在此背景下，香氛品牌与美发品牌的跨界合作成为新趋势。此类合作巧妙地将嗅觉体验融入日常头发护理，为消费者带来更丰富、更个性化的感官享受，有望成为品牌增长的新动力。",
+      "key_points": [
+        "香氛市场高速增长",
+        "香氛美发品牌联名成趋势",
+        "提供个性化感官体验"
+      ],
+      "tags": [
+        "香氛",
+        "美发",
+        "品牌合作",
+        "市场趋势"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://fashionista.com/.image/c_fit%2Ch_800%2Cw_1200/MjIxNzE5NzY4MzQ2OTI5MDE0/crown-affair-ds-durga-collab-2.png",
+      "published": "2026-03-05T13:45:00",
+      "sources": [
+        {
+          "name": "Fashionista",
+          "title": "Why Fragrance and Hair Brand Collabs Are Winning Combos",
+          "link": "https://fashionista.com/2026/03/fragrance-hair-care-collaborations-marketing-trend",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "657c28dd37e6",
+      "title": "2026春季：优雅色彩裤装风潮",
+      "summary": "2026年春季，设计师们大胆运用色彩，预示着色彩将成为打造时尚造型的关键。各种色彩鲜艳的裤装将成为优雅女性的必备单品，为春日衣橱注入活力与个性。从柔和的马卡龙色到大胆的撞色搭配，色彩裤装将引领新一季的时尚风潮，展现穿着者的独特品味和自信魅力。",
+      "key_points": [
+        "色彩是关键",
+        "裤装是主角",
+        "优雅女性必备"
+      ],
+      "tags": [
+        "色彩裤装",
+        "春季时尚",
+        "潮流趋势"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.vogue.es/photos/69a94144214f160ff3d3b525/master/pass/versace-pantalon-azul-primavera-verano-2026-ready-to-wear.jpg",
+      "published": "2026-03-05T13:33:10",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "Los pantalones de colores que vestirán las chicas más elegantes en la primavera de 2026",
+          "link": "https://www.vogue.es/articulos/pantalones-colores-tendencia-primavera-verano-2026",
+          "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "4dbf9f14e4d6",
+      "title": "优衣库印度市场野心：夏季服装发力，目标增长十倍",
+      "summary": "优衣库正积极拓展全球市场，并在印度市场设定了雄心勃勃的增长目标。该公司计划通过专注于夏季服装系列，深度挖掘印度市场的潜力，力求实现销售额增长十倍的飞跃。这一策略反映了优衣库对印度市场的长期信心，以及对当地消费者需求的精准把握。优衣库将继续调整产品线，以适应不同市场的独特气候和文化偏好，从而在全球范围内实现可持续增长。",
+      "key_points": [
+        "优衣库设定印度市场增长目标",
+        "夏季服装是关键策略",
+        "全球市场扩张计划"
+      ],
+      "tags": [
+        "优衣库",
+        "印度市场",
+        "夏季服装",
+        "市场扩张",
+        "零售"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://img.businessoffashion.com/resizer/v2/7EXGX62CPZCFPD6G324RZFJT7A.jpg?auth=04f57779aea054e26a0b8dcd6d5ef23d9358aa6a66a4b7b2a5cedfe1779c7c2e&smart=true&width=1800&height=1013",
+      "published": "2026-03-05T13:30:55",
+      "sources": [
+        {
+          "name": "BOF",
+          "title": "Uniqlo Aims to Grow Tenfold in India With Summer-Centric Clothes",
+          "link": "https://www.businessoffashion.com/news/global-markets/uniqlo-aims-to-grow-tenfold-in-india-with-summer-centric-clothes/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "17a454e6a01f",
+      "title": "雅诗兰黛集团全面收购印度奢华草本品牌",
+      "summary": "雅诗兰黛集团宣布将收购印度奢华阿育吠陀品牌Forest Essentials剩余股份，旨在加速该品牌在全球市场的扩张。此举表明雅诗兰黛集团对印度美容市场的长期看好，以及对天然草本护肤品类增长潜力的信心。Forest Essentials以其传统阿育吠陀配方和奢华体验著称，此次收购将助力其触达更广泛的国际消费者，并进一步巩固雅诗兰黛集团在高端护肤领域的地位。",
+      "key_points": [
+        "雅诗兰黛集团收购Forest Essentials剩余股份",
+        "旨在扩大Forest Essentials全球市场",
+        "看好印度美容市场及天然护肤品潜力"
+      ],
+      "tags": [
+        "雅诗兰黛",
+        "Forest Essentials",
+        "收购",
+        "阿育吠陀",
+        "印度",
+        "草本护肤",
+        "全球扩张"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/43ee/d6d0/e6dd/858c/730a/061a/e5c0/c950/8460/4816/208x208/4816.jpg",
+      "published": "2026-03-05T13:25:33",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Estée Lauder Companies to acquire the remaining interests in Ayurvedic beauty brand Forest Essentials",
+          "link": "https://ww.fashionnetwork.com/news/Estee-lauder-companies-to-acquire-the-remaining-interests-in-ayurvedic-beauty-brand-forest-essentials,1813103.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "738285df8a1f",
+      "title": "Off-White™ FW26：致敬“MR. DAVIS”的颠覆之作",
+      "summary": "Ib Kamara在巴黎一所中学发布Off-White™ 2026秋冬系列，以绿色球体点缀阳光明媚的庭院，将运动装与晚礼服巧妙融合。该系列以“MR. DAVIS”为灵感，秉承“颠覆不是风格，而是一种状态”的理念，开场是一件水洗拼布风衣，大胆探索解构主义和材质碰撞。秀场在巴黎时装周第三天举行，开放式的环境更突显了设计的活力与前卫。",
+      "key_points": [
+        "Ib Kamara执掌的Off-White™ 2026秋冬系列",
+        "致敬“MR. DAVIS”，强调颠覆性",
+        "运动装与晚礼服的混搭"
+      ],
+      "tags": [
+        "Off-White",
+        "2026秋冬",
+        "巴黎时装周",
+        "Ib Kamara",
+        "解构主义"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F05%2Foff-white-fall-winter-2026-paris-fashion-week-menswear-womenswear-runway-0.png?w=800&cbr=1&q=90&format=png&fit=max",
+      "published": "2026-03-05T13:06:33",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "Off-White™ FW26 Is a Tribute to \"MR. DAVIS\"",
+          "link": "https://hypebeast.com/2026/3/off-white-fall-winter-2026-paris-fashion-week-menswear-womenswear-runway",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "ae0b9114b49a",
+      "title": "Mackage携手莱万，演绎工艺之守",
+      "summary": "加拿大轻奢品牌Mackage发布了第五季“Protect Your Craft”主题活动，并邀请著名足球运动员罗伯特·莱万多夫斯基担任代言人。本次活动旨在展示Mackage 2026春夏系列的成衣和高性能产品，强调品牌对卓越工艺的执着追求和对运动精神的致敬。莱万多夫斯基的加入，为该系列注入了更多活力和力量感，完美诠释了品牌的功能性与时尚感。",
+      "key_points": [
+        "Mackage第五季“Protect Your Craft”活动",
+        "罗伯特·莱万多夫斯基担任代言人",
+        "展示2026春夏成衣及高性能系列"
+      ],
+      "tags": [
+        "Mackage",
+        "莱万多夫斯基",
+        "春夏系列",
+        "运动时尚",
+        "品牌活动"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/28f2/28a5/3f2b/fb4d/789c/327d/95f8/29eb/515f/37f0/208x208/37f0.jpg",
+      "published": "2026-03-05T13:04:54",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Mackage launches fifth edition of 'Protect Your Craft' campaign with footballer Robert Lewandowski",
+          "link": "https://ww.fashionnetwork.com/news/Mackage-launches-fifth-edition-of-protect-your-craft-campaign-with-footballer-robert-lewandowski,1812804.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "cba634ac1d5f",
+      "title": "春季时尚趋势：芭蕾舞鞋、及膝裙、薄纱与极简主义，拥抱纽约风尚",
+      "summary": "随着春季的到来，时尚界迎来轻盈复苏的潮流。芭蕾舞鞋、及膝裙、薄纱连衣裙等单品备受瞩目，预示着极简主义的回归。前Nordstrom买手精选九大春季潮流趋势，包括设计独特的针织衫、宽松廓形裤装和statement耳环。此外，纽约时尚人士也开始关注春季衣橱，寻找可叠穿、易搭配的百搭单品和潮流灵感，Abercrombie & Fitch成为他们的选择之一。时尚达人如Sylvie Mus和Chloe Kath Butler的街拍造型提供了搭配灵感，例如刺绣衬衫搭配牛仔裤和风衣，以及冬季单品与春季元素的巧妙融合。",
+      "key_points": [
+        "芭蕾舞鞋、及膝裙、薄纱连衣裙等单品是春季流行趋势。",
+        "极简主义风格回归。",
+        "前Nordstrom买手推荐九大春季潮流趋势。",
+        "纽约时尚人士关注春季衣橱，偏爱百搭单品。",
+        "Abercrombie & Fitch提供春季时尚单品选择。"
+      ],
+      "tags": [
+        "春季时尚",
+        "芭蕾舞鞋",
+        "及膝裙",
+        "薄纱",
+        "极简主义",
+        "纽约风尚",
+        "Abercrombie & Fitch"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/P8UGn7nd3r69BKsYyaLsPo-1280-80.jpg",
+      "published": "2026-03-05T13:00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "Ballet Flats! Knee-Length Skirts! Sheer Dresses! 30 Pieces I'm Excited to Wear This Spring",
+          "link": "https://www.whowhatwear.com/fashion/shopping/spring-staples-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "In a Style Rut? 7 Effortless and Elevated Outfit Ideas to Wear Now and Throughout Spring",
+          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/transitional-winter-to-spring-outfits-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "March Is Here—10 Things to Buy This Month That'll Make You Look Cool",
+          "link": "https://www.whowhatwear.com/fashion/shopping/what-to-buy-in-march-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "I'm a Former Nordstrom Buyer—These Are the 9 Spring Trends I Care About Most",
+          "link": "https://www.whowhatwear.com/fashion/shopping/nordstrom-buyer-spring-trends-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "A New York Fashion Person Walks Into Abercrombie & Fitch—24 Items They'd Grab for Spring",
+          "link": "https://www.whowhatwear.com/fashion/shopping/best-abercrombie-spring-shopping-new-york",
+          "lang": "en"
+        }
+      ],
+      "article_count": 5
+    },
+    {
+      "id": "d84c2f4c0aee",
+      "title": "Robert Marc眼镜焕新，双设计师联袂启幕",
+      "summary": "美国眼镜品牌Robert Marc迎来全新篇章，设计师John Juniper和Jeff Solorio强强联手，共同执掌品牌创意方向。同时，品牌发布了2026春季系列“第一卷：情怀依旧”，预示着在传承经典的基础上，注入更多创新设计理念，为消费者带来更具风格的眼镜选择。",
+      "key_points": [
+        "Robert Marc迎来新设计师",
+        "John Juniper和Jeff Solorio合作",
+        "发布2026春季系列"
+      ],
+      "tags": [
+        "眼镜",
+        "设计师",
+        "新品发布",
+        "Robert Marc"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2026/02/robert-marc-fi.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-05T13:00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "EXCLUSIVE: Robert Marc Turns the Page on a New Chapter With Designers John Juniper and Jeff Solorio",
+          "link": "https://wwd.com/fashion-news/fashion-scoops/robert-marc-designers-john-juniper-jeff-solorio-spring-2026-1238622494/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e222a9aaabc1",
+      "title": "“冰上悍妞”：激励不止一代人",
+      "summary": "《冰上悍将》中“猫女”加夫尼的扮演者，在32年后依然被女性观众告知，她是激励她们走上冰场的动力。美国女子冰球队的持续成功，也在不断激励着新一代的女孩们追逐冰球梦想。这部电影和这支队伍，共同塑造了无数女性的冰球之路。",
+      "key_points": [
+        "《冰上悍将》影响深远",
+        "女性冰球运动的崛起",
+        "榜样的力量"
+      ],
+      "tags": [
+        "冰球",
+        "女性",
+        "电影",
+        "榜样",
+        "体育精神"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/juliethecatingoal-69a88c408cfa0.jpg",
+      "published": "2026-03-05T13:00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "Julie ‘The Cat’ Gaffney Inspired Girls 34 Years Ago. The U.S. Women’s Hockey Team Still Does.",
+          "link": "https://www.elle.com/culture/career-politics/a70609439/colombe-jacobsen-julie-the-cat-gaffney-essay-2026/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e83e97735ca2",
+      "title": "基里安·墨菲：我的妻子是我的缪斯",
+      "summary": "《浴血黑帮》男星基里安·墨菲近日公开表达了对妻子的敬佩之情，坦言妻子在很多事情上都是正确的。他认为女性拥有敏锐的直觉和深刻的见解，并从妻子身上汲取灵感。此番言论展现了他对女性力量的尊重和欣赏，也让人们看到了这位荧幕硬汉柔情的一面。",
+      "key_points": [
+        "基里安·墨菲赞赏妻子",
+        "承认妻子观点正确",
+        "展现对女性的尊重"
+      ],
+      "tags": [
+        "基里安·墨菲",
+        "明星",
+        "情感",
+        "女性",
+        "浴血黑帮"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/elm030126bobelleman-digital-69a1e964c5008.jpg",
+      "published": "2026-03-05T13:00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "Cillian Murphy Is in Awe of Women",
+          "link": "https://www.elle.com/culture/movies-tv/a70538180/cillian-murphy-peaky-blinders-movie-interview-2026/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "9f36f6567e09",
+      "title": "大卫·卢拉斯基镜头下的时尚新星：塞尔坎·德尼兹",
+      "summary": "著名摄影师大卫·卢拉斯基为Dazed杂志2026年春季刊拍摄了一组时尚大片，主角是当下炙手可热的模特塞尔坎·德尼兹。这组照片捕捉了塞尔坎独特的魅力和时尚表现力，预示着他在时尚界的无限潜力。Dazed杂志春季刊已于3月5日在全球发售。",
+      "key_points": [
+        "大卫·卢拉斯基掌镜",
+        "塞尔坎·德尼兹",
+        "Dazed杂志2026春季刊"
+      ],
+      "tags": [
+        "时尚摄影",
+        "模特",
+        "Dazed杂志",
+        "时尚大片",
+        "春季刊"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://images-prod.dazeddigital.com/629/azure/dazed-prod/1440/0/1440287.jpg",
+      "published": "2026-03-05T13:00:00",
+      "sources": [
+        {
+          "name": "Dazed",
+          "title": "In pictures: David Luraschi captures model of the moment, Serkan Deniz",
+          "link": "https://www.dazeddigital.com/fashion/article/69806/1/unearth-me-serkan-deniz-david-luraschi-ola-ebiti-spring-issue-2026?utm_source=Link&utm_medium=Link&utm_campaign=RSSFeed&utm_term=in-pictures-david-luraschi-captures-model-of-the-moment-serkan-deniz",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "fb9e8b2d037a",
+      "title": "潮流先锋：二手时尚教主Luke Fracher的品味哲学",
+      "summary": "GQ全新专栏“品味男士”首期聚焦Luke Fracher，这位特立独行的二手时尚经销商在纽约和洛杉矶拥有自己的店铺。他以独到的眼光和对复古潮流的深刻理解，重新定义了二手时尚的价值。Fracher的选品不仅体现了他对品质的坚持，更展现了一种不落俗套的个人风格。通过他的推荐，我们得以一窥当下二手时尚的流行趋势，以及如何从经典单品中发掘新的搭配灵感。他的成功也启发我们重新审视消费观念，拥抱可持续的时尚生活方式。",
+      "key_points": [
+        "GQ推出“品味男士”专栏",
+        "Luke Fracher是二手时尚领域的意见领袖",
+        "他的选品体现独特品味和潮流触觉"
+      ],
+      "tags": [
+        "二手时尚",
+        "复古潮流",
+        "可持续时尚",
+        "Luke Fracher",
+        "GQ"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.gq.com/photos/69a85c51ce304cc6813f5cc1/master/pass/GQ26_MenOfTaste_March_lede-1.jpg",
+      "published": "2026-03-05T13:00:00",
+      "sources": [
+        {
+          "name": "GQ",
+          "title": "What You Can Learn From America’s Most Opinionated Fashion Reseller",
+          "link": "https://www.gq.com/story/luke-fracher-men-of-taste",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "034b6923ed95",
+      "title": "Paulin家族：波普沙发传奇",
+      "summary": "i-D杂志探访了设计师Benjamin Paulin位于巴黎里昂车站附近的工作室兼住宅，这里陈列着他父亲Pierre Paulin设计的标志性波普风格家具，如“舌头”椅和Groovy椅。在色彩缤纷的Big C沙发上，Benjamin探讨了“乌托邦式沙发”的理念，延续着家族在设计领域的创新精神和对流行文化的独特见解。",
+      "key_points": [
+        "Paulin家族设计传承",
+        "波普风格家具",
+        "乌托邦式设计理念"
+      ],
+      "tags": [
+        "沙发设计",
+        "波普艺术",
+        "法国家具"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://i-d.co/wp-content/uploads/2026/03/CO_FINAL_DETAIL_000000730030-copy-e1772569122245.jpg?quality=90&w=1167",
+      "published": "2026-03-05T13:00:00",
+      "sources": [
+        {
+          "name": "i-D",
+          "title": "Paulin, Paulin, Paulin’s Pop Culture Couches",
+          "link": "https://i-d.co/article/paulin-paulin-paulins-pop-culture-couches/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "7306d110a6be",
+      "title": "肯尼迪家族再登荧幕，Netflix新剧揭秘",
+      "summary": "肯尼迪家族的故事似乎永远不会过时。Netflix 正在筹备一部关于肯尼迪家族的新剧集，再次将这个充满传奇色彩的家族推向聚光灯下。这部剧集将深入挖掘肯尼迪家族的历史、政治生涯以及鲜为人知的个人生活，为观众呈现一个更加立体和真实的肯尼迪家族。",
+      "key_points": [
+        "Netflix 打造肯尼迪家族新剧",
+        "聚焦肯尼迪家族历史与个人生活",
+        "传奇家族故事再现荧幕"
+      ],
+      "tags": [
+        "肯尼迪家族",
+        "Netflix",
+        "电视剧",
+        "历史",
+        "政治"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.glamour.com/photos/69a8a98e047e97be2d825ba0/master/pass/GettyImages-2261327769.jpg",
+      "published": "2026-03-05T13:00:00",
+      "sources": [
+        {
+          "name": "Glamour",
+          "title": "The Kennedy Series on Netflix: Everything We Know",
+          "link": "https://www.glamour.com/story/the-kennedy-series-on-netflix-everything-we-know",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "8f2f47cd7fb6",
+      "title": "纽约奢品买手揭秘：2026必火包包风向标",
+      "summary": "纽约顶级私人买手透露，2026年客户们最关注的包包款式呈现出多元化趋势。经典款依然备受青睐，如设计简约、材质上乘的托特包和链条包，适合日常通勤和休闲场合。同时，造型别致的异形包和迷你包也逐渐走红，成为时尚达人们的个性之选。色彩方面，除了百搭的黑白灰，大胆的亮色系和复古印花也将成为潮流。总之，2026年的包包市场将更加注重实用性与设计感的平衡，满足消费者多样化的需求。",
+      "key_points": [
+        "经典款托特包和链条包持续流行",
+        "异形包和迷你包成为个性之选",
+        "亮色系和复古印花崭露头角"
+      ],
+      "tags": [
+        "包包趋势",
+        "2026时尚",
+        "奢侈品",
+        "纽约",
+        "私人买手"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/ii5fLhPEuSuRHkfcBSyqBF-1280-80.jpg",
+      "published": "2026-03-05T13:00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "I'm a Luxury Personal Shopper in NYC—These Are the Bag Styles My Clients Are Asking About",
+          "link": "https://www.whowhatwear.com/fashion/shopping/personal-shopper-best-luxury-bags",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e2a7275cbed1",
+      "title": "梅诺卡岛的浪漫邂逅：一场古典与怀旧交织的婚礼",
+      "summary": "西班牙艺术家Adriana Gatagán与Víctor Valbuena在梅诺卡岛一座19世纪宫殿中举行了婚礼。婚礼融合了经典优雅与怀旧情调，细节之处尽显艺术家的独特品味。从场地选择到装饰布置，都充满了浪漫气息，为宾客们带来了一场难忘的体验。这场婚礼也展现了梅诺卡岛独特的魅力，吸引了众多时尚人士的目光。",
+      "key_points": [
+        "梅诺卡岛婚礼",
+        "古典优雅风格",
+        "艺术家婚礼"
+      ],
+      "tags": [
+        "婚礼",
+        "梅诺卡岛",
+        "时尚",
+        "艺术",
+        "浪漫"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vogue.es/photos/69a813de90306e13f52d13ce/master/pass/A&V%20Fotografi%CC%81a%2079%20-%20Adria%CC%80%20Can%CC%83ameras%203.jpg",
+      "published": "2026-03-05T12:56:55",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "La boda en Menorca de la artista Adriana Gatagán y Víctor Valbuena: una mezcla de elegancia clásica y nostalgia en una celebración muy especial en un palacete del siglo XIX",
+          "link": "https://www.vogue.es/galerias/boda-menorca-elegante-clasica-decoracion-nostalgica-artista-adriana-gatagan",
+          "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "8e1a51152e61",
+      "title": "肯豆奥斯卡派对造型回顾：黑色是她的红毯挚爱？",
+      "summary": "肯达尔·詹娜（Kendall Jenner）一直是 Vanity Fair 奥斯卡派对红毯上的焦点。回顾她往年的造型，黑色似乎是她的首选。虽然具体款式各异，但黑色礼服总能凸显她的超模气质。未来她是否会尝试其他颜色，令人期待。",
+      "key_points": [
+        "肯达尔·詹娜",
+        "Vanity Fair 奥斯卡派对",
+        "红毯造型",
+        "黑色礼服"
+      ],
+      "tags": [
+        "肯豆",
+        "奥斯卡",
+        "红毯",
+        "礼服",
+        "黑色",
+        "超模"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://media.vanityfair.com/photos/5c73cb3ecd049d050c38f273/master/pass/20190224_VF_Oscars_1191.jpg",
+      "published": "2026-03-05T12:56:47",
+      "sources": [
+        {
+          "name": "Vanity Fair",
+          "title": "All the Looks Kendall Jenner Has Worn to the Vanity Fair Oscar Party",
+          "link": "https://www.vanityfair.com/style/photos/all-the-looks-kendall-jenner-has-worn-to-the-vanity-fair-oscar-party",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "d74dabfc007f",
+      "title": "Prada集团2025年营收增长，Versace时代开启",
+      "summary": "Prada集团公布了2025年度业绩，总营收增长9%至57.1亿欧元。其中，Miu Miu表现突出，零售额同比增长35%，成为集团增长的主要驱动力。相比之下，Prada品牌销售额略有下降，同比减少1%。此外，集团已开始着手Versace品牌的初步战略项目。尽管面临高基数挑战，Miu Miu依然表现出色，延续了其强劲的增长势头。Prada集团在2025年完成了对Versace的战略收购，标志着集团发展进入新阶段。",
+      "key_points": [
+        "Prada集团2025年营收增长9%",
+        "Miu Miu零售额增长35%，驱动集团增长",
+        "Prada品牌销售额略有下降",
+        "Versace品牌战略项目启动",
+        "完成对Versace的战略收购"
+      ],
+      "tags": [
+        "Prada集团",
+        "Miu Miu",
+        "Versace",
+        "营收增长",
+        "时尚产业"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://img.businessoffashion.com/resizer/v2/ONEW6GTKMBDWDGCINXQV3535LA.png?auth=4f2c83f3d4d215e96c8a458811aa81eb750eba940005531432d88b6fdaf34c36&smart=true&width=1800&height=1013",
+      "published": "2026-03-05T12:52:57",
+      "sources": [
+        {
+          "name": "BOF",
+          "title": "Prada Sales Climb 9% in 2025 as Versace Era Begins",
+          "link": "https://www.businessoffashion.com/news/luxury/prada-sales-climb-9-in-2025-as-versace-era-begins/",
+          "lang": "en"
+        },
+        {
+          "name": "Fashion Network",
+          "title": "Prada sees annual revenue rise 9% to €5.71 billion in 2025",
+          "link": "https://ww.fashionnetwork.com/news/Prada-sees-annual-revenue-rise-9-to-5-71-billion-in-2025,1813273.html",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Prada Group Closes 2025 With 5% Revenue Growth and Strategic Versace Acquisition",
+          "link": "https://wwd.com/business-news/financial/prada-group-2025-revenue-growth-miu-miu-outperform-1238649057/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 3
+    },
+    {
+      "id": "ff18097176ad",
+      "title": "土耳其皮革世家 Desa 奢华升级",
+      "summary": "土耳其皮革巨头Çelet家族旗下的 Desa 品牌正加大对其旗舰品牌 1972 Desa 的投资力度。在创意总监 Ivana Omazic 的带领下，1972 Desa 亮相米兰时装周，展示其最新系列。品牌正积极考虑开设首批独立门店，并拓展其配饰产品线，旨在进一步提升品牌在奢侈品市场的地位。",
+      "key_points": [
+        "Desa 加大对 1972 Desa 品牌投资",
+        "Ivana Omazic 担任创意总监",
+        "米兰时装周展示最新系列，计划开设独立门店"
+      ],
+      "tags": [
+        "Desa",
+        "1972 Desa",
+        "土耳其皮革",
+        "米兰时装周",
+        "奢侈品牌"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/2b8e/7483/4ec1/2c0e/d9f1/ed17/cc0f/2871/76f2/cec8/208x208/cec8.jpg",
+      "published": "2026-03-05T12:45:58",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "The Çelet family’s Turkish leather empire expands its luxury brand 1972 Desa",
+          "link": "https://ww.fashionnetwork.com/news/The-celet-family-s-turkish-leather-empire-expands-its-luxury-brand-1972-desa,1813258.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "7f537c95795a",
+      "title": "Courrèges FW26：现代巴黎女性的24小时衣橱",
+      "summary": "Courrèges 2026秋冬系列在巴黎时装周发布，设计师Nicolas Di Felice以“Courrèges女性的24小时”为主题，通过时装秀呈现了一位现代巴黎女性一天的生活轨迹。该系列是对品牌经典元素的重新演绎，在超现实主义氛围中，将女性从清晨到深夜的各种生活场景融入设计。该系列也是Di Felice与品牌合作五周年的纪念。亮点包括：纯白色压轴造型，黑色几何管状连衣裙，以及全新Shadow手袋。系列展示了品牌标志性的元素，如多个按扣、梯形剪裁、拉链和乙烯基服装。都市细节包括刺绣的欧根纱地铁票和经过焦油处理的鱼子酱编织牛仔布。晚装则将都市主题转化为更华丽的装饰，旨在打造一个满足现代女性一天不同需求的衣橱，在经典廓形中融入了未来主义的创新。",
+      "key_points": [
+        "Nicolas Di Felice以“Courrèges女性的24小时”为主题，呈现现代巴黎女性的一天。",
+        "系列是对品牌经典元素的重新演绎，包括按扣、梯形剪裁、拉链和乙烯基服装。",
+        "都市细节包括刺绣欧根纱地铁票和焦油处理的鱼子酱编织牛仔布，晚装则更为华丽。"
       ],
       "tags": [
         "Courrèges",
-        "2026秋冬",
+        "FW26",
         "巴黎时装周",
+        "Nicolas Di Felice",
         "现代女性",
-        "未来主义"
+        "未来主义",
+        "巴黎",
+        "24小时"
       ],
       "category": "runway-collection",
       "category_name": "秀场/系列",
@@ -124,29 +1282,61 @@
           "lang": "en"
         },
         {
-          "name": "Hypebeast Fashion",
+          "name": "Hypebeast",
           "title": "Courrèges FW26 Chronicles a Daylong Wardrobe for the Modern Parisian Woman",
           "link": "https://hypebeast.com/2026/3/courreges-fall-winter-2026-paris-fashion-week-runway-collection",
           "lang": "en"
         }
       ],
-      "article_count": 2
+      "article_count": 3
+    },
+    {
+      "id": "9ef0e8c65e84",
+      "title": "Meta AI试水电商，静悄悄的野心？",
+      "summary": "Meta正加速布局对话式电商领域，在美国悄然将购物功能整合进Meta AI助手。此举被视为Meta对标ChatGPT和Google的回应，旨在探索AI驱动的全新购物体验，或将重塑电商格局。目前测试范围有限，未来发展值得关注。",
+      "key_points": [
+        "Meta AI整合购物功能",
+        "对话式电商新尝试",
+        "对标ChatGPT和Google"
+      ],
+      "tags": [
+        "Meta",
+        "人工智能",
+        "电商",
+        "购物体验"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/2474/b9d9/e247/4092/fb9e/3b8b/0e97/eb74/22a0/940e/208x208/940e.jpg",
+      "published": "2026-03-05T12:26:34",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Meta quietly trials agentic commerce within Meta AI",
+          "link": "https://ww.fashionnetwork.com/news/Meta-quietly-trials-agentic-commerce-within-meta-ai,1813193.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
     },
     {
       "id": "bb56eede769f",
-      "title": "Alaïa：穆勒的完美天鹅之歌",
-      "summary": "Pieter Mulier在巴黎时装周正式发布了他在Maison Alaïa的告别系列，为他备受赞誉的五年任期画上了句号。这场充满情感的2026秋冬系列发布会被广泛认为是令人惊叹的“天鹅之歌”，完美展现了设计师标志性的建筑感、克制的设计、雕塑般的轮廓，以及对品牌精湛工艺传统的深刻尊重。行业内部人士、编辑和评论家普遍赞扬这个大师级的系列。该系列既令人陶醉，又保持了克制，设计师以高水准结束了他的任期。Bruno Astuto, Tiffany Hsu, Mel Ottenberg等业内人士也纷纷表达了对穆勒在Alaïa五年任期的看法，认为这是一个充满勇气和慷慨的举动。",
+      "title": "Alaïa：Pieter Mulier 的告别系列，穆勒的完美天鹅之歌",
+      "summary": "Pieter Mulier 在巴黎时装周正式发布了他在 Maison Alaïa 的告别系列，为他备受赞誉的五年任期画上了句号。这场充满情感的 2026 秋冬系列发布会被广泛认为是令人惊叹的“天鹅之歌”，完美展现了设计师标志性的建筑感、克制的设计、雕塑般的轮廓，以及对品牌精湛工艺传统的深刻尊重。行业内部人士、编辑和评论家普遍赞扬这个大师级的系列，认为这是一个充满勇气和慷慨的举动，并赞扬 Mulier 对该品牌产生的持久影响。此前，Mulier 宣布离职，引发了人们对他告别作品的高度期待。发布会邀请函也别出心裁，参与者收到一个装有皮革紧身胸衣的盒子，上面附有组装说明。Bruno Astuto, Tiffany Hsu, Mel Ottenberg 等业内人士也纷纷表达了对穆勒在 Alaïa 五年任期的看法，认为这是一个充满勇气和慷慨的举动。该系列既令人陶醉，又保持了克制，设计师以高水准结束了他的任期。",
       "key_points": [
-        "Pieter Mulier告别系列",
-        "2026秋冬系列发布",
-        "建筑感与雕塑轮廓"
+        "Pieter Mulier 在 Alaïa 的告别系列被认为是他的“天鹅之歌”。",
+        "该系列展现了 Mulier 标志性的建筑美学、雕塑轮廓和对品牌工艺的尊重。",
+        "业内人士普遍赞扬该系列，认为它既充满勇气又慷慨。",
+        "Mulier 的离职引发了人们对他告别作品的高度期待。",
+        "发布会邀请函别出心裁，参与者收到装有皮革紧身胸衣的盒子。"
       ],
       "tags": [
         "Alaïa",
         "Pieter Mulier",
-        "秋冬系列",
+        "2026 秋冬系列",
+        "巴黎时装周",
         "天鹅之歌",
-        "巴黎时装周"
+        "告别系列"
       ],
       "category": "runway-collection",
       "category_name": "秀场/系列",
@@ -160,7 +1350,7 @@
           "lang": "en"
         },
         {
-          "name": "Hypebeast Fashion",
+          "name": "Hypebeast",
           "title": "Pieter Mulier's Final Collection Delivers an Emotional Swan Song at Alaïa",
           "link": "https://hypebeast.com/2026/3/pieter-muliers-final-collection-delivers-an-emotional-swan-song-at-alaia",
           "lang": "en"
@@ -178,7 +1368,37 @@
           "lang": "en"
         }
       ],
-      "article_count": 4
+      "article_count": 5
+    },
+    {
+      "id": "aba223170a0a",
+      "title": "Bremont携手菲力猫，酷黑飞行表限量来袭！",
+      "summary": "英国腕表品牌Bremont（宝名表）推出Altitude MB Meteor限量版腕表，主角是经典卡通形象菲力猫。这款42毫米钛金属飞行员腕表采用低调的黑色DLC涂层，表盘上饰有菲力猫的趣味图案，并以醒目的黄色航空元素点缀。全球限量500枚，提供钛金属或皮革表带选择，将Bremont的航空传统与菲力猫的俏皮魅力巧妙融合。",
+      "key_points": [
+        "Bremont与菲力猫联名",
+        "Altitude MB Meteor限量版",
+        "42mm钛金属黑色DLC涂层"
+      ],
+      "tags": [
+        "Bremont",
+        "菲力猫",
+        "飞行员腕表",
+        "限量版",
+        "联名"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F05%2Fbremont-altitude-mb-meteor-felix-the-cat-release-info-0.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-05T11:31:55",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "Bremont Stars ‘Felix the Cat’ In New Altitude MB Meteor Limited Edition",
+          "link": "https://hypebeast.com/2026/3/bremont-stars-felix-the-cat-in-new-altitude-mb-meteor-limited-edition",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
     },
     {
       "id": "b6cedc029c34",
@@ -447,6 +1667,66 @@
       "article_count": 2
     },
     {
+      "id": "d44d8ec8243f",
+      "title": "Timberland 东京限定系列：工装新解",
+      "summary": "Timberland携手东京设计单位Tokyo Design Collective (TDC)，推出日本限定胶囊系列。该系列以现代日式视角重塑Timberland经典的粗犷美式工装风格。设计重点包括Strozam飞行员夹克、纱染格纹衬衫和短袖工装衬衫，在经典工装轮廓中融入日式简约和细节巧思。该系列将于3月6日发售，仅在日本地区有售，价格在140美元至196美元之间。",
+      "key_points": [
+        "Timberland x Tokyo Design Collective",
+        "日本限定胶囊系列",
+        "现代日式工装风格"
+      ],
+      "tags": [
+        "Timberland",
+        "东京设计单位",
+        "工装",
+        "限定系列",
+        "日本"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F05%2Ftimberland-by-tokyo-design-collective-capsulr-japan-exclusive-release-info-0.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-05T10:02:34",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "Timberland Launches Japan‑Only Capsule by Tokyo Design Collective",
+          "link": "https://hypebeast.com/2026/3/timberland-launches-japanonly-capsule-by-tokyo-design-collective",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "528ad0cfcee9",
+      "title": "American Eagle 业绩超预期，富裕消费者需求强劲",
+      "summary": "American Eagle 因富裕消费者对其产品的强劲需求，预测销售增长将超出预期。尽管预测未考虑美国最高法院最近推翻前总统特朗普部分关税的决定，但市场对其前景依旧看好。该公司在轻奢市场的定位和对高端消费者的吸引力是其业绩增长的关键因素。",
+      "key_points": [
+        "American Eagle 销售增长预测超预期",
+        "富裕消费者需求是增长主要驱动力",
+        "预测未考虑关税政策变化"
+      ],
+      "tags": [
+        "American Eagle",
+        "销售增长",
+        "轻奢品牌",
+        "富裕消费者",
+        "市场预测"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://img.businessoffashion.com/resizer/v2/HRBJDJTIHFGDNJA7RMVECUSDRQ.jpg?auth=d217edf79f20616fba0e55ef4c513ab21f3dadf278fe6091b5b587ceebbd2ef9&smart=true&width=1800&height=1013",
+      "published": "2026-03-05T10:00:17",
+      "sources": [
+        {
+          "name": "BOF",
+          "title": "American Eagle Forecasts Sales Growth Above Estimates on Demand From Wealthy Shoppers",
+          "link": "https://www.businessoffashion.com/news/retail/american-eagle-forecasts-sales-growth-above-estimates-on-demand-from-wealthy-shoppers/",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "c2030bfd5b18",
       "title": "甜茶魅力何在？导演眼中的蒂莫西",
       "summary": "蒂莫西·柴勒梅德（Timothée Chalamet）凭借其独特的魅力和精湛的演技，深受众多知名导演的喜爱。年仅30岁，已获得三次奥斯卡最佳男主角提名，新作《马蒂·施普林 世界尽在掌握》（Marty Supreme）再次让他成为颁奖季的热门人物。Vogue Japan采访了包括卢卡·瓜达尼诺、丹尼斯·维伦纽瓦、格蕾塔·葛韦格在内的七位曾与他合作的导演，试图揭示他备受青睐的原因。导演们认为，蒂莫西兼具智慧与野心、纯真与大胆，这使得他能够完美诠释各种角色。在《马蒂·施普林 世界尽在掌握》中，蒂莫西展现出前所未有的投入和创意，他本人也表示对这部作品充满热情。从鲍勃·迪伦到传奇乒乓球冠军，蒂莫西不断挑战自我，拓展演艺生涯的边界。他不仅是一位才华横溢的演员，更是一位充满想法和创造力的艺术家，不断为观众带来惊喜。",
@@ -522,6 +1802,37 @@
       "article_count": 2
     },
     {
+      "id": "f10268806e5b",
+      "title": "BAPE登陆枫叶国！首家温哥华门店开幕",
+      "summary": "日本街头潮牌A Bathing Ape (BAPE) 在加拿大开设了第一家实体店，选址温哥华市中心Alberni街1028号，位于该市的奢侈品零售区。这家备受期待的门店是BAPE北美扩张战略的重要里程碑。为庆祝开业，温哥华门店特别推出了独家限量版商品系列。",
+      "key_points": [
+        "BAPE首家加拿大门店开业",
+        "选址温哥华奢侈品零售区",
+        "推出独家限量版商品"
+      ],
+      "tags": [
+        "BAPE",
+        "加拿大",
+        "温哥华",
+        "街头潮流",
+        "门店开业",
+        "限量版"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F05%2Fbape-first-canadian-flagship-store-vancouver-opening-announcement-000.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-05T09:34:55",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "BAPE Enters Canada With First-Ever Store in Vancouver",
+          "link": "https://hypebeast.com/2026/3/bape-first-canadian-flagship-store-vancouver-opening-announcement",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "afb63e21dcdd",
       "title": "东京前沿：HENRI & MIHOKO SAITO 2026秋冬新貌",
       "summary": "FASHIONSNAP报道，HENRI和MIHOKO SAITO分别发布了各自的2026秋冬系列。虽然报道内容仅提及品牌名称和系列发布，但我们可以推测，这两位设计师的作品代表了东京时尚界对未来秋冬潮流的探索。HENRI的系列可能延续其品牌一贯的风格，或带来新的突破。MIHOKO SAITO的设计则可能展现其独特的审美理念和对材质的创新运用。更多关于设计灵感、色彩趋势、廓形剪裁以及面料选择的详细信息，敬请期待后续报道。",
@@ -559,20 +1870,22 @@
     },
     {
       "id": "8683f3e40e7a",
-      "title": "《熊家餐馆》第五季终结？",
-      "summary": "备受好评的FX剧集《熊家餐馆》(The Bear) 传闻将在第五季迎来完结。这一消息最初由客串演员杰米·李·柯蒂斯(Jamie Lee Curtis)引发，她在社交媒体上发布了一篇充满感情的帖子，庆祝拍摄结束，并随后在采访中表示“大家都明白这是最后一季”。据报道，第五季早在2025年就已秘密获得批准，并与第四季背靠背拍摄。虽然官方尚未正式宣布，但柯蒂斯的言论暗示了该剧即将完结的可能性。如果消息属实，观众们将不得不告别Donna Berzatto和她的厨房。",
+      "title": "《熊家餐馆》第五季迎来最终季？杰米·李·柯蒂斯暗示剧集完结",
+      "summary": "备受好评的FX剧集《熊家餐馆》(The Bear) 预计将在第五季迎来完结。客串演员杰米·李·柯蒂斯在社交媒体和采访中暗示了这一消息，称拍摄已经“完成”，并且“大家都确认剧集要完结了”。尽管FX和Hulu尚未正式宣布，但第五季完结与剧集目前的叙事走向相符，第四季结尾主角卡米也表达了想放弃高级餐厅的想法。据报道，第五季早在2025年就已秘密获得批准，并与第四季背靠背拍摄，预计今年晚些时候播出。剧集主创克里斯·斯托勒此前也暗示过已规划好故事线。",
       "key_points": [
-        "《熊家餐馆》或将第五季完结",
-        "杰米·李·柯蒂斯暗示剧集完结",
-        "第五季与第四季背靠背拍摄",
-        "官方尚未正式宣布"
+        "杰米·李·柯蒂斯暗示《熊家餐馆》第五季完结",
+        "FX和Hulu尚未正式宣布",
+        "第五季与第四季背靠背拍摄，预计今年晚些时候播出",
+        "剧集叙事走向暗示完结可能性"
       ],
       "tags": [
         "熊家餐馆",
-        "杰米·李·柯蒂斯",
-        "剧集",
+        "The Bear",
+        "第五季",
         "完结",
-        "FX"
+        "杰米·李·柯蒂斯",
+        "FX",
+        "Hulu"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -580,7 +1893,7 @@
       "published": "2026-03-05T09:05:24",
       "sources": [
         {
-          "name": "Hypebeast Fashion",
+          "name": "Hypebeast",
           "title": "‘The Bear’ Is Officially Ending With Season 5",
           "link": "https://hypebeast.com/2026/3/fx-the-bear-ending-with-season-5-release-info",
           "lang": "en"
@@ -592,27 +1905,26 @@
           "lang": "en"
         }
       ],
-      "article_count": 2
+      "article_count": 3
     },
     {
       "id": "63e5b33ce195",
-      "title": "Dior 2026秋冬系列：安德森的浪漫花园，经典与解构的融合",
-      "summary": "Jonathan Anderson在巴黎时装周期间，于杜乐丽花园发布其为Dior设计的第二个女装系列——2026秋冬系列。秀场被布置成一个巨大的玻璃温室，灵感源自克劳德·莫奈和巴黎悠久的漫步传统。该系列巧妙地平衡了阳刚与柔美，重新演绎了经典的Bar夹克，并融入了精致的褶皱、羽毛和花卉元素。色彩上以中性色为主，辅以粉彩色调和亮色点缀。秀场吸引众多明星名流，同时举办了私享预览，旨在为新系列提供更深层次的解读和背景。",
+      "title": "Dior 2026秋冬系列：安德森的浪漫花园，经典与解构的融合（含幕后花絮）",
+      "summary": "Jonathan Anderson在巴黎时装周期间，于杜乐丽花园发布其为Dior设计的第二个女装系列——2026秋冬系列。秀场被布置成一个巨大的玻璃温室，灵感源自克劳德·莫奈和巴黎悠久的漫步传统。该系列巧妙地平衡了阳刚与柔美，重新演绎了经典的Bar夹克，并融入了精致的褶皱、羽毛和花卉元素。色彩上以中性色为主，辅以粉彩色调和亮色点缀。Vogue Fashion的幕后照片捕捉到了该系列在巴黎时装周的准备过程，以及其他品牌如Loewe, Jean Paul Gaultier, Balenciaga, Alaïa的精彩瞬间。秀场吸引众多明星名流，同时举办了私享预览，旨在为新系列提供更深层次的解读和背景。",
       "key_points": [
-        "Jonathan Anderson为Dior设计的2026秋冬系列",
-        "秀场选址杜乐丽花园，灵感来自莫奈和巴黎漫步传统",
-        "经典Bar Jacket的解构与重塑，融入褶皱、羽毛和花卉元素",
-        "平衡阳刚与柔美，打造浪漫而富有戏剧性的花园幻想",
-        "明星云集，举办私享预览"
+        "Jonathan Anderson为Dior设计的第二个女装系列",
+        "灵感源自莫奈花园和巴黎漫步传统",
+        "经典Bar夹克的解构与重塑",
+        "阳刚与柔美的平衡",
+        "Vogue Fashion发布巴黎时装周幕后花絮照片"
       ],
       "tags": [
         "Dior",
+        "Jonathan Anderson",
         "2026秋冬",
         "巴黎时装周",
-        "Jonathan Anderson",
-        "Bar Jacket",
-        "杜乐丽花园",
-        "花卉元素"
+        "高级时装",
+        "幕后花絮"
       ],
       "category": "runway-collection",
       "category_name": "秀场/系列",
@@ -632,7 +1944,7 @@
           "lang": "en"
         },
         {
-          "name": "Vogue",
+          "name": "Vogue Fashion",
           "title": "The Best Backstage Photos From the Fall 2026 Shows in Paris",
           "link": "https://www.vogue.com/slideshow/the-best-backstage-photos-from-the-fall-2026-shows-in-paris",
           "lang": "en"
@@ -704,7 +2016,7 @@
           "lang": "en"
         }
       ],
-      "article_count": 14
+      "article_count": 15
     },
     {
       "id": "09661ec8f45c",
@@ -788,61 +2100,6 @@
       "article_count": 3
     },
     {
-      "id": "cba634ac1d5f",
-      "title": "春季时尚趋势：芭蕾舞鞋、及膝裙、薄纱与极简主义的复兴",
-      "summary": "随着春季的到来，时尚界迎来轻盈复苏的潮流。芭蕾舞鞋、及膝裙、薄纱连衣裙等单品备受瞩目，预示着极简主义的回归。前Nordstrom买手精选九大春季潮流趋势，包括设计独特的针织衫、宽松廓形裤装和statement耳环。时尚达人如Sylvie Mus和Chloe Kath Butler的街拍造型提供了搭配灵感，例如刺绣衬衫搭配牛仔裤和风衣，以及冬季单品与春季元素的巧妙融合。",
-      "key_points": [
-        "芭蕾舞鞋、及膝裙、薄纱等单品流行",
-        "极简主义风格回归",
-        "前Nordstrom买手推荐九大春季潮流趋势",
-        "设计独特的针织衫、宽松廓形裤装和statement耳环是重点单品",
-        "学习时尚达人的春季穿搭技巧"
-      ],
-      "tags": [
-        "春季时尚",
-        "芭蕾舞鞋",
-        "及膝裙",
-        "薄纱",
-        "极简主义",
-        "潮流趋势",
-        "针织衫",
-        "阔腿裤",
-        "Statement耳环",
-        "换季穿搭"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/P8UGn7nd3r69BKsYyaLsPo-1280-80.jpg",
-      "published": "2026-03-05T08:00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Ballet Flats! Knee-Length Skirts! Sheer Dresses! 30 Pieces I'm Excited to Wear This Spring",
-          "link": "https://www.whowhatwear.com/fashion/shopping/spring-staples-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "In a Style Rut? 7 Effortless and Elevated Outfit Ideas to Wear Now and Throughout Spring",
-          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/transitional-winter-to-spring-outfits-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "March Is Here—10 Things to Buy This Month That'll Make You Look Cool",
-          "link": "https://www.whowhatwear.com/fashion/shopping/what-to-buy-in-march-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "I'm a Former Nordstrom Buyer—These Are the 9 Spring Trends I Care About Most",
-          "link": "https://www.whowhatwear.com/fashion/shopping/nordstrom-buyer-spring-trends-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 4
-    },
-    {
       "id": "223e88ff8908",
       "title": "TOKYO BASE 启动新业态KEY TIMEZ",
       "summary": "TOKYO BASE 正式启动全新精选业态“KEY TIMEZ”，标志着该公司正式进军休闲市场。该项目被视为 TOKYO BASE 未来十年发展的主力业务，将在东京表参道、大阪、香港等地同步开设六家店铺。KEY TIMEZ 的概念是“日常与特别的边界之间，提供有价值的时刻”，旨在打造一个兼具适度潮流感和沉稳气质的精选店，提供不受趋势过度影响、具有核心价值的商品。\n\n除了精选品牌外，KEY TIMEZ 还将推出原创品牌系列，并与品牌“ヨーク (YOKE)”合作推出别注单品，例如售价176,000日元的别注款。此前，TOKYO BASE 主要通过 STUDIOUS 等品牌专注于时尚和精致风格领域，致力于向国内外传播日本品牌的价值。而 KEY TIMEZ 将在此基础上，进一步拓展到休闲市场，为消费者提供更广泛的选择。",
@@ -878,6 +2135,36 @@
         }
       ],
       "article_count": 2
+    },
+    {
+      "id": "eafe5cec705e",
+      "title": "披头士传记电影选角引争议：北方角色应由北方演员出演？",
+      "summary": "2024年初，Sam Mendes宣布将拍摄披头士乐队四位成员的独立传记电影。2025年初，Paul Mescal、Harris Dickinson、Joseph Quinn和Barry Keoghan分别确定饰演保罗、约翰、乔治和林戈。近日，演员造型曝光，引发热议。部分评论指出，考虑到故事背景设定在英国北方，选角应更多考虑来自北方地区的演员，以保证角色的真实性和地域文化表达的准确性。这种观点强调了地域文化在表演中的重要性，以及选角对电影整体呈现的影响。",
+      "key_points": [
+        "披头士乐队传记电影选角确定",
+        "演员造型曝光引发热议",
+        "北方角色选角应考虑北方演员"
+      ],
+      "tags": [
+        "披头士乐队",
+        "传记电影",
+        "选角争议",
+        "地域文化",
+        "电影"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/0/1440240.jpg",
+      "published": "2026-03-05T08:00:00",
+      "sources": [
+        {
+          "name": "Dazed",
+          "title": "Northern roles should go to northern actors",
+          "link": "https://www.dazeddigital.com/film-tv/article/69817/1/should-northern-roles-go-to-northern-actors-beatles-biopic-wuthering-heights?utm_source=Link&utm_medium=Link&utm_campaign=RSSFeed&utm_term=northern-roles-should-go-to-northern-actors",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
     },
     {
       "id": "3390aa48a9d9",
@@ -1050,20 +2337,19 @@
     {
       "id": "b4f8e7200ef8",
       "title": "赛琳娜·戈麦斯证实泰勒·斯威夫特歌曲《Dorothea》灵感源于她，揭秘18年闺蜜情",
-      "summary": "赛琳娜·戈麦斯在丈夫Benny Blanco的播客节目中证实，泰勒·斯威夫特的歌曲《Dorothea》是以她为原型创作的。此前粉丝已有猜测，这是赛琳娜首次公开确认。两人已相识18年，互相支持，共同经历事业和人生的重要时刻。赛琳娜强调了这段友谊的珍贵，并表示泰勒一直是她生命中重要的支柱。泰勒·斯威夫特极少透露歌曲灵感来源，赛琳娜的爆料实属罕见。",
+      "summary": "赛琳娜·戈麦斯在丈夫Benny Blanco的播客节目中证实，泰勒·斯威夫特的歌曲《Dorothea》是以她为原型创作的。她在2026年3月3日播出的Friends Keep Secrets播客节目中确认了这一消息。此前粉丝已有猜测，歌词中提到Dorothea“sellin' dreams, sellin' makeup, and magazines”，这被认为是引用了Gomez的化妆品牌Rare Beauty。这是赛琳娜首次公开确认。两人已相识18年，互相支持，共同经历事业和人生的重要时刻。赛琳娜强调了这段友谊的珍贵，并表示泰勒一直是她生命中重要的支柱。泰勒·斯威夫特极少透露歌曲灵感来源，赛琳娜的爆料实属罕见。",
       "key_points": [
-        "赛琳娜·戈麦斯证实泰勒·斯威夫特歌曲《Dorothea》的创作灵感来源于她本人。",
-        "赛琳娜在Benny Blanco的播客节目《Friends Keep Secrets》中公开了这一消息。",
-        "赛琳娜和泰勒已相识18年，友谊深厚，互相支持。",
-        "泰勒·斯威夫特很少公开歌曲灵感来源，赛琳娜的爆料非常罕见。",
-        "《Dorothea》这首歌因此增添了更多情感色彩，满足了粉丝的好奇心。"
+        "赛琳娜·戈麦斯证实泰勒·斯威夫特歌曲《Dorothea》灵感来源于她。",
+        "赛琳娜在Friends Keep Secrets播客节目中公开确认。",
+        "歌词中“sellin' dreams, sellin' makeup, and magazines”被认为是引用了赛琳娜的化妆品牌Rare Beauty。",
+        "两人已相识18年，友谊深厚。"
       ],
       "tags": [
         "赛琳娜·戈麦斯",
         "泰勒·斯威夫特",
         "Dorothea",
-        "友谊",
-        "明星八卦"
+        "闺蜜",
+        "Rare Beauty"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -1087,9 +2373,15 @@
           "title": "Selena Gomez Reflects on Her 18-Year-Long Friendship With Taylor Swift on Benny Blanco’s Podcast",
           "link": "https://www.harpersbazaar.com/celebrity/latest/a70604979/selena-gomez-talks-friendship-with-taylor-swift-dorothea-song-meaning-benny-blanco-podcast/",
           "lang": "en"
+        },
+        {
+          "name": "Elite Daily",
+          "title": "Selena Gomez Confirms Taylor Swift's \"Dorothea\" Lyrics Are About Her",
+          "link": "https://www.elitedaily.com/entertainment/selena-gomez-taylor-swift-dorothea-lyrics",
+          "lang": "en"
         }
       ],
-      "article_count": 3
+      "article_count": 4
     },
     {
       "id": "5601abc38f40",
@@ -4694,19 +5986,24 @@
     },
     {
       "id": "83f144e5081b",
-      "title": "070 Shake：耳机不离身的Dior秀场",
-      "summary": "音乐人070 Shake在出席Dior时装秀时，依然保持着她标志性的风格，全程佩戴有线耳机。她透露，在准备参加Dior秀的期间，她的播放列表循环播放着披头士乐队的歌曲，尤其是《约翰与洋子的歌谣》。她最近沉迷于披头士的音乐，并将其融入到她的时尚态度中，展现了音乐与时尚的独特融合。",
+      "title": "070 Shake：耳机不离身的Dior秀场，钟爱披头士与结构感造型",
+      "summary": "音乐人兼Dior品牌大使070 Shake出席Dior 2026秋季时装秀，标志性的有线耳机不离身，搭配海军格子衬衫、白色外套和牛仔裤，展现舒适风格。她透露准备期间循环播放披头士乐队的歌曲，并特别欣赏该系列中结构感十足的米白色Bar夹克和鸵鸟毛边饰裙子的第39套造型，喜欢其形状以及夹克结构与裙子羽毛动感之间的对比。Shake将音乐品味融入时尚态度，体现独特融合。",
       "key_points": [
-        "070 Shake出席Dior秀",
-        "全程佩戴有线耳机",
-        "透露近期沉迷披头士音乐"
+        "070 Shake作为Dior品牌大使出席Dior 2026秋季时装秀。",
+        "Shake全程佩戴有线耳机，展现标志性风格。",
+        "Shake透露准备期间主要听披头士乐队的歌曲。",
+        "Shake喜欢Dior系列中第39套造型：结构感Bar夹克和鸵鸟毛边饰裙子。",
+        "Shake喜欢该造型的形状以及夹克结构与裙子羽毛动感之间的对比。"
       ],
       "tags": [
         "070 Shake",
         "Dior",
-        "披头士",
-        "时尚",
-        "音乐"
+        "2026秋季时装秀",
+        "有线耳机",
+        "披头士乐队",
+        "品牌大使",
+        "Bar夹克",
+        "鸵鸟毛"
       ],
       "category": "runway-collection",
       "category_name": "秀场/系列",
@@ -4714,13 +6011,13 @@
       "published": "2026-03-04T17:52:02",
       "sources": [
         {
-          "name": "Vogue",
+          "name": "Vogue Fashion",
           "title": "070 Shake Kept Her Wired Headphones on for the Dior Show",
           "link": "https://www.vogue.com/slideshow/070-shake-dior-fall-2026-paris-fashion-week-diary",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "1262840ad818",
@@ -9125,36 +10422,6 @@
       "article_count": 1
     },
     {
-      "id": "977a615d5de8",
-      "title": "LoveShackFancy x Crocs：梦幻少女的春日足迹",
-      "summary": "以浪漫印花著称的LoveShackFancy再次跨界合作，这次携手Crocs，为经典洞洞鞋注入甜美基因。该系列将LoveShackFancy标志性的粉彩色调和梦幻花卉图案融入Crocs的舒适设计中，打造充满春日气息的时尚单品。此前，LoveShackFancy已与Stanley、Gap等多个知名品牌合作，此次与Crocs的联名无疑将再次引发时尚界的关注，为洞洞鞋爱好者带来耳目一新的选择。",
-      "key_points": [
-        "LoveShackFancy与Crocs联名",
-        "粉彩色调和花卉图案设计",
-        "春日主题的时尚单品"
-      ],
-      "tags": [
-        "LoveShackFancy",
-        "Crocs",
-        "联名系列",
-        "洞洞鞋",
-        "春季时尚"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.refinery29.com/images/11962782.jpg?width=853&height=1024&fit=bounds&crop=853%3A1024",
-      "published": "2026-03-03T21:06:54",
-      "sources": [
-        {
-          "name": "Refinery29",
-          "title": "Oh Jibbitz! LoveShackFancy Is Putting A Whimsical Spin On Crocs",
-          "link": "https://www.refinery29.com/en-us/loveshackfancy-crocs-collaboration?utm_source=feed&utm_medium=rss",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "2ed694004c31",
       "title": "阔腿牛仔：时尚达人挚爱依旧",
       "summary": "时尚圈内人士透露，宽松牛仔裤热潮持续升温，本季新款在廓形、面料和细节上都进行了升级。从复古水洗到做旧质感，再到别致的腰部设计，阔腿牛仔裤不仅舒适百搭，更能轻松打造前卫造型。无论是搭配简约T恤、优雅衬衫还是个性外套，都能展现独特的时尚态度，成为街头潮流的焦点。",
@@ -12434,35 +13701,6 @@
       "article_count": 1
     },
     {
-      "id": "468d0749bb83",
-      "title": "Burberry集结23位巨星，谁是真正的时尚偶像？",
-      "summary": "Burberry最新广告大片“The Trench: Portraits of an Icon”汇聚了23位全球瞩目的明星，堪称时尚界的壮举。该系列旨在致敬品牌标志性单品——Trench风衣，并引发人们对时尚偶像的思考。幕后选角团队的精准眼光，将众多不同领域的传奇人物聚集在一起，共同演绎Burberry的经典与创新。",
-      "key_points": [
-        "Burberry最新广告大片阵容强大",
-        "致敬经典Trench风衣",
-        "探讨时尚偶像的定义"
-      ],
-      "tags": [
-        "Burberry",
-        "Trench风衣",
-        "时尚偶像",
-        "广告大片"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgix.bustle.com/uploads/image/2026/3/1/77b46546/burberry-trench_-portraits-of.jpg?w=1200&fit=max",
-      "published": "2026-03-02T13:41:39",
-      "sources": [
-        {
-          "name": "NYLON",
-          "title": "How Many Icons Can You Count In Burberry's Latest Campaign?",
-          "link": "https://www.nylon.com/fashion/burberry-trench-coat-portrait-of-an-icon-campaign",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "a0b9359fdded",
       "title": "夏日星期五：润唇膏的香氛奇遇？",
       "summary": "网红护肤品牌Summer Fridays凭借其明星产品润唇膏Lip Butter Balm一炮而红。现在，他们将目光投向了香氛领域，推出了首款香水，灵感正是来源于这款畅销润唇膏。这款香水能否延续润唇膏的成功，在竞争激烈的香氛市场中脱颖而出，值得期待。",
@@ -14358,833 +15596,6 @@
           "name": "Fashion Dive",
           "title": "Mass beauty outpaces prestige in the first half of 2025",
           "link": "https://www.fashiondive.com/news/mass-beauty-outpaces-prestige-first-half-2025/758856/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "dadfbfc49794",
-      "title": "American Eagle联手Travis Kelce",
-      "summary": "American Eagle宣布与NFL球星、泰勒·斯威夫特的新晋未婚夫Travis Kelce合作推出Tru Kolors胶囊系列。此前，该公司经历了一场媒体风暴。此次合作延续了American Eagle一贯的明星营销策略，希望借助Kelce的影响力吸引更多年轻消费者，提升品牌形象。",
-      "key_points": [
-        "American Eagle与Travis Kelce合作",
-        "推出Tru Kolors胶囊系列",
-        "明星效应助力品牌营销"
-      ],
-      "tags": [
-        "American Eagle",
-        "Travis Kelce",
-        "明星合作",
-        "胶囊系列",
-        "时尚营销"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgproxy.divecdn.com/ToTV8etBxbuJTCDRbHf7yGalLjDRJjoNAf5-WayjTd4/g:ce/rs:fill:1600:900:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9US3hBRV9XSURFX0dST1VQX0lNQUdFLmpwZw==.webp",
-      "published": "2025-08-28T13:52:00",
-      "sources": [
-        {
-          "name": "Fashion Dive",
-          "title": "American Eagle’s Travis Kelce collab extends celebrity-led marketing streak",
-          "link": "https://www.fashiondive.com/news/american-eagle-travis-kelce-collab-extends-celebrity-led-marketing-streak/758846/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "3fdad22a933e",
-      "title": "Urban Outfitters x Levi's：复古丹宁新体验",
-      "summary": "Urban Outfitters携手Levi's推出“On Rotation”企划，旨在打造充满复古跳蚤市场氛围的购物空间。该空间将陈列Levi's的全新丹宁系列，同时搜罗并展示极具年代感的古着单品，如标志性的纸袋牛仔裤，为消费者带来独特的丹宁体验。",
-      "key_points": [
-        "Urban Outfitters与Levi's合作",
-        "打造复古跳蚤市场购物氛围",
-        "融合全新与古着丹宁单品"
-      ],
-      "tags": [
-        "Urban Outfitters",
-        "Levi's",
-        "丹宁",
-        "复古",
-        "合作"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgproxy.divecdn.com/Cf7ELJ-myHU7MJL7GOCh5N9lW_1kZ9W8K-znG674Msw/g:ce/rs:fill:1600:900:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS8wODI1LXVveGxldmlzX2NmaXNoZXItNi5qcGc=.webp",
-      "published": "2025-08-27T13:47:00",
-      "sources": [
-        {
-          "name": "Fashion Dive",
-          "title": "Urban Outfitters taps Levi’s for its next On Rotation experience",
-          "link": "https://www.fashiondive.com/news/urban-outfitters-levis-on-rotation/758729/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b33dc1b12f07",
-      "title": "时尚授权逆势增长，成IP新宠？",
-      "summary": "Licensing International报告显示，2024年时尚授权业务增长8.1%。娱乐产业缺乏新的知识产权，促使授权资产和产品类别发生结构性转变，时尚领域从中受益。这表明在IP授权领域，时尚品牌正成为新的增长点，或将吸引更多投资和合作。",
-      "key_points": [
-        "时尚授权业务显著增长",
-        "娱乐IP疲软利好时尚",
-        "授权结构发生转变"
-      ],
-      "tags": [
-        "时尚授权",
-        "IP授权",
-        "市场趋势"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgproxy.divecdn.com/a2lLHB2gSyiRd03rDhPp8JxViLiE1p0eYfPK6nOGHvs/g:nowe:0:227/c:2500:1412/rs:fill:1600:900:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9HZXR0eUltYWdlcy0xNjIyMTk0NTc5LmpwZw==.webp",
-      "published": "2025-08-27T13:42:00",
-      "sources": [
-        {
-          "name": "Fashion Dive",
-          "title": "Fashion licensing grew 8.1% in 2024: report",
-          "link": "https://www.fashiondive.com/news/2024-fashion-licensing-growth-entertainment-ip/758615/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "5d30cd85e8d9",
-      "title": "欧美亚邮政收紧，对美出口面临挑战",
-      "summary": "由于对美国海关新规理解存在不确定性，以及8月29日即将到期的“微量豁免”政策，欧洲和亚洲多家邮政运营商宣布暂停或限制部分对美出口服务。此举可能对跨境电商和依赖邮政渠道的小型企业造成影响，商家需密切关注政策变化，及时调整物流策略，以应对潜在的贸易中断。",
-      "key_points": [
-        "欧美亚邮政运营商限制对美出口",
-        "政策不确定性和豁免到期是主因",
-        "跨境电商或受影响"
-      ],
-      "tags": [
-        "国际物流",
-        "出口贸易",
-        "海关政策",
-        "跨境电商"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgproxy.divecdn.com/L6NnCESfj1undC2RpvTbiQFNXjl177WtNohbwZ7CGCA/g:ce/rs:fill:1600:900:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9HZXR0eUltYWdlcy0yMTkwMjM1MjgyXzEuanBn.webp",
-      "published": "2025-08-26T13:41:00",
-      "sources": [
-        {
-          "name": "Fashion Dive",
-          "title": "US-bound shipments restricted by postal carriers in Europe, Asia",
-          "link": "https://www.fashiondive.com/news/us-bound-postal-shipments-restricted-by-suspensions-in-europe-asia/758598/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "5eaf914c8a5e",
-      "title": "奢侈品珠宝：冰火两重天？",
-      "summary": "奢侈品市场风向转变，珠宝销售表现分化。LVMH和开云集团的珠宝品类出现下滑，反映出消费者购买意愿的降低。与此同时，历峰集团却逆势增长，销售额有所提升。这表明奢侈品珠宝市场并非整体低迷，品牌策略和市场定位至关重要。消费者对高价珠宝的购买更加谨慎，品牌需要更精准地把握市场脉搏，才能在竞争中脱颖而出。",
-      "key_points": [
-        "LVMH和开云珠宝销售下滑",
-        "历峰集团珠宝销售增长",
-        "消费者购买意愿降低"
-      ],
-      "tags": [
-        "奢侈品珠宝",
-        "市场趋势",
-        "销售业绩"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgproxy.divecdn.com/nU6VXV2LO31xraogDaEA0WeS4ltSCMc6jEdgv4p9HHE/g:nowe:0:205/c:3000:1694/rs:fill:1600:900:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9HZXR0eUltYWdlcy0xODQ3MzM5MTkuanBn.webp",
-      "published": "2025-08-26T13:38:00",
-      "sources": [
-        {
-          "name": "Fashion Dive",
-          "title": "Luxury jewelry sales mixed amid consumer pullback",
-          "link": "https://www.fashiondive.com/news/luxury-jewelry-sales-mixed-2025/758149/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "1eba231f9086",
-      "title": "AI能预测时尚供应链的未来吗？",
-      "summary": "尽管人工智能无法完全阻止下一次供应链中断，但它能帮助时尚品牌更好地进行规划和应对。通过整合正确的数据和运用合适的工具，服装企业可以有效缓解诸如疫情、关税等带来的冲击，并为未来的挑战做好准备。专家建议，品牌应积极拥抱AI技术，提升供应链的弹性和适应性，从而在快速变化的市场环境中保持竞争力。",
-      "key_points": [
-        "AI助力供应链风险预测",
-        "数据驱动的决策至关重要",
-        "提升供应链弹性和适应性"
-      ],
-      "tags": [
-        "人工智能",
-        "供应链",
-        "时尚产业",
-        "风险管理",
-        "数据分析"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgproxy.divecdn.com/X5oUVwfl5Sm4zOVtfY8Zw34TQjLJPJ8O2rYFTcoZ1SU/g:nowe:0:38/c:3200:1807/rs:fill:1600:900:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9HZXR0eUltYWdlcy0yMTU2MDk3MDkyLmpwZw==.webp",
-      "published": "2025-08-25T13:38:00",
-      "sources": [
-        {
-          "name": "Fashion Dive",
-          "title": "AI won’t stop the next supply chain disruption, but it can help companies plan",
-          "link": "https://www.fashiondive.com/news/artificial-intelligence-supply-chain-paul-magel/758138/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "3016611ac4ca",
-      "title": "威尔胜CEO即将卸任，体育巨头人事变动",
-      "summary": "体育品牌威尔胜（Wilson）CEO乔·杜迪（Joe Dudy）宣布即将卸任。杜迪在威尔胜及其母公司亚玛芬体育（Amer Sports）工作了三十年之久，此次离职标志着公司高层的一次重要变动。具体继任者和未来发展方向尚未公布，行业内正密切关注。",
-      "key_points": [
-        "威尔胜CEO乔·杜迪卸任",
-        "杜迪在公司任职三十年",
-        "亚玛芬体育母公司受影响"
-      ],
-      "tags": [
-        "威尔胜",
-        "CEO",
-        "人事变动",
-        "亚玛芬体育",
-        "体育品牌"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgproxy.divecdn.com/oCTjJgzgTzZ9uH9KEpH2X7KFr0tqx7VEZhFfr1GxsaM/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS8yMDIzUkVfVVNfTWFsbF9vZl9BbWVyaWNhX1N0b3JlX1Bob3RvZ3JhcGh5X1BSSU9SSVRZXzEuanBn.webp",
-      "published": "2025-08-25T13:37:00",
-      "sources": [
-        {
-          "name": "Fashion Dive",
-          "title": "Wilson CEO to step down",
-          "link": "https://www.fashiondive.com/news/wilson-ceo-to-step-down-joe-dudy/758478/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "141a63db28d4",
-      "title": "维密人事变动：Adore Me创始人离职",
-      "summary": "维多利亚的秘密母公司Victoria's Secret & Co.近日宣布，旗下品牌Adore Me创始人已卸任。接替者为Christine Vellani，她在维密拥有近六年的商品销售和新业务经验。此次人事变动或将为维密带来新的发展方向，值得关注。",
-      "key_points": [
-        "Adore Me创始人离职",
-        "Christine Vellani接任",
-        "Vellani在维密有丰富经验"
-      ],
-      "tags": [
-        "维多利亚的秘密",
-        "人事变动",
-        "Adore Me",
-        "内衣品牌"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgproxy.divecdn.com/Ioch85YiLkwM3U6h1cM87bX2esaJnsV0BYkUJE3bqhA/g:ce/rs:fill:1600:900:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9WaWN0b3JpYXNfU2VjcmV0LWhpLXJlc194UVJyMFQyLmpwZw==.webp",
-      "published": "2025-08-22T14:05:00",
-      "sources": [
-        {
-          "name": "Fashion Dive",
-          "title": "Adore Me founder out at Victoria’s Secret & Co.",
-          "link": "https://www.fashiondive.com/news/adore-me-founder-out-victorias-secret-co/758387/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "383957c43ec0",
-      "title": "快时尚巨头陷售假风波？",
-      "summary": "非营利组织信息技术与创新基金会(ITIF)呼吁将Shein、Temu和AliExpress列为“恶名市场”，理由是这些平台存在大量假冒商品。该组织购买了这三家公司的50多种商品，发现近一半是假货。这一指控无疑给本就备受争议的快时尚行业再添阴影，引发了消费者对产品质量和知识产权保护的担忧。如果被列入“恶名市场”，这些平台将面临更严格的审查和监管，对其品牌形象和业务运营产生重大影响。",
-      "key_points": [
-        "ITIF指控Shein、Temu和AliExpress售假",
-        "近一半抽检商品被认定为假货",
-        "或面临被列入“恶名市场”的风险"
-      ],
-      "tags": [
-        "Shein",
-        "Temu",
-        "AliExpress",
-        "假货",
-        "恶名市场",
-        "快时尚"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgproxy.divecdn.com/ab51086NdBAzOIyYbI6wexXfNsB2qUtZcUseO_GNPSM/g:ce/rs:fill:1600:900:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS8yUFk0MU1SLmpwZw==.webp",
-      "published": "2025-08-22T13:50:00",
-      "sources": [
-        {
-          "name": "Fashion Dive",
-          "title": "Shein, Temu and AliExpress should be labeled ‘notorious markets,’ nonprofit says",
-          "link": "https://www.fashiondive.com/news/shein-temu-notorious-markets/758385/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "1c6fee3f76e4",
-      "title": "麦迪逊·汤普森片场日记独家放送！",
-      "summary": "《通往你的地图》主演麦迪逊·汤普森独家分享了她在片场的幕后花絮。这位年轻演员用她的私人相机记录下了拍摄过程中的点点滴滴，让我们得以一窥这部新电影的制作现场。从演员的视角出发，感受片场的氛围和趣味瞬间，更加期待电影的上映。",
-      "key_points": [
-        "麦迪逊·汤普森分享片场照片",
-        "《通往你的地图》幕后花絮",
-        "演员视角记录拍摄过程"
-      ],
-      "tags": [
-        "麦迪逊·汤普森",
-        "电影",
-        "幕后花絮",
-        "演员",
-        "独家"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/madison-thompson-06-68a3478ababc4.jpg",
-      "published": "2025-08-21T16:00:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "Exclusive: Take a Look at Madison Thompson’s POV on ‘The Map That Leads to You’ Set",
-          "link": "https://www.seventeen.com/celebrity/movies-tv/a65619989/madison-thompson-the-map-that-leads-to-you-pictures/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "07e6ae92a7ee",
-      "title": "怪趣少女艾玛·迈尔斯：从叛逆到神秘",
-      "summary": "因《星期三》走红的艾玛·迈尔斯，早年是一位在亚特兰大接受家庭教育的“情绪化”女孩，自认有些叛逆。如今，她的性格更加捉摸不透，正如好友珍娜·奥尔特加所形容的，她变得更加神秘，散发着独特的魅力。",
-      "key_points": [
-        "艾玛·迈尔斯早年经历：家庭教育，情绪化，略带叛逆",
-        "《星期三》成名：演艺事业迎来转折",
-        "性格转变：从叛逆少女到神秘女性"
-      ],
-      "tags": [
-        "艾玛·迈尔斯",
-        "星期三",
-        "人物专访",
-        "性格",
-        "青少年"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/cos08012025-emmamyers-10-1-688a535a4b4ca.jpg",
-      "published": "2025-08-05T11:00:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "Emma Myers Likes the Weird Stuff",
-          "link": "https://www.seventeen.com/celebrity/movies-tv/a65540732/emma-myers-wednesday-seventeen-cover/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "3c88aebf2563",
-      "title": "紫罗兰·麦格劳：无限可能",
-      "summary": "因出演《梅根2.0》而备受瞩目的14岁演员紫罗兰·麦格劳，正以超乎年龄的成熟和清醒，规划着自己的好莱坞之路。这位冉冉升起的新星并不满足于仅仅作为一名演员，她对未来有着更广阔的憧憬，并积极探索表演之外的各种可能性。在采访中，麦格劳分享了她独特的演艺策略，以及她如何在这个充满机遇与挑战的行业中保持自我。此外，她还透露了自己对《梅根》玩偶的喜爱，希望能将它留在身边，作为这段特别经历的纪念。",
-      "key_points": [
-        "不局限于演员身份",
-        "独特的演艺策略",
-        "对未来的憧憬"
-      ],
-      "tags": [
-        "紫罗兰·麦格劳",
-        "梅根2.0",
-        "好莱坞",
-        "青少年演员"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/sev-2025-violet-mcgraw-006-copy-684b2d01301f1.jpg",
-      "published": "2025-06-17T16:00:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "Violet McGraw Is in a Class of Her Own",
-          "link": "https://www.seventeen.com/celebrity/a65048958/violet-mcgraw-interview-2025/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "cccd87398448",
-      "title": "梅森·泰晤士：冉冉升起的新星",
-      "summary": "17岁的梅森·泰晤士凭借在备受瞩目的夏季大片《驯龙高手》中的出色表现，成为焦点人物。在影片上映前，他接受了《Seventeen》杂志的专访，坦诚地分享了扮演Hiccup的压力，与尼科·帕克和麦肯纳·格蕾丝之间深厚的友谊，以及未来发展规划，预示着这位年轻演员的无限潜力。",
-      "key_points": [
-        "梅森·泰晤士主演《驯龙高手》",
-        "分享扮演Hiccup的压力",
-        "与尼科·帕克和麦肯纳·格蕾丝关系亲密"
-      ],
-      "tags": [
-        "梅森·泰晤士",
-        "驯龙高手",
-        "青少年明星"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/masonthames-6-12-25-sq-1-684c311434a79.jpg",
-      "published": "2025-06-13T14:00:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "Mason Thames Would Also Like to Be One of the Greats",
-          "link": "https://www.seventeen.com/celebrity/movies-tv/a65014025/mason-thames-how-to-train-your-dragon-interview-2025/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "2bf6a4c390ef",
-      "title": "星盘揭秘：《不眠之夜》演员的化学反应！",
-      "summary": "热门戏剧《不眠之夜》因其演员之间令人惊叹的化学反应而备受赞誉。《Seventeen》杂志独家解读了该剧演员的星盘，试图从宇宙的角度探寻他们之间默契的根源。通过分析他们的出生图，揭示了行星位置和星座特征如何影响他们在舞台上的互动，以及如何创造出引人入胜的表演。这次星盘分析为我们提供了一个独特的视角，来理解演员之间非凡的连接，以及这种连接如何提升了整个戏剧的艺术价值。",
-      "key_points": [
-        "演员化学反应",
-        "星盘解读",
-        "宇宙视角"
-      ],
-      "tags": [
-        "戏剧",
-        "演员",
-        "星盘",
-        "星座",
-        "化学反应"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/w-cos040125-allnighter-003-67f6912fa79dd.png",
-      "published": "2025-04-10T17:00:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "Exclusive: The ‘All Nighter’ Cast Let Me Read Their Birth Charts",
-          "link": "https://www.seventeen.com/celebrity/a64423785/all-nighter-off-broadway-cast-exclusive/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "23cde9ce19e7",
-      "title": "Clairo：清澈之音的时代",
-      "summary": "独立音乐人Clairo正以其独特的音乐风格和真诚的表达，影响着越来越多的年轻人。她希望通过音乐传递积极的信息，与年轻一代建立更深层次的连接，分享她对世界的观察和思考。Clairo的音乐不仅仅是旋律，更是一种态度，一种与年轻人共同成长的力量。",
-      "key_points": [
-        "Clairo希望向年轻人传递积极信息",
-        "音乐风格独特，引发共鸣",
-        "与年轻一代建立深层连接"
-      ],
-      "tags": [
-        "Clairo",
-        "独立音乐",
-        "年轻一代",
-        "音乐人"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/cos060125campusdispatch-010-67efece27f414.jpg",
-      "published": "2025-04-07T11:00:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "Clairo’s Age of Clarity",
-          "link": "https://www.seventeen.com/celebrity/a64285586/clairo-interview-2025/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "74aef4393c82",
-      "title": "Zaya Wade：冉冉升起的新星",
-      "summary": "Zaya Wade，这位备受瞩目的青少年，在即将迎来18岁生日之际，已准备好展翅高飞。她拥有着忠实的粉丝群体，并以其独特的时尚品味和积极的生活态度影响着年轻一代。尽管父母有时会让她感到尴尬，但这并不妨碍她追求自我，勇敢地拥抱未来。Zaya的成长历程和时尚选择，无疑将继续吸引着大众的目光。",
-      "key_points": [
-        "Zaya Wade即将迎来18岁生日",
-        "拥有庞大的粉丝群体",
-        "准备好迎接新的挑战"
-      ],
-      "tags": [
-        "Zaya Wade",
-        "青少年",
-        "时尚",
-        "名人"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/cos040125sevenzine-011-67b4c4f3960fc.jpg",
-      "published": "2025-02-24T12:00:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "Growing Up Zaya Wade",
-          "link": "https://www.seventeen.com/celebrity/a63777364/zaya-wade-interview-2025/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "8fcb0be68bbb",
-      "title": "《怪奇物语》骨灰粉必入：24款周边好礼",
-      "summary": "《怪奇物语》的粉丝们准备好了吗？Seventeen杂志精选了24款周边好礼，从服装、配饰到家居用品，每一件都充满着80年代的复古气息和剧中经典元素。无论你是Eleven的忠实拥趸，还是对Upside Down世界充满好奇，这些周边都能让你沉浸在《怪奇物语》的独特魅力中。快来挑选你的心头好，展现你对这部剧的无限热爱吧！",
-      "key_points": [
-        "《怪奇物语》周边精选",
-        "80年代复古风",
-        "粉丝必备好礼"
-      ],
-      "tags": [
-        "怪奇物语",
-        "周边产品",
-        "粉丝",
-        "礼物",
-        "复古"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/spoiler-1655228691.png",
-      "published": "2023-11-14T18:03:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "24 <i>Stranger Things</i> Gifts Any Mega Fan Will Cross to The Upside Down For",
-          "link": "https://www.seventeen.com/celebrity/movies-tv/g23867870/stranger-things-gifts-merchandise/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "fbf3db5da69b",
-      "title": "哈卷圣诞：23款周边宠粉指南",
-      "summary": "“哈利·圣诞”来袭！为庆祝节日季，我们精选了23款哈里·斯泰尔斯（Harry Styles）主题的周边好礼，从服饰、配饰到家居用品，应有尽有。无论你是资深“哈迷”还是想为朋友挑选特别礼物，这份清单都能满足你的需求，让你的圣诞充满“哈卷”的魅力。",
-      "key_points": [
-        "精选23款哈里·斯泰尔斯周边",
-        "涵盖服饰、配饰、家居等品类",
-        "适合哈卷粉丝的圣诞礼物"
-      ],
-      "tags": [
-        "哈里·斯泰尔斯",
-        "周边产品",
-        "圣诞礼物",
-        "粉丝",
-        "时尚"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/harry-styles-performs-on-stage-during-the-brit-awards-2023-news-photo-1699562303.jpg",
-      "published": "2023-11-14T18:03:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "23 Harry Styles Gifts That'll Be ~Pleasing~ to Any Mega-Fan",
-          "link": "https://www.seventeen.com/fashion/g3085/gifts-true-harry-styles-fan-needs-to-own/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "673f9bb543ef",
-      "title": "家族群聊：7个超赞群名灵感！",
-      "summary": "还在为家族群聊起什么名字发愁吗？精选7个充满趣味和温馨的群名灵感，让你的家族群焕发新活力！无论是幽默搞怪，还是温馨感人，总有一款适合你的家族。快来为你的家族群选择一个充满个性的名字，让聊天更有趣吧！告别平庸，让家族群名成为家族成员之间独特的连接。",
-      "key_points": [
-        "精选7个家族群名灵感",
-        "涵盖幽默和温馨风格",
-        "为家族群注入新活力"
-      ],
-      "tags": [
-        "家族群聊",
-        "群名",
-        "灵感",
-        "社交",
-        "趣味"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/family-talking-by-video-conference-in-the-terminal-royalty-free-image-1695922965.jpg",
-      "published": "2023-09-29T17:32:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "7 of the Best Family Group Chat Names Your Squad Will Love",
-          "link": "https://www.seventeen.com/life/friends-family/g45360534/best-family-group-chat-names/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "ff45064498e1",
-      "title": "周年纪念日Ins文案灵感速递",
-      "summary": "还在为周年纪念日Instagram配文发愁？我们为你精选了从泰勒·斯威夫特歌词到完美表情符号组合的各种灵感，让你无需再为文字绞尽脑汁。无论是甜蜜告白，还是幽默调侃，总有一款适合你，轻松表达你的爱意与喜悦，让你的纪念日动态更具个性与魅力。",
-      "key_points": [
-        "提供多种文案选择",
-        "涵盖不同风格与情感",
-        "包含名人名言与表情符号"
-      ],
-      "tags": [
-        "周年纪念日",
-        "Instagram",
-        "文案",
-        "灵感",
-        "社交媒体"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/young-couple-at-a-funfair-royalty-free-image-1695934484.jpg",
-      "published": "2023-09-29T17:32:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "Instagram Captions for Your Anniversary",
-          "link": "https://www.seventeen.com/love/dating-advice/g45249162/instagram-captions-for-your-anniversary/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "bec06012806e",
-      "title": "逃离水泥森林：纽约周边酷玩之旅",
-      "summary": "身处永不眠的纽约，精彩活动永不停歇。但偶尔，我们也渴望逃离喧嚣，寻找片刻宁静与新鲜。本期精选纽约周边数小时车程可达的绝佳去处，无论是自然风光、历史名城，还是特色小镇，都能让你在短时间内焕发活力，满载而归。告别都市的拥挤与压力，来一场说走就走的周边探索吧！",
-      "key_points": [
-        "纽约周边游推荐",
-        "短途旅行目的地",
-        "逃离城市喧嚣"
-      ],
-      "tags": [
-        "纽约",
-        "旅行",
-        "周边游",
-        "短途旅行",
-        "生活方式"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/screenshot-2023-08-09-at-9-06-08-pm-64d4381ac67e5.png",
-      "published": "2023-08-28T01:23:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "The Coolest Trips to Take From NYC",
-          "link": "https://www.seventeen.com/life/a44778638/trips-to-take-from-nyc/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "4f19e239b43c",
-      "title": "闺蜜公路之旅：燃爆夏日回忆！",
-      "summary": "告别城市的喧嚣，与你最好的朋友们一起踏上公路之旅，创造专属的夏日回忆！无论是探索未知的风景，还是在星空下畅谈人生，一次精心策划的公路旅行都能让你们的友谊更加深刻。准备好音乐、零食和相机，一起出发吧！",
-      "key_points": [
-        "与闺蜜同行",
-        "创造美好回忆",
-        "探索未知风景"
-      ],
-      "tags": [
-        "公路旅行",
-        "闺蜜",
-        "夏日",
-        "友谊",
-        "旅行"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/gettyimages-909040892-1535400758.jpg",
-      "published": "2023-08-25T16:41:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "The Coolest Road Trips to Take With Your Besties",
-          "link": "https://www.seventeen.com/life/school/a22842866/the-best-road-trips-to-take-with-your-besties/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "58bece5100c7",
-      "title": "《我变美的夏天》第三季：海滩再续前缘？",
-      "summary": "热门剧集《我变美的夏天》第三季备受期待，观众们翘首以盼Belly是否会在Cousins海滩迎来新的冒险。虽然官方消息尚未公布具体情节，但粉丝们已经开始猜测剧情走向，包括Belly的感情归属以及Conrad和Jeremiah兄弟之间的关系发展。第三季的回归无疑将再次掀起一股青春爱情剧的追剧热潮。",
-      "key_points": [
-        "《我变美的夏天》第三季备受期待",
-        "Belly是否会在Cousins海滩迎来新的冒险",
-        "粉丝猜测剧情走向，包括感情归属和兄弟关系"
-      ],
-      "tags": [
-        "我变美的夏天",
-        "第三季",
-        "青春爱情剧",
-        "Cousins海滩"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/sitp-ut-202-220808-merjoh-00080rc2-64b15ebc7fecd.jpg",
-      "published": "2023-08-04T15:00:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "Everything We Know About <i>The Summer I Turned Pretty</i> Season 3",
-          "link": "https://www.seventeen.com/celebrity/movies-tv/a44544904/the-summer-i-turned-pretty-season-3/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "e6ddab6d2045",
-      "title": "大学新生必Buy好物清单",
-      "summary": "还在为送什么给即将入学的大学生而烦恼吗？这份清单为你精选了61件他们真正想要的礼物，从装饰宿舍的酷炫小物到提升学习效率的实用工具，应有尽有。无论是提升生活品质，还是打造个性空间，都能在这里找到灵感，让大学生活更加精彩。",
-      "key_points": [
-        "宿舍装饰好物",
-        "实用学习工具",
-        "个性化礼品选择"
-      ],
-      "tags": [
-        "大学新生",
-        "礼物推荐",
-        "宿舍好物",
-        "开学季"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/lead-image-college-gift-01-1660852415.jpg",
-      "published": "2023-08-01T02:40:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "61 Gifts College Students *Actually* Want This Semester",
-          "link": "https://www.seventeen.com/life/school/g23495657/gifts-for-college-students/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "4ceaf1c68578",
-      "title": "放下手机，拾起书本，寻觅深度连接",
-      "summary": "一位青少年放下手机，沉浸于书本的世界，意外地发现了人与人之间更深层次的连接。在这个充斥着社交媒体和点赞的时代，她选择了一条不同的道路，通过阅读，她不仅获得了知识和乐趣，更重要的是，她体验到了与作者、角色以及其他读者之间难以言喻的情感共鸣。这种连接超越了表面的点赞和关注，是一种更真实、更深刻的情感交流，让她在快节奏的现代生活中找到了内心的平静和归属感。",
-      "key_points": [
-        "青少年阅读体验",
-        "深度情感连接",
-        "反思社交媒体"
-      ],
-      "tags": [
-        "阅读",
-        "社交媒体",
-        "青少年",
-        "情感连接"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/teenager-girl-reading-book-in-library-royalty-free-image-1690314202.jpg",
-      "published": "2023-07-25T19:44:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "No Follows. No Likes. Just Deep Connection — All From a Book",
-          "link": "https://www.seventeen.com/life/real-girl-stories/a44640182/no-follows-no-likes-deep-connection-from-a-book/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "83cb6d6b4e12",
-      "title": "Lori Harvey：白T恤裙的欧陆夏日风情",
-      "summary": "Lori Harvey近日在社交媒体上分享了一组度假照片，身穿简约白色T恤裙，尽显轻松惬意的“欧陆夏日”风。这身造型舒适又不失时尚感，完美诠释了夏日度假的慵懒氛围。白色T恤裙作为经典单品，搭配墨镜和简约配饰，就能轻松打造出时尚感，是夏日衣橱的必备之选。Lori Harvey的这身搭配也引发了粉丝的热议，纷纷表示要get同款。",
-      "key_points": [
-        "Lori Harvey演绎欧陆夏日风",
-        "白色T恤裙的简约时尚",
-        "夏日度假的舒适穿搭"
-      ],
-      "tags": [
-        "Lori Harvey",
-        "白色T恤裙",
-        "欧陆夏日",
-        "度假风",
-        "时尚穿搭"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/361840326-18384887887011246-206294249566916793-n-64b9322b482ce.jpg",
-      "published": "2023-07-21T13:36:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "Lori Harvey Declares It's \"Euro Summer\" in a Chill White T-Shirt Dress",
-          "link": "https://www.seventeen.com/fashion/celeb-fashion/a44599333/lori-harvey-white-tshirt-dress-summer-boat/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "f2292fb74bd4",
-      "title": "告别束缚！精选14款大码舒适Leggings",
-      "summary": "告别紧绷，拥抱舒适！Seventeen杂志精选14款最舒适的大码Leggings，让你穿上就不想脱下。无论居家休闲还是外出运动，都能找到完美贴合的选择。高腰设计修饰身形，柔软面料带来极致触感。从经典黑色到时尚印花，满足不同风格需求，让你自信展现曲线魅力。这个秋冬，用舒适与时尚兼备的Leggings，打造你的专属风格。",
-      "key_points": [
-        "精选14款大码Leggings",
-        "舒适面料，完美贴合",
-        "高腰设计，修饰身形"
-      ],
-      "tags": [
-        "大码时尚",
-        "Leggings",
-        "舒适穿搭",
-        "秋冬穿搭"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/untitled-1-01-1-6425ed43865f8.jpg",
-      "published": "2023-07-20T20:41:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "14 Best Plus Size Leggings That You'll Never Want To Take Off",
-          "link": "https://www.seventeen.com/fashion/style-advice/g35952613/best-plus-size-leggings/",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "ccc3ccec4896",
-      "title": "Alix Earle：明媚黄裙点亮夏夜",
-      "summary": "社交媒体红人Alix Earle身穿一袭飘逸的黄色泡泡袖连衣裙，与闺蜜们共度欢乐的女孩之夜。这条裙子完美展现了夏日的活力与明媚，泡泡袖设计更添一丝甜美气息。Alix的造型再次引领了夏季时尚潮流，明亮的色彩和轻盈的材质成为焦点。",
-      "key_points": [
-        "Alix Earle夏日造型",
-        "黄色泡泡袖连衣裙",
-        "女孩之夜穿搭"
-      ],
-      "tags": [
-        "Alix Earle",
-        "连衣裙",
-        "黄色",
-        "泡泡袖",
-        "夏季时尚",
-        "闺蜜穿搭"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/alix-earle-attends-sony-pictures-no-hard-feelings-new-york-news-photo-1689860328.jpg",
-      "published": "2023-07-20T15:26:00",
-      "sources": [
-        {
-          "name": "Seventeen",
-          "title": "Alix Earle has a Girls' Night Out Dinner in a Flowy Yellow Puff Sleeve Dress",
-          "link": "https://www.seventeen.com/fashion/celeb-fashion/a44599666/alix-earle-flowy-yellow-dress-montauk/",
           "lang": "en"
         }
       ],
