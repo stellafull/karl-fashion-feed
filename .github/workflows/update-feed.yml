@@ -1,0 +1,50 @@
+name: Update Fashion Feed
+
+on:
+  schedule:
+    # Run every 2 hours
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+    # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  update-feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests feedparser beautifulsoup4
+
+      - name: Run feed aggregator
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          LLM_MODEL: ${{ vars.LLM_MODEL || 'google/gemini-2.0-flash-001' }}
+        run: |
+          python scripts/fetch_feeds.py
+
+      - name: Check for changes
+        id: check
+        run: |
+          git diff --quiet client/public/feed-data.json || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "Fashion Feed Bot"
+          git config user.email "bot@fashion-feed.app"
+          git add client/public/feed-data.json
+          git commit -m "chore: update feed data [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+          git push
