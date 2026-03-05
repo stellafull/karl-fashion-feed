@@ -33,6 +33,22 @@
   enabled: true
   max_articles: 20
 
+# Vanity Fair
+- name: Vanity Fair
+  url: https://www.vanityfair.com/feed/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+# Fashion Network
+- name: Fashion Network
+  url: https://ww.fashionnetwork.com/rss/feed/ww,1.xml
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 30
+
 # WWD
 - name: WWD
   url: https://wwd.com/feed/
@@ -144,9 +160,25 @@
   enabled: true
   max_articles: 20
 
+# Seventeen
+- name: Seventeen
+  url: https://www.seventeen.com/rss/default.xml
+  lang: en
+  category: 青少年时尚
+  enabled: true
+  max_articles: 20
+
+# Esquire
+- name: Esquire
+  url: https://www.esquire.com/rss/all.xml/
+  lang: en
+  category: 男装风尚
+  enabled: true
+  max_articles: 20
+
 # The Cut (New York Magazine)
 - name: The Cut
-  url: https://www.thecut.com/feed/rss
+  url: https://feeds.feedburner.com/nymag/fashion
   lang: en
   category: 先锋文化
   enabled: true
@@ -168,6 +200,86 @@
   enabled: true
   max_articles: 20
 
+# Allure
+- name: Allure
+  url: https://www.allure.com/feed/rss
+  lang: en
+  category: 美妆美容
+  enabled: true
+  max_articles: 20
+
+# Bustle
+- name: Bustle
+  url: https://www.bustle.com/rss
+  lang: en
+  category: 生活方式
+  enabled: true
+  max_articles: 20
+
+# NYLON
+- name: NYLON
+  url: https://www.nylon.com/rss
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 20
+
+# Essence
+- name: Essence
+  url: https://www.essence.com/feed/
+  lang: en
+  category: 生活方式
+  enabled: true
+  max_articles: 20
+
+# Digital Spy
+- name: Digital Spy
+  url: https://www.digitalspy.com/rss.xml
+  lang: en
+  category: 娱乐文化
+  enabled: true
+  max_articles: 20
+
+# Elite Daily
+- name: Elite Daily
+  url: https://www.elitedaily.com/rss
+  lang: en
+  category: 生活方式
+  enabled: true
+  max_articles: 20
+
+# StyleCaster
+- name: StyleCaster
+  url: https://stylecaster.com/feed/
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 20
+
+# The Zoe Report
+- name: The Zoe Report
+  url: https://www.thezoereport.com/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 20
+
+# W Magazine
+- name: W Magazine
+  url: https://www.wmagazine.com/feed
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 20
+
+# Footwear News
+- name: Footwear News
+  url: https://footwearnews.com/feed/
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 20
+
 # ─── 日文源 ──────────────────────────────────────────
 
 - name: WWD Japan
@@ -184,10 +296,26 @@
   enabled: true
   max_articles: 30
 
+- name: GQ Japan
+  url: https://www.gqjapan.jp/feed/rss
+  lang: ja
+  category: 男装风尚
+  enabled: true
+  max_articles: 20
+
 - name: Fashionsnap
-  url: https://www.fashionsnap.com/feed/
+  url: https://www.fashionsnap.com/rss.xml
   lang: ja
   category: 行业动态
+  enabled: true
+  max_articles: 20
+
+# ─── 西班牙语源 ──────────────────────────────────────
+
+- name: Vogue España
+  url: https://www.vogue.es/feed/rss
+  lang: es
+  category: 高端时装
   enabled: true
   max_articles: 20
 
