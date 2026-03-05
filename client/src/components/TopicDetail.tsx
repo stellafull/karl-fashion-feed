@@ -12,13 +12,12 @@ import {
   Globe,
   Tag,
   ChevronRight,
+  ImageOff,
 } from "lucide-react";
 import type { Topic } from "@/hooks/useFeedData";
 import { formatTimeAgo, getLangLabel } from "@/hooks/useFeedData";
 import { motion, AnimatePresence } from "framer-motion";
-
-const FALLBACK_IMAGE =
-  "https://d2xsxph8kpxj0f.cloudfront.net/310519663404425913/XsRzs3R3SMWpsb8CkVUfqq/hero-fashion-runway-ZtgpWi2MaKrrfhi6Fy6CcA.webp";
+import { useEffect, useState } from "react";
 
 interface TopicDetailProps {
   topic: Topic | null;
@@ -26,9 +25,15 @@ interface TopicDetailProps {
 }
 
 export default function TopicDetail({ topic, onClose }: TopicDetailProps) {
+  const [imageBroken, setImageBroken] = useState(false);
+
+  useEffect(() => {
+    setImageBroken(false);
+  }, [topic?.id]);
+
   if (!topic) return null;
 
-  const imageUrl = topic.image || FALLBACK_IMAGE;
+  const hasImage = Boolean(topic.image) && !imageBroken;
   const uniqueSources = topic.sources
     .map((s) => s.name)
     .filter((v, i, a) => a.indexOf(v) === i);
@@ -54,14 +59,21 @@ export default function TopicDetail({ topic, onClose }: TopicDetailProps) {
           >
             {/* Hero image */}
             <div className="relative aspect-[16/9] overflow-hidden bg-ink">
-              <img
-                src={imageUrl}
-                alt=""
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
-                }}
-              />
+              {hasImage ? (
+                <img
+                  src={topic.image}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  onError={() => setImageBroken(true)}
+                />
+              ) : (
+                <div className="w-full h-full bg-[radial-gradient(circle_at_18%_22%,hsl(var(--secondary))_0%,transparent_52%),radial-gradient(circle_at_82%_78%,hsl(var(--muted))_0%,transparent_48%),linear-gradient(135deg,hsl(var(--muted))_0%,hsl(var(--secondary))_100%)] flex items-center justify-center">
+                  <span className="flex items-center gap-2 text-white/70 text-sm font-body">
+                    <ImageOff className="w-4 h-4" />
+                    暂无配图
+                  </span>
+                </div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
               {/* Back button */}

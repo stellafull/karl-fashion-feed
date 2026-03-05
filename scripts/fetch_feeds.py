@@ -6,19 +6,19 @@ Pipeline:
   1. Load RSS sources from sources.yaml
   2. Fetch articles from all enabled sources (parallel)
   3. Deduplicate by normalized URL + fuzzy title matching
-  4. TF-IDF vectorize → Agglomerative Clustering (cosine distance)
+  4. OpenRouter semantic embedding → Agglomerative Clustering (cosine distance)
   5. LLM verification: for multi-article clusters only, confirm or split
   6. LLM batch summary: process clusters in batches of 5 concurrently
   7. Output feed-data.json for the frontend (up to 500 topics)
 
 Key optimizations vs v4:
   - Concurrent LLM calls (ThreadPoolExecutor, 5 workers)
-  - Relaxed clustering threshold (0.78) for better aggregation
+  - Semantic embedding for higher-quality clustering
   - Batch processing with progress tracking
 """
 
 import os, sys, json, hashlib, re, datetime, time, logging
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -33,8 +33,10 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
+OPENROUTER_CHAT_URL = "https://openrouter.ai/api/v1/chat/completions"
+OPENROUTER_EMBEDDING_URL = "https://openrouter.ai/api/v1/embeddings"
 LLM_MODEL = os.environ.get("LLM_MODEL", "google/gemini-2.0-flash-001")
+EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "openai/text-embedding-3-large")
 
 SCRIPT_DIR = Path(__file__).parent
 PROJECT_DIR = SCRIPT_DIR.parent
@@ -45,9 +47,14 @@ SOURCES_FILE = SCRIPT_DIR / "sources.yaml"
 MAX_ARTICLES_PER_FEED = 30
 MAX_TOPICS = 500
 LLM_CONCURRENCY = 5  # concurrent LLM calls
+IMAGE_FETCH_CONCURRENCY = 12
+MAX_PAGE_IMAGE_FETCH = 200
+EMBEDDING_INPUT_CHARS = 1800
+EMBEDDING_BATCH_SIZE = 64
 
-# Clustering: higher = more merges. 0.78 means articles need >22% cosine similarity
-CLUSTER_DISTANCE_THRESHOLD = 0.78
+# Clustering distance threshold: lower is stricter; higher merges more aggressively.
+SEMANTIC_CLUSTER_DISTANCE_THRESHOLD = 0.32
+TFIDF_CLUSTER_DISTANCE_THRESHOLD = 0.78
 TITLE_DEDUP_THRESHOLD = 0.6
 
 HEADERS = {
@@ -83,25 +90,237 @@ def clean_html(html_content):
         tag.decompose()
     return re.sub(r"\s+", " ", soup.get_text(separator=" ", strip=True)).strip()[:3000]
 
+def normalize_image_url(url, base_url=""):
+    if not url: return ""
+    raw = str(url).strip()
+    if not raw or raw.startswith(("data:", "javascript:")): return ""
+    if raw.startswith("//"):
+        scheme = urlparse(base_url).scheme or "https"
+        raw = f"{scheme}:{raw}"
+    elif raw.startswith("/"):
+        raw = urljoin(base_url, raw)
+    elif not raw.startswith(("http://", "https://")):
+        raw = urljoin(base_url, raw)
+    raw = raw.split("#", 1)[0].strip()
+    if raw.startswith(("http://", "https://")):
+        return raw
+    return ""
+
+def is_valid_image_url(url):
+    if not url: return False
+    parsed = urlparse(url)
+    host = parsed.netloc.lower()
+    path = parsed.path.lower()
+    query = parsed.query.lower()
+    if not parsed.scheme.startswith("http"): return False
+    if any(bad in host for bad in [
+        "doubleclick.net", "googlesyndication.com", "googleadservices.com", "adnxs.com"
+    ]):
+        return False
+    if any(bad in path for bad in ["/ads/", "/ad/", "pixel", "tracking", "spacer", "blank"]):
+        return False
+    if any(bad in query for bad in ["gampad", "adunit", "iu=", "sz="]):
+        return False
+    if path.endswith((".svg", ".ico")):
+        return False
+    return True
+
+def _pick_from_srcset(srcset, base_url=""):
+    if not srcset: return ""
+    best_url, best_w = "", -1
+    for part in srcset.split(","):
+        seg = part.strip()
+        if not seg: continue
+        bits = seg.split()
+        candidate = normalize_image_url(bits[0], base_url)
+        if not candidate: continue
+        width = 0
+        if len(bits) > 1 and bits[1].endswith("w"):
+            try: width = int(bits[1][:-1])
+            except: width = 0
+        if width >= best_w:
+            best_url, best_w = candidate, width
+    return best_url if is_valid_image_url(best_url) else ""
+
+def _extract_img_from_tag(img, base_url=""):
+    if not img: return ""
+    for attr in ["src", "data-src", "data-original", "data-lazy-src", "data-url"]:
+        candidate = normalize_image_url(img.get(attr, ""), base_url)
+        if is_valid_image_url(candidate):
+            return candidate
+    for attr in ["srcset", "data-srcset"]:
+        candidate = _pick_from_srcset(img.get(attr, ""), base_url)
+        if candidate:
+            return candidate
+    return ""
+
+def _image_seems_decorative(img):
+    attrs_blob = " ".join([
+        str(img.get("class", "")),
+        str(img.get("id", "")),
+        str(img.get("alt", "")),
+        str(img.get("src", "")),
+    ]).lower()
+    if any(token in attrs_blob for token in ["logo", "icon", "avatar", "sprite", "pixel", "emoji"]):
+        return True
+    w = img.get("width", "")
+    h = img.get("height", "")
+    try:
+        wi = int(re.search(r"\d+", str(w)).group()) if re.search(r"\d+", str(w)) else 0
+        hi = int(re.search(r"\d+", str(h)).group()) if re.search(r"\d+", str(h)) else 0
+    except:
+        wi, hi = 0, 0
+    if (wi and wi < 120) or (hi and hi < 120):
+        return True
+    return False
+
+def _extract_image_from_html_fragment(html, base_url=""):
+    if not html: return ""
+    soup = BeautifulSoup(html, "html.parser")
+    for img in soup.find_all("img"):
+        if _image_seems_decorative(img):
+            continue
+        candidate = _extract_img_from_tag(img, base_url)
+        if candidate:
+            return candidate
+    return ""
+
+def _collect_jsonld_images(node, out):
+    if isinstance(node, dict):
+        image_val = node.get("image")
+        if isinstance(image_val, str):
+            out.append(image_val)
+        elif isinstance(image_val, list):
+            for item in image_val:
+                if isinstance(item, str):
+                    out.append(item)
+                elif isinstance(item, dict):
+                    out.extend([item.get("url", ""), item.get("contentUrl", "")])
+        elif isinstance(image_val, dict):
+            out.extend([image_val.get("url", ""), image_val.get("contentUrl", "")])
+        for value in node.values():
+            _collect_jsonld_images(value, out)
+    elif isinstance(node, list):
+        for item in node:
+            _collect_jsonld_images(item, out)
+
+def _extract_image_from_article_page(link):
+    try:
+        resp = requests.get(link, headers=HEADERS, timeout=20)
+        if resp.status_code != 200:
+            return ""
+        ctype = resp.headers.get("content-type", "").lower()
+        if ctype and "html" not in ctype:
+            return ""
+        page_url = resp.url or link
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        # Prefer explicit metadata images first.
+        for attrs in [
+            {"property": "og:image"},
+            {"property": "og:image:secure_url"},
+            {"name": "og:image"},
+            {"name": "twitter:image"},
+            {"property": "twitter:image"},
+            {"itemprop": "image"},
+        ]:
+            for tag in soup.find_all("meta", attrs=attrs):
+                candidate = normalize_image_url(tag.get("content", ""), page_url)
+                if is_valid_image_url(candidate):
+                    return candidate
+
+        # Then try JSON-LD image fields.
+        jsonld_candidates = []
+        for script in soup.find_all("script", attrs={"type": re.compile("ld\\+json", re.I)}):
+            text = script.string or script.get_text(" ", strip=True)
+            if not text:
+                continue
+            try:
+                data = json.loads(text)
+            except:
+                continue
+            _collect_jsonld_images(data, jsonld_candidates)
+        for raw in jsonld_candidates:
+            candidate = normalize_image_url(raw, page_url)
+            if is_valid_image_url(candidate):
+                return candidate
+
+        # Finally, pick a likely primary image from article/main/body.
+        for container in [soup.find("article"), soup.find("main"), soup.body, soup]:
+            if not container:
+                continue
+            for img in container.find_all("img"):
+                if _image_seems_decorative(img):
+                    continue
+                candidate = _extract_img_from_tag(img, page_url)
+                if candidate:
+                    return candidate
+        return ""
+    except Exception:
+        return ""
+
 def extract_image(entry):
+    link = getattr(entry, "link", "")
     for attr in ["media_content", "media_thumbnail"]:
         items = getattr(entry, attr, None)
         if items:
             for item in (items if isinstance(items, list) else [items]):
                 url = item.get("url", "") if isinstance(item, dict) else ""
-                if url: return url
+                candidate = normalize_image_url(url, link)
+                if is_valid_image_url(candidate): return candidate
     if hasattr(entry, "enclosures"):
         for enc in entry.enclosures:
-            if enc.get("type","").startswith("image"): return enc.get("href","")
+            if enc.get("type","").startswith("image"):
+                candidate = normalize_image_url(enc.get("href",""), link)
+                if is_valid_image_url(candidate): return candidate
     for attr in ["content", "description", "summary"]:
         val = getattr(entry, attr, None)
         if val:
             content = val[0].get("value","") if isinstance(val, list) else (val or "")
             if content:
-                soup = BeautifulSoup(content, "html.parser")
-                img = soup.find("img")
-                if img and img.get("src","").startswith("http"): return img["src"]
+                candidate = _extract_image_from_html_fragment(content, link)
+                if candidate: return candidate
     return ""
+
+def fill_missing_images_from_web(articles):
+    missing_indices = []
+    for i, article in enumerate(articles):
+        current = normalize_image_url(article.get("image", ""), article.get("link", ""))
+        if is_valid_image_url(current):
+            article["image"] = current
+            continue
+        article["image"] = ""
+        missing_indices.append(i)
+
+    if not missing_indices:
+        logger.info("Image coverage: all articles already have RSS images")
+        return articles
+
+    target_indices = missing_indices[:MAX_PAGE_IMAGE_FETCH]
+    skipped = len(missing_indices) - len(target_indices)
+    msg = f"Trying webpage image extraction for {len(target_indices)} missing-image articles"
+    if skipped > 0:
+        msg += f" (skipped {skipped} older articles)"
+    logger.info(msg)
+
+    resolved = 0
+    with ThreadPoolExecutor(max_workers=IMAGE_FETCH_CONCURRENCY) as ex:
+        futures = {
+            ex.submit(_extract_image_from_article_page, articles[i]["link"]): i
+            for i in target_indices
+        }
+        total = len(futures)
+        for done, future in enumerate(as_completed(futures), 1):
+            idx = futures[future]
+            image_url = future.result() or ""
+            if image_url:
+                articles[idx]["image"] = image_url
+                resolved += 1
+            if done % 25 == 0 or done == total:
+                logger.info(f"  Image extraction progress: {done}/{total}")
+
+    logger.info(f"Image enrichment done: +{resolved} article images from webpage content")
+    return articles
 
 def normalize_url(url):
     if not url: return ""
@@ -197,38 +416,125 @@ def deduplicate_articles(articles):
     return deduped
 
 
-# ─── TF-IDF Clustering ──────────────────────────────────────────────────────
+# ─── Clustering (Semantic Embedding + TF-IDF fallback) ─────────────────────
 
-def cluster_articles(articles):
-    if len(articles) <= 1: return [[i] for i in range(len(articles))]
+def _article_embedding_text(article):
+    title = (article.get("title") or "").strip()
+    snippet = (article.get("content_snippet") or "").strip()[:EMBEDDING_INPUT_CHARS]
+    source = (article.get("source") or "").strip()
+    lang = (article.get("source_lang") or "").strip()
+    return f"source: {source} ({lang})\ntitle: {title}\ncontent: {snippet}"
 
-    # Build corpus: title repeated 3x + snippet for weight
+def _clusters_from_labels(labels):
+    grouped = {}
+    for idx, lbl in enumerate(labels):
+        grouped.setdefault(int(lbl), []).append(idx)
+    return list(grouped.values())
+
+def _log_cluster_stats(clusters, articles, label):
+    multi = [c for c in clusters if len(c) > 1]
+    max_size = max((len(c) for c in multi), default=0)
+    logger.info(f"{label}: {len(clusters)} total, {len(multi)} multi-article (max size: {max_size})")
+    if multi:
+        for c in sorted(multi, key=len, reverse=True)[:10]:
+            logger.info(f"  [{len(c)}x] {articles[c[0]]['title'][:60]}...")
+
+def get_semantic_embeddings(texts):
+    if not OPENROUTER_API_KEY:
+        return None
+    if not texts:
+        return np.zeros((0, 0), dtype=np.float32)
+
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://fashion-feed.manus.space",
+    }
+
+    vectors = []
+    total_batches = (len(texts) + EMBEDDING_BATCH_SIZE - 1) // EMBEDDING_BATCH_SIZE
+    for batch_idx, start in enumerate(range(0, len(texts), EMBEDDING_BATCH_SIZE), 1):
+        batch = texts[start:start + EMBEDDING_BATCH_SIZE]
+        payload = {"model": EMBEDDING_MODEL, "input": batch}
+
+        batch_vectors = None
+        for attempt in range(3):
+            try:
+                resp = requests.post(OPENROUTER_EMBEDDING_URL, headers=headers, json=payload, timeout=120)
+                resp.raise_for_status()
+                data = resp.json().get("data", [])
+                ordered = sorted(data, key=lambda x: x.get("index", 0))
+                extracted = [row.get("embedding") for row in ordered]
+                if len(extracted) != len(batch) or any(not isinstance(v, list) or not v for v in extracted):
+                    raise ValueError("Invalid embedding response shape")
+                batch_vectors = extracted
+                break
+            except Exception as e:
+                logger.warning(f"Embedding batch {batch_idx}/{total_batches} attempt {attempt+1} failed: {e}")
+                if attempt < 2:
+                    time.sleep(2 * (attempt + 1))
+
+        if not batch_vectors:
+            return None
+        vectors.extend(batch_vectors)
+
+        if batch_idx % 5 == 0 or batch_idx == total_batches:
+            logger.info(f"  Embedding progress: {batch_idx}/{total_batches} batches")
+
+    matrix = np.array(vectors, dtype=np.float32)
+    norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+    norms[norms == 0] = 1.0
+    return matrix / norms
+
+def cluster_with_semantic_embeddings(articles):
+    texts = [_article_embedding_text(a) for a in articles]
+    logger.info(f"Computing semantic embeddings via OpenRouter ({EMBEDDING_MODEL})...")
+    matrix = get_semantic_embeddings(texts)
+    if matrix is None or matrix.shape[0] != len(articles):
+        return None
+
+    logger.info(f"Embedding matrix: {matrix.shape}")
+    logger.info(f"Agglomerative Clustering on embeddings (threshold={SEMANTIC_CLUSTER_DISTANCE_THRESHOLD})...")
+    model = AgglomerativeClustering(
+        n_clusters=None,
+        distance_threshold=SEMANTIC_CLUSTER_DISTANCE_THRESHOLD,
+        metric="cosine",
+        linkage="average",
+    )
+    labels = model.fit_predict(matrix)
+    result = _clusters_from_labels(labels)
+    _log_cluster_stats(result, articles, "Clusters (semantic)")
+    return result
+
+def cluster_with_tfidf_fallback(articles):
     corpus = [f"{a['title']} {a['title']} {a['title']} {a['content_snippet'][:300]}" for a in articles]
-
-    logger.info("Computing TF-IDF vectors...")
+    logger.info("Computing TF-IDF vectors (fallback)...")
     tfidf = TfidfVectorizer(max_features=10000, ngram_range=(1,2), stop_words="english", min_df=1, max_df=0.95)
     matrix = tfidf.fit_transform(corpus)
     logger.info(f"TF-IDF matrix: {matrix.shape}")
 
-    logger.info(f"Agglomerative Clustering (threshold={CLUSTER_DISTANCE_THRESHOLD})...")
+    logger.info(f"Agglomerative Clustering fallback (threshold={TFIDF_CLUSTER_DISTANCE_THRESHOLD})...")
     model = AgglomerativeClustering(
-        n_clusters=None, distance_threshold=CLUSTER_DISTANCE_THRESHOLD,
-        metric="cosine", linkage="average"
+        n_clusters=None,
+        distance_threshold=TFIDF_CLUSTER_DISTANCE_THRESHOLD,
+        metric="cosine",
+        linkage="average",
     )
     labels = model.fit_predict(matrix.toarray())
-
-    clusters = {}
-    for idx, lbl in enumerate(labels):
-        clusters.setdefault(lbl, []).append(idx)
-    result = list(clusters.values())
-
-    multi = [c for c in result if len(c) > 1]
-    logger.info(f"Clusters: {len(result)} total, {len(multi)} multi-article (max size: {max(len(c) for c in multi) if multi else 0})")
-    if multi:
-        for c in sorted(multi, key=len, reverse=True)[:10]:
-            titles = [articles[i]["title"][:50] for i in c]
-            logger.info(f"  [{len(c)}x] {titles[0]}...")
+    result = _clusters_from_labels(labels)
+    _log_cluster_stats(result, articles, "Clusters (tfidf fallback)")
     return result
+
+def cluster_articles(articles):
+    if len(articles) <= 1:
+        return [[i] for i in range(len(articles))]
+
+    clusters = cluster_with_semantic_embeddings(articles)
+    if clusters is not None:
+        return clusters
+
+    logger.warning("Semantic embedding unavailable; falling back to TF-IDF clustering.")
+    return cluster_with_tfidf_fallback(articles)
 
 
 # ─── LLM Helpers ────────────────────────────────────────────────────────────
@@ -243,7 +549,7 @@ def call_llm(messages, temperature=0.3, max_tokens=4000):
     payload = {"model": LLM_MODEL, "messages": messages, "temperature": temperature, "max_tokens": max_tokens}
     for attempt in range(3):
         try:
-            resp = requests.post(OPENROUTER_BASE_URL, headers=headers, json=payload, timeout=90)
+            resp = requests.post(OPENROUTER_CHAT_URL, headers=headers, json=payload, timeout=90)
             resp.raise_for_status()
             return resp.json()["choices"][0]["message"]["content"].strip()
         except Exception as e:
@@ -462,6 +768,7 @@ def main():
         logger.error("No articles fetched"); sys.exit(1)
 
     articles = deduplicate_articles(raw_articles)
+    articles = fill_missing_images_from_web(articles)
     all_source_names = list(set(a["source"] for a in articles))
 
     clusters = cluster_articles(articles)
