@@ -13,7 +13,7 @@ permissions:
 jobs:
   update-feed:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -41,21 +41,30 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           LLM_MODEL: ${{ vars.LLM_MODEL || 'google/gemini-2.0-flash-001' }}
+          LOW_COST_LLM_MODEL: ${{ vars.LOW_COST_LLM_MODEL || vars.LLM_MODEL || 'google/gemini-2.0-flash-001' }}
+          HIGH_QUALITY_LLM_MODEL: ${{ vars.HIGH_QUALITY_LLM_MODEL || vars.LLM_MODEL || 'google/gemini-2.0-flash-001' }}
           EMBEDDING_MODEL: ${{ vars.EMBEDDING_MODEL || 'openai/text-embedding-3-large' }}
           REQUIRE_SEMANTIC_EMBEDDING: '1'
+          INCREMENTAL_MODE: '1'
+          FULL_REBUILD_UTC_HOUR: ${{ vars.FULL_REBUILD_UTC_HOUR || '0' }}
+          STATE_FILE: scripts/feed-state.json
+          RSS_SNAPSHOT_FILE: scripts/rss-snapshot.json
+          TOMBSTONE_TTL_DAYS: ${{ vars.TOMBSTONE_TTL_DAYS || '30' }}
+          ARTICLE_SUMMARY_ENABLED: ${{ vars.ARTICLE_SUMMARY_ENABLED || '1' }}
+          ARTICLE_SUMMARY_LANG: ${{ vars.ARTICLE_SUMMARY_LANG || 'zh' }}
         run: |
           python scripts/fetch_feeds.py
 
       - name: Check for changes
         id: check
         run: |
-          git diff --quiet client/public/feed-data.json || echo "changed=true" >> $GITHUB_OUTPUT
+          git diff --quiet client/public/feed-data.json scripts/feed-state.json scripts/rss-snapshot.json || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit and push
         if: steps.check.outputs.changed == 'true'
         run: |
           git config user.name "Fashion Feed Bot"
           git config user.email "bot@fashion-feed.app"
-          git add client/public/feed-data.json
+          git add client/public/feed-data.json scripts/feed-state.json scripts/rss-snapshot.json
           git commit -m "chore: update feed data [$(date -u '+%Y-%m-%d %H:%M UTC')]"
           git push
