@@ -5,13 +5,11 @@
  * Clicking opens topic detail panel
  */
 
-import { Clock, Layers, ChevronRight } from "lucide-react";
+import { Clock, Layers, ChevronRight, ImageOff } from "lucide-react";
 import type { Topic } from "@/hooks/useFeedData";
 import { formatTimeAgo } from "@/hooks/useFeedData";
 import { motion } from "framer-motion";
-
-const FALLBACK_IMAGE =
-  "https://d2xsxph8kpxj0f.cloudfront.net/310519663404425913/XsRzs3R3SMWpsb8CkVUfqq/fallback-pattern-diwxooD7YAXKmRVyMjUGPW.webp";
+import { useState } from "react";
 
 interface TopicCardProps {
   topic: Topic;
@@ -26,7 +24,8 @@ export default function TopicCard({
   variant = "default",
   onClick,
 }: TopicCardProps) {
-  const imageUrl = topic.image || FALLBACK_IMAGE;
+  const [imageBroken, setImageBroken] = useState(false);
+  const hasImage = Boolean(topic.image) && !imageBroken;
   const uniqueSources = topic.sources
     .map((s) => s.name)
     .filter((v, i, a) => a.indexOf(v) === i);
@@ -42,15 +41,19 @@ export default function TopicCard({
       >
         {/* Thumbnail */}
         <div className="w-20 h-20 flex-shrink-0 overflow-hidden bg-muted">
-          <img
-            src={imageUrl}
-            alt=""
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            loading="lazy"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
-            }}
-          />
+          {hasImage ? (
+            <img
+              src={topic.image}
+              alt=""
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              loading="lazy"
+              onError={() => setImageBroken(true)}
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-secondary to-muted flex items-center justify-center">
+              <ImageOff className="w-4 h-4 text-muted-foreground/60" />
+            </div>
+          )}
         </div>
 
         {/* Content */}
@@ -88,15 +91,19 @@ export default function TopicCard({
       >
         {/* Image */}
         <div className="sm:w-64 md:w-80 aspect-[16/10] sm:aspect-auto overflow-hidden bg-muted flex-shrink-0">
-          <img
-            src={imageUrl}
-            alt=""
-            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            loading="lazy"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
-            }}
-          />
+          {hasImage ? (
+            <img
+              src={topic.image}
+              alt=""
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              loading="lazy"
+              onError={() => setImageBroken(true)}
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-secondary to-muted flex items-center justify-center">
+              <ImageOff className="w-8 h-8 text-muted-foreground/60" />
+            </div>
+          )}
         </div>
 
         {/* Content */}
@@ -148,15 +155,19 @@ export default function TopicCard({
     >
       {/* Image */}
       <div className="aspect-[4/3] overflow-hidden bg-muted relative">
-        <img
-          src={imageUrl}
-          alt=""
-          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          loading="lazy"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
-          }}
-        />
+        {hasImage ? (
+          <img
+            src={topic.image}
+            alt=""
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            loading="lazy"
+            onError={() => setImageBroken(true)}
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-secondary to-muted flex items-center justify-center">
+            <ImageOff className="w-8 h-8 text-muted-foreground/60" />
+          </div>
+        )}
         {/* Source badge */}
         {topic.article_count > 1 && (
           <div className="absolute top-3 left-3">

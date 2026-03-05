@@ -4,13 +4,11 @@
  * Clicking opens the topic detail panel instead of external link
  */
 
-import { Clock, Layers, ChevronRight } from "lucide-react";
+import { Clock, Layers, ChevronRight, ImageOff } from "lucide-react";
 import type { Topic } from "@/hooks/useFeedData";
 import { formatTimeAgo } from "@/hooks/useFeedData";
 import { motion } from "framer-motion";
-
-const FALLBACK_IMAGE =
-  "https://d2xsxph8kpxj0f.cloudfront.net/310519663404425913/XsRzs3R3SMWpsb8CkVUfqq/hero-fashion-runway-ZtgpWi2MaKrrfhi6Fy6CcA.webp";
+import { useState } from "react";
 
 interface FeaturedCardProps {
   topic: Topic;
@@ -18,7 +16,8 @@ interface FeaturedCardProps {
 }
 
 export default function FeaturedCard({ topic, onClick }: FeaturedCardProps) {
-  const imageUrl = topic.image || FALLBACK_IMAGE;
+  const [imageBroken, setImageBroken] = useState(false);
+  const hasImage = Boolean(topic.image) && !imageBroken;
 
   return (
     <motion.div
@@ -29,10 +28,16 @@ export default function FeaturedCard({ topic, onClick }: FeaturedCardProps) {
       className="group relative block w-full aspect-[21/9] min-h-[280px] md:min-h-[360px] lg:min-h-[420px] overflow-hidden bg-ink cursor-pointer"
     >
       {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-        style={{ backgroundImage: `url(${imageUrl})` }}
-      />
+      {hasImage ? (
+        <img
+          src={topic.image}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+          onError={() => setImageBroken(true)}
+        />
+      ) : (
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,hsl(var(--secondary))_0%,transparent_52%),radial-gradient(circle_at_82%_78%,hsl(var(--muted))_0%,transparent_48%),linear-gradient(135deg,hsl(var(--muted))_0%,hsl(var(--secondary))_100%)]" />
+      )}
 
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
@@ -45,6 +50,12 @@ export default function FeaturedCard({ topic, onClick }: FeaturedCardProps) {
           <span className="px-3 py-1 text-xs font-body font-medium tracking-wider uppercase bg-gold/90 text-ink">
             {topic.category_name || "时尚"}
           </span>
+          {!hasImage && (
+            <span className="flex items-center gap-1 text-xs text-white/60">
+              <ImageOff className="w-3 h-3" />
+              无配图
+            </span>
+          )}
           {topic.article_count > 1 && (
             <span className="flex items-center gap-1 text-xs text-white/70">
               <Layers className="w-3 h-3" />
