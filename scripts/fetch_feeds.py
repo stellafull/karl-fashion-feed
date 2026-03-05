@@ -2310,7 +2310,7 @@ def build_output(topics, all_sources, incremental_meta=None, quality_meta=None):
 
 def main():
     logger.info("="*60)
-    logger.info("Fashion Feed Aggregator v5 — Optimized Pipeline")
+    logger.info("Fashion Feed Aggregator v6 — Two-Stage Event Fusion")
     logger.info("="*60)
     logger.info(f"Incremental mode: {INCREMENTAL_MODE}, state={STATE_FILE}, snapshot={RSS_SNAPSHOT_FILE}")
 
