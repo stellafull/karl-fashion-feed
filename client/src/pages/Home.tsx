@@ -1,12 +1,14 @@
 /*
- * Home Page — Editorial Noir Design (v2: Topic Clustering Mode)
- * Structure: Header → Category Nav → Featured Topic → Topic Grid + Sidebar → Topic Detail Panel
- * Users read aggregated Chinese content directly — no need to visit original sites
+ * Home Page — Editorial Noir Design (v3: Luxury Brand Focus)
+ * Structure: Header → Category Nav → Filter Bar → Featured Topic → Topic Grid + Sidebar → Topic Detail Panel
+ * Categories: 秀场/系列, 街拍/造型, 趋势总结, 品牌/市场
+ * Features: Sort by date/sources, filter by source
  */
 
 import { useFeedData } from "@/hooks/useFeedData";
 import Header from "@/components/Header";
 import CategoryNav from "@/components/CategoryNav";
+import FilterBar from "@/components/FilterBar";
 import FeaturedCard from "@/components/FeaturedCard";
 import TopicCard from "@/components/TopicCard";
 import TopicDetail from "@/components/TopicDetail";
@@ -27,6 +29,13 @@ export default function Home() {
     gridTopics,
     selectedTopic,
     setSelectedTopic,
+    sortMode,
+    setSortMode,
+    selectedSources,
+    toggleSource,
+    clearSourceFilter,
+    availableSources,
+    filteredTopics,
   } = useFeedData();
 
   // Lock body scroll when topic detail is open
@@ -91,20 +100,26 @@ export default function Home() {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Topic grid — main content */}
             <div className="flex-1 min-w-0">
-              {/* Section header */}
-              <div className="flex items-center justify-between mb-6">
+              {/* Section header with filter bar */}
+              <div className="mb-6 space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-6 bg-gold" />
                   <h2 className="font-display text-xl font-bold">话题聚合</h2>
                 </div>
-                <span className="text-xs text-muted-foreground font-body">
-                  共 {gridTopics.length} 个话题
-                </span>
+                <FilterBar
+                  sortMode={sortMode}
+                  onSortChange={setSortMode}
+                  availableSources={availableSources}
+                  selectedSources={selectedSources}
+                  onToggleSource={toggleSource}
+                  onClearSources={clearSourceFilter}
+                  totalCount={filteredTopics.length}
+                />
               </div>
 
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={`grid-${activeCategory}`}
+                  key={`grid-${activeCategory}-${sortMode}-${selectedSources.join(",")}`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
@@ -167,7 +182,9 @@ export default function Home() {
                   {gridTopics.length === 0 && !featuredTopic && (
                     <div className="text-center py-16">
                       <p className="font-body text-muted-foreground">
-                        该分类暂无话题
+                        {selectedSources.length > 0
+                          ? "该筛选条件下暂无话题，请调整来源筛选"
+                          : "该分类暂无话题"}
                       </p>
                     </div>
                   )}
@@ -178,7 +195,11 @@ export default function Home() {
             {/* Sidebar */}
             <div className="w-full lg:w-72 xl:w-80 flex-shrink-0">
               <div className="lg:sticky lg:top-20">
-                <SourcesSidebar meta={data.meta} />
+                <SourcesSidebar
+                  meta={data.meta}
+                  selectedSources={selectedSources}
+                  onToggleSource={toggleSource}
+                />
               </div>
             </div>
           </div>

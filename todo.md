@@ -1,20 +1,18 @@
-# Fashion Feed v2 — 重构任务清单
+# Fashion Feed v3 — 优化任务清单
 
-## Phase 1: GitHub
-- [x] 创建私有仓库并push代码 (stellafull/karl-fashion-feed)
+## 后端改进
+- [ ] 分类重新规划为4类：RUNWAY_COLLECTION, STREET_STYLE_STYLING, TREND_SUMMARY, BRAND_MARKET_MOVE
+- [ ] 修复clustering质量：加强prompt约束，宁可不聚也不能错聚
+- [ ] MAX_TOPICS提升到500，过时内容自然淘汰
+- [ ] 确保clustering只聚合真正相关的文章
 
-## Phase 2: 后端重构
-- [x] RSS源抽象为 sources.yaml
-- [x] 扩展抓取量到500条（23源启用，381篇去重后）
-- [x] 核心重构：话题聚合模式（120话题，12个多源聚合）
-- [x] 聚合后的话题不再跳转原站，用户直接阅读中文内容
-- [x] 图片使用原网页URL
+## 前端改进
+- [ ] 更新分类标签为新的4类
+- [ ] 添加排序功能（按发布时间排序）
+- [ ] 添加来源筛选功能（按RSS订阅源筛选）
+- [ ] 确保筛选和排序可组合使用
 
-## Phase 3: 前端重构
-- [ ] 话题卡片展示（聚合后的话题，含多源标注）
-- [ ] 话题详情页（综合摘要 + 原始来源列表）
-- [ ] 移除直接跳转原站的逻辑
-
-## Phase 4: 测试交付
-- [ ] 端到端测试
-- [ ] 推送更新到GitHub
+## 交付
+- [ ] 运行脚本生成新数据
+- [ ] 测试完整流程
+- [ ] 推送到GitHub

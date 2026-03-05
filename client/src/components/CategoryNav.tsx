@@ -1,20 +1,19 @@
 /*
- * CategoryNav — Editorial Noir Design
+ * CategoryNav — Editorial Noir Design (v3: Luxury Brand Focus)
  * Horizontal category tabs with gold accent underline
- * Inspired by Perplexity Discover's topic pills
+ * Categories: 全部, 秀场/系列, 街拍/造型, 趋势总结, 品牌/市场
  */
 
-import { Newspaper, Crown, Flame, TrendingUp, Shirt, Palette } from "lucide-react";
+import { Newspaper, Sparkles, Camera, TrendingUp, Building2 } from "lucide-react";
 import type { Category } from "@/hooks/useFeedData";
 import { motion } from "framer-motion";
 
 const iconMap: Record<string, React.ElementType> = {
   Newspaper,
-  Crown,
-  Flame,
+  Sparkles,
+  Camera,
   TrendingUp,
-  Shirt,
-  Palette,
+  Building2,
 };
 
 interface CategoryNavProps {

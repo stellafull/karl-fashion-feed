@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 
-// ─── Data Types (v2: Topic-based) ──────────────────────────────────────────
+// ─── Data Types (v3: Topic-based, Luxury Brand Focus) ────────────────────
 
 export interface TopicSource {
   name: string;
@@ -43,6 +43,8 @@ export interface FeedData {
   topics: Topic[];
 }
 
+export type SortMode = "newest" | "oldest" | "most-sources";
+
 // ─── Hook ──────────────────────────────────────────────────────────────────
 
 export function useFeedData() {
@@ -51,6 +53,8 @@ export function useFeedData() {
   const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+  const [sortMode, setSortMode] = useState<SortMode>("newest");
+  const [selectedSources, setSelectedSources] = useState<string[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -68,11 +72,55 @@ export function useFeedData() {
     fetchData();
   }, []);
 
+  // Toggle a source in the filter
+  const toggleSource = useCallback((source: string) => {
+    setSelectedSources((prev) => {
+      if (prev.includes(source)) {
+        return prev.filter((s) => s !== source);
+      }
+      return [...prev, source];
+    });
+  }, []);
+
+  // Clear all source filters
+  const clearSourceFilter = useCallback(() => {
+    setSelectedSources([]);
+  }, []);
+
+  // Filtered + sorted topics
   const filteredTopics = useMemo(() => {
     if (!data) return [];
-    if (activeCategory === "all") return data.topics;
-    return data.topics.filter((t) => t.category === activeCategory);
-  }, [data, activeCategory]);
+
+    let topics = data.topics;
+
+    // Category filter
+    if (activeCategory !== "all") {
+      topics = topics.filter((t) => t.category === activeCategory);
+    }
+
+    // Source filter
+    if (selectedSources.length > 0) {
+      topics = topics.filter((t) =>
+        t.sources.some((s) => selectedSources.includes(s.name))
+      );
+    }
+
+    // Sort
+    const sorted = [...topics];
+    switch (sortMode) {
+      case "newest":
+        sorted.sort((a, b) => (b.published || "").localeCompare(a.published || ""));
+        break;
+      case "oldest":
+        sorted.sort((a, b) => (a.published || "").localeCompare(b.published || ""));
+        break;
+      case "most-sources":
+        sorted.sort((a, b) => b.article_count - a.article_count);
+        break;
+    }
+
+    return sorted;
+  }, [data, activeCategory, selectedSources, sortMode]);
 
   const featuredTopic = useMemo(() => {
     // Pick the first multi-source topic with an image, or the first topic
@@ -89,6 +137,12 @@ export function useFeedData() {
     return filteredTopics.filter((t) => t.id !== featuredTopic.id);
   }, [filteredTopics, featuredTopic]);
 
+  // Available sources (from data)
+  const availableSources = useMemo(() => {
+    if (!data) return [];
+    return data.meta.sources.sort();
+  }, [data]);
+
   return {
     data,
     loading,
@@ -100,6 +154,12 @@ export function useFeedData() {
     gridTopics,
     selectedTopic,
     setSelectedTopic,
+    sortMode,
+    setSortMode,
+    selectedSources,
+    toggleSource,
+    clearSourceFilter,
+    availableSources,
   };
 }
 

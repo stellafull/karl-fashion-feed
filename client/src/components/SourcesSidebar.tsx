@@ -1,13 +1,15 @@
 /*
- * SourcesSidebar — Editorial Noir Design (v2: Topic mode)
- * Right sidebar showing stats, sources, and about info
+ * SourcesSidebar — Editorial Noir Design (v3: Luxury Brand Focus)
+ * Right sidebar showing stats, sources (clickable for filtering), and about info
  */
 
-import { Rss, Clock, Globe, Layers, BarChart3 } from "lucide-react";
+import { Rss, Clock, Globe, Layers, BarChart3, Check } from "lucide-react";
 import type { FeedMeta } from "@/hooks/useFeedData";
 
 interface SourcesSidebarProps {
   meta: FeedMeta;
+  selectedSources: string[];
+  onToggleSource: (source: string) => void;
 }
 
 const SOURCE_URLS: Record<string, string> = {
@@ -36,7 +38,11 @@ const SOURCE_URLS: Record<string, string> = {
   Fashionsnap: "https://www.fashionsnap.com",
 };
 
-export default function SourcesSidebar({ meta }: SourcesSidebarProps) {
+export default function SourcesSidebar({
+  meta,
+  selectedSources,
+  onToggleSource,
+}: SourcesSidebarProps) {
   return (
     <aside className="space-y-6">
       {/* Stats */}
@@ -89,7 +95,7 @@ export default function SourcesSidebar({ meta }: SourcesSidebarProps) {
         </div>
       </div>
 
-      {/* Sources list */}
+      {/* Sources list — clickable for filtering */}
       <div className="p-4 border border-border bg-card">
         <div className="flex items-center gap-2 mb-3">
           <Globe className="w-4 h-4 text-gold" />
@@ -97,19 +103,31 @@ export default function SourcesSidebar({ meta }: SourcesSidebarProps) {
             信息来源 ({meta.sources_count})
           </h3>
         </div>
+        <p className="text-[10px] text-muted-foreground font-body mb-2">
+          点击来源可筛选相关话题
+        </p>
         <div className="space-y-0">
-          {meta.sources.sort().map((source) => (
-            <a
-              key={source}
-              href={SOURCE_URLS[source] || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 py-2 text-xs font-body text-muted-foreground hover:text-gold transition-colors duration-200 border-b border-border/50 last:border-0"
-            >
-              <Rss className="w-3 h-3 flex-shrink-0" />
-              <span className="truncate">{source}</span>
-            </a>
-          ))}
+          {meta.sources.sort().map((source) => {
+            const isSelected = selectedSources.includes(source);
+            return (
+              <button
+                key={source}
+                onClick={() => onToggleSource(source)}
+                className={`w-full flex items-center gap-2 py-2 text-xs font-body transition-colors duration-200 border-b border-border/50 last:border-0 text-left ${
+                  isSelected
+                    ? "text-gold"
+                    : "text-muted-foreground hover:text-gold"
+                }`}
+              >
+                {isSelected ? (
+                  <Check className="w-3 h-3 flex-shrink-0 text-gold" />
+                ) : (
+                  <Rss className="w-3 h-3 flex-shrink-0" />
+                )}
+                <span className="truncate flex-1">{source}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
