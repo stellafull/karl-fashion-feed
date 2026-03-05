@@ -28,10 +28,21 @@ jobs:
         run: |
           pip install -r scripts/requirements.txt
 
+      - name: Validate required secrets
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "OPENROUTER_API_KEY is not set in repository secrets"
+            exit 1
+          fi
+
       - name: Run feed aggregator
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           LLM_MODEL: ${{ vars.LLM_MODEL || 'google/gemini-2.0-flash-001' }}
+          EMBEDDING_MODEL: ${{ vars.EMBEDDING_MODEL || 'openai/text-embedding-3-large' }}
+          REQUIRE_SEMANTIC_EMBEDDING: '1'
         run: |
           python scripts/fetch_feeds.py
 
