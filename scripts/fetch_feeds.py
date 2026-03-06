@@ -772,14 +772,14 @@ def get_published_date(entry):
         parsed = getattr(entry, attr, None)
         if parsed:
             try:
-                return datetime.datetime(*parsed[:6]).isoformat()
+                return datetime.datetime(*parsed[:6], tzinfo=datetime.timezone.utc).isoformat()
             except Exception:
                 pass
     for attr in ["published","updated","created"]:
         val = getattr(entry, attr, None)
         if val:
             return parse_isoish_date(val)
-    return datetime.datetime.now().isoformat()
+    return datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat()
 
 def title_bigrams(title):
     t = re.sub(r"[^\w\s]", "", title.lower().strip())
@@ -1261,7 +1261,7 @@ def build_article_record(source, *, link, title, published="", content_text="", 
     canonical = normalize_url(canonical_url, source["dedup"]["strip_query_params"]) or normalized_link
     cleaned_text = clean_html(content_text)
     snippet = cleaned_text[:800] if cleaned_text else clean_html(fallback_snippet)[:800]
-    published_at = parse_isoish_date(published) or utc_now_iso()
+    published_at = parse_isoish_date(published) or datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat()
     source_host = urlparse(canonical or normalized_link).netloc.lower()
     return {
         "id": compute_article_id(canonical or normalized_link, title, source["id"]),
@@ -3038,7 +3038,7 @@ def compute_quality_metrics(topics_state, rebuild_mode):
 def build_output(topics, all_sources, incremental_meta=None, quality_meta=None):
     return {
         "meta": {
-            "generated_at": datetime.datetime.now().isoformat(),
+            "generated_at": datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat(),
             "total_topics": len(topics),
             "total_articles": sum(t["article_count"] for t in topics),
             "sources_count": len(all_sources),

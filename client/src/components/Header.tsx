@@ -5,6 +5,7 @@
 
 import { Rss } from "lucide-react";
 import type { FeedMeta } from "@/hooks/useFeedData";
+import { formatChinaDateTimeShort } from "@/lib/time";
 
 interface HeaderProps {
   meta: FeedMeta | null;
@@ -39,15 +40,7 @@ export default function Header({ meta }: HeaderProps) {
               </span>
               <span>{meta.total_topics} 个话题</span>
               <span>{meta.total_articles} 篇原文</span>
-              <span>
-                更新于{" "}
-                {new Date(meta.generated_at).toLocaleString("zh-CN", {
-                  month: "short",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
+              <span>更新于 {formatChinaDateTimeShort(meta.generated_at)}</span>
             </>
           )}
         </div>

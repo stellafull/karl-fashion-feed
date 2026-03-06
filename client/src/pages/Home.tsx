@@ -193,8 +193,8 @@ export default function Home() {
             </div>
 
             {/* Sidebar */}
-            <div className="w-full lg:w-72 xl:w-80 flex-shrink-0">
-              <div className="lg:sticky lg:top-20">
+            <div className="w-full lg:w-72 xl:w-80 flex-shrink-0 lg:min-h-0">
+              <div className="lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)]">
                 <SourcesSidebar
                   meta={data.meta}
                   selectedSources={selectedSources}
