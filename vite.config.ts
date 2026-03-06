@@ -150,9 +150,58 @@ function vitePluginManusDebugCollector(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()];
+function normalizeBase(base: string) {
+  const withLeadingSlash = base.startsWith("/") ? base : `/${base}`;
+  return withLeadingSlash.endsWith("/") ? withLeadingSlash : `${withLeadingSlash}/`;
+}
+
+function resolveBase() {
+  const explicitBase = process.env.VITE_BASE_URL || process.env.BASE_URL;
+  if (explicitBase) {
+    return normalizeBase(explicitBase);
+  }
+
+  const isGithubPagesBuild = process.env.GITHUB_PAGES === "true";
+  const repoName = process.env.GITHUB_REPOSITORY?.split("/")[1];
+
+  if (isGithubPagesBuild && repoName) {
+    return `/${repoName}/`;
+  }
+
+  return "/";
+}
+
+function vitePluginSpaFallback(): Plugin {
+  let outDir = "";
+
+  return {
+    name: "spa-fallback",
+    apply: "build",
+    configResolved(config) {
+      outDir = config.build.outDir;
+    },
+    closeBundle() {
+      const indexHtmlPath = path.join(outDir, "index.html");
+      const notFoundPath = path.join(outDir, "404.html");
+
+      if (fs.existsSync(indexHtmlPath)) {
+        fs.copyFileSync(indexHtmlPath, notFoundPath);
+      }
+    },
+  };
+}
+
+const plugins = [
+  react(),
+  tailwindcss(),
+  jsxLocPlugin(),
+  vitePluginManusRuntime(),
+  vitePluginManusDebugCollector(),
+  vitePluginSpaFallback(),
+];
 
 export default defineConfig({
+  base: resolveBase(),
   plugins,
   resolve: {
     alias: {
