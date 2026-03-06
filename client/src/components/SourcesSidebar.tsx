@@ -5,6 +5,7 @@
 
 import { Rss, Clock, Globe, Layers, BarChart3, Check } from "lucide-react";
 import type { FeedMeta } from "@/hooks/useFeedData";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface SourcesSidebarProps {
   meta: FeedMeta;
@@ -43,8 +44,10 @@ export default function SourcesSidebar({
   selectedSources,
   onToggleSource,
 }: SourcesSidebarProps) {
+  const sortedSources = [...meta.sources].sort();
+
   return (
-    <aside className="space-y-6">
+    <aside className="space-y-6 lg:flex lg:max-h-[calc(100vh-6rem)] lg:flex-col lg:gap-6 lg:space-y-0 lg:overflow-hidden">
       {/* Stats */}
       <div className="p-4 border border-border bg-card">
         <div className="flex items-center gap-2 mb-3">
@@ -96,7 +99,7 @@ export default function SourcesSidebar({
       </div>
 
       {/* Sources list — clickable for filtering */}
-      <div className="p-4 border border-border bg-card">
+      <div className="p-4 border border-border bg-card lg:min-h-0 lg:flex-1 lg:flex lg:flex-col">
         <div className="flex items-center gap-2 mb-3">
           <Globe className="w-4 h-4 text-gold" />
           <h3 className="font-body font-semibold text-sm">
@@ -106,8 +109,9 @@ export default function SourcesSidebar({
         <p className="text-[10px] text-muted-foreground font-body mb-2">
           点击来源可筛选相关话题
         </p>
-        <div className="space-y-0">
-          {meta.sources.sort().map((source) => {
+        <ScrollArea className="pr-3 lg:min-h-0 lg:flex-1">
+          <div className="space-y-0">
+            {sortedSources.map((source) => {
             const isSelected = selectedSources.includes(source);
             return (
               <button
@@ -127,8 +131,9 @@ export default function SourcesSidebar({
                 <span className="truncate flex-1">{source}</span>
               </button>
             );
-          })}
-        </div>
+            })}
+          </div>
+        </ScrollArea>
       </div>
 
       {/* About */}
