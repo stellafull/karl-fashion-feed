@@ -48,6 +48,7 @@ export type SortMode = "newest" | "oldest" | "most-sources";
 // ─── Hook ──────────────────────────────────────────────────────────────────
 
 export function useFeedData() {
+  const feedDataUrl = `${import.meta.env.BASE_URL}feed-data.json`;
   const [data, setData] = useState<FeedData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +60,7 @@ export function useFeedData() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const resp = await fetch("/feed-data.json");
+        const resp = await fetch(feedDataUrl);
         if (!resp.ok) throw new Error("Failed to load feed data");
         const json: FeedData = await resp.json();
         setData(json);
@@ -70,7 +71,7 @@ export function useFeedData() {
       }
     }
     fetchData();
-  }, []);
+  }, [feedDataUrl]);
 
   // Toggle a source in the filter
   const toggleSource = useCallback((source: string) => {
