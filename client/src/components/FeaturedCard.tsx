@@ -6,9 +6,9 @@
 
 import { Clock, Layers, ChevronRight, ImageOff } from "lucide-react";
 import type { Topic } from "@/hooks/useFeedData";
-import { formatTimeAgo } from "@/hooks/useFeedData";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { formatChinaDateTimeShort } from "@/lib/time";
 
 interface FeaturedCardProps {
   topic: Topic;
@@ -87,7 +87,7 @@ export default function FeaturedCard({ topic, onClick }: FeaturedCardProps) {
         <div className="flex items-center gap-4 text-xs text-white/60 font-body">
           <span className="flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5" />
-            {formatTimeAgo(topic.published)}
+            {formatChinaDateTimeShort(topic.published)}
           </span>
           <span className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-gold">
             <ChevronRight className="w-3.5 h-3.5" />

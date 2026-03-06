@@ -15,9 +15,10 @@ import {
   ImageOff,
 } from "lucide-react";
 import type { Topic } from "@/hooks/useFeedData";
-import { formatTimeAgo, getLangLabel } from "@/hooks/useFeedData";
+import { getLangLabel } from "@/hooks/useFeedData";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { formatChinaDateTimeShort } from "@/lib/time";
 
 interface TopicDetailProps {
   topic: Topic | null;
@@ -104,7 +105,7 @@ export default function TopicDetail({ topic, onClose }: TopicDetailProps) {
               <div className="flex items-center gap-4 mb-6 text-xs text-muted-foreground font-body flex-wrap">
                 <span className="flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5" />
-                  {formatTimeAgo(topic.published)}
+                  {formatChinaDateTimeShort(topic.published)}
                 </span>
                 {topic.article_count > 1 && (
                   <span className="flex items-center gap-1.5 text-gold/80">
