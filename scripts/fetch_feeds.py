@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Fashion Feed Aggregator v6 — Two-Stage Event Fusion
-====================================================
+Fashion Feed Aggregator v6 — Multi-Source Event Fusion
+======================================================
 Pipeline:
-  1. Fetch + deduplicate RSS articles
+  1. Fetch + deduplicate RSS/crawl articles
   2. Stage A candidate recall (embedding + event fingerprint)
   3. Stage B event fusion (low-cost LLM screening + boundary high-quality review)
   4. Incremental update every 2h with historical topic re-fusion
@@ -12,7 +12,7 @@ Pipeline:
 """
 
 import os, sys, json, hashlib, re, datetime, time, logging, base64
-from urllib.parse import urlparse, urljoin
+from urllib.parse import parse_qsl, urlencode, urlparse, urljoin, urlunparse
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from itertools import combinations
@@ -66,11 +66,55 @@ MAX_PAGE_TEXT_FETCH = int(os.environ.get("MAX_PAGE_TEXT_FETCH", "500"))
 ARTICLE_FULLTEXT_CHARS = int(os.environ.get("ARTICLE_FULLTEXT_CHARS", "8000"))
 ARTICLE_EMBED_SUMMARY_CHARS = int(os.environ.get("ARTICLE_EMBED_SUMMARY_CHARS", "600"))
 ARTICLE_SUMMARY_CONCURRENCY = int(os.environ.get("ARTICLE_SUMMARY_CONCURRENCY", "6"))
+ARTICLE_ANALYSIS_INPUT_CHARS = 2200
 
 # Clustering distance threshold: lower is stricter; higher merges more aggressively.
 SEMANTIC_CLUSTER_DISTANCE_THRESHOLD = 0.37
 TFIDF_CLUSTER_DISTANCE_THRESHOLD = 0.78
 TITLE_DEDUP_THRESHOLD = 0.6
+DEFAULT_CRAWL_PAGES = 2
+DEFAULT_FETCH_TIMEOUT = 20
+COMMON_TRACKING_QUERY_PREFIXES = (
+    "utm_",
+    "mc_",
+    "mkt_",
+    "oly_",
+)
+COMMON_TRACKING_QUERY_KEYS = {
+    "fbclid",
+    "gclid",
+    "igshid",
+    "ref",
+    "ref_",
+    "spm",
+}
+DEFAULT_LINK_SELECTORS = ["a[href]"]
+DEFAULT_TITLE_SELECTORS = ["h1"]
+DEFAULT_CONTENT_SELECTORS = [
+    "article",
+    "main article",
+    "main",
+    "[role='main']",
+    ".article-body",
+    ".entry-content",
+    ".post-content",
+    ".article-content",
+]
+DEFAULT_PUBLISHED_SELECTORS = ["time[datetime]", "time", "[itemprop='datePublished']"]
+DEFAULT_IMAGE_SELECTORS = ["meta[property='og:image']", "meta[name='twitter:image']", "article img", "main img"]
+DEFAULT_REMOVE_SELECTORS = [
+    "script",
+    "style",
+    "noscript",
+    "iframe",
+    "form",
+    "nav",
+    "aside",
+    ".ad",
+    ".ads",
+    ".advertisement",
+    ".newsletter",
+]
 
 # Stage A recall + Stage B event fusion
 STAGE_A_EMBED_DISTANCE_THRESHOLD = float(os.environ.get("STAGE_A_EMBED_DISTANCE_THRESHOLD", "0.34"))
@@ -121,9 +165,33 @@ CATEGORY_NAME_MAP = {
     "runway-collection": "秀场/系列", "street-style": "街拍/造型",
     "trend-summary": "趋势总结", "brand-market": "品牌/市场",
 }
+DEFAULT_ARTICLE_CONTENT_TYPE = "general-fashion"
 
 
 # ─── Utilities ───────────────────────────────────────────────────────────────
+
+def ensure_list(value):
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [item for item in value if item not in (None, "")]
+    return [value] if value != "" else []
+
+def slugify(text):
+    value = re.sub(r"[^a-z0-9]+", "-", str(text).strip().lower())
+    return value.strip("-") or "source"
+
+def fetch_html(url, timeout=DEFAULT_FETCH_TIMEOUT):
+    resp = requests.get(url, headers=HEADERS, timeout=timeout)
+    resp.raise_for_status()
+    ctype = resp.headers.get("content-type", "").lower()
+    if ctype and "html" not in ctype and "xml" not in ctype:
+        raise ValueError(f"Unsupported content type: {ctype}")
+    current_encoding = (resp.encoding or "").lower()
+    apparent_encoding = (getattr(resp, "apparent_encoding", None) or "").lower()
+    if apparent_encoding and current_encoding in ("", "iso-8859-1", "ascii", "gb2312"):
+        resp.encoding = apparent_encoding
+    return resp
 
 def clean_html(html_content):
     if not html_content: return ""
@@ -131,6 +199,53 @@ def clean_html(html_content):
     for tag in soup.find_all(["script","style","img","video","audio","iframe","input","noscript"]):
         tag.decompose()
     return re.sub(r"\s+", " ", soup.get_text(separator=" ", strip=True)).strip()[:3000]
+
+def normalize_title(text):
+    normalized = re.sub(r"[^\w\s]", " ", (text or "").lower())
+    return re.sub(r"\s+", " ", normalized).strip()
+
+def content_digest(text):
+    normalized = normalize_title((text or "")[:1200])
+    if not normalized:
+        return ""
+    return hashlib.sha1(normalized.encode("utf-8")).hexdigest()[:16]
+
+def compute_article_id(*parts):
+    raw = "||".join((part or "").strip() for part in parts if part)
+    if not raw:
+        raw = str(time.time())
+    return hashlib.md5(raw.encode("utf-8")).hexdigest()[:12]
+
+def within_days(date_a, date_b, days=2):
+    if not date_a or not date_b:
+        return False
+    try:
+        a = datetime.datetime.fromisoformat(str(date_a).replace("Z", "+00:00"))
+        b = datetime.datetime.fromisoformat(str(date_b).replace("Z", "+00:00"))
+        return abs((a - b).total_seconds()) <= days * 86400
+    except Exception:
+        return False
+
+def parse_isoish_date(value):
+    if not value:
+        return ""
+    raw = str(value).strip()
+    if not raw:
+        return ""
+    for fmt in (
+        None,
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%d",
+        "%Y/%m/%d %H:%M:%S",
+        "%Y/%m/%d",
+    ):
+        try:
+            if fmt is None:
+                return datetime.datetime.fromisoformat(raw.replace("Z", "+00:00")).isoformat()
+            return datetime.datetime.strptime(raw, fmt).isoformat()
+        except Exception:
+            continue
+    return raw
 
 def normalize_image_url(url, base_url=""):
     if not url: return ""
@@ -246,58 +361,191 @@ def _collect_jsonld_images(node, out):
         for item in node:
             _collect_jsonld_images(item, out)
 
-def _extract_image_from_article_page(link):
-    try:
-        resp = requests.get(link, headers=HEADERS, timeout=20)
-        if resp.status_code != 200:
-            return ""
-        ctype = resp.headers.get("content-type", "").lower()
-        if ctype and "html" not in ctype:
-            return ""
-        page_url = resp.url or link
-        soup = BeautifulSoup(resp.text, "html.parser")
+def _matches_patterns(text, patterns):
+    pats = ensure_list(patterns)
+    if not pats:
+        return True
+    return any(re.search(pattern, text, re.I) for pattern in pats)
 
-        # Prefer explicit metadata images first.
-        for attrs in [
-            {"property": "og:image"},
-            {"property": "og:image:secure_url"},
-            {"name": "og:image"},
-            {"name": "twitter:image"},
-            {"property": "twitter:image"},
-            {"itemprop": "image"},
-        ]:
-            for tag in soup.find_all("meta", attrs=attrs):
-                candidate = normalize_image_url(tag.get("content", ""), page_url)
-                if is_valid_image_url(candidate):
-                    return candidate
+def _is_excluded_by_patterns(text, patterns):
+    return any(re.search(pattern, text, re.I) for pattern in ensure_list(patterns))
 
-        # Then try JSON-LD image fields.
-        jsonld_candidates = []
-        for script in soup.find_all("script", attrs={"type": re.compile("ld\\+json", re.I)}):
-            text = script.string or script.get_text(" ", strip=True)
-            if not text:
-                continue
-            try:
-                data = json.loads(text)
-            except:
-                continue
-            _collect_jsonld_images(data, jsonld_candidates)
-        for raw in jsonld_candidates:
-            candidate = normalize_image_url(raw, page_url)
+def _normalize_allowed_domains(domains, urls):
+    values = [urlparse(url).netloc.lower() for url in ensure_list(urls) if urlparse(url).netloc]
+    values.extend([str(domain).lower() for domain in ensure_list(domains)])
+    return sorted(set(filter(None, values)))
+
+def _selector_text(node):
+    if not node:
+        return ""
+    for attr in ("content", "datetime", "title", "alt", "href", "src"):
+        value = node.get(attr, "")
+        if value:
+            return str(value).strip()
+    return " ".join(node.stripped_strings).strip()
+
+def _select_first_text(soup, selectors):
+    for selector in ensure_list(selectors):
+        node = soup.select_one(selector)
+        value = _selector_text(node)
+        if value:
+            return value
+    return ""
+
+def _select_first_image(soup, selectors, base_url=""):
+    for selector in ensure_list(selectors):
+        node = soup.select_one(selector)
+        if not node:
+            continue
+        if node.name == "img":
+            candidate = _extract_img_from_tag(node, base_url)
+            if candidate:
+                return candidate
+        else:
+            candidate = normalize_image_url(_selector_text(node), base_url)
+            if is_valid_image_url(candidate):
+                return candidate
+    return ""
+
+def extract_canonical_url(soup, page_url, extra_strip_params=None):
+    candidates = [
+        normalize_url(tag.get("href", ""), extra_strip_params)
+        for tag in soup.find_all("link", attrs={"rel": re.compile("canonical", re.I)})
+    ]
+    candidates.extend([
+        normalize_url(tag.get("content", ""), extra_strip_params)
+        for tag in soup.find_all("meta", attrs={"property": re.compile("og:url", re.I)})
+    ])
+    for candidate in candidates:
+        if candidate:
+            return candidate
+    return normalize_url(page_url, extra_strip_params)
+
+def _extract_published_from_soup(soup, selectors=None):
+    configured = parse_isoish_date(_select_first_text(soup, selectors or []))
+    if configured:
+        return configured
+
+    for attrs in (
+        {"property": "article:published_time"},
+        {"property": "og:published_time"},
+        {"name": "pubdate"},
+        {"name": "publish-date"},
+        {"itemprop": "datePublished"},
+    ):
+        tag = soup.find("meta", attrs=attrs)
+        if tag and tag.get("content"):
+            return parse_isoish_date(tag.get("content"))
+
+    time_tag = soup.find("time")
+    if time_tag:
+        return parse_isoish_date(time_tag.get("datetime") or time_tag.get_text(" ", strip=True))
+
+    return ""
+
+def _extract_content_text(soup, selectors=None, remove_selectors=None):
+    selector_list = ensure_list(selectors) or list(DEFAULT_CONTENT_SELECTORS)
+    for selector in selector_list:
+        node = soup.select_one(selector)
+        if not node:
+            continue
+        node_soup = BeautifulSoup(str(node), "html.parser")
+        for remove_selector in ensure_list(remove_selectors) or list(DEFAULT_REMOVE_SELECTORS):
+            for tag in node_soup.select(remove_selector):
+                tag.decompose()
+        text = clean_html(str(node_soup))
+        if len(text) >= 120:
+            return text
+
+    for container in (soup.find("article"), soup.find("main"), soup.body):
+        if not container:
+            continue
+        paragraphs = []
+        for p in container.find_all(["p", "h2", "h3"]):
+            text = " ".join(p.stripped_strings).strip()
+            if len(text) >= 30:
+                paragraphs.append(text)
+        joined = re.sub(r"\s+", " ", " ".join(paragraphs)).strip()
+        if len(joined) >= 120:
+            return joined[:3000]
+    return ""
+
+def _extract_image_from_article_page_fields(soup, page_url):
+    for attrs in [
+        {"property": "og:image"},
+        {"property": "og:image:secure_url"},
+        {"name": "og:image"},
+        {"name": "twitter:image"},
+        {"property": "twitter:image"},
+        {"itemprop": "image"},
+    ]:
+        for tag in soup.find_all("meta", attrs=attrs):
+            candidate = normalize_image_url(tag.get("content", ""), page_url)
             if is_valid_image_url(candidate):
                 return candidate
 
-        # Finally, pick a likely primary image from article/main/body.
-        for container in [soup.find("article"), soup.find("main"), soup.body, soup]:
-            if not container:
+    jsonld_candidates = []
+    for script in soup.find_all("script", attrs={"type": re.compile("ld\\+json", re.I)}):
+        text = script.string or script.get_text(" ", strip=True)
+        if not text:
+            continue
+        try:
+            data = json.loads(text)
+        except Exception:
+            continue
+        _collect_jsonld_images(data, jsonld_candidates)
+    for raw in jsonld_candidates:
+        candidate = normalize_image_url(raw, page_url)
+        if is_valid_image_url(candidate):
+            return candidate
+
+    for container in [soup.find("article"), soup.find("main"), soup.body, soup]:
+        if not container:
+            continue
+        for img in container.find_all("img"):
+            if _image_seems_decorative(img):
                 continue
-            for img in container.find_all("img"):
-                if _image_seems_decorative(img):
-                    continue
-                candidate = _extract_img_from_tag(img, page_url)
-                if candidate:
-                    return candidate
-        return ""
+            candidate = _extract_img_from_tag(img, page_url)
+            if candidate:
+                return candidate
+    return ""
+
+def parse_article_page(html, page_url, detail_cfg=None, fallback=None):
+    fallback = fallback or {}
+    detail_cfg = detail_cfg or {}
+    soup = BeautifulSoup(html, "html.parser")
+
+    title = _select_first_text(soup, detail_cfg.get("title_selectors")) or ""
+    if not title:
+        title = (
+            _select_first_text(soup, ["meta[property='og:title']", "meta[name='twitter:title']"])
+            or " ".join((soup.find("h1") or soup.find("title") or soup.new_tag("span")).stripped_strings).strip()
+        )
+
+    content_text = _extract_content_text(
+        soup,
+        detail_cfg.get("content_selectors"),
+        detail_cfg.get("remove_selectors"),
+    )
+    published = _extract_published_from_soup(soup, detail_cfg.get("published_selectors"))
+    image = _select_first_image(soup, detail_cfg.get("image_selectors"), page_url)
+    if not image:
+        image = _extract_image_from_article_page_fields(soup, page_url)
+
+    return {
+        "canonical_url": extract_canonical_url(soup, page_url, detail_cfg.get("strip_query_params")),
+        "title": title or fallback.get("title", ""),
+        "published": published or fallback.get("published", ""),
+        "content_text": content_text or fallback.get("content_text", ""),
+        "image": image or fallback.get("image", ""),
+    }
+
+def _extract_image_from_article_page(link):
+    try:
+        resp = fetch_html(link)
+        page_url = resp.url or link
+        soup = BeautifulSoup(resp.text, "html.parser")
+        return _extract_image_from_article_page_fields(soup, page_url)
     except Exception:
         return ""
 
@@ -367,12 +615,7 @@ def fill_missing_images_from_web(articles):
 
 def _extract_text_from_article_page(link):
     try:
-        resp = requests.get(link, headers=HEADERS, timeout=20)
-        if resp.status_code != 200:
-            return ""
-        ctype = resp.headers.get("content-type", "").lower()
-        if ctype and "html" not in ctype:
-            return ""
+        resp = fetch_html(link)
         soup = BeautifulSoup(resp.text, "html.parser")
         for tag in soup.find_all(["script", "style", "noscript", "iframe", "svg", "img", "video", "audio", "form"]):
             tag.decompose()
@@ -392,7 +635,8 @@ def _extract_text_from_article_page(link):
 
 
 def fill_article_fulltext_from_web(articles):
-    targets = list(range(min(len(articles), MAX_PAGE_TEXT_FETCH)))
+    missing_indices = [idx for idx, article in enumerate(articles) if not (article.get("full_text") or "").strip()]
+    targets = missing_indices[:MAX_PAGE_TEXT_FETCH]
     if not targets:
         return articles
 
@@ -489,20 +733,52 @@ def build_embedding_summaries(articles):
                 logger.info(f"  Embedding-summary progress: {done}/{total}")
     return articles
 
-def normalize_url(url):
-    if not url: return ""
-    p = urlparse(url)
-    return f"{p.scheme}://{p.netloc}{p.path}".rstrip("/").lower()
+def normalize_url(url, extra_strip_params=None):
+    if not url:
+        return ""
+
+    extra_strip = {str(p).lower() for p in ensure_list(extra_strip_params)}
+    parsed = urlparse(str(url).strip())
+    if not parsed.scheme or not parsed.netloc:
+        return ""
+
+    query_items = []
+    for key, value in parse_qsl(parsed.query, keep_blank_values=False):
+        lowered = key.lower()
+        if lowered in extra_strip:
+            continue
+        if lowered in COMMON_TRACKING_QUERY_KEYS:
+            continue
+        if any(lowered.startswith(prefix) for prefix in COMMON_TRACKING_QUERY_PREFIXES):
+            continue
+        query_items.append((key, value))
+
+    path = re.sub(r"/+", "/", parsed.path or "/")
+    if path != "/":
+        path = path.rstrip("/")
+
+    query = urlencode(query_items, doseq=True)
+    return urlunparse((
+        parsed.scheme.lower(),
+        parsed.netloc.lower(),
+        path,
+        "",
+        query,
+        "",
+    ))
 
 def get_published_date(entry):
     for attr in ["published_parsed","updated_parsed","created_parsed"]:
         parsed = getattr(entry, attr, None)
         if parsed:
-            try: return datetime.datetime(*parsed[:6]).isoformat()
-            except: pass
+            try:
+                return datetime.datetime(*parsed[:6]).isoformat()
+            except Exception:
+                pass
     for attr in ["published","updated","created"]:
         val = getattr(entry, attr, None)
-        if val: return val
+        if val:
+            return parse_isoish_date(val)
     return datetime.datetime.now().isoformat()
 
 def title_bigrams(title):
@@ -594,6 +870,7 @@ def build_article_event_fingerprint(article):
     merged_text = " ".join(
         [
             article.get("title", ""),
+            article.get("article_summary", ""),
             article.get("embedding_summary", ""),
             article.get("content_snippet", ""),
         ]
@@ -756,7 +1033,7 @@ def normalize_title_for_hash(title):
 
 
 def article_key_for_article(article):
-    norm = normalize_url(article.get("link", ""))
+    norm = normalize_url(article.get("canonical_url") or article.get("link", ""))
     source = article.get("source", "")
     title_hash = hashlib.md5(normalize_title_for_hash(article.get("title", "")).encode()).hexdigest()[:12]
     return hashlib.md5(f"{source}|{norm}|{title_hash}".encode()).hexdigest()[:20], title_hash, norm
@@ -878,72 +1155,390 @@ def should_run_full_rebuild(state, snapshot):
     return last_full.date() != now.date()
 
 
-# ─── RSS Fetching ────────────────────────────────────────────────────────────
+# ─── Source Loading / Acquisition ────────────────────────────────────────────
+
+def _normalize_detail_config(raw, default_fetch_detail):
+    raw = raw or {}
+    return {
+        "fetch_detail": bool(raw.get("fetch_detail", default_fetch_detail)),
+        "title_selectors": ensure_list(raw.get("title_selectors") or raw.get("title_selector")) or list(DEFAULT_TITLE_SELECTORS),
+        "content_selectors": ensure_list(raw.get("content_selectors") or raw.get("content_selector")) or list(DEFAULT_CONTENT_SELECTORS),
+        "published_selectors": ensure_list(raw.get("published_selectors") or raw.get("published_selector")) or list(DEFAULT_PUBLISHED_SELECTORS),
+        "image_selectors": ensure_list(raw.get("image_selectors") or raw.get("image_selector")) or list(DEFAULT_IMAGE_SELECTORS),
+        "remove_selectors": ensure_list(raw.get("remove_selectors") or raw.get("remove_selector")) or list(DEFAULT_REMOVE_SELECTORS),
+    }
+
+def _normalize_rss_source(raw, source):
+    feed_url = raw.get("feed_url") or raw.get("url")
+    if not feed_url:
+        raise ValueError(f"RSS source {source['name']} is missing feed_url/url")
+    source.update({
+        "feed_url": feed_url,
+        "url": feed_url,
+        "max_items": int(raw.get("max_items") or raw.get("max_articles") or MAX_ARTICLES_PER_FEED),
+        "detail": _normalize_detail_config(raw.get("detail") or raw.get("extract"), False),
+    })
+    return source
+
+def _normalize_crawl_source(raw, source):
+    discovery_raw = raw.get("discovery") or {}
+    detail_raw = raw.get("detail") or raw.get("extract") or {}
+    start_urls = ensure_list(raw.get("start_urls") or discovery_raw.get("start_urls"))
+    if not start_urls:
+        raise ValueError(f"Crawl source {source['name']} is missing start_urls")
+    source.update({
+        "start_urls": start_urls,
+        "max_items": int(raw.get("max_items") or raw.get("max_articles") or MAX_ARTICLES_PER_FEED),
+        "detail_concurrency": int(raw.get("detail_concurrency") or 4),
+        "allowed_domains": _normalize_allowed_domains(
+            raw.get("allowed_domains") or discovery_raw.get("allowed_domains"),
+            start_urls,
+        ),
+        "discovery": {
+            "link_selectors": ensure_list(discovery_raw.get("link_selectors") or discovery_raw.get("link_selector")) or list(DEFAULT_LINK_SELECTORS),
+            "article_url_patterns": ensure_list(
+                discovery_raw.get("article_url_patterns")
+                or discovery_raw.get("link_patterns")
+                or raw.get("article_url_patterns")
+                or raw.get("link_patterns")
+            ),
+            "exclude_patterns": ensure_list(discovery_raw.get("exclude_patterns") or raw.get("exclude_patterns")),
+            "pagination_selectors": ensure_list(
+                discovery_raw.get("pagination_selectors")
+                or discovery_raw.get("pagination_selector")
+                or discovery_raw.get("next_page_selectors")
+            ),
+            "max_pages": int(discovery_raw.get("max_pages") or raw.get("max_pages") or DEFAULT_CRAWL_PAGES),
+        },
+        "detail": _normalize_detail_config(detail_raw, True),
+    })
+    return source
+
+def normalize_source_config(raw, index=0):
+    if not isinstance(raw, dict):
+        raise ValueError(f"Invalid source entry at index {index}: expected mapping")
+
+    source_type = str(raw.get("type") or "").strip().lower()
+    if not source_type:
+        source_type = "crawl" if raw.get("start_urls") else "rss"
+
+    source = {
+        "id": raw.get("id") or slugify(raw.get("name") or f"source-{index+1}"),
+        "name": raw.get("name") or f"Source {index+1}",
+        "type": source_type,
+        "lang": raw.get("lang", "en"),
+        "category": raw.get("category", "品牌/市场"),
+        "enabled": bool(raw.get("enabled", True)),
+        "priority": int(raw.get("priority", 100)),
+        "dedup": {
+            "strip_query_params": ensure_list((raw.get("dedup") or {}).get("strip_query_params")),
+        },
+    }
+
+    if source_type == "rss":
+        return _normalize_rss_source(raw, source)
+    if source_type == "crawl":
+        return _normalize_crawl_source(raw, source)
+    raise ValueError(f"Unsupported source type for {source['name']}: {source_type}")
 
 def load_sources():
     with open(SOURCES_FILE, "r", encoding="utf-8") as f:
-        sources = yaml.safe_load(f)
+        raw_sources = yaml.safe_load(f) or []
+
+    sources = [normalize_source_config(raw, i) for i, raw in enumerate(raw_sources)]
     enabled = [s for s in sources if s.get("enabled", True)]
-    logger.info(f"Loaded {len(enabled)} enabled sources")
+    type_counts = {}
+    for source in enabled:
+        type_counts[source["type"]] = type_counts.get(source["type"], 0) + 1
+    suffix = ""
+    if type_counts:
+        suffix = " (" + ", ".join(f"{kind}={count}" for kind, count in sorted(type_counts.items())) + ")"
+    logger.info(f"Loaded {len(enabled)} enabled sources{suffix}")
     return enabled
 
-def fetch_single_feed(cfg):
-    name, url = cfg["name"], cfg["url"]
-    lang = cfg.get("lang", "en")
-    category = cfg.get("category", "品牌/市场")
-    max_articles = int(cfg.get("max_articles", MAX_ARTICLES_PER_FEED) or MAX_ARTICLES_PER_FEED)
+def build_article_record(source, *, link, title, published="", content_text="", image="", canonical_url="", fallback_snippet=""):
+    normalized_link = normalize_url(link, source["dedup"]["strip_query_params"]) or str(link).strip()
+    canonical = normalize_url(canonical_url, source["dedup"]["strip_query_params"]) or normalized_link
+    cleaned_text = clean_html(content_text)
+    snippet = cleaned_text[:800] if cleaned_text else clean_html(fallback_snippet)[:800]
+    published_at = parse_isoish_date(published) or utc_now_iso()
+    source_host = urlparse(canonical or normalized_link).netloc.lower()
+    return {
+        "id": compute_article_id(canonical or normalized_link, title, source["id"]),
+        "title": (title or "").strip(),
+        "link": normalized_link,
+        "canonical_url": canonical,
+        "source": source["name"],
+        "source_id": source["id"],
+        "source_type": source["type"],
+        "source_host": source_host,
+        "source_lang": source["lang"],
+        "category_hint": source["category"],
+        "category_id": CATEGORY_MAP.get(source["category"], "brand-market"),
+        "image": normalize_image_url(image, normalized_link),
+        "published": published_at,
+        "content_text": cleaned_text,
+        "content_snippet": snippet,
+        "article_summary": "",
+        "article_tags": [],
+        "relevance_score": None,
+        "relevance_reason": "",
+        "content_type": DEFAULT_ARTICLE_CONTENT_TYPE,
+        "is_relevant": True,
+        "is_sensitive": False,
+        "content_hash": content_digest(cleaned_text or snippet),
+        "dedup_key": canonical or normalized_link,
+    }
+
+def _url_is_allowed(url, source):
+    host = urlparse(url).netloc.lower()
+    allowed_domains = source.get("allowed_domains", [])
+    if not host:
+        return False
+    if not allowed_domains:
+        return True
+    return any(host == domain or host.endswith(f".{domain}") for domain in allowed_domains)
+
+def extract_discovery_links(html, page_url, source):
+    soup = BeautifulSoup(html, "html.parser")
+    discovery = source["discovery"]
+    discovered = []
+    seen = set()
+    for selector in discovery["link_selectors"]:
+        for node in soup.select(selector):
+            href = normalize_url(urljoin(page_url, node.get("href", "")), source["dedup"]["strip_query_params"])
+            if not href or href in seen:
+                continue
+            if not _url_is_allowed(href, source):
+                continue
+            if _is_excluded_by_patterns(href, discovery["exclude_patterns"]):
+                continue
+            if not _matches_patterns(href, discovery["article_url_patterns"]):
+                continue
+            title = " ".join(node.stripped_strings).strip()
+            seen.add(href)
+            discovered.append({"url": href, "title": title})
+    return discovered
+
+def extract_pagination_links(html, page_url, source):
+    soup = BeautifulSoup(html, "html.parser")
+    links = []
+    seen = set()
+    for selector in source["discovery"]["pagination_selectors"]:
+        for node in soup.select(selector):
+            href = normalize_url(urljoin(page_url, node.get("href", "")), source["dedup"]["strip_query_params"])
+            if not href or href in seen or not _url_is_allowed(href, source):
+                continue
+            seen.add(href)
+            links.append(href)
+    return links
+
+def fetch_article_detail(source, link, fallback=None):
+    fallback = fallback or {}
+    try:
+        resp = fetch_html(link)
+        page_url = resp.url or link
+        detail_cfg = dict(source["detail"])
+        detail_cfg["strip_query_params"] = source["dedup"]["strip_query_params"]
+        detail = parse_article_page(resp.text, page_url, detail_cfg, fallback=fallback)
+        return build_article_record(
+            source,
+            link=page_url,
+            title=detail["title"] or fallback.get("title", ""),
+            published=detail["published"] or fallback.get("published", ""),
+            content_text=detail["content_text"] or fallback.get("content_text", ""),
+            image=detail["image"] or fallback.get("image", ""),
+            canonical_url=detail["canonical_url"] or fallback.get("canonical_url", ""),
+            fallback_snippet=fallback.get("content_text", "") or fallback.get("fallback_snippet", ""),
+        )
+    except Exception as e:
+        logger.warning(f"  [{source['name']}] detail fetch failed for {link}: {e}")
+        return build_article_record(
+            source,
+            link=link,
+            title=fallback.get("title", ""),
+            published=fallback.get("published", ""),
+            content_text=fallback.get("content_text", ""),
+            image=fallback.get("image", ""),
+            canonical_url=fallback.get("canonical_url", ""),
+            fallback_snippet=fallback.get("fallback_snippet", ""),
+        )
+
+def fetch_rss_source(source):
     articles = []
     try:
-        resp = requests.get(url, headers=HEADERS, timeout=20)
-        if resp.status_code != 200:
-            logger.warning(f"  [{name}] HTTP {resp.status_code}")
-            return articles
+        resp = fetch_html(source["feed_url"])
         feed = feedparser.parse(resp.text)
-        for entry in feed.entries[:max_articles]:
+        for entry in feed.entries[:source["max_items"]]:
             link = getattr(entry, "link", "")
             title = getattr(entry, "title", "")
-            if not link or not title: continue
+            if not link or not title:
+                continue
+
             content = ""
             if hasattr(entry, "content") and entry.content:
-                content = entry.content[0].get("value","")
-            elif hasattr(entry, "description"): content = entry.description or ""
-            elif hasattr(entry, "summary"): content = entry.summary or ""
-            articles.append({
-                "id": hashlib.md5((link+title).encode()).hexdigest()[:12],
-                "title": title.strip(), "link": link, "source": name,
-                "source_lang": lang, "category_hint": category,
-                "category_id": CATEGORY_MAP.get(category, "brand-market"),
-                "image": extract_image(entry),
+                content = entry.content[0].get("value", "")
+            elif hasattr(entry, "description"):
+                content = entry.description or ""
+            elif hasattr(entry, "summary"):
+                content = entry.summary or ""
+
+            fallback = {
+                "title": title.strip(),
                 "published": get_published_date(entry),
-                "content_snippet": clean_html(content)[:800],
-            })
-        logger.info(f"  [{name}] {len(articles)} articles")
+                "content_text": clean_html(content),
+                "image": extract_image(entry),
+                "canonical_url": normalize_url(link, source["dedup"]["strip_query_params"]),
+                "fallback_snippet": clean_html(content)[:800],
+            }
+            if source["detail"]["fetch_detail"]:
+                article = fetch_article_detail(source, link, fallback)
+            else:
+                article = build_article_record(
+                    source,
+                    link=link,
+                    title=fallback["title"],
+                    published=fallback["published"],
+                    content_text=fallback["content_text"],
+                    image=fallback["image"],
+                    canonical_url=fallback["canonical_url"],
+                    fallback_snippet=fallback["fallback_snippet"],
+                )
+            if article["title"] and article["link"]:
+                articles.append(article)
+        logger.info(f"  [{source['name']}] {len(articles)} articles via RSS")
     except Exception as e:
-        logger.error(f"  [{name}] Error: {e}")
+        logger.error(f"  [{source['name']}] RSS error: {e}")
     return articles
 
-def fetch_all_feeds(sources):
+def fetch_crawl_source(source):
+    queue = list(source["start_urls"])
+    seen_pages, seen_articles, discovered = set(), set(), []
+
+    while queue and len(seen_pages) < source["discovery"]["max_pages"] and len(discovered) < source["max_items"]:
+        page = queue.pop(0)
+        normalized_page = normalize_url(page, source["dedup"]["strip_query_params"])
+        if not normalized_page or normalized_page in seen_pages:
+            continue
+        seen_pages.add(normalized_page)
+        try:
+            resp = fetch_html(page)
+        except Exception as e:
+            logger.warning(f"  [{source['name']}] crawl discovery failed for {page}: {e}")
+            continue
+
+        page_url = resp.url or page
+        for item in extract_discovery_links(resp.text, page_url, source):
+            if item["url"] in seen_articles:
+                continue
+            seen_articles.add(item["url"])
+            discovered.append(item)
+            if len(discovered) >= source["max_items"]:
+                break
+
+        if len(seen_pages) < source["discovery"]["max_pages"]:
+            for next_page in extract_pagination_links(resp.text, page_url, source):
+                if next_page not in seen_pages and next_page not in queue:
+                    queue.append(next_page)
+
+    if not discovered:
+        logger.warning(f"  [{source['name']}] no article URLs discovered")
+        return []
+
+    logger.info(f"  [{source['name']}] discovered {len(discovered)} candidate article links")
+    articles = []
+    with ThreadPoolExecutor(
+        max_workers=min(source.get("detail_concurrency", 4), max(1, len(discovered)))
+    ) as ex:
+        futures = {
+            ex.submit(fetch_article_detail, source, item["url"], {
+                "title": item.get("title", ""),
+                "canonical_url": item["url"],
+            }): item
+            for item in discovered
+        }
+        for future in as_completed(futures):
+            article = future.result()
+            if article["title"] and article["link"]:
+                articles.append(article)
+
+    logger.info(f"  [{source['name']}] {len(articles)} articles via crawl")
+    return articles
+
+def fetch_source(source):
+    if source["type"] == "crawl":
+        return fetch_crawl_source(source)
+    return fetch_rss_source(source)
+
+def fetch_all_sources(sources):
     all_articles = []
     logger.info(f"Fetching from {len(sources)} sources...")
     with ThreadPoolExecutor(max_workers=8) as ex:
-        for future in as_completed({ex.submit(fetch_single_feed, s): s for s in sources}):
+        futures = {ex.submit(fetch_source, source): source for source in sources}
+        for future in as_completed(futures):
             all_articles.extend(future.result())
     logger.info(f"Total raw articles: {len(all_articles)}")
     return all_articles
 
+def fetch_all_feeds(sources):
+    return fetch_all_sources(sources)
+
 
 # ─── Deduplication ───────────────────────────────────────────────────────────
 
+def _is_probable_same_article(article, title_bg, seen_title_records):
+    normalized = normalize_title(article.get("title", ""))
+    for other in seen_title_records:
+        same_scope = (
+            other["source_id"] == article.get("source_id")
+            or other["source_host"] == article.get("source_host")
+        )
+        if not same_scope:
+            continue
+        if not within_days(article.get("published", ""), other["published"], 3):
+            continue
+        if article.get("content_hash") and article.get("content_hash") == other["content_hash"]:
+            return True
+        if normalized and normalized == other["normalized_title"]:
+            return True
+        if jaccard_sim(title_bg, other["title_bigrams"]) > TITLE_DEDUP_THRESHOLD:
+            return True
+    return False
+
 def deduplicate_articles(articles):
-    seen_urls, seen_bgs, deduped = set(), [], []
-    for art in articles:
-        norm = normalize_url(art["link"])
-        if norm in seen_urls: continue
-        bg = title_bigrams(art["title"])
-        if any(jaccard_sim(bg, eb) > TITLE_DEDUP_THRESHOLD for eb in seen_bgs): continue
-        seen_urls.add(norm); seen_bgs.append(bg); deduped.append(art)
-    deduped.sort(key=lambda x: x.get("published",""), reverse=True)
-    logger.info(f"After dedup: {len(deduped)} articles (removed {len(articles)-len(deduped)})")
+    seen_primary_keys = set()
+    seen_title_records = []
+    deduped = []
+    removed_primary = 0
+    removed_fuzzy = 0
+
+    for art in sorted(articles, key=lambda x: x.get("published", ""), reverse=True):
+        primary = art.get("dedup_key") or art.get("canonical_url") or art.get("link", "")
+        if primary and primary in seen_primary_keys:
+            removed_primary += 1
+            continue
+
+        title_bg = title_bigrams(art.get("title", ""))
+        if _is_probable_same_article(art, title_bg, seen_title_records):
+            removed_fuzzy += 1
+            continue
+
+        if primary:
+            seen_primary_keys.add(primary)
+        seen_title_records.append({
+            "source_id": art.get("source_id"),
+            "source_host": art.get("source_host"),
+            "published": art.get("published", ""),
+            "normalized_title": normalize_title(art.get("title", "")),
+            "title_bigrams": title_bg,
+            "content_hash": art.get("content_hash", ""),
+        })
+        deduped.append(art)
+
+    logger.info(
+        f"After dedup: {len(deduped)} articles "
+        f"(removed {len(articles) - len(deduped)}; canonical={removed_primary}, fuzzy={removed_fuzzy})"
+    )
     return deduped
 
 
@@ -952,14 +1547,16 @@ def deduplicate_articles(articles):
 def _article_embedding_text(article):
     title = (article.get("title") or "").strip()
     snippet = (
-        article.get("embedding_summary")
+        article.get("article_summary")
+        or article.get("embedding_summary")
         or article.get("full_text")
         or article.get("content_snippet")
         or ""
     ).strip()[:EMBEDDING_INPUT_CHARS]
     source = (article.get("source") or "").strip()
     lang = (article.get("source_lang") or "").strip()
-    return f"source: {source} ({lang})\ntitle: {title}\ncontent: {snippet}"
+    content_type = (article.get("content_type") or "").strip()
+    return f"source: {source} ({lang})\ntype: {content_type}\ntitle: {title}\ncontent: {snippet}"
 
 def _clusters_from_labels(labels):
     grouped = {}
@@ -1466,6 +2063,141 @@ def extract_json(text):
     return None
 
 
+# ─── Article-Level LLM Enrichment ───────────────────────────────────────────
+
+def _article_analysis_text(article):
+    title = (article.get("title") or "").strip()
+    body = (
+        article.get("full_text")
+        or article.get("content_text")
+        or article.get("content_snippet")
+        or ""
+    ).strip()[:ARTICLE_ANALYSIS_INPUT_CHARS]
+    source = (article.get("source") or "").strip()
+    lang = (article.get("source_lang") or "").strip()
+    category = (article.get("category_hint") or "").strip()
+    published = (article.get("published") or "").strip()
+    return (
+        f"source: {source} ({lang})\n"
+        f"published: {published}\n"
+        f"category_hint: {category}\n"
+        f"title: {title}\n"
+        f"content: {body}"
+    )
+
+def apply_article_analysis(article, analysis):
+    enriched = dict(article)
+    if not analysis:
+        return enriched
+
+    keep = bool(analysis.get("keep", True))
+    is_sensitive = bool(analysis.get("is_sensitive", False))
+    if is_sensitive:
+        keep = False
+
+    category_name = analysis.get("category") or enriched.get("category_hint") or "品牌/市场"
+    category_id = CATEGORY_MAP.get(category_name, enriched.get("category_id", "brand-market"))
+    summary = (analysis.get("summary_zh") or "").strip()
+    tags = analysis.get("tags") or []
+    if not isinstance(tags, list):
+        tags = []
+
+    relevance_score = analysis.get("relevance_score")
+    try:
+        relevance_score = int(relevance_score) if relevance_score is not None else None
+    except Exception:
+        relevance_score = None
+
+    enriched.update({
+        "article_summary": summary,
+        "article_tags": [str(tag).strip() for tag in tags if str(tag).strip()][:8],
+        "category_hint": category_name,
+        "category_id": category_id,
+        "relevance_score": relevance_score,
+        "relevance_reason": (analysis.get("reason") or "").strip(),
+        "content_type": (analysis.get("content_type") or DEFAULT_ARTICLE_CONTENT_TYPE).strip(),
+        "is_relevant": keep,
+        "is_sensitive": is_sensitive,
+    })
+    return enriched
+
+def analyze_single_article(article):
+    if not OPENROUTER_API_KEY:
+        return article
+
+    prompt = f"""请判断下面这篇报道是否应保留在时尚情报平台中。
+
+保留标准：
+1. 与时尚、奢侈品、美妆、生活方式、名人风格、品牌营销、零售、秀场、趋势、文化议题相关。
+2. 品牌联名、campaign、代言、跨界合作、时尚科技、Apple 等科技品牌与时尚行业的交叉内容，应视为相关。
+3. 纯泛科技、纯汽车、纯财经、纯社会新闻，且与时尚产业/审美/品牌动作无明显关系，才判定为不保留。
+
+请严格输出 JSON：
+{{
+  "keep": true,
+  "relevance_score": 0,
+  "reason": "一句中文原因",
+  "summary_zh": "100字以内中文摘要",
+  "category": "从以下选一个: 秀场/系列, 街拍/造型, 趋势总结, 品牌/市场",
+  "tags": ["标签1", "标签2", "标签3"],
+  "content_type": "如 brand-collab / fashion-tech / runway / market / celebrity-style / beauty / lifestyle / culture",
+  "is_sensitive": false
+}}
+
+原始内容：
+{_article_analysis_text(article)}"""
+
+    result = call_llm(
+        [
+            {
+                "role": "system",
+                "content": "你是轻奢品牌内部情报平台的资深编辑。你负责做文章摘要、分类和相关性判断。只输出 JSON。",
+            },
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.1,
+        max_tokens=1200,
+        model=LOW_COST_LLM_MODEL,
+    )
+    return apply_article_analysis(article, extract_json(result))
+
+def enrich_and_filter_articles(articles):
+    if not articles:
+        return []
+    if not OPENROUTER_API_KEY:
+        logger.warning("OPENROUTER_API_KEY is empty; article-level LLM enrichment is skipped.")
+        return articles
+
+    logger.info(f"Analyzing {len(articles)} articles for relevance, summary, and category...")
+    enriched = []
+    with ThreadPoolExecutor(max_workers=LLM_CONCURRENCY) as ex:
+        futures = {ex.submit(analyze_single_article, article): article for article in articles}
+        total = len(futures)
+        for idx, future in enumerate(as_completed(futures), 1):
+            try:
+                enriched.append(future.result())
+            except Exception as e:
+                logger.warning(f"Article analysis failed: {e}")
+                enriched.append(futures[future])
+            if idx % 20 == 0 or idx == total:
+                logger.info(f"  Article analysis progress: {idx}/{total}")
+
+    kept = [article for article in enriched if article.get("is_relevant", True)]
+    dropped = [article for article in enriched if not article.get("is_relevant", True)]
+    logger.info(f"Article analysis kept {len(kept)}/{len(enriched)} articles")
+    if dropped:
+        for article in dropped[:10]:
+            logger.info(
+                "  Dropped: %s | score=%s | reason=%s",
+                article.get("title", "")[:80],
+                article.get("relevance_score"),
+                article.get("relevance_reason", "")[:80],
+            )
+
+    kept.sort(key=lambda x: x.get("published", ""), reverse=True)
+    return kept
+
+
 # ─── LLM Verification (only for multi-article clusters) ─────────────────────
 
 def verify_cluster(articles, cluster_indices):
@@ -1521,7 +2253,20 @@ def generate_summary_for_cluster(articles, cluster_indices, cluster_idx, total):
     topic_articles = [articles[i] for i in cluster_indices]
     context_parts = []
     for a in topic_articles:
-        context_parts.append(f"来源: {a['source']} ({a['source_lang']})\n标题: {a['title']}\n内容: {a['content_snippet'][:500]}")
+        article_summary = (a.get("article_summary") or "").strip()
+        tags = ", ".join(a.get("article_tags", [])[:6])
+        content_for_prompt = article_summary or a["content_snippet"][:500]
+        extras = []
+        if article_summary:
+            extras.append(f"单篇摘要: {article_summary}")
+        if tags:
+            extras.append(f"标签: {tags}")
+        extra_text = "\n".join(extras)
+        if extra_text:
+            extra_text = "\n" + extra_text
+        context_parts.append(
+            f"来源: {a['source']} ({a['source_lang']})\n标题: {a['title']}\n内容: {content_for_prompt}{extra_text}"
+        )
     context = "\n---\n".join(context_parts)
 
     n = len(topic_articles)
@@ -1575,7 +2320,7 @@ def generate_summary_for_cluster(articles, cluster_indices, cluster_idx, total):
         cat_id = CATEGORY_MAP.get(a.get("category_hint","品牌/市场"), "brand-market")
         return {
             "id": a["id"], "title": a["title"],
-            "summary": a["content_snippet"][:300],
+            "summary": (a.get("article_summary") or a["content_snippet"])[:300],
             "key_points": [], "tags": [],
             "category": cat_id,
             "category_name": CATEGORY_NAME_MAP.get(cat_id, "品牌/市场"),
@@ -1626,7 +2371,7 @@ def _fallback_no_llm(articles, clusters):
         cat_id = CATEGORY_MAP.get(a.get("category_hint","品牌/市场"), "brand-market")
         topics.append({
             "id": a["id"], "title": a["title"],
-            "summary": a["content_snippet"][:300],
+            "summary": (a.get("article_summary") or a["content_snippet"])[:300],
             "key_points": [], "tags": [],
             "category": cat_id,
             "category_name": CATEGORY_NAME_MAP.get(cat_id, "品牌/市场"),
@@ -1719,7 +2464,7 @@ def refresh_topic_editorial(topic, new_articles):
     context = []
     for a in new_articles[:6]:
         context.append(
-            f"来源: {a.get('source','')} ({a.get('source_lang','')})\n标题: {a.get('title','')}\n摘要: {(a.get('embedding_summary') or a.get('content_snippet') or '')[:240]}"
+            f"来源: {a.get('source','')} ({a.get('source_lang','')})\n标题: {a.get('title','')}\n摘要: {(a.get('article_summary') or a.get('embedding_summary') or a.get('content_snippet') or '')[:240]}"
         )
     prompt = f"""这是已存在的话题，请基于新增文章更新这个话题描述。
 
@@ -2310,7 +3055,7 @@ def build_output(topics, all_sources, incremental_meta=None, quality_meta=None):
 
 def main():
     logger.info("="*60)
-    logger.info("Fashion Feed Aggregator v6 — Two-Stage Event Fusion")
+    logger.info("Fashion Feed Aggregator v6 — Multi-Source Event Fusion")
     logger.info("="*60)
     logger.info(f"Incremental mode: {INCREMENTAL_MODE}, state={STATE_FILE}, snapshot={RSS_SNAPSHOT_FILE}")
 
@@ -2319,12 +3064,16 @@ def main():
     full_rebuild = should_run_full_rebuild(state, previous_snapshot)
 
     sources = load_sources()
-    raw_articles = fetch_all_feeds(sources)
+    raw_articles = fetch_all_sources(sources)
     if not raw_articles:
         logger.error("No articles fetched"); sys.exit(1)
 
     articles = deduplicate_articles(raw_articles)
     articles = fill_missing_images_from_web(articles)
+    articles = fill_article_fulltext_from_web(articles)
+    articles = enrich_and_filter_articles(articles)
+    if not articles:
+        logger.error("No articles left after article-level LLM filtering"); sys.exit(1)
     articles = attach_article_keys(articles)
     articles = attach_event_fingerprints(articles)
     all_source_names = list(set(a["source"] for a in articles))
