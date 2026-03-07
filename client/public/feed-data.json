@@ -1,9 +1,9 @@
 {
   "meta": {
-    "generated_at": "2026-03-07T08:25:55+00:00",
+    "generated_at": "2026-03-07T10:21:54+00:00",
     "total_topics": 500,
-    "total_articles": 806,
-    "sources_count": 49,
+    "total_articles": 814,
+    "sources_count": 48,
     "sources": [
       "Allure",
       "BOF",
@@ -25,7 +25,6 @@
       "Fashionsnap",
       "Footwear News",
       "GQ",
-      "GQ China",
       "GQ Japan",
       "Glamour",
       "Glamour UK",
@@ -58,22 +57,22 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 26,
-      "blocked_by_tombstones": 274,
-      "evicted_topics": 20,
+      "new_articles_in_2h": 21,
+      "blocked_by_tombstones": 275,
+      "evicted_topics": 13,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 6,
-        "incremental_new_topics_created": 20,
-        "cross_merge_candidates": 3,
-        "cross_merge_low_reviews": 3,
+        "incremental_assigned_to_existing": 7,
+        "incremental_new_topics_created": 14,
+        "cross_merge_candidates": 4,
+        "cross_merge_low_reviews": 4,
         "cross_merge_high_reviews": 0,
-        "cross_merge_merged_topics": 0
+        "cross_merge_merged_topics": 1
       }
     },
     "quality": {
-      "merge_rate": 0.3797,
+      "merge_rate": 0.3857,
       "avg_sources_per_topic": 1.298,
-      "high_confidence_topic_ratio": 0.896,
+      "high_confidence_topic_ratio": 0.902,
       "rebuild_mode": "incremental"
     }
   },
@@ -473,20 +472,26 @@
     },
     {
       "id": "309dd07a95e9",
-      "title": "Dior花園綺夢：Diorette 2026新品",
-      "summary": "Dior迪奥Diorette系列珠宝将于2026年推出全新作品，灵感源自迪奥先生位于法国的迷人花园。新品巧妙运用漆艺工艺，将花园中的雏菊、蜜蜂、幸运草等元素生动地融入项链设计之中。彩漆与宝石交相辉映，勾勒出充满童趣和精致感的珠宝风景，每一件作品都蕴含着独特的寓意，例如象征勤劳的蜜蜂、带来好运的瓢虫和幸运草，细节之处尽显品牌匠心。",
+      "title": "Dior花園綺夢：Diorette 2026新品 & 幸运草钱包",
+      "summary": "Dior迪奥2026年将推出Diorette系列珠宝新品，灵感源自迪奥先生的花园，运用漆艺工艺将雏菊、蜜蜂、幸运草等元素融入项链设计。同时，2026春夏系列还将推出新款女士钱包，包含日本限定款，设计采用标志性的“幸运草”元素，配色柔和，内里为米莫萨黄色，另有日本限定Oblique刺绣钱包和Lady Dior钱包。",
       "key_points": [
-        "Diorette系列2026新品发布",
-        "灵感源自迪奥先生的花园",
-        "漆艺工艺与宝石的巧妙结合"
+        "Diorette 2026新品珠宝灵感来自迪奥花园",
+        "Diorette新品运用漆艺工艺，包含雏菊、蜜蜂、幸运草等元素",
+        "2026春夏系列推出新款幸运草女士钱包，含日本限定款",
+        "幸运草钱包有刺绣和压纹两种设计，配色柔和，内里为米莫萨黄色",
+        "另有日本限定Oblique刺绣钱包和Lady Dior钱包"
       ],
       "tags": [
         "Dior",
         "Diorette",
+        "2026",
         "珠宝",
-        "新品",
-        "漆艺",
-        "花园"
+        "花园",
+        "幸运草",
+        "钱包",
+        "日本限定",
+        "Oblique",
+        "Lady Dior"
       ],
       "category": "runway-collection",
       "category_name": "秀场/系列",
@@ -498,6 +503,1093 @@
           "title": "Diorette迪奧珠寶2026焦點新品：漆藝工藝把花園和幸運草收成項鍊！",
           "link": "https://www.marieclaire.com.tw/fashion/news/92130",
           "lang": "zh"
+        },
+        {
+          "name": "Fashion Press",
+          "title": "ディオール“幸運のクローバー”映えるピンクレザー財布、内側はミモザイエローに",
+          "link": "https://www.fashion-press.net/news/144093",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "682da5fdc648",
+      "title": "卡地亚：对话女性，点亮未来",
+      "summary": "在国际女性日来临之际，卡地亚举办“卡地亚对话：女性点亮道路”特别活动，延续大阪·关西世博会“女性馆”中对女性赋权的关注。活动汇聚各界精英，共同探讨女性在社会发展中的重要角色与未来机遇。卡地亚同时宣布启动全球性平台“卡地亚对话”，聚焦艺术文化、商业科技等领域，旨在促进全球女性力量的崛起与发展，彰显品牌对女性议题的长期承诺。",
+      "key_points": [
+        "国际女性日特别活动",
+        "启动“卡地亚对话”平台",
+        "关注女性赋权与发展"
+      ],
+      "tags": [
+        "卡地亚",
+        "国际女性日",
+        "女性赋权",
+        "社会责任",
+        "品牌活动"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/07122442/TOP_DSC9857.jpg",
+      "published": "2026-03-07T10:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "「カルティエ」が国際女性デーに先駆けイベントを開催　女性の未来を照らす“カルティエ ダイアローグ”を始動",
+          "link": "https://www.wwdjapan.com/articles/2346266",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "de63769c1a36",
+      "title": "2026-27秋冬巴黎时装周：三宅一生、山本耀司探索日式美学，纪梵希Burton首秀领衔多元潮流",
+      "summary": "2026-27秋冬巴黎时装周汇聚众多品牌，呈现多元化的时尚理念与风格。三宅一生由近藤悟史主导，以“创造/不创造”为主题，探索极简主义和未完成廓形。山本耀司将日本传统文化融入黑色美学，呈现静谧的日式世界观。纪梵希迎来Sarah Burton时代，首个系列融合天鹅绒、动物纹等元素。其他品牌如Mugler、Loewe、Tom Ford、Isabel Marant等也分别呈现了前卫、经典、性感等多元风格。",
+      "key_points": [
+        "三宅一生：近藤悟史主导，探索极简主义和“创造/不创造”的可能性，挑战完美概念。",
+        "山本耀司：融合日本传统文化与黑色美学，探索和洋融合。",
+        "纪梵希：Sarah Burton首秀，大胆融合天鹅绒、动物纹等元素。",
+        "多元品牌：Mugler、Loewe、Tom Ford、Isabel Marant等呈现前卫、经典、性感等多元风格。"
+      ],
+      "tags": [
+        "2026秋冬巴黎时装周",
+        "三宅一生",
+        "山本耀司",
+        "纪梵希",
+        "Sarah Burton",
+        "极简主义",
+        "解构",
+        "日式美学",
+        "多元化",
+        "时装趋势"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://www.fashion-press.net/img/news/144092/top.jpg?1772811167",
+      "published": "2026-03-07T09:47:44+00:00",
+      "sources": [
+        {
+          "name": "Fashion Press",
+          "title": "イッセイ ミヤケ 2026-27年秋冬コレクション - 「つくる/つくらない」の間に潜む可能性",
+          "link": "https://www.fashion-press.net/news/144092",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD",
+          "title": "Issey Miyake Fall 2026: Less Is More",
+          "link": "https://wwd.com/runway/fall-2026/paris/issey-miyake/review",
+          "lang": "en"
+        },
+        {
+          "name": "Fashion Press",
+          "title": "ヨウジヤマモト 2026-27年秋冬コレクション - 黒に宿る、粋な和のエレガンス",
+          "link": "https://www.fashion-press.net/news/144095",
+          "lang": "ja"
+        },
+        {
+          "name": "Hypebeast Fashion",
+          "title": "Issey Miyake FW26 \"Creating, Allowing\" Questions Beauty and Creativity",
+          "link": "https://hypebeast.com/2026/3/issey-miyake-fall-winter-2026-paris-fashion-week-womenswear-runway",
+          "lang": "en"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「イッセイ ミヤケ」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2346107",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashion Press",
+          "title": "イレニサ 2026-27年秋冬コレクション - 潜在する静かな美意識",
+          "link": "https://www.fashion-press.net/news/143021",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "Yohji Yamamoto 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/yohji-yamamoto/womens/2026aw",
+          "lang": "ja"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Yohji Yamamoto FW26 Sees a Master at Work",
+          "link": "https://hypebeast.com/2026/3/yohji-yamamoto-fall-winter-2026-paris-fashion-week-womenswear-runway",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Yohji Yamamoto Fall 2026: There and Back Again",
+          "link": "https://wwd.com/runway/fall-2026/paris/yohji-yamamoto/review",
+          "lang": "en"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「ヨウジヤマモト」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2346289",
+          "lang": "ja"
+        },
+        {
+          "name": "Vogue",
+          "title": "Givenchy Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/givenchy",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Victoria Beckham Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/victoria-beckham",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Gauchere Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/gauchere",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Yohji Yamamoto Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/yohji-yamamoto",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Givenchy Fall 2026: I’m Every Woman",
+          "link": "https://wwd.com/runway/fall-2026/paris/givenchy/review",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Mugler Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/mugler",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Loewe Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/loewe",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Issey Miyake Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/issey-miyake",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue España",
+          "title": "5 claves del desfile de Loewe otoño-invierno 2026-2027",
+          "link": "https://www.vogue.es/articulos/loewe-otono-invierno-2026-2027-desfile",
+          "lang": "es"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "MUGLER 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/mugler/2026aw",
+          "lang": "ja"
+        },
+        {
+          "name": "Vogue",
+          "title": "Nina Ricci Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/nina-ricci",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Loewe Fall 2026: Unserious Luxury, Serious Fun",
+          "link": "https://wwd.com/runway/fall-2026/paris/loewe/review",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Undercover Fall 2026: Almost Levitating",
+          "link": "https://wwd.com/runway/fall-2026/paris/undercover/review",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Gauchere Fall 2026: Into the Void",
+          "link": "https://wwd.com/runway/fall-2026/paris/gauchere/review",
+          "lang": "en"
+        },
+        {
+          "name": "CR Fashion Book",
+          "title": "CR Reviews: Tom Ford Fall/Winter 2026",
+          "link": "https://crfashionbook.com/",
+          "lang": "en"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "トム フォード、パリ・ファッションウィークで最新コレクションを発表。注目は初登場のデニム【2026-27年秋冬コレクション】",
+          "link": "https://www.gqjapan.jp/article/20260306-tom-ford-haider-ackermann-fall-2026-show",
+          "lang": "ja"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "At Tom Ford, Seductive Tailoring, a Touch of American Psycho, and the Ultimate Cool Girl Denim",
+          "link": "https://www.whowhatwear.com/fashion/runway/tom-ford-paris-fashion-week-fall-winter-2026",
+          "lang": "en"
+        },
+        {
+          "name": "CR Fashion Book",
+          "title": "CR Reviews: Tom Ford Fall/Winter 2026 - CR Fashion Book",
+          "link": "https://crfashionbook.com/cr-reviews-tom-ford-fall-winter-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Chic Sensuality Defines Isabel Marant FW26",
+          "link": "https://hypebeast.com/2026/3/isabel-marant-fall-winter-2026-paris-fashion-week-menswear-womenswear-runway",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Isabel Marant Fall 2026: Hot Hurry",
+          "link": "https://wwd.com/runway/fall-2026/paris/isabel-marant/review",
+          "lang": "en"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「ラバンヌ」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2344860",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「スキャパレリ」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2344658",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「イザベル マラン」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2344713",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「ガニー」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2344926",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「セシリー バンセン」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2343766",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "CECILIE BAHNSEN 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/cecilie-bahnsen/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "メンズコレに見た微々たる変化",
+          "link": "https://www.wwdjapan.com/articles/2340720",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「スティル アタッチメント」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2343325",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "TOM FORD 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/tom-ford/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "HENRI 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/henri/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "MIHOKO SAITO 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/mihoko-saito/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "ADERERROR 2026SS コレクション",
+          "link": "https://www.fashionsnap.com/collection/adererror/2026ss/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "CARVEN 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/carven/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "OFF-WHITE™ 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/off-white-co-virgil-abloh/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "ALAÏA 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/alaia/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「オフ-ホワイト c/o ヴァージル アブロー」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2343810",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「アランポール」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2342516",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「リック・オウエンス」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2343729",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「ラム・シェ」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2338335",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「クロエ」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2343670",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "MOSSI 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/mossi/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "POET-LAB 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/poet-lab/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "FAM IRVOLL 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/fam-irvoll/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "ICICLE 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/icicle/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "Pierre-Louis Mascia 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/pierre-louis-mascia/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "MAREA 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/marea/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "WE11DONE 2026SS コレクション",
+          "link": "https://www.fashionsnap.com/collection/we11done/2026ss/",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "rabanne 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/rabanne/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Vogue",
+          "title": "Schiaparelli Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/schiaparelli",
+          "lang": "en"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "Schiaparelli 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/schiaparelli/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Daniel Roseberry Unlocks the Enigma of \"The Sphynx\" for Schiaparelli's Fall/Winter 2026 Collection",
+          "link": "https://hypebeast.com/2026/3/daniel-roseberry-unlocks-the-enigma-of-the-sphynx-for-schiaparellis-fall-winter-2026-collection",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Chloé Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/chloe",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Rick Owens Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/rick-owens",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Cecilie Bahnsen Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/cecilie-bahnsen",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Uma Wang Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/uma-wang",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Off-White Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/off-white",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Chloé Fall 2026: A Folk Tale",
+          "link": "https://wwd.com/runway/fall-2026/paris/chloe/review/",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Cecilie Bahnsen Fall 2026: Romance in Motion",
+          "link": "https://wwd.com/runway/fall-2026/paris/cecilie-bahnsen/review/",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Courrèges Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/courreges",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Courrèges FW26 Chronicles a Daylong Wardrobe for the Modern Parisian Woman",
+          "link": "https://hypebeast.com/2026/3/courreges-fall-winter-2026-paris-fashion-week-runway-collection",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Mossi Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/mossi",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Isabel Marant Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/isabel-marant",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Rabanne Fall 2026: Rebel, Rebel",
+          "link": "https://wwd.com/runway/fall-2026/paris/paco-rabanne/review/",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Tom Ford Fall 2026: Sobering Up",
+          "link": "https://wwd.com/runway/fall-2026/paris/tom-ford/review/",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue Japan",
+          "title": "存在感を増す、ハイダー・アッカーマンによるトム フォードの世界【2026-27年秋冬 パリコレクション】",
+          "link": "https://www.vogue.co.jp/article/tom-ford-fall-2026",
+          "lang": "ja"
+        },
+        {
+          "name": "Hypebeast Fashion",
+          "title": "Tom Ford FW26 Channels 'American Psycho' for a Masterclass in Sinister Seduction",
+          "link": "https://hypebeast.com/2026/3/tom-ford-fall-winter-2026-paris-fashion-week-runway-collection",
+          "lang": "en"
+        },
+        {
+          "name": "Elle",
+          "title": "Tom Ford Brings Executive Realness to Paris Fashion Week",
+          "link": "https://www.elle.com/runway/a70500595/tom-ford-fall-2026-review/",
+          "lang": "en"
+        },
+        {
+          "name": "GQ",
+          "title": "‘Need Those Jeans’: It’s Tom Ford Mania at Paris Fashion Week",
+          "link": "https://www.gq.com/story/tom-ford-haider-ackermann-fall-2026-show",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Dries Van Noten Fall 2026: Art History Lesson",
+          "link": "https://wwd.com/runway/fall-2026/paris/dries-van-noten/review/",
+          "lang": "en"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "DRIES VAN NOTEN -Women's- 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/dries-van-noten/womens/2026aw/",
+          "lang": "ja"
+        },
+        {
+          "name": "Vogue Japan",
+          "title": "ドリス ヴァン ノッテンが呼び起こす、青春時代へのノスタルジー【2026-27年秋冬 パリコレクション】",
+          "link": "https://www.vogue.co.jp/article/dries-van-noten-fall-2026",
+          "lang": "ja"
+        },
+        {
+          "name": "BOF",
+          "title": "Paris Day Three: Variables and Constants",
+          "link": "https://www.businessoffashion.com/reviews/fashion-week/courreges-the-row-balmain-dries-van-noten-tom-ford-alaia-autumn-winter-2026/",
+          "lang": "en"
+        },
+        {
+          "name": "Fashion Network",
+          "title": "Paris Fashion Week Wednesday: Courrèges, Balmain, Dries Van Noten",
+          "link": "https://ww.fashionnetwork.com/news/Paris-fashion-week-wednesday-courreges-balmain-dries-van-noten,1812835.html",
+          "lang": "en"
+        },
+        {
+          "name": "The Zoe Report",
+          "title": "Chloé's Fall/Winter 2026 Collection Was An Ode To Folkloric Craft",
+          "link": "https://www.thezoereport.com/fashion/chloe-fall-winter-2026-collection",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Acne Studios Fall 2026: A Royal Affair",
+          "link": "https://wwd.com/runway/fall-2026/paris/acne/review/",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast Fashion",
+          "title": "Acne Studios Reflects on 30 Years of Legacy With Its FW26 Collection",
+          "link": "https://hypebeast.com/2026/3/acne-studios-fall-winter-2026-paris-fashion-week-runway-collection",
+          "lang": "en"
+        },
+        {
+          "name": "Fashion Network",
+          "title": "Jonny Johansson delivers dark femininity at Acne Studios",
+          "link": "https://ww.fashionnetwork.com/news/Jonny-johansson-delivers-dark-femininity-at-acne-studios,1812985.html",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "All the Stars On the Front Row at Paris Fashion Week",
+          "link": "https://www.vogue.com/slideshow/paris-fashion-week-front-row-celebrities-fall-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Harper's Bazaar",
+          "title": "See All the Backstage Action from Paris Fashion Week",
+          "link": "https://www.harpersbazaar.com/fashion/fashion-week/g70593328/paris-fashion-week-2026-photographs/",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue Fashion",
+          "title": "The Best Backstage Photos From the Fall 2026 Shows in Paris",
+          "link": "https://www.vogue.com/slideshow/the-best-backstage-photos-from-the-fall-2026-shows-in-paris",
+          "lang": "en"
+        },
+        {
+          "name": "The Cut",
+          "title": "The Best Street Style From Paris Fashion Week",
+          "link": "http://www.thecut.com/article/the-best-street-style-from-paris-fashion-week2026.html?utm_source=rss&utm_medium=social_acct&utm_campaign=feed-part",
+          "lang": "en"
+        },
+        {
+          "name": "Harper's Bazaar",
+          "title": "All the Celebrity Front-Row Looks From the Fall 2026 Paris Fashion Week Shows",
+          "link": "https://www.harpersbazaar.com/celebrity/latest/g70587731/all-celebrity-looks-paris-fashion-week-fall-2026-shows/",
+          "lang": "en"
+        },
+        {
+          "name": "NYLON",
+          "title": "Every Front-Row Look At Paris Fashion Week Fall/Winter 2026",
+          "link": "https://www.nylon.com/fashion/paris-fashion-week-front-row-style-fall-winter-2026",
+          "lang": "en"
+        },
+        {
+          "name": "The Zoe Report",
+          "title": "The Paris Fashion Week Fall/Winter 2026 Street Style Is Nothing Short Of Spectacular",
+          "link": "https://www.thezoereport.com/fashion/paris-fashion-week-fall-winter-2026-street-style",
+          "lang": "en"
+        },
+        {
+          "name": "The Cut",
+          "title": "A Sharp, Clear Vision at Dior",
+          "link": "http://www.thecut.com/article/dior-ysl-fashion-review-paris-week-cathy-horyn.html?utm_source=rss&utm_medium=social_acct&utm_campaign=feed-part",
+          "lang": "en"
+        },
+        {
+          "name": "Harper's Bazaar",
+          "title": "Dior Is in Full Bloom",
+          "link": "https://www.harpersbazaar.com/fashion/fashion-week/a70596981/christian-dior-fall-2026-jonathan-anderson-paris/",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast Fashion",
+          "title": "Dior FW26 Reimagines the Parisian Promenade Under Jonathan Anderson",
+          "link": "https://hypebeast.com/2026/3/dior-jonathan-anderson-fall-winter-2026-womens-paris-fashion-week-runway-collection",
+          "lang": "en"
+        },
+        {
+          "name": "The Zoe Report",
+          "title": "Dior's Fall/Winter 2026 Collection Was A Garden Fantasy",
+          "link": "https://www.thezoereport.com/fashion/dior-fall-winter-2026-show-review",
+          "lang": "en"
+        },
+        {
+          "name": "BOF",
+          "title": "Paris Day Two: Monument Men",
+          "link": "https://www.businessoffashion.com/reviews/fashion-week/dior-saint-laurent-autumn-winter-2026/",
+          "lang": "en"
+        },
+        {
+          "name": "The Zoe Report",
+          "title": "The Dior Fall/Winter 2026 Front Row Featured A Full Celebrity Lineup",
+          "link": "https://www.thezoereport.com/culture/dior-fall-winter-2026-show-celebrity-guests",
+          "lang": "en"
+        },
+        {
+          "name": "i-D",
+          "title": "Jonathan Anderson Unwinds Dior for Us",
+          "link": "https://i-d.co/article/dior-fall-2026/",
+          "lang": "en"
+        },
+        {
+          "name": "Harper's Bazaar",
+          "title": "At Saint Laurent, Milestones and Many Suits",
+          "link": "https://www.harpersbazaar.com/fashion/a70605247/saint-laurent-fall-2026-anthony-vaccarello/",
+          "lang": "en"
+        },
+        {
+          "name": "Dazed",
+          "title": "Saint Laurent AW26 paid tribute to the iconic Le Smoking jacket",
+          "link": "https://www.dazeddigital.com/fashion/article/69815/1/saint-laurent-aw26-fw26-paris-fashion-week-pfw-anthony-vaccarello-le-smoking?utm_source=Link&utm_medium=Link&utm_campaign=RSSFeed&utm_term=saint-laurent-aw26-paid-tribute-to-the-iconic-le-smoking-jacket",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast Fashion",
+          "title": "Anthony Vaccarello Strips Back to Foundational Tailoring for Saint Laurent's Winter 2026 Collection",
+          "link": "https://hypebeast.com/2026/3/anthony-vaccarello-saint-laurent-fall-winter-2026-paris-fashion-week-runway-collection",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue Japan",
+          "title": "「ル・スモーキング」誕生60周年。サンローランが磨きをかける、究極のタキシード【2026-27年秋冬 パリコレクション】",
+          "link": "https://www.vogue.co.jp/article/saint-laurent-fall-2026",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionista",
+          "title": "The 9 Standout Trends From Milan Fashion Week Fall 2026",
+          "link": "https://fashionista.com/2026/03/milan-fashion-week-fall-2026-trends",
+          "lang": "en"
+        },
+        {
+          "name": "Fashionista",
+          "title": "Fashionista's 11 Favorite Fall 2026 Collections From Milan Fashion Week",
+          "link": "https://fashionista.com/2026/03/milan-fashion-week-fall-2026-best-collections",
+          "lang": "en"
+        },
+        {
+          "name": "The Zoe Report",
+          "title": "Milan Fashion Week's Fall/Winter 2026 Trends Are Not For The Faint Of Heart",
+          "link": "https://www.thezoereport.com/fashion/milan-fashion-week-fall-winter-2026-trends",
+          "lang": "en"
+        },
+        {
+          "name": "NYLON",
+          "title": "Milan Fashion Week, The Emilia Way",
+          "link": "https://www.nylon.com/fashion/emilia-milan-fashion-week-photo-diary",
+          "lang": "en"
+        },
+        {
+          "name": "NYLON",
+          "title": "Every Front-Row Look At Milan Fashion Week Fall/Winter 2026",
+          "link": "https://www.nylon.com/fashion/milan-fashion-week-front-row-style-fall-winter-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 114
+    },
+    {
+      "id": "20c5b8ce959f",
+      "title": "UR联手甜茶新片，乒乓球堆砌潮流空间！",
+      "summary": "日本潮流品牌Urban Research携手由提莫西·查拉梅（昵称“甜茶”）主演的电影《Marty Supreme》，于京都旗舰店打造限时快闪店。本次合作亮点十足，店内创意性地使用5000个乒乓球营造独特视觉陈列。更令人期待的是，将提前发售由知名艺术总监大岛依提亜操刀设计的联名系列，包括T恤、裤装、眼镜等单品，以及备受影迷喜爱的A24电影公司周边产品。影迷和潮流爱好者不容错过！",
+      "key_points": [
+        "Urban Research联名《Marty Supreme》",
+        "京都旗舰店限时快闪",
+        "大岛依提亜设计联名系列"
+      ],
+      "tags": [
+        "Urban Research",
+        "提莫西·查拉梅",
+        "Marty Supreme",
+        "联名系列",
+        "A24",
+        "快闪店"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/07145859/260306_urkyoto_a24_092.jpg",
+      "published": "2026-03-07T09:30:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "「アーバンリサーチ」× ティモシー・シャラメ主演映画「マーティ・シュプリーム」のポップアップを体験　注目のコラボアイテムも",
+          "link": "https://www.wwdjapan.com/articles/2346395",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "adb1f0664865",
+      "title": "巴黎新色：告别奶油黄！",
+      "summary": "2026年春季，巴黎时尚风向标悄然转变。告别曾经风靡的奶油黄色，巴黎女性正拥抱更具个性的色彩选择。本文深入解析这一色彩趋势的背后原因，并提供穿搭灵感和精选单品推荐，助你玩转最新潮流，走在时尚前沿。",
+      "key_points": [
+        "巴黎时尚新色彩趋势",
+        "告别奶油黄的原因分析",
+        "2026春季色彩搭配建议"
+      ],
+      "tags": [
+        "时尚趋势",
+        "色彩趋势",
+        "巴黎时尚",
+        "2026春季"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/FPNPiP5P2Gy54vbsJS3aRd-1280-80.jpg",
+      "published": "2026-03-07T09:18:44+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "Not Butter Yellow—The Most Stylish Women In Paris Are Opting For This Pretty Shade Instead",
+          "link": "https://www.whowhatwear.com/fashion/celebrity-style/pink-colour-trend-alexa-chung-olivia-rodrigo-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c79bd43fd47c",
+      "title": "效率至上：编辑精选多效美妆单品",
+      "summary": "《Who What Wear》为忙碌的都市丽人倾情推荐一系列高效美妆产品。精选单品涵盖彩妆、护肤及护发领域，均以多功能性和便捷性为核心优势。旨在帮助现代女性在快节奏生活中，轻松打造精致妆容，时刻保持最佳状态，美丽不打烊。",
+      "key_points": [
+        "推荐高效美妆产品",
+        "涵盖彩妆、护肤、护发",
+        "强调多功能与便捷性"
+      ],
+      "tags": [
+        "美妆",
+        "护肤",
+        "彩妆",
+        "快速美妆",
+        "编辑推荐"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://cdn.mos.cms.futurecdn.net/vfDqtdyPmxDS63wozoG2ia-1280-80.jpg",
+      "published": "2026-03-07T09:00:00+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "Low Effort, High Impact—the Busy-Editor Guide to Chic, Multitasking Beauty Products",
+          "link": "https://www.whowhatwear.com/beauty/multitasking-beauty-editor-picks",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "88c209c36440",
+      "title": "早春时髦精必备：收腰针织开衫成新宠！",
+      "summary": "2026早春，收腰针织开衫强势回归，成为时尚达人们的心头好。这款单品不仅能凸显腰线，打造优雅身姿，更以其百搭特性轻松驾驭各种早春造型。各大品牌如Zara、COS、Revolve等纷纷推出新款，提供丰富选择。无论是搭配裙装还是裤装，都能展现你的时尚品味，快来get早春潮流灵感吧！",
+      "key_points": [
+        "收腰设计凸显身材",
+        "针织开衫百搭实用",
+        "Zara、COS等品牌推荐"
+      ],
+      "tags": [
+        "针织开衫",
+        "春季时尚",
+        "购物推荐",
+        "时尚单品",
+        "穿搭技巧"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/GrzYngQjcYdP4zDotEffPh-1280-80.jpg",
+      "published": "2026-03-07T09:00:00+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "This Chic Waisted Cardigan Is My Most-Complimented Wardrobe Item—And It's Selling Fast",
+          "link": "https://www.whowhatwear.com/fashion/shopping/aligne-daphne-top",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "df3a05b1b7a7",
+      "title": "日本新锐女设计师的全球视野",
+      "summary": "《Vogue Japan》近期聚焦四位备受瞩目的日本女性设计师：青木明子、幾左田千佳、舟山瑛美和木村由佳。访谈中，她们分享了各自独特的品牌理念，以及对全球市场的战略展望和具体行动。设计师们深入探讨了如何将日本传统元素和价值观巧妙地融入现代设计，从而塑造品牌独一无二的风格。此外，文章特别介绍了CHIKA KISADA 2026春夏系列，该系列以其标志性的芭蕾风格和与艺术家林ひかり的精彩合作为亮点，令人耳目一新。",
+      "key_points": [
+        "四位日本女性设计师访谈",
+        "品牌理念与全球市场战略",
+        "日本元素在设计中的运用"
+      ],
+      "tags": [
+        "日本设计师",
+        "品牌出海",
+        "女性力量"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vogue.co.jp/photos/698e95a2171d922a4b199a7d/master/pass/cut02_081.jpg",
+      "published": "2026-03-07T09:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue Japan",
+          "title": "注目の女性デザイナー4人が集結！ 彼女たちが今見ている景色と未来への展望とは？【女性デザイナーの現在 vol.3】",
+          "link": "https://www.vogue.co.jp/article/women-designers-now-roundtable",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "355b5b9c6f01",
+      "title": "下周必入！7大潮流单品抢先看",
+      "summary": "时尚弄潮儿们注意啦！下周即将迎来一波重磅新品发售。优衣库携手 Comptoir des Cotonniers，以地中海里维埃拉的明媚色彩，打造充满法式风情的清爽系列。运动风方面，Stone Island 与 New Balance 再次联手，推出令人期待的合作款运动鞋。Ungrid 则与 Converse 碰撞出新火花，带来别具一格的牛仔运动鞋。此外，Dior 新款手袋也将优雅登场，Lily Brown 携手 KEITAMARUYAMA 推出浪漫的“夜樱”系列，不容错过。",
+      "key_points": [
+        "优衣库 x Comptoir des Cotonniers 合作系列",
+        "Stone Island x New Balance 联名运动鞋",
+        "Ungrid x Converse 牛仔运动鞋"
+      ],
+      "tags": [
+        "联名合作",
+        "新品发售",
+        "时尚单品"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2025/10/05105342/%E6%96%B0%E4%BD%9C-1.jpg",
+      "published": "2026-03-07T09:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "「ユニクロ」と「コントワー・デ・コトニエ」のコラボなど！　来週発売のファッションアイテム7選【3/9〜3/15】",
+          "link": "https://www.wwdjapan.com/articles/2235030",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "8f26b1871bcf",
+      "title": "TENGA潮牌TXA原宿限时快闪！",
+      "summary": "日本情趣品牌TENGA旗下服装项目TXA将于3月17日至22日在原宿东急广场Harakado开设快闪店。本次活动将展售与22位艺术家合作的限定服装系列，包括插画家田中かえ、艺术家我喜屋位瑳务等。更令人期待的是，TXA还将首次举办样品特卖会，提供高达75%的折扣，涵盖过往经典单品及珍贵样品，不容错过。",
+      "key_points": [
+        "TENGA服装项目TXA原宿快闪店",
+        "与22位艺术家合作限定系列",
+        "首次样品特卖，折扣高达75%"
+      ],
+      "tags": [
+        "TENGA",
+        "TXA",
+        "快闪店",
+        "原宿",
+        "样品销售",
+        "潮流",
+        "联名"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/txa-popup-20260306_004-96f4fe22-96bc-40b5-8cd5-36506198e865.jpg",
+      "published": "2026-03-07T09:00:00+00:00",
+      "sources": [
+        {
+          "name": "Fashionsnap",
+          "title": "TENGAのアパレルプロジェクトが原宿でポップアップ開催　初のサンプルセールを実施",
+          "link": "https://www.fashionsnap.com/article/2026-03-07/txa-popup",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "9f24655a8e58",
+      "title": "Lanvin 2026秋季：致命优雅",
+      "summary": "WWD聚焦Lanvin 2026秋季成衣系列在巴黎时装周的惊艳亮相。设计师Peter Copping从1920年代汲取灵感，将复古别致风情与神秘的蛇蝎美人气质巧妙融合，打造出一个充满魅惑与现代感的系列。该系列的设计理念和风格成为本次报道的重点，预示着Lanvin在未来时尚潮流中的独特地位。",
+      "key_points": [
+        "Lanvin 2026秋季成衣系列发布",
+        "Peter Copping的设计灵感：1920年代",
+        "风格融合：复古别致与蛇蝎美人"
+      ],
+      "tags": [
+        "Lanvin",
+        "2026秋冬",
+        "巴黎时装周"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/lanvin-pfw-fall-26-rtw-r-ctsy-0001.jpg?crop=0px%2C54px%2C1638px%2C918px&resize=1000%2C563",
+      "published": "2026-03-07T08:40:57+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Lanvin Fall 2026: Ultimate Chic",
+          "link": "https://wwd.com/runway/fall-2026/paris/lanvin/review",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c7919dffe18a",
+      "title": "早春型格：光腿与及膝靴的时尚法则",
+      "summary": "2026早春，光腿穿搭与及膝靴再度成为焦点。本季的关键在于靴款的选择与搭配技巧。无论是简约的皮革款，还是带有设计感的麂皮款，都能在裸露的双腿间展现性感与率性。巧妙运用连衣裙、短裙或短裤，搭配不同材质和颜色的及膝靴，即可轻松打造出兼具优雅与个性的早春造型。掌握这些搭配要点，你也能成为街头最时髦的风景。",
+      "key_points": [
+        "靴款选择是关键",
+        "材质与颜色搭配",
+        "裙装/裤装的巧妙运用"
+      ],
+      "tags": [
+        "及膝靴",
+        "春季穿搭",
+        "时尚潮流",
+        "街头风格",
+        "光腿穿搭"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://cdn.mos.cms.futurecdn.net/ECBqh86NLBuo57oX5DBwpU-1280-80.jpg",
+      "published": "2026-03-07T08:34:09+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "It's Bare Legs and Boots Season—This is the Chicest Way to Style Knee-High Boots Right Now",
+          "link": "https://www.whowhatwear.com/fashion/celebrity-style/bare-legs-knee-high-boots-knee-length-skirt-trend-hailey-bieber",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "5057a4488140",
+      "title": "巾帼不让须眉：时尚界的女性力量",
+      "summary": "值此国际妇女节之际，《Vogue Japan》聚焦十位以时尚为利器，推动时代变革的杰出女性设计师。文章深入剖析了包括Miuccia Prada和Maria Grazia Chiuri在内的设计师们的理念，以及她们如何通过Prada、Miu Miu和Fendi等品牌，在时尚界积极倡导女性赋权、实用主义和可持续发展。她们的设计不仅反映了深刻的社会和政治态度，更对女性在时尚界的地位产生了深远影响，引领行业走向更加多元和包容的未来。",
+      "key_points": [
+        "国际妇女节特别策划",
+        "十位女性设计师的贡献",
+        "时尚赋权与社会责任"
+      ],
+      "tags": [
+        "女性设计师",
+        "国际妇女节",
+        "时尚品牌"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vogue.co.jp/photos/69a522022d0107c470bfb98e/master/pass/00061-prada-fall-2026-ready-to-w.jpg",
+      "published": "2026-03-07T08:30:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue Japan",
+          "title": "国際女性デーに、改めて知りたい。ファッションの力で時代を動かす10人の女性デザイナーたち",
+          "link": "https://www.vogue.co.jp/article/10-women-designers-you-need-to-know-2026",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "483e3ad55f9a",
+      "title": "Dries Van Noten：叛逆学院风与自我探索",
+      "summary": "Dries Van Noten AW26女装系列重返巴黎卡诺中学发布，创意总监Julian Klausner从青春期的情感体验和17世纪弗拉芒静物画中汲取灵感，巧妙地将脆弱与自信、迷茫与清醒等矛盾情绪融入设计之中。本季作品以思春期记忆为灵感，重新解读制服文化，描绘了寻找“自我风格”的过程。系列从学生时代的经典单品出发，融入品牌标志性的异域装饰元素，将学院风与装饰主义、日常与华丽巧妙结合，展现了学生们在自我探索中不断成长的过程，仿佛一群打破传统校服规则的时髦学生，在经典与叛逆之间自由游走，展现出独特的个性魅力。",
+      "key_points": [
+        "Julian Klausner 从青春期情感体验和弗拉芒静物画中汲取灵感",
+        "重新解读制服文化，探索“自我风格”",
+        "学院风与装饰主义、日常与华丽的巧妙结合"
+      ],
+      "tags": [
+        "Dries Van Noten",
+        "AW26",
+        "巴黎时装周",
+        "学院风",
+        "制服",
+        "青春期",
+        "自我探索",
+        "Julian Klausner"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/0/1440492.jpg",
+      "published": "2026-03-07T08:26:43+00:00",
+      "sources": [
+        {
+          "name": "Dazed",
+          "title": "Dries Van Noten’s stylish school kids flouted the uniform rules",
+          "link": "https://www.dazeddigital.com/fashion/gallery/36804/0/dries-van-noten-aw26",
+          "lang": "en"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "制服の先にある“自分らしさ”を探して「ドリス ヴァン ノッテン」2026年秋冬ウィメンズ",
+          "link": "https://www.fashionsnap.com/article/dries-van-noten-26aw-womens",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "32a375c610f2",
+      "title": "马拉加电影节：红毯星光熠熠",
+      "summary": "《Vogue España》聚焦2026年马拉加电影节，这场于3月6日至15日在西班牙马拉加举行的盛事，汇聚了众多明星名流。红毯上，明星们展示了前卫大胆的妆容和极具婚礼季穿搭灵感的造型，为我们带来了一场视觉盛宴。本届电影节由Jaione Camborda担任评审团主席，并向Rossy de Palma和Francisco Lombardi颁发重要奖项，以表彰他们对电影事业的杰出贡献。",
+      "key_points": [
+        "2026马拉加电影节红毯造型盘点",
+        "大胆妆容与婚礼季穿搭灵感",
+        "Rossy de Palma和Francisco Lombardi获奖"
+      ],
+      "tags": [
+        "红毯造型",
+        "电影节",
+        "明星时尚"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://media.vogue.es/photos/69abd9ca13b2cf05a96329ff/master/pass/GettyImages-2265118044.jpg",
+      "published": "2026-03-07T08:21:42+00:00",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "Festival de Málaga 2026: todos los looks de la alfombra roja",
+          "link": "https://www.vogue.es/galerias/festival-malaga-2026-alfombra-roja",
+          "lang": "es"
         }
       ],
       "article_count": 1
@@ -546,78 +1638,6 @@
         }
       ],
       "article_count": 3
-    },
-    {
-      "id": "de63769c1a36",
-      "title": "三宅一生与山本耀司：极简、解构与日式美学的未来探索",
-      "summary": "2026-27年秋冬巴黎时装周上，三宅一生与山本耀司分别发布了最新系列。三宅一生由设计师近藤悟史主导，延续品牌一贯的简约风格，以“创造/不创造”之间的可能性为主题，探讨完美的概念，通过有意未完成的廓形，挑战人们对精致的追求，探索极简主义的更多可能性。WWD Japan也对三宅一生的系列进行了报道，展示了更多图片和设计理念。山本耀司则将日本传统文化融入品牌标志性的“黑色”美学中，呈现静谧的日式世界观，探索和洋融合的可能性。此外，日本品牌IRENISA也发布了其2026-27年秋冬系列，展现了潜在的静谧美学。山本耀司的系列进一步融合了和服的图案和结构，并以扇子、折纸等元素强调日式风情，最后更融入葛饰北斋及其女儿葛饰应为的作品，将日本艺术融入黑色礼服中。",
-      "key_points": [
-        "三宅一生：近藤悟史主导，探索极简主义的未完成之美。",
-        "山本耀司：黑色美学与日本传统文化融合，探索和洋融合。",
-        "山本耀司：2026秋冬系列融入和服元素、日式配饰及葛饰北斋作品。",
-        "IRENISA：2026-27年秋冬系列展现潜在的静谧美学。"
-      ],
-      "tags": [
-        "三宅一生",
-        "山本耀司",
-        "2026-27秋冬",
-        "巴黎时装周",
-        "极简主义",
-        "解构主义",
-        "日本文化",
-        "和服",
-        "葛饰北斋",
-        "IRENISA"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://www.fashion-press.net/img/news/144092/top.jpg?1772811167",
-      "published": "2026-03-07T08:19:09+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "イッセイ ミヤケ 2026-27年秋冬コレクション - 「つくる/つくらない」の間に潜む可能性",
-          "link": "https://www.fashion-press.net/news/144092",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD",
-          "title": "Issey Miyake Fall 2026: Less Is More",
-          "link": "https://wwd.com/runway/fall-2026/paris/issey-miyake/review",
-          "lang": "en"
-        },
-        {
-          "name": "Fashion Press",
-          "title": "ヨウジヤマモト 2026-27年秋冬コレクション - 黒に宿る、粋な和のエレガンス",
-          "link": "https://www.fashion-press.net/news/144095",
-          "lang": "ja"
-        },
-        {
-          "name": "Hypebeast Fashion",
-          "title": "Issey Miyake FW26 \"Creating, Allowing\" Questions Beauty and Creativity",
-          "link": "https://hypebeast.com/2026/3/issey-miyake-fall-winter-2026-paris-fashion-week-womenswear-runway",
-          "lang": "en"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「イッセイ ミヤケ」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2346107",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashion Press",
-          "title": "イレニサ 2026-27年秋冬コレクション - 潜在する静かな美意識",
-          "link": "https://www.fashion-press.net/news/143021",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "Yohji Yamamoto 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/yohji-yamamoto/womens/2026aw",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 8
     },
     {
       "id": "89a86bedf49f",
@@ -1023,6 +2043,69 @@
         }
       ],
       "article_count": 1
+    },
+    {
+      "id": "22c2a31211bf",
+      "title": "Loewe AW26系列：McCollough和Hernandez首个男装系列，童趣运动风、猫跟泳鞋与创作的喜悦",
+      "summary": "Loewe在巴黎发布AW26系列，由设计师组合Jack McCollough和Lazaro Hernandez操刀。该系列是两人为Loewe打造的第二个系列，也是他们的首个男装系列，延续了首季的运动美学，并携手艺术家Cosima von Bonin，带来充满趣味的充气派克大衣和奢华厚重的皮草外套。猫跟泳鞋作为本季亮点，以多种颜色亮相，融合优雅与实用。该系列还融入了童年异想天开的风格，例如Polly Pocket连衣裙等设计，充满趣味性。本季以“创作的喜悦”为主题，强调试错过程的价值，并融入西班牙式的幽默和轻盈感，采用立体的廓形、扭曲的结构和手工艺质感，色彩上延续了上一季的明亮感。秀场选址于Vincennes城堡，并以天真烂漫的格子图案点缀，整体风格在成熟中流露出俏皮玩乐的意境，邀请人们走出户外，拥抱自由。Hypebeast也对此系列进行了报道，展示了更多设计细节。",
+      "key_points": [
+        "Jack McCollough和Lazaro Hernandez为Loewe打造的首个男装系列",
+        "延续运动美学，并与艺术家Cosima von Bonin合作，带来趣味设计",
+        "猫跟泳鞋是本季亮点",
+        "融入童年异想天开的风格，例如Polly Pocket连衣裙",
+        "以“创作的喜悦”为主题，强调试错过程的价值",
+        "西班牙式的幽默和轻盈感，立体的廓形、扭曲的结构和手工艺质感",
+        "延续上一季的明亮色彩"
+      ],
+      "tags": [
+        "Loewe",
+        "AW26",
+        "男装",
+        "Jack McCollough",
+        "Lazaro Hernandez",
+        "Cosima von Bonin",
+        "运动风",
+        "猫跟鞋",
+        "童趣",
+        "创作的喜悦"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/0/1440740.jpg",
+      "published": "2026-03-07T07:10:59+00:00",
+      "sources": [
+        {
+          "name": "Dazed",
+          "title": "Loewe AW26 is daring you to come outside and play",
+          "link": "https://www.dazeddigital.com/fashion/article/69836/1/loewe-aw26-fw26-paris-fashion-week-pfw-jack-mccollough-lazaro-hernandez",
+          "lang": "en"
+        },
+        {
+          "name": "Footwear News",
+          "title": "Loewe Fall 2026 Shoes: A Kitten Heel Swim Shoe Takes Over the Runway",
+          "link": "https://wwd.com/footwear-news/shoe-trends/loewe-fall-2026-shoes-paris-fashion-week-1238652912",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast Fashion",
+          "title": "LOEWE FW26 Punches You In The Face",
+          "link": "https://hypebeast.com/2026/3/loewe-fall-winter-2026-paris-fashion-week-menswear-womenswear-runway",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "From Swim Shoes to Polly Pocket Dresses: Loewe Fall 2026 Embraces Childhood Whimsy",
+          "link": "https://www.whowhatwear.com/fashion/runway/loewe-paris-fashion-week-fall-winter-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "LOEWE 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/loewe/2026aw",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 7
     },
     {
       "id": "3e253bbe3672",
@@ -2312,59 +3395,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "22c2a31211bf",
-      "title": "Loewe AW26系列：McCollough和Hernandez首个男装系列，童趣运动风与猫跟泳鞋成亮点",
-      "summary": "Loewe在巴黎发布AW26系列，由设计师组合Jack McCollough和Lazaro Hernandez操刀。该系列是两人为Loewe打造的第二个系列，也是他们的首个男装系列，延续了首季的运动美学，并携手艺术家Cosima von Bonin，带来充满趣味的充气派克大衣和奢华厚重的皮草外套。猫跟泳鞋作为本季亮点，以多种颜色亮相，融合优雅与实用。该系列还融入了童年异想天开的风格，例如Polly Pocket连衣裙等设计，充满趣味性。秀场选址于Vincennes城堡，并以天真烂漫的格子图案点缀，整体风格在成熟中流露出俏皮玩乐的意境，邀请人们走出户外，拥抱自由。Hypebeast也对此系列进行了报道，展示了更多设计细节。",
-      "key_points": [
-        "Loewe AW26是McCollough和Hernandez的首个男装系列。",
-        "系列延续运动美学，并与艺术家Cosima von Bonin合作。",
-        "猫跟泳鞋是本季亮点。",
-        "设计融入童年异想天开的元素。",
-        "Hypebeast等媒体对此系列进行了报道。"
-      ],
-      "tags": [
-        "Loewe",
-        "AW26",
-        "男装",
-        "McCollough Hernandez",
-        "运动风",
-        "猫跟泳鞋",
-        "Cosima von Bonin",
-        "Hypebeast"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/0/1440740.jpg",
-      "published": "2026-03-07T00:32:22+00:00",
-      "sources": [
-        {
-          "name": "Dazed",
-          "title": "Loewe AW26 is daring you to come outside and play",
-          "link": "https://www.dazeddigital.com/fashion/article/69836/1/loewe-aw26-fw26-paris-fashion-week-pfw-jack-mccollough-lazaro-hernandez",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Loewe Fall 2026 Shoes: A Kitten Heel Swim Shoe Takes Over the Runway",
-          "link": "https://wwd.com/footwear-news/shoe-trends/loewe-fall-2026-shoes-paris-fashion-week-1238652912",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast Fashion",
-          "title": "LOEWE FW26 Punches You In The Face",
-          "link": "https://hypebeast.com/2026/3/loewe-fall-winter-2026-paris-fashion-week-menswear-womenswear-runway",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "From Swim Shoes to Polly Pocket Dresses: Loewe Fall 2026 Embraces Childhood Whimsy",
-          "link": "https://www.whowhatwear.com/fashion/runway/loewe-paris-fashion-week-fall-winter-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 6
     },
     {
       "id": "f67941ad15f1",
@@ -4844,637 +5874,6 @@
       "article_count": 1
     },
     {
-      "id": "4d4bfc416b9f",
-      "title": "2026秋冬巴黎米兰时装周：纪梵希Burton首秀领衔，多元品牌系列演绎未来潮流",
-      "summary": "2026秋冬巴黎米兰时装周汇聚众多品牌，呈现多元化的时尚理念与风格。纪梵希迎来Sarah Burton时代，其首个成衣系列大胆融合天鹅绒、动物纹等元素。Mugler以前卫设计和廓形展现未来主义，Loewe强调经典传承，Issey Miyake探索创新。Tom Ford由Haider Ackermann操刀，将性感基因与趣味设计融合，并首次推出牛仔单品。Isabel Marant则以巴黎式性感和自信风潮重新定义女性衣橱。Victoria Beckham、Gauchere、Yohji Yamamoto、RABANNE、Schiaparelli、Dior、Saint Laurent等品牌也带来了精彩系列，共同塑造2026秋冬的时尚风貌。",
-      "key_points": [
-        "纪梵希迎来Sarah Burton时代，发布首个成衣系列",
-        "巴黎米兰时装周呈现多元品牌系列，风格各异",
-        "Mugler、Loewe、Issey Miyake等品牌探索未来主义、经典传承与创新",
-        "Tom Ford首次推出牛仔单品，Isabel Marant重新定义巴黎式性感"
-      ],
-      "tags": [
-        "2026秋冬",
-        "巴黎时装周",
-        "米兰时装周",
-        "成衣系列",
-        "纪梵希",
-        "Sarah Burton",
-        "Mugler",
-        "Loewe",
-        "Issey Miyake",
-        "Tom Ford",
-        "Isabel Marant"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://assets.vogue.com/photos/69a9de8de6f493231200f200/master/pass/03052026_Watch%20the%20Givenchy%20Fall%202026%20Ready-to-Wear%20Show%20Here_Livestream%20Holding.jpg",
-      "published": "2026-03-06T20:18:55+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "Givenchy Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/givenchy",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Victoria Beckham Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/victoria-beckham",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Gauchere Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/gauchere",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Yohji Yamamoto Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/yohji-yamamoto",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Givenchy Fall 2026: I’m Every Woman",
-          "link": "https://wwd.com/runway/fall-2026/paris/givenchy/review",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Mugler Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/mugler",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Loewe Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/loewe",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Issey Miyake Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/issey-miyake",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue España",
-          "title": "5 claves del desfile de Loewe otoño-invierno 2026-2027",
-          "link": "https://www.vogue.es/articulos/loewe-otono-invierno-2026-2027-desfile",
-          "lang": "es"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "MUGLER 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/mugler/2026aw",
-          "lang": "ja"
-        },
-        {
-          "name": "Vogue",
-          "title": "Nina Ricci Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/nina-ricci",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Loewe Fall 2026: Unserious Luxury, Serious Fun",
-          "link": "https://wwd.com/runway/fall-2026/paris/loewe/review",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Undercover Fall 2026: Almost Levitating",
-          "link": "https://wwd.com/runway/fall-2026/paris/undercover/review",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Gauchere Fall 2026: Into the Void",
-          "link": "https://wwd.com/runway/fall-2026/paris/gauchere/review",
-          "lang": "en"
-        },
-        {
-          "name": "CR Fashion Book",
-          "title": "CR Reviews: Tom Ford Fall/Winter 2026",
-          "link": "https://crfashionbook.com/",
-          "lang": "en"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "トム フォード、パリ・ファッションウィークで最新コレクションを発表。注目は初登場のデニム【2026-27年秋冬コレクション】",
-          "link": "https://www.gqjapan.jp/article/20260306-tom-ford-haider-ackermann-fall-2026-show",
-          "lang": "ja"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "At Tom Ford, Seductive Tailoring, a Touch of American Psycho, and the Ultimate Cool Girl Denim",
-          "link": "https://www.whowhatwear.com/fashion/runway/tom-ford-paris-fashion-week-fall-winter-2026",
-          "lang": "en"
-        },
-        {
-          "name": "CR Fashion Book",
-          "title": "CR Reviews: Tom Ford Fall/Winter 2026 - CR Fashion Book",
-          "link": "https://crfashionbook.com/cr-reviews-tom-ford-fall-winter-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Chic Sensuality Defines Isabel Marant FW26",
-          "link": "https://hypebeast.com/2026/3/isabel-marant-fall-winter-2026-paris-fashion-week-menswear-womenswear-runway",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Isabel Marant Fall 2026: Hot Hurry",
-          "link": "https://wwd.com/runway/fall-2026/paris/isabel-marant/review",
-          "lang": "en"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「ラバンヌ」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2344860",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「スキャパレリ」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2344658",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「イザベル マラン」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2344713",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「ガニー」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2344926",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「セシリー バンセン」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2343766",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "CECILIE BAHNSEN 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/cecilie-bahnsen/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "メンズコレに見た微々たる変化",
-          "link": "https://www.wwdjapan.com/articles/2340720",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「スティル アタッチメント」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2343325",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "TOM FORD 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/tom-ford/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "HENRI 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/henri/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "MIHOKO SAITO 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/mihoko-saito/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "ADERERROR 2026SS コレクション",
-          "link": "https://www.fashionsnap.com/collection/adererror/2026ss/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "CARVEN 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/carven/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "OFF-WHITE™ 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/off-white-co-virgil-abloh/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "ALAÏA 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/alaia/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「オフ-ホワイト c/o ヴァージル アブロー」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2343810",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「アランポール」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2342516",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「リック・オウエンス」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2343729",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「ラム・シェ」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2338335",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「クロエ」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2343670",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "MOSSI 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/mossi/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "POET-LAB 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/poet-lab/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "FAM IRVOLL 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/fam-irvoll/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "ICICLE 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/icicle/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "Pierre-Louis Mascia 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/pierre-louis-mascia/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "MAREA 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/marea/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "WE11DONE 2026SS コレクション",
-          "link": "https://www.fashionsnap.com/collection/we11done/2026ss/",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "rabanne 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/rabanne/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Vogue",
-          "title": "Schiaparelli Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/schiaparelli",
-          "lang": "en"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "Schiaparelli 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/schiaparelli/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Daniel Roseberry Unlocks the Enigma of \"The Sphynx\" for Schiaparelli's Fall/Winter 2026 Collection",
-          "link": "https://hypebeast.com/2026/3/daniel-roseberry-unlocks-the-enigma-of-the-sphynx-for-schiaparellis-fall-winter-2026-collection",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Chloé Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/chloe",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Rick Owens Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/rick-owens",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Cecilie Bahnsen Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/cecilie-bahnsen",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Uma Wang Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/uma-wang",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Off-White Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/off-white",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Chloé Fall 2026: A Folk Tale",
-          "link": "https://wwd.com/runway/fall-2026/paris/chloe/review/",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Cecilie Bahnsen Fall 2026: Romance in Motion",
-          "link": "https://wwd.com/runway/fall-2026/paris/cecilie-bahnsen/review/",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Courrèges Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/courreges",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Courrèges FW26 Chronicles a Daylong Wardrobe for the Modern Parisian Woman",
-          "link": "https://hypebeast.com/2026/3/courreges-fall-winter-2026-paris-fashion-week-runway-collection",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Mossi Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/mossi",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Isabel Marant Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/isabel-marant",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Rabanne Fall 2026: Rebel, Rebel",
-          "link": "https://wwd.com/runway/fall-2026/paris/paco-rabanne/review/",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Tom Ford Fall 2026: Sobering Up",
-          "link": "https://wwd.com/runway/fall-2026/paris/tom-ford/review/",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue Japan",
-          "title": "存在感を増す、ハイダー・アッカーマンによるトム フォードの世界【2026-27年秋冬 パリコレクション】",
-          "link": "https://www.vogue.co.jp/article/tom-ford-fall-2026",
-          "lang": "ja"
-        },
-        {
-          "name": "Hypebeast Fashion",
-          "title": "Tom Ford FW26 Channels 'American Psycho' for a Masterclass in Sinister Seduction",
-          "link": "https://hypebeast.com/2026/3/tom-ford-fall-winter-2026-paris-fashion-week-runway-collection",
-          "lang": "en"
-        },
-        {
-          "name": "Elle",
-          "title": "Tom Ford Brings Executive Realness to Paris Fashion Week",
-          "link": "https://www.elle.com/runway/a70500595/tom-ford-fall-2026-review/",
-          "lang": "en"
-        },
-        {
-          "name": "GQ",
-          "title": "‘Need Those Jeans’: It’s Tom Ford Mania at Paris Fashion Week",
-          "link": "https://www.gq.com/story/tom-ford-haider-ackermann-fall-2026-show",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Dries Van Noten Fall 2026: Art History Lesson",
-          "link": "https://wwd.com/runway/fall-2026/paris/dries-van-noten/review/",
-          "lang": "en"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "DRIES VAN NOTEN -Women's- 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/dries-van-noten/womens/2026aw/",
-          "lang": "ja"
-        },
-        {
-          "name": "Vogue Japan",
-          "title": "ドリス ヴァン ノッテンが呼び起こす、青春時代へのノスタルジー【2026-27年秋冬 パリコレクション】",
-          "link": "https://www.vogue.co.jp/article/dries-van-noten-fall-2026",
-          "lang": "ja"
-        },
-        {
-          "name": "BOF",
-          "title": "Paris Day Three: Variables and Constants",
-          "link": "https://www.businessoffashion.com/reviews/fashion-week/courreges-the-row-balmain-dries-van-noten-tom-ford-alaia-autumn-winter-2026/",
-          "lang": "en"
-        },
-        {
-          "name": "Fashion Network",
-          "title": "Paris Fashion Week Wednesday: Courrèges, Balmain, Dries Van Noten",
-          "link": "https://ww.fashionnetwork.com/news/Paris-fashion-week-wednesday-courreges-balmain-dries-van-noten,1812835.html",
-          "lang": "en"
-        },
-        {
-          "name": "The Zoe Report",
-          "title": "Chloé's Fall/Winter 2026 Collection Was An Ode To Folkloric Craft",
-          "link": "https://www.thezoereport.com/fashion/chloe-fall-winter-2026-collection",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Acne Studios Fall 2026: A Royal Affair",
-          "link": "https://wwd.com/runway/fall-2026/paris/acne/review/",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast Fashion",
-          "title": "Acne Studios Reflects on 30 Years of Legacy With Its FW26 Collection",
-          "link": "https://hypebeast.com/2026/3/acne-studios-fall-winter-2026-paris-fashion-week-runway-collection",
-          "lang": "en"
-        },
-        {
-          "name": "Fashion Network",
-          "title": "Jonny Johansson delivers dark femininity at Acne Studios",
-          "link": "https://ww.fashionnetwork.com/news/Jonny-johansson-delivers-dark-femininity-at-acne-studios,1812985.html",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "All the Stars On the Front Row at Paris Fashion Week",
-          "link": "https://www.vogue.com/slideshow/paris-fashion-week-front-row-celebrities-fall-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "See All the Backstage Action from Paris Fashion Week",
-          "link": "https://www.harpersbazaar.com/fashion/fashion-week/g70593328/paris-fashion-week-2026-photographs/",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue Fashion",
-          "title": "The Best Backstage Photos From the Fall 2026 Shows in Paris",
-          "link": "https://www.vogue.com/slideshow/the-best-backstage-photos-from-the-fall-2026-shows-in-paris",
-          "lang": "en"
-        },
-        {
-          "name": "The Cut",
-          "title": "The Best Street Style From Paris Fashion Week",
-          "link": "http://www.thecut.com/article/the-best-street-style-from-paris-fashion-week2026.html?utm_source=rss&utm_medium=social_acct&utm_campaign=feed-part",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "All the Celebrity Front-Row Looks From the Fall 2026 Paris Fashion Week Shows",
-          "link": "https://www.harpersbazaar.com/celebrity/latest/g70587731/all-celebrity-looks-paris-fashion-week-fall-2026-shows/",
-          "lang": "en"
-        },
-        {
-          "name": "NYLON",
-          "title": "Every Front-Row Look At Paris Fashion Week Fall/Winter 2026",
-          "link": "https://www.nylon.com/fashion/paris-fashion-week-front-row-style-fall-winter-2026",
-          "lang": "en"
-        },
-        {
-          "name": "The Zoe Report",
-          "title": "The Paris Fashion Week Fall/Winter 2026 Street Style Is Nothing Short Of Spectacular",
-          "link": "https://www.thezoereport.com/fashion/paris-fashion-week-fall-winter-2026-street-style",
-          "lang": "en"
-        },
-        {
-          "name": "The Cut",
-          "title": "A Sharp, Clear Vision at Dior",
-          "link": "http://www.thecut.com/article/dior-ysl-fashion-review-paris-week-cathy-horyn.html?utm_source=rss&utm_medium=social_acct&utm_campaign=feed-part",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "Dior Is in Full Bloom",
-          "link": "https://www.harpersbazaar.com/fashion/fashion-week/a70596981/christian-dior-fall-2026-jonathan-anderson-paris/",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast Fashion",
-          "title": "Dior FW26 Reimagines the Parisian Promenade Under Jonathan Anderson",
-          "link": "https://hypebeast.com/2026/3/dior-jonathan-anderson-fall-winter-2026-womens-paris-fashion-week-runway-collection",
-          "lang": "en"
-        },
-        {
-          "name": "The Zoe Report",
-          "title": "Dior's Fall/Winter 2026 Collection Was A Garden Fantasy",
-          "link": "https://www.thezoereport.com/fashion/dior-fall-winter-2026-show-review",
-          "lang": "en"
-        },
-        {
-          "name": "BOF",
-          "title": "Paris Day Two: Monument Men",
-          "link": "https://www.businessoffashion.com/reviews/fashion-week/dior-saint-laurent-autumn-winter-2026/",
-          "lang": "en"
-        },
-        {
-          "name": "The Zoe Report",
-          "title": "The Dior Fall/Winter 2026 Front Row Featured A Full Celebrity Lineup",
-          "link": "https://www.thezoereport.com/culture/dior-fall-winter-2026-show-celebrity-guests",
-          "lang": "en"
-        },
-        {
-          "name": "i-D",
-          "title": "Jonathan Anderson Unwinds Dior for Us",
-          "link": "https://i-d.co/article/dior-fall-2026/",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "At Saint Laurent, Milestones and Many Suits",
-          "link": "https://www.harpersbazaar.com/fashion/a70605247/saint-laurent-fall-2026-anthony-vaccarello/",
-          "lang": "en"
-        },
-        {
-          "name": "Dazed",
-          "title": "Saint Laurent AW26 paid tribute to the iconic Le Smoking jacket",
-          "link": "https://www.dazeddigital.com/fashion/article/69815/1/saint-laurent-aw26-fw26-paris-fashion-week-pfw-anthony-vaccarello-le-smoking?utm_source=Link&utm_medium=Link&utm_campaign=RSSFeed&utm_term=saint-laurent-aw26-paid-tribute-to-the-iconic-le-smoking-jacket",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast Fashion",
-          "title": "Anthony Vaccarello Strips Back to Foundational Tailoring for Saint Laurent's Winter 2026 Collection",
-          "link": "https://hypebeast.com/2026/3/anthony-vaccarello-saint-laurent-fall-winter-2026-paris-fashion-week-runway-collection",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue Japan",
-          "title": "「ル・スモーキング」誕生60周年。サンローランが磨きをかける、究極のタキシード【2026-27年秋冬 パリコレクション】",
-          "link": "https://www.vogue.co.jp/article/saint-laurent-fall-2026",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionista",
-          "title": "The 9 Standout Trends From Milan Fashion Week Fall 2026",
-          "link": "https://fashionista.com/2026/03/milan-fashion-week-fall-2026-trends",
-          "lang": "en"
-        },
-        {
-          "name": "Fashionista",
-          "title": "Fashionista's 11 Favorite Fall 2026 Collections From Milan Fashion Week",
-          "link": "https://fashionista.com/2026/03/milan-fashion-week-fall-2026-best-collections",
-          "lang": "en"
-        },
-        {
-          "name": "The Zoe Report",
-          "title": "Milan Fashion Week's Fall/Winter 2026 Trends Are Not For The Faint Of Heart",
-          "link": "https://www.thezoereport.com/fashion/milan-fashion-week-fall-winter-2026-trends",
-          "lang": "en"
-        },
-        {
-          "name": "NYLON",
-          "title": "Milan Fashion Week, The Emilia Way",
-          "link": "https://www.nylon.com/fashion/emilia-milan-fashion-week-photo-diary",
-          "lang": "en"
-        },
-        {
-          "name": "NYLON",
-          "title": "Every Front-Row Look At Milan Fashion Week Fall/Winter 2026",
-          "link": "https://www.nylon.com/fashion/milan-fashion-week-front-row-style-fall-winter-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 103
-    },
-    {
       "id": "b32fcdbac49a",
       "title": "双排扣Blazer：2025精英男士之选",
       "summary": "《GQ》精选2025年14款最佳男士双排扣Blazer，助你打造专属VIP气质。双排扣Blazer以其重叠前襟和对称纽扣设计著称，是精致时尚男士的理想选择。推荐品牌包括Todd Snyder、Natalino和Polo Ralph Lauren等，尽显格调。",
@@ -5968,6 +6367,35 @@
           "name": "Highsnobiety",
           "title": "In Stride with adidas' ADIZERO EVO SL",
           "link": "https://www.highsnobiety.com/p/adidas-adizero-evo-sl",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e1cedc36955c",
+      "title": "「弟弟」也内卷？肉毒杆菌成新宠",
+      "summary": "Allure杂志揭秘男性美容新趋势：私密部位注射肉毒杆菌。澳洲网红Harry Jowsey和科技企业家Bryan Johnson等名人已尝试。医生表示，该疗法或可使阴茎增大约1厘米，并提升勃起硬度和性生活满意度。男性美容市场正迎来更多可能性。",
+      "key_points": [
+        "男性私密整形新趋势",
+        "肉毒杆菌注射或增大阴茎",
+        "提升男性性健康满意度"
+      ],
+      "tags": [
+        "男性美容",
+        "肉毒杆菌",
+        "私密整形",
+        "美容趋势"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.allure.com/photos/69ab2dadf941521973bca0f7/master/pass/penis%20botox.jpg",
+      "published": "2026-03-06T19:44:14+00:00",
+      "sources": [
+        {
+          "name": "Allure",
+          "title": "The Hard Truth About Penis Botox",
+          "link": "https://www.allure.com/story/penis-botox-trend",
           "lang": "en"
         }
       ],
@@ -9690,20 +10118,24 @@
     },
     {
       "id": "ae58dbee6738",
-      "title": "硬核联名：南极探险腕表新篇",
-      "summary": "Unimatic携手Nigel Cabourn和The Armoury，推出全新Modello Cinque UT5-TANC腕表。设计灵感源自1955年英联邦跨南极探险，致敬探险精神。该腕表采用36毫米不锈钢表壳，提供两种配色选择，兼具经典工具腕表的硬朗外观与卓越的耐用性和实用性，是追求品质与功能的理想之选。",
+      "title": "硬核联名再升级：Unimatic南极探险腕表UT5-TANC",
+      "summary": "Unimatic再度携手Nigel Cabourn和The Armoury，推出全新Modello Cinque UT5-TANC腕表，延续2019年合作。设计灵感源自1955年英联邦跨南极探险，致敬探险精神。该腕表采用36毫米不锈钢表壳，提供两种石洗Cerakote™涂层配色选择，具有300米防水性能和“眩目迷彩”底盖，限量300枚。兼具经典工具腕表的硬朗外观与卓越的耐用性和实用性，强调坚固的功能性和军事风格美学，是追求品质与功能的理想之选。",
       "key_points": [
-        "Unimatic联名Nigel Cabourn和The Armoury",
-        "设计灵感源于南极探险",
-        "36mm不锈钢表壳，坚固耐用"
+        "Unimatic与Nigel Cabourn、The Armoury再度联名",
+        "Modello Cinque UT5-TANC腕表，灵感源自南极探险",
+        "36mm表壳，石洗Cerakote™涂层，300米防水",
+        "限量300枚，售价约766美元",
+        "强调功能性与军事风格美学"
       ],
       "tags": [
-        "腕表",
-        "联名款",
         "Unimatic",
         "Nigel Cabourn",
         "The Armoury",
-        "探险风格"
+        "Modello Cinque UT5-TANC",
+        "联名腕表",
+        "南极探险",
+        "军事风",
+        "Cerakote"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -9715,9 +10147,15 @@
           "title": "This Ultra-Tough Watch Was Designed by a Pair of Menswear Legends",
           "link": "https://www.gq.com/story/unimatic-nigel-cabourn-mark-cho-field-watch",
           "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Nigel Cabourn, The Armoury and UNIMATIC Unveil the Expedition‑Ready UT5‑TANC Watch",
+          "link": "https://hypebeast.com/2026/3/nigel-cabourn-the-armoury-unimatic-modello-cinque-ut5-tanc-release-info",
+          "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "6dbc4e39e9cd",
@@ -11048,6 +11486,35 @@
       "article_count": 1
     },
     {
+      "id": "99a854863712",
+      "title": "Maia Campbell：戒毒六年后的疗愈之路",
+      "summary": "好莱坞女演员Maia Campbell在戒毒六年之际，坦诚回顾了自己与毒瘾抗争的痛苦经历，以及失去双亲带来的巨大悲痛。她反思了心理健康问题在成瘾过程中的影响，并强调了治疗对于她与女儿重建亲密关系的关键作用。Campbell勇敢地分享了自己克服成瘾、直面过往尴尬，并对未来充满希望的故事，激励着更多人关注心理健康和戒毒的重要性。",
+      "key_points": [
+        "Maia Campbell戒毒六年",
+        "反思成瘾原因与心理健康",
+        "治疗帮助重建母女关系"
+      ],
+      "tags": [
+        "名人",
+        "戒毒",
+        "心理健康",
+        "疗愈"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/maia-campbell-now-1920x1080.jpg?width=1920",
+      "published": "2026-03-06T13:00:00+00:00",
+      "sources": [
+        {
+          "name": "Essence",
+          "title": "Maia Campbell Reflects On Addiction, Grief And Healing After Six Years Of Sobriety",
+          "link": "https://www.essence.com/lifestyle/maia-campbell-now",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "7d2bffc465dd",
       "title": "行家之选：12款被低估的腕表遗珠",
       "summary": "还在追逐热门爆款？《GQ》为你精选12款被市场低估的腕表，涵盖潜水表、计时码表和复古70年代风格，助你避开“撞表”尴尬，彰显独特品味。对于腕表收藏新手而言，热门款往往价格高昂且一表难求。这些被低估的表款不仅更易入手，也同样具备卓越的品质和设计感，是提升格调的明智之选。",
@@ -12083,36 +12550,6 @@
           "name": "Hypebeast",
           "title": "Piaget’s Place Vendôme Flagship Shines With Extraleganza",
           "link": "https://hypebeast.com/2026/3/rafael-de-cardenas-ltd-piaget-place-vendome-flagship-boutique-paris",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "483e3ad55f9a",
-      "title": "Dries Van Noten：叛逆学院风",
-      "summary": "Dries Van Noten AW26系列重返巴黎卡诺中学发布，创意总监Julian Klausner从青春期的情感体验和17世纪弗拉芒静物画中汲取灵感，巧妙地将脆弱与自信、迷茫与清醒等矛盾情绪融入设计之中。本季作品仿佛一群打破传统校服规则的时髦学生，在经典与叛逆之间自由游走，展现出独特的个性魅力。",
-      "key_points": [
-        "AW26系列",
-        "卡诺中学发布",
-        "灵感源于青春期和弗拉芒静物画"
-      ],
-      "tags": [
-        "Dries Van Noten",
-        "AW26",
-        "巴黎时装周",
-        "学院风",
-        "叛逆"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/0/1440492.jpg",
-      "published": "2026-03-06T11:02:00+00:00",
-      "sources": [
-        {
-          "name": "Dazed",
-          "title": "Dries Van Noten’s stylish school kids flouted the uniform rules",
-          "link": "https://www.dazeddigital.com/fashion/gallery/36804/0/dries-van-noten-aw26",
           "lang": "en"
         }
       ],
@@ -16555,387 +16992,6 @@
           "name": "PureWow Fashion",
           "title": "Here's How I Pull Off Barrel Jeans as a 5'1\" Petite",
           "link": "https://www.purewow.com/fashion/wearing-barrel-jeans-as-petite",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b95e129951c2",
-      "title": "2026羊绒衫终极指南",
-      "summary": "PureWow时尚频道权威发布2026年羊绒衫购买指南，精选13款必入单品。既有Jenni Kayne奢华茧形开衫，尽显优雅格调，也有Quince蒙古羊绒圆领衫，兼顾品质与亲民价格。Garnet Hill和Quince设计总监强调，羊绒以其柔软、保暖、轻便和抗皱的特性，成为冬季衣橱不可或缺的时尚之选，无论是日常通勤还是休闲度假，都能轻松驾驭，提升穿搭质感。",
-      "key_points": [
-        "PureWow推荐13款羊绒衫",
-        "Jenni Kayne奢华开衫",
-        "Quince高性价比之选"
-      ],
-      "tags": [
-        "羊绒衫",
-        "冬季穿搭",
-        "购物推荐"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://publish.purewow.net/wp-content/uploads/sites/2/2025/09/best-cashmere-sweaters-collage-of-cardigansz-and-crew-neck-cashmere-sweaters-1200.jpg",
-      "published": "2026-03-06T08:26:20+00:00",
-      "sources": [
-        {
-          "name": "PureWow Fashion",
-          "title": "The 13 Best Cashmere Sweaters to Buy in 2026, According to Experts and Editors",
-          "link": "https://www.purewow.com/fashion/best-cashmere-sweaters",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "1046c35e0e76",
-      "title": "百元羊绒衫对决：Quince vs. Naadam",
-      "summary": "轻奢品牌羊绒衫不再遥不可及！本文深度评测Quince和Naadam两款百元级羊绒衫，从性价比、版型、质量、设计美观度以及品牌透明度等多维度进行对比分析。旨在为追求高品质生活的消费者提供实用指南，助力大家在平价区间内挑选到最适合自己的羊绒单品，轻松提升秋冬时尚品味。",
-      "key_points": [
-        "Quince羊绒衫评测",
-        "Naadam羊绒衫评测",
-        "百元羊绒衫选购指南"
-      ],
-      "tags": [
-        "羊绒衫",
-        "品牌评测",
-        "平价时尚",
-        "Quince",
-        "Naadam"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://publish.purewow.net/wp-content/uploads/sites/2/2024/02/quince-vs-naadam-cashmere-sweaters-UNI.jpg?fit=1174%2C630",
-      "published": "2026-03-06T08:26:20+00:00",
-      "sources": [
-        {
-          "name": "PureWow Fashion",
-          "title": "Quince vs. Naadam: We Review Which Under $100 Cashmere Sweater Is Best",
-          "link": "https://www.purewow.com/fashion/quince-vs-naadam-cashmere-sweater-review",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "fb7a49f5f2ee",
-      "title": "告别磨脚！精选10款舒适美靴",
-      "summary": "还在为新靴子磨脚而烦恼？PureWow时尚编辑为你精选了10款舒适度极高的靴子，涵盖踝靴、切尔西靴、牛仔靴等多种款式，无论是日常通勤还是休闲出游，都能找到你的心仪之选。所有靴款均经过编辑亲身测试，保证舒适不磨脚，让你告别痛苦的“新鞋磨合期”，自信展现时尚魅力。附购买链接，轻松get潮流单品。",
-      "key_points": [
-        "PureWow时尚推荐",
-        "10款舒适靴子精选",
-        "涵盖多种流行款式"
-      ],
-      "tags": [
-        "靴子",
-        "舒适",
-        "时尚",
-        "购物推荐"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://publish.purewow.net/wp-content/uploads/sites/2/2025/09/most-comfortable-boots-2025-FB.png",
-      "published": "2026-03-06T08:26:20+00:00",
-      "sources": [
-        {
-          "name": "PureWow Fashion",
-          "title": "10 of the Most Comfortable Boots That Won’t Leave You with Blisters After Just One Wear",
-          "link": "https://www.purewow.com/fashion/most-comfortable-boots",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "2667026c2dec",
-      "title": "旅途轻盈：舒适越野跑鞋，机场时尚之选",
-      "summary": "还在为机场穿什么鞋烦恼？长时间候机、快速安检，舒适与便捷至关重要。越野跑鞋凭借其卓越的舒适性、支撑力和易穿脱设计，成为旅行达人的秘密武器。告别束缚，让双脚在旅途中也能自由呼吸，尽享轻松愉悦的飞行体验。",
-      "key_points": [
-        "越野跑鞋适合旅行穿着",
-        "舒适性和支撑性是关键",
-        "方便快速穿脱，节省安检时间"
-      ],
-      "tags": [
-        "旅行",
-        "鞋履",
-        "越野跑鞋",
-        "舒适",
-        "时尚"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://publish.purewow.net/wp-content/uploads/sites/2/2025/09/trail-running-shoes-for-travel_fb-2.jpg",
-      "published": "2026-03-06T08:26:20+00:00",
-      "sources": [
-        {
-          "name": "PureWow Fashion",
-          "title": "These Shoes are My Secret to Easy & Comfortable Air Travel",
-          "link": "https://www.purewow.com/fashion/trail-running-shoes-for-travel",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "eb51e5ae10a9",
-      "title": "鹅绒加持，温暖过冬！",
-      "summary": "PureWow精选了10款加拿大鹅经典外套，无论是应对严寒的滑雪之旅，还是日常通勤，都能提供卓越的保暖性能。从标志性的Expedition Parka到时尚的Garnet Cropped Puffer，每一款都兼顾功能性与设计感。加拿大鹅以其卓越的品质和耐用性著称，更有终身保修服务，确保您的投资历久弥新。",
-      "key_points": [
-        "PureWow推荐10款加拿大鹅外套",
-        "适合冬季滑雪和日常通勤",
-        "保暖耐用，提供终身保修"
-      ],
-      "tags": [
-        "加拿大鹅",
-        "冬季外套",
-        "保暖",
-        "奢侈品"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://publish.purewow.net/wp-content/uploads/sites/2/2025/09/best-canada-goose-coats-2025-FB.png",
-      "published": "2026-03-06T08:26:19+00:00",
-      "sources": [
-        {
-          "name": "PureWow Fashion",
-          "title": "These Are the 10 Best Canada Goose Jackets & Coats That Are Functional, Warm and Can Last a Lifetime",
-          "link": "https://www.purewow.com/fashion/best-coats-at-canada-goose",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "fecaf6d4eb9d",
-      "title": "冬日暖足：精选12款御寒靴履",
-      "summary": "PureWow时尚频道精选12款冬季保暖靴，由专业编辑和用户评论员共同推荐，助您在严寒冬日保持足部温暖舒适。评选标准涵盖防水性能、保暖效果及抓地力等关键要素，并根据不同场景需求推荐Sorel Joan of Arctic、LL.Bean Bean Boots等经典及潮流款式，满足都市通勤、户外探险等多样化需求，兼顾时尚与实用。",
-      "key_points": [
-        "专业编辑和用户推荐",
-        "防水、保暖、抓地力兼备",
-        "Sorel、LL.Bean等品牌入选"
-      ],
-      "tags": [
-        "冬季靴子",
-        "保暖",
-        "时尚",
-        "产品推荐"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://publish.purewow.net/wp-content/uploads/sites/2/2025/10/warm-winter-boots_uni-2025-editors-picks.png?fit=1174%2C630",
-      "published": "2026-03-06T08:26:19+00:00",
-      "sources": [
-        {
-          "name": "PureWow Fashion",
-          "title": "The 12 Best Warm Winter Boots to Keep You Toasty in Extreme Cold, Vetted by Editors and Reviewers",
-          "link": "https://www.purewow.com/fashion/warm-winter-boots",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "1ece205d8555",
-      "title": "OUTDOOR PRODUCTS 携手 NICE WEATHER 潮酷来袭",
-      "summary": "美国经典户外品牌 OUTDOOR PRODUCTS 首次联手韩国潮流品牌 NICE WEATHER，推出限定合作系列。该系列包含采用高密度尼龙材质打造的背包、波士顿包和收纳袋三款单品，兼具实用性与潮流感。目前，该系列已在 NICE WEATHER 表参道店、大阪店、线上商店以及札幌快闪店同步发售，每款产品均配有标志性的霓虹色透明钥匙扣，为整体造型增添亮点。",
-      "key_points": [
-        "OUTDOOR PRODUCTS 与 NICE WEATHER 首次合作",
-        "推出三款联名包袋单品",
-        "高密度尼龙材质，兼具实用与潮流"
-      ],
-      "tags": [
-        "OUTDOOR PRODUCTS",
-        "NICE WEATHER",
-        "联名系列",
-        "潮流包袋",
-        "户外风"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/outdoor-products-niceweather-bag-20260121-003-44815ddc-369e-4b5f-aa29-fc4115351f9b.jpg",
-      "published": "2026-03-06T08:19:53+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "アウトドアプロダクツが韓国発「ナイスウェザー」と初コラボ、デイパックなど3型を発売",
-          "link": "https://www.fashionsnap.com/article/2026-03-06/outdoor-products-niceweather",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "8bda6b9122c2",
-      "title": "Saucony：跑者的都市新装",
-      "summary": "运动品牌Saucony正式进军日本服装市场，推出全新服装系列。该系列巧妙融合品牌领先的跑步科技，旨在打造无缝衔接运动与日常生活的穿搭体验。首发系列涵盖连帽衫、短款上衣、T恤、短裤、帽子及臂套等丰富单品，定价亲民，从5500日元至17000日元不等。Saucony原宿旗舰店将独家发售此系列，敬请期待。",
-      "key_points": [
-        "Saucony推出全新服装系列",
-        "跑步科技融入服装设计",
-        "原宿旗舰店独家发售"
-      ],
-      "tags": [
-        "Saucony",
-        "服装",
-        "运动休闲",
-        "日本",
-        "新品上市"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/saucony-apparel-line-20260306-028-1b5dc9f8-df9b-43cf-804f-75aa269a2e17.jpg",
-      "published": "2026-03-06T08:19:14",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "サッカニーがアパレルラインの国内展開をスタート　ランニングテクノロジーをウェアに転用",
-          "link": "https://www.fashionsnap.com/article/2026-03-06/saucony-apparel-line",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b6a77af532bc",
-      "title": "紧身牛仔裤：复古回潮？",
-      "summary": "Vogue西班牙版近日聚焦紧身牛仔裤的强势回归，重温了90年代和2000年代辛迪·克劳馥、凯特·莫斯等时尚icon的经典演绎。文章深入探讨了如何将这一曾经风靡的单品巧妙融入现代穿搭，再现其时尚魅力。值得关注的是，Celine在2026春夏系列中也展示了紧身牛仔裤的搭配，预示着其未来的流行趋势。",
-      "key_points": [
-        "紧身牛仔裤复兴",
-        "90/00年代偶像穿搭",
-        "Celine 2026春夏系列"
-      ],
-      "tags": [
-        "紧身牛仔裤",
-        "复古潮流",
-        "名人穿搭"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.vogue.es/photos/69a943e3d4e86ac6554fd1d0/master/pass/117044819",
-      "published": "2026-03-06T08:15:31",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "¿Cómo se llevan los vaqueros pitillo como los iconos de los años 90 y 2000?",
-          "link": "https://www.vogue.es/articulos/pantalones-vaqueros-pitillo-top-models-90-2000",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "cd333f027a9c",
-      "title": "阿迪达斯盈利飙升，未来仍存隐忧？",
-      "summary": "运动品牌巨头阿迪达斯发布了亮眼的2024年财报，营收和利润均实现显著增长。首席执行官对公司业绩表示满意，并强调了本地化战略的重要性。然而，由于市场对未来增长的预期较为保守，财报发布后阿迪达斯股价出现下跌。此外，公司管理层密切关注中东地区紧张局势，评估其可能对业务运营造成的影响，并积极制定应对措施。",
-      "key_points": [
-        "阿迪达斯2024年财报亮眼",
-        "本地化战略是关键",
-        "中东局势带来不确定性"
-      ],
-      "tags": [
-        "阿迪达斯",
-        "财务业绩",
-        "市场策略",
-        "中东局势"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/06161143/ADIDAS_01.jpg",
-      "published": "2026-03-06T08:10:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "アディダス、25年は66％増益と好調　中東情勢の影響は「現時点では誰にも分からない」とCEO",
-          "link": "https://www.wwdjapan.com/articles/2345182",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "7cecd24e8ced",
-      "title": "哈卷演唱会穿搭灵感！",
-      "summary": "还在为Harry Styles演唱会穿什么烦恼？告别千篇一律的周边T恤吧！本文为你提供舒适又时髦的穿搭方案，让你在享受音乐的同时，也能展现独特的个人风格。无论是Anthropologie的飘逸连衣裙，Topshop的针织背心，还是Matisse的西部靴，都能让你在人群中脱颖而出，成为最闪耀的时尚焦点。",
-      "key_points": [
-        "避免选择演唱会周边T恤",
-        "推荐舒适时尚的穿搭",
-        "Anthropologie连衣裙、Topshop针织背心、Matisse西部靴等单品推荐"
-      ],
-      "tags": [
-        "Harry Styles",
-        "演唱会穿搭",
-        "明星风格",
-        "时尚搭配",
-        "穿搭灵感"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://media.glamourmagazine.co.uk/photos/69a83de72112b0f5c006be0e/16:9/w_1280,c_limit/Harry%20Styles%20concert%20outfit%20ideas%2004032026%20%20(25).jpg",
-      "published": "2026-03-06T08:04:49+00:00",
-      "sources": [
-        {
-          "name": "Glamour UK",
-          "title": "Struggling for Harry Styles concert outfit ideas? I got you",
-          "link": "https://www.glamourmagazine.co.uk/article/harry-styles-concert-outfit-ideas",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "4a90329da925",
-      "title": "摄影大师Collier Schorr十年后重磅回归",
-      "summary": "著名摄影师Collier Schorr携其近十年来的首次个展“Problems and Other Stories”登陆巴黎Modern Art画廊。本次展览汇集了Schorr过去七年间创作的多元化作品，包括引人入胜的视频、别具一格的拼贴、细腻的绘画以及标志性的摄影作品。作为在艺术和时尚界都极具影响力的摄影师，Schorr曾为众多顶级杂志拍摄封面，并为Kristen Stewart、Iggy Pop等名人拍摄肖像，其作品以独特的视角和深刻的内涵著称。",
-      "key_points": [
-        "Collier Schorr巴黎个展",
-        "涵盖视频、拼贴、绘画、摄影",
-        "艺术与时尚领域的重要影响"
-      ],
-      "tags": [
-        "Collier Schorr",
-        "摄影展",
-        "巴黎艺术",
-        "当代艺术"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/0/1440290.jpg",
-      "published": "2026-03-06T08:00:00",
-      "sources": [
-        {
-          "name": "Dazed",
-          "title": "‘This show is like a world’: Collier Schorr on her major new exhibition",
-          "link": "https://www.dazeddigital.com/art-photography/article/69805/1/collier-schorr-problems-and-other-stories-photographer-paris-interview",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b842dc2965be",
-      "title": "双城记：我的轻奢通勤单品",
-      "summary": "穿梭于查尔斯顿的悠闲与纽约的快节奏之间，如何巧妙运用设计师单品打造无缝衔接的时尚造型？本文作者分享了8件在两地皆宜的轻奢好物，涵盖不同场合的穿搭技巧，助你轻松玩转都市风格，找到属于自己的时尚平衡点。无论是优雅晚宴还是日常通勤，都能展现精致品味。",
-      "key_points": [
-        "设计师单品选择",
-        "跨城市穿搭技巧",
-        "不同场合造型搭配"
-      ],
-      "tags": [
-        "设计师品牌",
-        "穿搭技巧",
-        "城市风格",
-        "轻奢",
-        "生活方式"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://cdn.mos.cms.futurecdn.net/9vKU8jErCHSe6M8QTsUsLP-1280-80.jpg",
-      "published": "2026-03-06T08:00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "I Live Between Charleston and New York—8 Designer Finds I Get Away With Wearing in Both",
-          "link": "https://www.whowhatwear.com/fashion/luxury/julia-berolzheimer-interview",
           "lang": "en"
         }
       ],
