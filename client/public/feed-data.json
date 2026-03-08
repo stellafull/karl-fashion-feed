@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-03-08T10:23:03+00:00",
+    "generated_at": "2026-03-08T12:34:26+00:00",
     "total_topics": 500,
-    "total_articles": 879,
+    "total_articles": 881,
     "sources_count": 49,
     "sources": [
       "Allure",
@@ -58,22 +58,22 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 20,
-      "blocked_by_tombstones": 311,
-      "evicted_topics": 12,
+      "new_articles_in_2h": 21,
+      "blocked_by_tombstones": 307,
+      "evicted_topics": 10,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 6,
-        "incremental_new_topics_created": 14,
-        "cross_merge_candidates": 4,
-        "cross_merge_low_reviews": 4,
+        "incremental_assigned_to_existing": 8,
+        "incremental_new_topics_created": 13,
+        "cross_merge_candidates": 5,
+        "cross_merge_low_reviews": 5,
         "cross_merge_high_reviews": 1,
-        "cross_merge_merged_topics": 2
+        "cross_merge_merged_topics": 3
       }
     },
     "quality": {
-      "merge_rate": 0.4312,
-      "avg_sources_per_topic": 1.302,
-      "high_confidence_topic_ratio": 0.93,
+      "merge_rate": 0.4325,
+      "avg_sources_per_topic": 1.296,
+      "high_confidence_topic_ratio": 0.932,
       "rebuild_mode": "incremental"
     }
   },
@@ -444,335 +444,223 @@
       "article_count": 1
     },
     {
-      "id": "f7700a5418d7",
-      "title": "Max Mara 与 Mugler：米兰时装周后台及系列精选",
-      "summary": "米兰时装周精彩继续！WWD Japan独家呈现Max Mara 2026-27秋冬系列后台花絮，深入探索品牌最新系列的精湛设计细节，揭秘时装秀幕后准备工作。同时，WWD Japan也报道了Mugler 发布的2026-27年秋冬系列，提供多张图片方便读者回顾品牌及其他相关系列。",
+      "id": "eff03e318cb4",
+      "title": "陈杰宪战鞋揭秘！Jordan专属订制暗藏玄机",
+      "summary": "运动品牌Jordan Brand持续发力亚洲市场，继签约邓紫棋后，又迎来“台湾队长”陈杰宪的加入。品牌为其量身打造专属钉鞋，鞋舌内衬特别印制“没有极限陈杰宪”字样，彰显其个人精神与赛场信念。此举不仅是对陈杰宪的致敬，更体现了Jordan Brand拓展亚洲市场，从篮球领域向更广阔运动时尚领域延伸的战略布局。",
       "key_points": [
-        "Max Mara 2026-27秋冬系列后台花絮：面料选择、廓形塑造等细节。",
-        "Mugler 2026-27秋冬系列发布：提供系列图片方便回顾。",
-        "米兰时装周：聚焦两大品牌秋冬系列。"
+        "Jordan Brand签约陈杰宪",
+        "专属订制钉鞋，细节感人",
+        "品牌亚洲市场战略升级"
       ],
       "tags": [
-        "Max Mara",
-        "Mugler",
-        "2026-27秋冬",
-        "米兰时装周",
-        "后台花絮",
-        "系列发布"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/04140918/20260304_MAXMARA_og.jpg",
-      "published": "2026-03-08T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "【バックステージ】「マックスマーラ」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2341156",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「ミュグレー」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2346341",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "cdb848983260",
-      "title": "Nordstrom精选：高性价比时尚单品推荐",
-      "summary": "知名时尚媒体Who What Wear精选Nordstrom时尚单品，不仅推荐跨季节的40款经典单品，更聚焦33款百元以下的高性价比之选。旨在为读者提供多元化的穿搭灵感，无论追求经典还是性价比，都能在Nordstrom找到心仪之选，轻松打造时髦造型。",
-      "key_points": [
-        "Nordstrom精选时尚单品",
-        "Who What Wear媒体推荐",
-        "跨季节经典单品推荐",
-        "百元以下高性价比单品推荐",
-        "多元化穿搭灵感"
-      ],
-      "tags": [
-        "Nordstrom",
-        "时尚单品",
-        "Who What Wear",
-        "穿搭灵感",
-        "高性价比",
-        "平价时尚"
+        "Jordan Brand",
+        "陈杰宪",
+        "运动时尚",
+        "品牌合作",
+        "专属订制"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
-      "image": "https://cdn.mos.cms.futurecdn.net/s9ZmaoofePyVbGqePTKiPo-1280-80.jpg",
-      "published": "2026-03-08T10:00:00+00:00",
+      "image": "https://ia.marieclaire.com.tw/assets/mc/202603/69AD5E62EE2AB1772969570.jpeg",
+      "published": "2026-03-08T19:32:53",
       "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "40 Stunning Nordstrom Items You'll Wear Now and Well Into the Rest of the Year",
-          "link": "https://www.whowhatwear.com/fashion/shopping/best-nordstrom-clothing-march-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "I Check Nordstrom Daily—33 Rich-Looking Under-$100 Finds That Deserve Their Own Highlight Reel",
-          "link": "https://www.whowhatwear.com/fashion/shopping/chic-nordstrom-under-100-finds-march-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "c036ac8fdc54",
-      "title": "准新娘派对战袍：我的寻裙之旅",
-      "summary": "《Vogue》作者分享了她为婚前派对挑选礼服的经历，从Oscar de la Renta的精致蕾丝到Carolina Herrera的珍珠迷你裙，再到Zara的简约丝绸裙，她尝试了多种风格，最终找到了完美契合个人风格与派对氛围的理想之选。这篇文章为即将举办婚前派对的新娘们提供了丰富的穿搭灵感，助力她们在特别日子里闪耀动人。",
-      "key_points": [
-        "婚前派对礼服选择多样",
-        "蕾丝、珍珠、丝绸等元素流行",
-        "不同品牌提供不同风格选择"
-      ],
-      "tags": [
-        "婚纱礼服",
-        "新娘穿搭",
-        "婚前派对"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://assets.vogue.com/photos/69a9e3056a0ddca74c52b39d/master/pass/03_2026%20Bridal%20Shower%20Dress%20(Collage%201920x1080)%20Final.jpg",
-      "published": "2026-03-08T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "I Tried Dozens of Bridal Shower Dresses—Here’s How I Found the One",
-          "link": "https://www.vogue.com/article/bridal-shower-dress-try-on",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b04234bc3237",
-      "title": "艾丽·范宁：奥斯卡之路的璀璨星光",
-      "summary": "《Vogue》回顾了艾丽·范宁演艺生涯中14个里程碑式的表演，这些作品共同构筑了她通往奥斯卡提名的道路。从3岁首次触电到驾驭各类电影角色，范宁凭借其天赋和不懈努力，与众多明星合作，展现了她在表演上的多面性。文章不仅肯定了她过往的成就，更对其未来的发展寄予厚望，预示着这位年轻演员将继续在银幕上绽放光芒。",
-      "key_points": [
-        "回顾艾丽·范宁14个重要表演",
-        "展现其在不同类型电影中的出色表现",
-        "肯定其长期努力和多才多艺"
-      ],
-      "tags": [
-        "艾丽·范宁",
-        "奥斯卡",
-        "电影",
-        "名人风格"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://assets.vogue.com/photos/69ac1ca28c686e37bb395810/master/pass/208_217_191_ACU_12954_R-1.jpg",
-      "published": "2026-03-08T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "14 Elle Fanning Performances That Paved the Way for Her Oscar Nomination",
-          "link": "https://www.vogue.com/article/elle-fanning-14-best-performances",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "f37ec7fdefae",
-      "title": "自助结账：日本零售业的信任危机？",
-      "summary": "日本零售业正迅速普及自助结账系统，效仿美国模式。然而，美国零售巨头如沃尔玛的经验表明，自助结账虽提高了效率，却也面临盗窃损失增加、顾客体验下降等问题。文章警惕技术万能主义，强调在追求效率的同时，维护社会信任至关重要。加州等地已开始对自助结账系统进行监管。日本零售业如何在效率与信任之间找到平衡，值得深思。",
-      "key_points": [
-        "自助结账系统普及的潜在风险",
-        "效率与信任的平衡",
-        "借鉴美国经验，避免重蹈覆辙"
-      ],
-      "tags": [
-        "零售",
-        "自助结账",
-        "消费者体验",
-        "市场趋势",
-        "信任"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/imgi_3_74551fd1-s-dac4f517-83ac-4754-bb8d-a1a21a36d47e.jpg",
-      "published": "2026-03-08T09:59:00+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "日本はアメリカの二の舞に？　セルフレジは信頼を守れるか",
-          "link": "https://www.fashionsnap.com/article/2026-03-08/walmart-self-cash-register",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "cc2ad841fcc9",
-      "title": "巴黎时装周Day 6：策略与直觉的交锋",
-      "summary": "巴黎时装周第六日，BOF聚焦 Junya Watanabe、Celine、Hermès 和 Balenciaga 等品牌，深入剖析其设计理念。本季，设计师们或遵循严谨的战略规划，或依赖敏锐的直觉灵感，在时装的舞台上呈现出风格各异的作品。战略与直觉的碰撞，成为本季巴黎时装周的一大看点。",
-      "key_points": [
-        "Junya Watanabe 的解构主义",
-        "Celine 的法式优雅",
-        "Hermès 的经典传承",
-        "Balenciaga 的前卫实验"
-      ],
-      "tags": [
-        "巴黎时装周",
-        "时装设计",
-        "品牌分析"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://img.businessoffashion.com/resizer/v2/FU2Y7CP2CJF2VAB3JRMZ2O7BK4.png?auth=eee5e750f5d65053528e986569352744e7a91404ad56df1783ab1e6f95932514&smart=true&width=1800&height=1013",
-      "published": "2026-03-08T09:53:18+00:00",
-      "sources": [
-        {
-          "name": "BOF",
-          "title": "Paris Day 6: Strategy or Intuition?",
-          "link": "https://www.businessoffashion.com/reviews/fashion-week/junya-watanabe-celine-noir-kei-ninomiya-hermes-comme-des-garcons-balenciaga-autumn-winter-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "07504c71c67f",
-      "title": "Macron营收创新高，运动市场新动向？",
-      "summary": "意大利运动品牌Macron公布了其2025年的亮眼业绩，总营收高达2.444亿欧元，同比增长9.3%，EBITDA利润率达到21%。这一数据不仅展现了Macron的强劲增长势头，也为我们深入了解当前运动品牌市场的动态提供了宝贵的参考。",
-      "key_points": [
-        "Macron 2025年营收达2.444亿欧元",
-        "营收同比增长9.3%",
-        "EBITDA利润率为21%"
-      ],
-      "tags": [
-        "运动品牌",
-        "营收增长",
-        "市场分析",
-        "Macron"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.fashionnetwork.com/m/4527/9fc9/382a/66d6/4217/0db8/4beb/7557/4750/0a10/208x208/0a10.jpg",
-      "published": "2026-03-08T09:51:32+00:00",
-      "sources": [
-        {
-          "name": "Fashion Network",
-          "title": "Macron posts record turnover in 2025",
-          "link": "https://ww.fashionnetwork.com/news/Macron-posts-record-turnover-in-2025,1813791.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "4be5b9f1af7c",
-      "title": "YOASOBI x ASICS 联名系列：以音乐为灵感的运动时尚",
-      "summary": "日本超人气音乐组合YOASOBI与ASICS再度合作，推出以歌曲《もう少しだけ》（再靠近一点点）为灵感的全新联名系列。该系列包含GEL‑KINETIC FLUENT Y运动鞋（提供“Midnight/Dragon Fruit”、“Black/Black”和“Piedmont Grey/Pure Silver”三款配色）以及配套服装和配饰。重点鞋款为改良版的ASICS Gel-Kayano 14，设计体现歌曲的积极理念，鼓励人们通过日常微小行动提升身心状态。该系列已于3月19日通过YOASOBI在线商店及ASICS渠道发售，并被评为本周值得关注的重磅球鞋联名之一。",
-      "key_points": [
-        "YOASOBI与ASICS再度联名",
-        "联名系列以歌曲《もう少しだけ》为灵感",
-        "包含GEL‑KINETIC FLUENT Y运动鞋（三款配色）、Gel-Kayano 14以及配套服装和配饰",
-        "设计理念鼓励积极生活方式",
-        "已于3月19日发售"
-      ],
-      "tags": [
-        "YOASOBI",
-        "ASICS",
-        "联名",
-        "运动鞋",
-        "Gel-Kayano 14",
-        "GEL‑KINETIC FLUENT Y",
-        "时尚",
-        "J-pop"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F08%2Fyoasobi-asics-collaboration-full-collection-official-look-release-info-000.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-08T09:50:11+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast Fashion",
-          "title": "Official Look at the Full YOASOBI x ASICS Collaboration",
-          "link": "https://hypebeast.com/2026/3/yoasobi-asics-collaboration-full-collection-official-look",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "First Look at YOASOBI and ASICS’ Sneaker Collaboration",
-          "link": "https://hypebeast.com/2026/3/yoasobi-asics-gel-kayano-14-collaboration-first-look-release-info",
-          "lang": "en"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "YOASOBIとアシックスがコラボ！オリジナルデザインのシューズとアパレルが登場",
-          "link": "https://www.gqjapan.jp/article/20260305-asics-yoasobi-collab-news",
-          "lang": "ja"
-        },
         {
           "name": "Marie Claire Taiwan",
-          "title": "本週球鞋盤點！YOASOBI x ASICS、Kith x On、PUMA x Pokémon...2026 鞋頭必看",
-          "link": "https://www.marieclaire.com.tw/fashion/news/92129",
+          "title": "WBC台韓大戰陳傑憲腳上戰鞋是這雙！Jordan Brand為他訂製，鞋舌藏比賽信念！",
+          "link": "https://www.marieclaire.com.tw/fashion/news/92038",
           "lang": "zh"
         }
       ],
-      "article_count": 4
+      "article_count": 1
     },
     {
-      "id": "24e9dd4ad001",
-      "title": "爱马仕2026秋冬：暮光夜行动物与现代主义的平衡",
-      "summary": "爱马仕2026秋冬系列在巴黎时装周惊艳亮相，创意总监Nadège Vanhee以“暮光”和“夜间生物”为灵感，探索日落时分光影变幻的迷人景象。本季系列通过色彩的巧妙对比，模拟了暮光时分天空的色彩变化，例如亮绿色针织衫与勃艮第皮革迷你裙的搭配，以及午夜蓝、灰、森林绿和黑色的组合运用，提升感官体验，展现形态的全新维度。Hypebeast的报道则进一步指出，该系列在“边缘领域”中平衡了现代主义、女性气质和安静的神秘感，呈现出更为多元的设计理念。WWD的报道侧重于该系列所呈现的运动风格，以及适合户外探索的实用性服装，蜿蜒的T台走秀也预示着品牌未来的设计方向，整体风格兼具优雅与活力。",
+      "id": "e1c4c4683898",
+      "title": "运动Icon，时尚新势力",
+      "summary": "当运动健儿踏入时尚圈，会碰撞出怎样的火花？聚焦即将到来的2026年米兰-科尔蒂纳冬季奥运会，谷爱凌、Alysa Liu等杰出女性运动员不仅在赛场上摘金夺银，更以其独特的个人魅力和时尚品味，成为时尚界的新宠。谷爱凌受邀出席Prada时装秀，WNBA球星Caitlin Clark也惊艳亮相，充分展现了运动员对时尚潮流的影响力。此外，Ysaora Thibus和Aryna Sabalenka等运动员也凭借其个性鲜明的街头风格，备受时尚达人追捧。她们的穿搭不仅引领潮流，更传递出积极健康的生活态度。",
       "key_points": [
-        "Nadège Vanhee以“暮光”和“夜间生物”为灵感",
-        "色彩对比模拟暮光时分天空变化",
-        "平衡现代主义、女性气质和神秘感",
-        "兼具优雅与活力的运动风格"
+        "女性运动员的时尚影响力日益增强",
+        "谷爱凌等运动员亮相时装秀",
+        "运动员的街头风格备受关注"
       ],
       "tags": [
-        "爱马仕",
-        "Hermès",
-        "2026秋冬",
-        "巴黎时装周",
-        "Nadège Vanhee",
-        "暮光",
-        "夜行动物",
-        "现代主义",
-        "运动风格"
+        "女性运动员",
+        "时尚影响力",
+        "街拍",
+        "谷爱凌"
       ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://imgix.bustle.com/uploads/getty/2026/3/7/43c9d840/paris-france-march-07.jpg?w=1200&fit=max",
-      "published": "2026-03-08T09:46:38+00:00",
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://imgix.bustle.com/uploads/getty/2026/3/4/01299696/milan-italy-february-26.jpg?w=1200&fit=max",
+      "published": "2026-03-08T12:00:25+00:00",
       "sources": [
         {
           "name": "The Zoe Report",
-          "title": "Hermès' Fall/Winter 2026 Show Was A \"Twilight\" Affair",
-          "link": "https://www.thezoereport.com/fashion/hermes-fall-winter-2026-show-review",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Hermès Fall 2026: Nocturnal Creatures",
-          "link": "https://wwd.com/runway/fall-2026/paris/hermes/review",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast Fashion",
-          "title": "The Moon Rises Over Hermès FW26",
-          "link": "https://hypebeast.com/2026/3/hermes-fall-winter-2026-paris-fashion-week-womenswear-runway",
+          "title": "The Female Athletes Influencing Fashion In A Major Way",
+          "link": "https://www.thezoereport.com/fashion/female-athletes-in-fashion",
           "lang": "en"
         }
       ],
-      "article_count": 3
+      "article_count": 1
+    },
+    {
+      "id": "59ef1f2d0ea6",
+      "title": "影后初登场：奥斯卡红毯青涩回忆",
+      "summary": "《WWD》回顾了多位影后级女星首次亮相奥斯卡颁奖典礼的红毯造型，包括凯特·哈德森、艾玛·斯通等。这些早期红毯瞬间展现了她们年轻时的时尚品味和风格演变，也为我们提供了回顾经典红毯时刻的绝佳机会。从青涩到成熟，她们的红毯之路见证了各自的成长与蜕变。",
+      "key_points": [
+        "回顾影后首次奥斯卡红毯造型",
+        "展现早期红毯风格",
+        "凯特·哈德森、艾玛·斯通等女星"
+      ],
+      "tags": [
+        "奥斯卡",
+        "红毯造型",
+        "名人时尚",
+        "时尚回顾"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/best-actress-oscars-fi.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-08T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "What the 2026 Best Actress Nominees Wore to Their First Oscars",
+          "link": "https://wwd.com/pop-culture/celebrity-news/best-actress-2026-nominees-first-oscars-dresses-1238644340",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "059bfaaa7e34",
+      "title": "匡威「叛逆芭蕾」，厚底出击！",
+      "summary": "匡威全新All Star Trek Wave BL OX “Gingham Pack”系列，以芭蕾舞鞋为灵感，大胆颠覆传统印象。该系列一改芭蕾舞鞋的轻盈柔美，注入厚底设计，彰显不羁个性。首发配色包括经典黑色和清新浅蓝色，并饰有精致的格子缎带，为整体造型增添亮点。匡威将优雅与街头潮流巧妙融合，打造出独具风格的时尚单品。",
+      "key_points": [
+        "匡威新款运动鞋",
+        "芭蕾舞鞋设计灵感",
+        "厚底+格子缎带"
+      ],
+      "tags": [
+        "匡威",
+        "芭蕾舞鞋",
+        "厚底鞋",
+        "Gingham Pack",
+        "运动鞋"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://www.highsnobiety.com/static-assets/dato/1772847582-converse-ballerina-gingham-2-feat.jpg",
+      "published": "2026-03-08T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "Highsnobiety",
+          "title": "Converse’s Cute Ballet Shoes Have Serious Sole",
+          "link": "https://www.highsnobiety.com/p/converses-all-star-trek-wave-bl-ox-gingham-pack",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "d74c785c733b",
+      "title": "Liz Claiborne：职场女性的时尚先锋",
+      "summary": "回顾比利时裔设计师Liz Claiborne的传奇时尚生涯，她以敏锐的商业嗅觉和对女性需求的深刻理解，打造了一个价值数十亿美元的时尚帝国。Liz Claiborne品牌以其价格亲民、设计别致的服装，精准定位职业女性市场，改变了她们的着装选择，并在时尚界留下了深刻而持久的影响。",
+      "key_points": [
+        "Liz Claiborne的品牌历程",
+        "职业女性服装的革新",
+        "品牌在时尚界的影响力"
+      ],
+      "tags": [
+        "Liz Claiborne",
+        "品牌历史",
+        "设计师",
+        "职业女性",
+        "时尚品牌"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/liz-claiborne.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-08T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "From the Archive: Liz Claiborne’s Timeless Fashion Legacy",
+          "link": "https://wwd.com/fashion-news/fashion-features/archive-liz-claiborne-timeless-fashion-legacy-1238654283",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "9e14428ac685",
+      "title": "告别熊猫眼：咖啡因眼霜焕醒双眸",
+      "summary": "《Allure》杂志精选8款咖啡因眼霜，针对眼部浮肿和黑眼圈问题，通过咖啡因的血管收缩特性，迅速改善眼周状态。这些眼霜通常富含烟酰胺、维生素C、视黄醇和肽等成分，长期使用有助于淡化肤色不均、细纹和眼部凹陷。推荐产品包括Then I Met You Snail Mucin Eye Cream和RoC Derm Correxion Eye Repair Dark Circle Cream等。",
+      "key_points": [
+        "咖啡因眼霜快速消肿、淡化黑眼圈",
+        "多种成分协同作用，改善眼周肌肤",
+        "《Allure》推荐多款有效产品"
+      ],
+      "tags": [
+        "美妆",
+        "护肤",
+        "眼霜",
+        "咖啡因"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.allure.com/photos/69ab04224f085a60c1adc9f9/master/pass/03.04_ALL_The%20Best%20Caffeine%20Eye%20Creams%20to%20Wake%20Tired%20Eyes%20Fast_v1.jpg",
+      "published": "2026-03-08T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "Allure",
+          "title": "8 Best Caffeine Eye Creams That DePuff and Smooth Undereyes",
+          "link": "https://www.allure.com/story/best-caffeine-eye-creams",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1f07863b4973",
+      "title": "Ann Demeulemeester的华丽新生",
+      "summary": "在设计师Stefano Gallici的引领下，Ann Demeulemeester正焕发出新的活力。品牌所有者Claudio Antonioli正积极部署市场战略，计划通过推出pre-collection系列和开设新店来巩固增长势头。最新时装秀充分展现了Gallici如何巧妙地将个人风格融入品牌DNA，成功吸引了更广泛的年轻受众，为这个经典品牌注入了新鲜血液。",
+      "key_points": [
+        "Stefano Gallici引领品牌复兴",
+        "Pre-collection和新店扩张计划",
+        "风格融合与年轻化策略"
+      ],
+      "tags": [
+        "Ann Demeulemeester",
+        "Stefano Gallici",
+        "品牌复兴",
+        "时装秀",
+        "市场策略",
+        "年轻化"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://img.businessoffashion.com/resizer/v2/GT5XHKHCYJB4FHRGJ6UEPOEWCQ.png?auth=c3d88f687a855cdd941d69694ce5067ccae1dd0d994e93cafa51e32e2c4d1426&smart=true&width=1800&height=1013",
+      "published": "2026-03-08T11:58:57+00:00",
+      "sources": [
+        {
+          "name": "BOF",
+          "title": "Stefano Gallici’s Ann Demeulemeester Revival Is on the Right Track",
+          "link": "https://www.businessoffashion.com/articles/luxury/ann-demeulemeester-autumn-winter-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
     },
     {
       "id": "2e7aae0162dc",
       "title": "Balenciaga 2026秋冬系列：Pierpaolo Piccioli联手《亢奋》，暗黑美学与人像翻领",
-      "summary": "Balenciaga 2026秋冬系列在巴黎时装周发布，由Pierpaolo Piccioli操刀，并延续了与《亢奋》主创Sam Levinson的合作，将剧集片段、音效和图像融入时装秀，再现暗黑迷离氛围。该系列名为ClairObscur，灵感来自卡拉瓦乔的明暗对比画法。Piccioli将个人精致风格与Balenciaga经典街头元素巧妙融合，并在外套上设计了一系列具有人像感的翻领，以此呼应他对新一代的描绘。皮革、羊毛外套、廓形设计以及夜光City手袋成为亮点。Winona Ryder、Harris Dickinson等明星嘉宾到场助阵。",
+      "summary": "Balenciaga 2026秋冬系列在巴黎时装周发布，由Pierpaolo Piccioli操刀，并延续了与《亢奋》主创Sam Levinson的合作，将剧集片段、音效和图像融入时装秀，再现暗黑迷离氛围。该系列名为ClairObscur，灵感来自卡拉瓦乔的明暗对比画法。Piccioli将个人精致风格与Balenciaga经典街头元素巧妙融合，并在外套上设计了一系列具有人像感的翻领，以此呼应他对新一代的描绘。皮革、羊毛外套、廓形设计以及夜光City手袋成为亮点。Winona Ryder、Harris Dickinson等明星嘉宾到场助阵。Balenciaga与《亢奋》的合作通过嘉宾名单、logo、配乐和场景设计等多种方式体现，时装秀前，嘉宾收到了一个包含电影胶片和放大镜的神秘互动邀请函。",
       "key_points": [
-        "Pierpaolo Piccioli与《亢奋》主创Sam Levinson再度合作，打造沉浸式秀场体验",
-        "系列名为ClairObscur，灵感源于卡拉瓦乔的明暗对比画法",
-        "外套上的人像翻领设计，呼应设计师对新一代的描绘",
-        "延续Balenciaga经典街头元素，并融入Piccioli的个人风格"
+        "Pierpaolo Piccioli操刀Balenciaga 2026秋冬系列",
+        "延续与《亢奋》主创Sam Levinson的合作，深度融合剧集元素",
+        "系列名为ClairObscur，灵感来自卡拉瓦乔的明暗对比画法",
+        "人像翻领设计呼应Piccioli对新一代的描绘",
+        "神秘互动邀请函，包含电影胶片和放大镜"
       ],
       "tags": [
         "Balenciaga",
@@ -781,15 +669,14 @@
         "巴黎时装周",
         "亢奋",
         "Sam Levinson",
-        "暗黑美学",
-        "街头风",
+        "ClairObscur",
         "人像翻领",
-        "ClairObscur"
+        "暗黑美学"
       ],
       "category": "runway-collection",
       "category_name": "秀场/系列",
       "image": "https://assets.vogue.com/photos/69ac677e8c686e37bb395a3d/master/pass/PORTRAIT_3X4.jpg",
-      "published": "2026-03-08T09:31:28+00:00",
+      "published": "2026-03-08T11:48:00+00:00",
       "sources": [
         {
           "name": "Vogue",
@@ -826,222 +713,318 @@
           "title": "Pierpaolo Piccioli y Sam Levinson llevan ‘Euphoria’ a Balenciaga",
           "link": "https://www.vogue.es/articulos/pierpaolo-piccioli-sam-levinson-euphoria-balenciaga-otono-invierno-2026-27",
           "lang": "es"
-        }
-      ],
-      "article_count": 7
-    },
-    {
-      "id": "b3c6af9ad971",
-      "title": "并购市场：时尚业降温？",
-      "summary": "普华永道最新报告预测，2025年全球并购交易数量将保持稳定，但交易总额预计激增32%，达到3800亿美元，这主要得益于美国市场的大型并购项目。然而，报告同时指出，时尚行业在各个细分领域，包括服装、配饰和零售等，并购活动均呈现放缓趋势。这意味着时尚品牌在扩张和整合方面可能面临新的挑战，也预示着行业格局或将迎来调整。投资者和品牌方需密切关注市场动态，审慎评估并购风险与机遇。",
-      "key_points": [
-        "全球并购交易额预计增长32%",
-        "美国大型交易是主要驱动力",
-        "时尚行业并购活动放缓"
-      ],
-      "tags": [
-        "并购",
-        "市场分析",
-        "时尚行业",
-        "普华永道"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.fashionnetwork.com/m/c688/e1e0/cd98/eabb/9e7c/257e/c84e/96e4/6034/c87d/208x208/c87d.jpg",
-      "published": "2026-03-08T09:23:26+00:00",
-      "sources": [
+        },
         {
-          "name": "Fashion Network",
-          "title": "PwC: Global M&amp;A volumes steady, deal values up 32% in 2025; fashion slows across all segments",
-          "link": "https://ww.fashionnetwork.com/news/Pwc-global-m-a-volumes-steady-deal-values-up-32-in-2025-fashion-slows-across-all-segments,1813770.html",
+          "name": "Dazed",
+          "title": "Balenciaga AW26: Pierpaolo can’t wait for Euphoria season three",
+          "link": "https://www.dazeddigital.com/fashion/article/69851/1/balenciaga-aw26-pierpaolo-piccioli-euphoria-season-three-paris-fashion-week-pfw",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 8
     },
     {
-      "id": "0f840a1415cb",
-      "title": "Rosie的巴黎时尚经",
-      "summary": "超模Rosie Huntington-Whiteley的巴黎胶囊衣橱堪称完美旅行范本。精简的单品选择，凸显优雅与实用。此外，文章还提供了其他时尚灵感，包括Nicole Kidman的穿搭技巧以及法式过渡季衣橱的打造建议，为读者提供全方位的时尚参考。",
+      "id": "d6646e6d31f7",
+      "title": "西太后AW26：内衣外穿新浪潮？",
+      "summary": "Vivienne Westwood AW26系列在巴黎时装周惊艳亮相，创意总监Andreas Kronthaler巧妙融合奥地利影星Romy Schneider的优雅、意大利服装大师Danilo Donati的戏剧感，以及大胆的情色内衣元素，打造出极具颠覆性的全新系列。本季设计大胆前卫，挑战传统时尚观念，或将引领新一轮的内衣外穿风潮。",
       "key_points": [
-        "Rosie Huntington-Whiteley的巴黎胶囊衣橱",
-        "推荐适合旅行的时尚单品",
-        "提供Nicole Kidman穿搭和法式衣橱灵感"
+        "Vivienne Westwood AW26巴黎发布",
+        "灵感源自Romy Schneider和Danilo Donati",
+        "情色内衣元素大胆运用"
       ],
       "tags": [
-        "Rosie Huntington-Whiteley",
-        "胶囊衣橱",
-        "名人穿搭",
-        "旅行时尚",
-        "巴黎风格"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://cdn.mos.cms.futurecdn.net/QUnYLpseZxgTEmpa5QXGmX-1280-80.jpg",
-      "published": "2026-03-08T09:06:38+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Rosie Huntington-Whiteley’s Paris Capsule Wardrobe Is Perfect—3 Chic Items I’m Packing For My Next Trip",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/rosie-huntington-whiteley-paris-capsule-wardrobe-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "c2b8ddf19477",
-      "title": "本周必入！美妆新品抢鲜看",
-      "summary": "《WWD Japan》精选3月9日至15日发售的8款美妆新品，为你的美丽加分。DECENCIA推出全新美白系列，焕发肌肤光彩；REVLON高密着UV隔离再添新色，提供更全面的防护；YSL推出可重塑肌肤质感的粉饼，打造精致妆容；LOVE CHROME则带来限定梳子礼盒，附赠精美挂饰，呵护秀发。",
-      "key_points": [
-        "DECENCIA新美白系列",
-        "REVLON UV隔离新色",
-        "YSL重塑粉饼",
-        "LOVE CHROME限定礼盒"
-      ],
-      "tags": [
-        "美妆新品",
-        "YSL",
-        "Love Chrome",
-        "REVLON",
-        "DECENCIA"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2025/10/05124709/20260305%E3%81%BE%E3%81%A8%E3%82%81.jpg",
-      "published": "2026-03-08T09:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "「ラブクロム」限定品や「YSL」お直しクッションパウダーなどが登場　今週発売のビューティアイテム8選【3/9〜3/15】",
-          "link": "https://www.wwdjapan.com/articles/2235547",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "aae6ef7297ea",
-      "title": "《魔法坏女巫》戏服秘辛",
-      "summary": "《Vogue Japan》独家揭秘电影《魔法坏女巫：永远的承诺》的服装设计，由服装设计师Paul Tazewell亲自解读Elphaba和Glinda的服装密码。文章深入剖析戏服如何巧妙地展现人物性格的转变与故事情节的推进。Elphaba最初的破旧黑色斗篷象征着她的边缘化，而Glinda华丽的礼服则映射出她的社会地位与内心的渴望。这些服装不仅仅是视觉元素，更是叙事的重要组成部分，为观众提供了更深层次的解读。",
-      "key_points": [
-        "Paul Tazewell解读服装设计",
-        "Elphaba黑色斗篷的象征意义",
-        "Glinda华丽礼服的内涵"
-      ],
-      "tags": [
-        "电影服装",
-        "服装设计",
-        "魔法坏女巫",
-        "时尚解读"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vogue.co.jp/photos/699e6770039e66abc2e774df/master/pass/2552_D085_00216R-1.jpg",
-      "published": "2026-03-08T09:00:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue Japan",
-          "title": "映画『ウィキッド 永遠の約束』の衣装を徹底解説。ドレスに込められた意味とは？",
-          "link": "https://www.vogue.co.jp/article/wicked-for-good-costume-design-paul-tazewell",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "37a9844f1358",
-      "title": "ASSC喊你“怪”起来！SS26系列个性来袭",
-      "summary": "Anti Social Social Club (ASSC) 正式发布了其备受期待的 SS26 系列，并在官网同步上线首批单品。该系列延续了品牌标志性的街头潮流美学，大胆鼓励消费者拥抱真我，释放个性，勇敢“Get Weird”，穿出与众不同的风格。",
-      "key_points": [
-        "Anti Social Social Club发布SS26系列",
-        "系列延续品牌街头潮流风格",
-        "鼓励消费者展现个性，标语'Get Weird'"
-      ],
-      "tags": [
-        "Anti Social Social Club",
-        "SS26",
-        "街头潮流",
-        "新品发布",
-        "个性穿搭"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F08%2Fanti-social-social-club-spring-summer-2026-drop-1-release-info-000.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-08T08:43:12+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast Fashion",
-          "title": "Anti Social Social Club Wants You To “Get Weird” This SS26",
-          "link": "https://hypebeast.com/2026/3/anti-social-social-club-spring-summer-2026-drop-1-release-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "286232627f18",
-      "title": "Noir Kei Ninomiya暗黑浪漫再袭巴黎",
-      "summary": "Noir Kei Ninomiya于巴黎时装周发布2026-27年秋冬系列，延续品牌标志性的暗黑浪漫主义风格。本季设计着重解构与重塑，大胆探索全新材质与廓形，在经典基调上寻求突破与创新，为时尚界带来一场视觉盛宴。该系列进一步巩固了品牌在解构主义时尚领域的独特地位。",
-      "key_points": [
-        "暗黑浪漫",
-        "解构重塑",
-        "全新材质"
-      ],
-      "tags": [
-        "Noir Kei Ninomiya",
-        "2026-27秋冬",
-        "巴黎时装周"
+        "Vivienne Westwood",
+        "AW26",
+        "巴黎时装周",
+        "内衣外穿",
+        "Andreas Kronthaler"
       ],
       "category": "runway-collection",
       "category_name": "秀场/系列",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/08095850/noi_og.jpg",
-      "published": "2026-03-08T08:30:00+00:00",
+      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/0/1440893.jpg",
+      "published": "2026-03-08T11:18:00+00:00",
+      "sources": [
+        {
+          "name": "Dazed",
+          "title": "Vivienne Westwood AW26 is coming for your underwear draw",
+          "link": "https://www.dazeddigital.com/fashion/gallery/36815/0/vivienne-westwood-aw26",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "fc03a9cce6cb",
+      "title": "养宠进阶：55件提升幸福感好物",
+      "summary": "还在为爱宠的日常琐事烦恼？这份清单为你精选55款宠物主人力荐的实用小物，从便携水壶到可折叠楼梯，每一件都旨在解决养宠痛点，提升生活品质。告别手忙脚乱，享受更轻松、愉悦的养宠体验，让爱与陪伴更加纯粹。",
+      "key_points": [
+        "宠物实用好物推荐",
+        "提升养宠生活品质",
+        "解决日常养宠痛点"
+      ],
+      "tags": [
+        "宠物用品",
+        "生活方式",
+        "实用推荐",
+        "养宠攻略"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/5/b40388fb/6.png?w=1200&fit=max",
+      "published": "2026-03-08T11:15:25+00:00",
+      "sources": [
+        {
+          "name": "Bustle",
+          "title": "55 Weird, Clever Things Dog Owners Say Are Actually Life-Changing",
+          "link": "https://www.bustle.com/shopping/weird-clever-things-dog-owners-say-are-actually-life-changing",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "0663643f3993",
+      "title": "莉莉·柯林斯寻回失窃婚戒！三年后重回主人手中",
+      "summary": "好莱坞女星莉莉·柯林斯近日在社交媒体上激动宣布，三年前在西好莱坞EDITION酒店水疗中心被盗的订婚戒指失而复得。这枚由Irene Neuwirth设计的独特玫瑰切割钻石戒指，价值超过8万美元。她在Instagram上分享了这一喜讯，并表达了戒指回归的激动之情。警方曾于2023年5月对该盗窃案进行调查。时隔三年，这枚珍贵的戒指终于重回主人手中，令粉丝们纷纷送上祝福。",
+      "key_points": [
+        "莉莉·柯林斯寻回三年前被盗的订婚戒指",
+        "戒指为Irene Neuwirth设计的玫瑰切割钻石，价值超过8万美元",
+        "戒指于2023年5月在西好莱坞EDITION酒店水疗中心被盗",
+        "莉莉·柯林斯在Instagram上分享了戒指失而复得的喜讯"
+      ],
+      "tags": [
+        "莉莉·柯林斯",
+        "订婚戒指",
+        "失窃",
+        "Irene Neuwirth",
+        "玫瑰切割钻石",
+        "西好莱坞EDITION酒店"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://assets.vogue.com/photos/6137e19dfdb4eea84a5dd05f/master/pass/241416034_697093368356045_7801259790541448857_n.jpg",
+      "published": "2026-03-08T11:14:53+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "Lily Collins Recovers Her Engagement Ring Three Years After It Was Stolen",
+          "link": "https://www.vogue.com/article/lily-collins-recovers-her-engagement-ring-three-years-after-it-was-stolen",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue España",
+          "title": "Lily Collins recupera su anillo de compromiso tres años después de su robo",
+          "link": "https://www.vogue.es/articulos/lily-collins-recupera-anillo-de-compromiso-robo",
+          "lang": "es"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "bdf272bafb10",
+      "title": "小预算打造个性家居：平价好物点亮生活灵感，酷炫与精致并存",
+      "summary": "想用有限的预算打造精致奢华又充满个性的家居环境？无需大动干戈，本文精选多款平价好物，涵盖浴室、厨房、卧室、工作空间等，助你轻松提升生活品质，注入更多趣味和个性。从经典选择如无焰蜡烛、干桉树，到设计独特的吐司坐垫、赛车宠物床、羊驼抱枕，以及实用好物如木质旋转托盘、可遥控LED灯串等，每一件都能为你的生活空间增添意想不到的惊喜，打造专属的个性化家居风格。",
+      "key_points": [
+        "小预算打造精致奢华的家居环境",
+        "涵盖家居、美妆生活等多领域平价好物推荐",
+        "强调个性化和趣味性，提供多样化的家居灵感",
+        "无需DIY技能，轻松提升生活品质"
+      ],
+      "tags": [
+        "家居",
+        "平价好物",
+        "生活灵感",
+        "个性化",
+        "小预算",
+        "生活方式"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/4/ebd73ae8/17.png?w=1200&fit=max",
+      "published": "2026-03-08T11:00:24+00:00",
+      "sources": [
+        {
+          "name": "Elite Daily",
+          "title": "The 60 Bougiest Home Upgrades You Can Make For Under $25",
+          "link": "https://www.elitedaily.com/lifestyle/the-bougiest-home-upgrades-you-can-make-for-under-25",
+          "lang": "en"
+        },
+        {
+          "name": "Bustle",
+          "title": "60 Expensive-Looking Home Upgrades Are Actually So Damn Cheap",
+          "link": "https://www.bustle.com/shopping/expensive-looking-home-upgrades-are-actually-so-damn-cheap",
+          "lang": "en"
+        },
+        {
+          "name": "Elite Daily",
+          "title": "Weird Sh*t Under $25 That'll Make Your Home So Much Cooler",
+          "link": "https://www.elitedaily.com/shopping/weird-sht-under-25-thatll-make-your-home-so-much-cooler",
+          "lang": "en"
+        },
+        {
+          "name": "Elite Daily",
+          "title": "60 Bougie, Cheap Things That Make Your Life Way Easier",
+          "link": "https://www.elitedaily.com/shopping/bougie-cheap-things-that-make-your-life-way-easier",
+          "lang": "en"
+        },
+        {
+          "name": "Elite Daily",
+          "title": "70 Kooky Things For Your Home That Are So Damn Genius & Cheap",
+          "link": "https://www.elitedaily.com/shopping/kooky-things-for-your-home-that-are-so-damn-genius-cheap",
+          "lang": "en"
+        }
+      ],
+      "article_count": 5
+    },
+    {
+      "id": "c74df91dd14f",
+      "title": "日本香堂焕新：Z世代香氛「ナワズ」",
+      "summary": "为庆祝450周年，日本香堂推出全新香氛品牌「ナワズ(NOWAS)」，由Z世代团队主导，旨在将日本传统香文化与现代生活方式融合。该品牌以“现代护身符”为概念，从日本历史中汲取灵感，首发系列包含四款独特香型。同时，「ナワズ」注重可持续发展，产品包装采用升级回收材料，体现了品牌对环保的承诺。",
+      "key_points": [
+        "日本香堂450周年纪念",
+        "Z世代主导的全新香氛品牌",
+        "传承和文化，打造现代护身符"
+      ],
+      "tags": [
+        "香氛",
+        "日本香堂",
+        "Z世代",
+        "可持续"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/06182114/260108_nowas0143.jpg",
+      "published": "2026-03-08T11:00:00+00:00",
       "sources": [
         {
           "name": "WWD Japan",
-          "title": "「ノワール ケイ ニノミヤ」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2346767",
+          "title": "日本香堂が新フレグランスブランド「ナワズ」　“和”の香り文化を現代に継承",
+          "link": "https://www.wwdjapan.com/articles/2345705",
           "lang": "ja"
         }
       ],
       "article_count": 1
     },
     {
-      "id": "9e73adf8dd93",
-      "title": "2026-27秋冬巴黎时装周：多元风格交织，解构主义、未来主义、暗黑摇滚与西太后经典重塑",
-      "summary": "2026-27秋冬巴黎时装周各大品牌系列陆续发布，呈现多元化的时尚风格。CELINE, NINA RICCI, VICTORIA BECKHAM, ELIE SAAB, BARBARA BUI, LANVIN等品牌纷纷亮相，展现各自的设计理念。JUNYA WATANABE和Comme des Garçons延续解构主义风格，探索未来主义的可能性，前者以创新材质和建筑感廓形引人注目，后者则专注于面料表面的表达。ANN DEMEULEMEESTER则呈现暗黑摇滚风格。Andreas Kronthaler发布的Vivienne Westwood 2026秋冬系列，灵感源自Romy Schneider、Danilo Donati以及内衣设计，延续品牌大胆前卫的颠覆美学，并由Chappell Roan和Paris Jackson等明星演绎。",
+      "id": "eb8842b90c0b",
+      "title": "泰勒风华：91年Vogue绝版专访",
+      "summary": "Vogue杂志重温1991年对伊丽莎白·泰勒的珍贵访谈，揭示这位好莱坞传奇巨星的生活哲学与不凡品味。文章生动描绘了泰勒位于Bel Air的奢华住所，以及她标志性的着装风格：丝绸衬衫搭配紧身牛仔裤，再以璀璨夺目的珠宝点缀。尽管极度重视个人隐私，泰勒在访谈中依然展现出迷人的魅力与亲和力，令人回味。",
       "key_points": [
-        "巴黎时装周呈现多元风格，包括解构主义、未来主义、暗黑摇滚等。",
-        "JUNYA WATANABE和Comme des Garçons延续解构主义，探索未来主义。",
-        "Vivienne Westwood 2026秋冬系列致敬经典，由Andreas Kronthaler设计。",
-        "Chappell Roan和Paris Jackson等明星演绎Vivienne Westwood风格。"
+        "Vogue回顾1991年伊丽莎白·泰勒专访",
+        "展现泰勒的生活态度和时尚品味",
+        "丝绸衬衫、牛仔裤与华丽珠宝的经典搭配"
+      ],
+      "tags": [
+        "伊丽莎白·泰勒",
+        "Vogue",
+        "名人风格",
+        "复古时尚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://assets.vogue.com/photos/69acb60bc5251f3c111f1d7e/master/pass/1125951390",
+      "published": "2026-03-08T11:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "From the Archives: Her Demons at Rest, Elizabeth Taylor Is Back in Top Form",
+          "link": "https://www.vogue.com/article/from-the-archives-her-demons-at-rest-elizabeth-taylor-is-back-in-top-form",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e746f1ed3460",
+      "title": "Balenciaga秀场暗藏玄机：Rosalía的时尚密码",
+      "summary": "Balenciaga最新发布系列，惊喜不断。西班牙音乐天后Rosalía的音乐作品贯穿秀场，为整场发布会奠定了前卫基调。更令人眼前一亮的是，Rosalía的标志性形象跃然于服装之上，成为该系列极具辨识度的设计元素。此外，Winona Ryder、Naomi Watts等重量级明星也现身秀场，星光熠熠。",
+      "key_points": [
+        "Rosalía音乐作品成为Balenciaga秀场背景音乐",
+        "Rosalía形象印花服装成亮点",
+        "Winona Ryder、Naomi Watts等明星助阵"
+      ],
+      "tags": [
+        "Balenciaga",
+        "Rosalía",
+        "秀场",
+        "明星",
+        "音乐",
+        "时尚"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://media.vogue.es/photos/69ad395e3e686cac3872b001/master/pass/GettyImages-2245562464.jpg",
+      "published": "2026-03-08T10:31:42+00:00",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "Rosalía estuvo muy presente en el último desfile de Balenciaga (aunque no de la manera que esperas)",
+          "link": "https://www.vogue.es/articulos/rosalia-musica-euphoria-desfile-balenciaga-otono-invierno-2026-27",
+          "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "f7700a5418d7",
+      "title": "2026-27秋冬巴黎/米兰时装周：多元风格绽放，解构、暗黑、未来与经典重塑",
+      "summary": "2026-27秋冬巴黎和米兰时装周精彩呈现多元时尚风格。Max Mara、Mugler、Noir Kei Ninomiya、RUOHAN等品牌发布最新系列。解构主义持续流行，JUNYA WATANABE和Comme des Garçons探索未来主义，Noir Kei Ninomiya延续暗黑浪漫，CELINE, NINA RICCI, VICTORIA BECKHAM, ELIE SAAB, BARBARA BUI, LANVIN等品牌也纷纷亮相，展现各自的设计理念。",
+      "key_points": [
+        "Max Mara, Mugler, RUOHAN发布2026-27秋冬系列",
+        "Noir Kei Ninomiya延续暗黑浪漫主义风格，探索解构与重塑",
+        "巴黎时装周呈现多元风格，包括解构主义、未来主义、暗黑摇滚等",
+        "JUNYA WATANABE和Comme des Garçons探索未来主义的可能性",
+        "CELINE, NINA RICCI, VICTORIA BECKHAM, ELIE SAAB, BARBARA BUI, LANVIN等品牌发布最新系列"
       ],
       "tags": [
         "2026-27秋冬",
         "巴黎时装周",
+        "米兰时装周",
         "解构主义",
         "未来主义",
-        "暗黑摇滚",
-        "Vivienne Westwood",
-        "Andreas Kronthaler",
+        "暗黑浪漫",
+        "Max Mara",
+        "Mugler",
+        "Noir Kei Ninomiya",
+        "RUOHAN",
+        "JUNYA WATANABE",
+        "Comme des Garçons",
         "CELINE",
         "NINA RICCI",
         "VICTORIA BECKHAM",
         "ELIE SAAB",
         "BARBARA BUI",
-        "LANVIN",
-        "JUNYA WATANABE",
-        "Comme des Garçons",
-        "ANN DEMEULEMEESTER",
-        "Chappell Roan",
-        "Paris Jackson"
+        "LANVIN"
       ],
       "category": "runway-collection",
       "category_name": "秀场/系列",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/08105114/vic_og.jpg",
-      "published": "2026-03-08T08:00:00+00:00",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/04140918/20260304_MAXMARA_og.jpg",
+      "published": "2026-03-08T10:30:00+00:00",
       "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "【バックステージ】「マックスマーラ」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2341156",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「ミュグレー」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2346341",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「ルオハン」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2346810",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「ノワール ケイ ニノミヤ」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2346767",
+          "lang": "ja"
+        },
         {
           "name": "WWD Japan",
           "title": "「ヴィクトリア ベッカム」2026-27年秋冬コレクション",
@@ -2027,7 +2010,472 @@
           "lang": "en"
         }
       ],
-      "article_count": 170
+      "article_count": 174
+    },
+    {
+      "id": "cdb848983260",
+      "title": "Nordstrom精选：高性价比时尚单品推荐",
+      "summary": "知名时尚媒体Who What Wear精选Nordstrom时尚单品，不仅推荐跨季节的40款经典单品，更聚焦33款百元以下的高性价比之选。旨在为读者提供多元化的穿搭灵感，无论追求经典还是性价比，都能在Nordstrom找到心仪之选，轻松打造时髦造型。",
+      "key_points": [
+        "Nordstrom精选时尚单品",
+        "Who What Wear媒体推荐",
+        "跨季节经典单品推荐",
+        "百元以下高性价比单品推荐",
+        "多元化穿搭灵感"
+      ],
+      "tags": [
+        "Nordstrom",
+        "时尚单品",
+        "Who What Wear",
+        "穿搭灵感",
+        "高性价比",
+        "平价时尚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://cdn.mos.cms.futurecdn.net/s9ZmaoofePyVbGqePTKiPo-1280-80.jpg",
+      "published": "2026-03-08T10:00:00+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "40 Stunning Nordstrom Items You'll Wear Now and Well Into the Rest of the Year",
+          "link": "https://www.whowhatwear.com/fashion/shopping/best-nordstrom-clothing-march-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "I Check Nordstrom Daily—33 Rich-Looking Under-$100 Finds That Deserve Their Own Highlight Reel",
+          "link": "https://www.whowhatwear.com/fashion/shopping/chic-nordstrom-under-100-finds-march-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "c036ac8fdc54",
+      "title": "准新娘派对战袍：我的寻裙之旅",
+      "summary": "《Vogue》作者分享了她为婚前派对挑选礼服的经历，从Oscar de la Renta的精致蕾丝到Carolina Herrera的珍珠迷你裙，再到Zara的简约丝绸裙，她尝试了多种风格，最终找到了完美契合个人风格与派对氛围的理想之选。这篇文章为即将举办婚前派对的新娘们提供了丰富的穿搭灵感，助力她们在特别日子里闪耀动人。",
+      "key_points": [
+        "婚前派对礼服选择多样",
+        "蕾丝、珍珠、丝绸等元素流行",
+        "不同品牌提供不同风格选择"
+      ],
+      "tags": [
+        "婚纱礼服",
+        "新娘穿搭",
+        "婚前派对"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://assets.vogue.com/photos/69a9e3056a0ddca74c52b39d/master/pass/03_2026%20Bridal%20Shower%20Dress%20(Collage%201920x1080)%20Final.jpg",
+      "published": "2026-03-08T10:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "I Tried Dozens of Bridal Shower Dresses—Here’s How I Found the One",
+          "link": "https://www.vogue.com/article/bridal-shower-dress-try-on",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "b04234bc3237",
+      "title": "艾丽·范宁：奥斯卡之路的璀璨星光",
+      "summary": "《Vogue》回顾了艾丽·范宁演艺生涯中14个里程碑式的表演，这些作品共同构筑了她通往奥斯卡提名的道路。从3岁首次触电到驾驭各类电影角色，范宁凭借其天赋和不懈努力，与众多明星合作，展现了她在表演上的多面性。文章不仅肯定了她过往的成就，更对其未来的发展寄予厚望，预示着这位年轻演员将继续在银幕上绽放光芒。",
+      "key_points": [
+        "回顾艾丽·范宁14个重要表演",
+        "展现其在不同类型电影中的出色表现",
+        "肯定其长期努力和多才多艺"
+      ],
+      "tags": [
+        "艾丽·范宁",
+        "奥斯卡",
+        "电影",
+        "名人风格"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://assets.vogue.com/photos/69ac1ca28c686e37bb395810/master/pass/208_217_191_ACU_12954_R-1.jpg",
+      "published": "2026-03-08T10:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "14 Elle Fanning Performances That Paved the Way for Her Oscar Nomination",
+          "link": "https://www.vogue.com/article/elle-fanning-14-best-performances",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "f37ec7fdefae",
+      "title": "自助结账：日本零售业的信任危机？",
+      "summary": "日本零售业正迅速普及自助结账系统，效仿美国模式。然而，美国零售巨头如沃尔玛的经验表明，自助结账虽提高了效率，却也面临盗窃损失增加、顾客体验下降等问题。文章警惕技术万能主义，强调在追求效率的同时，维护社会信任至关重要。加州等地已开始对自助结账系统进行监管。日本零售业如何在效率与信任之间找到平衡，值得深思。",
+      "key_points": [
+        "自助结账系统普及的潜在风险",
+        "效率与信任的平衡",
+        "借鉴美国经验，避免重蹈覆辙"
+      ],
+      "tags": [
+        "零售",
+        "自助结账",
+        "消费者体验",
+        "市场趋势",
+        "信任"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/imgi_3_74551fd1-s-dac4f517-83ac-4754-bb8d-a1a21a36d47e.jpg",
+      "published": "2026-03-08T09:59:00+00:00",
+      "sources": [
+        {
+          "name": "Fashionsnap",
+          "title": "日本はアメリカの二の舞に？　セルフレジは信頼を守れるか",
+          "link": "https://www.fashionsnap.com/article/2026-03-08/walmart-self-cash-register",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "cc2ad841fcc9",
+      "title": "巴黎时装周Day 6：策略与直觉的交锋",
+      "summary": "巴黎时装周第六日，BOF聚焦 Junya Watanabe、Celine、Hermès 和 Balenciaga 等品牌，深入剖析其设计理念。本季，设计师们或遵循严谨的战略规划，或依赖敏锐的直觉灵感，在时装的舞台上呈现出风格各异的作品。战略与直觉的碰撞，成为本季巴黎时装周的一大看点。",
+      "key_points": [
+        "Junya Watanabe 的解构主义",
+        "Celine 的法式优雅",
+        "Hermès 的经典传承",
+        "Balenciaga 的前卫实验"
+      ],
+      "tags": [
+        "巴黎时装周",
+        "时装设计",
+        "品牌分析"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://img.businessoffashion.com/resizer/v2/FU2Y7CP2CJF2VAB3JRMZ2O7BK4.png?auth=eee5e750f5d65053528e986569352744e7a91404ad56df1783ab1e6f95932514&smart=true&width=1800&height=1013",
+      "published": "2026-03-08T09:53:18+00:00",
+      "sources": [
+        {
+          "name": "BOF",
+          "title": "Paris Day 6: Strategy or Intuition?",
+          "link": "https://www.businessoffashion.com/reviews/fashion-week/junya-watanabe-celine-noir-kei-ninomiya-hermes-comme-des-garcons-balenciaga-autumn-winter-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "07504c71c67f",
+      "title": "Macron营收创新高，运动市场新动向？",
+      "summary": "意大利运动品牌Macron公布了其2025年的亮眼业绩，总营收高达2.444亿欧元，同比增长9.3%，EBITDA利润率达到21%。这一数据不仅展现了Macron的强劲增长势头，也为我们深入了解当前运动品牌市场的动态提供了宝贵的参考。",
+      "key_points": [
+        "Macron 2025年营收达2.444亿欧元",
+        "营收同比增长9.3%",
+        "EBITDA利润率为21%"
+      ],
+      "tags": [
+        "运动品牌",
+        "营收增长",
+        "市场分析",
+        "Macron"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/4527/9fc9/382a/66d6/4217/0db8/4beb/7557/4750/0a10/208x208/0a10.jpg",
+      "published": "2026-03-08T09:51:32+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Macron posts record turnover in 2025",
+          "link": "https://ww.fashionnetwork.com/news/Macron-posts-record-turnover-in-2025,1813791.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "4be5b9f1af7c",
+      "title": "YOASOBI x ASICS 联名系列：以音乐为灵感的运动时尚",
+      "summary": "日本超人气音乐组合YOASOBI与ASICS再度合作，推出以歌曲《もう少しだけ》（再靠近一点点）为灵感的全新联名系列。该系列包含GEL‑KINETIC FLUENT Y运动鞋（提供“Midnight/Dragon Fruit”、“Black/Black”和“Piedmont Grey/Pure Silver”三款配色）以及配套服装和配饰。重点鞋款为改良版的ASICS Gel-Kayano 14，设计体现歌曲的积极理念，鼓励人们通过日常微小行动提升身心状态。该系列已于3月19日通过YOASOBI在线商店及ASICS渠道发售，是继先前合作后的完整系列。",
+      "key_points": [
+        "YOASOBI与ASICS再度联名，推出以歌曲《もう少しだけ》为灵感的系列。",
+        "系列包含GEL‑KINETIC FLUENT Y运动鞋（三种配色）以及配套服装和配饰。",
+        "设计理念体现歌曲的积极精神，鼓励积极生活。",
+        "已于3月19日通过YOASOBI在线商店及ASICS渠道发售。"
+      ],
+      "tags": [
+        "YOASOBI",
+        "ASICS",
+        "联名",
+        "GEL-KINETIC FLUENT Y",
+        "运动鞋",
+        "音乐",
+        "潮流",
+        "时尚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F08%2Fyoasobi-asics-collaboration-full-collection-official-look-release-info-000.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-08T09:50:11+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "Official Look at the Full YOASOBI x ASICS Collaboration",
+          "link": "https://hypebeast.com/2026/3/yoasobi-asics-collaboration-full-collection-official-look",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "First Look at YOASOBI and ASICS’ Sneaker Collaboration",
+          "link": "https://hypebeast.com/2026/3/yoasobi-asics-gel-kayano-14-collaboration-first-look-release-info",
+          "lang": "en"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "YOASOBIとアシックスがコラボ！オリジナルデザインのシューズとアパレルが登場",
+          "link": "https://www.gqjapan.jp/article/20260305-asics-yoasobi-collab-news",
+          "lang": "ja"
+        },
+        {
+          "name": "Marie Claire Taiwan",
+          "title": "本週球鞋盤點！YOASOBI x ASICS、Kith x On、PUMA x Pokémon...2026 鞋頭必看",
+          "link": "https://www.marieclaire.com.tw/fashion/news/92129",
+          "lang": "zh"
+        }
+      ],
+      "article_count": 5
+    },
+    {
+      "id": "24e9dd4ad001",
+      "title": "爱马仕2026秋冬：暮光夜行动物、现代主义与实用主义的融合",
+      "summary": "爱马仕2026秋冬系列在巴黎时装周惊艳亮相，创意总监Nadège Vanhee以“暮光”和“夜间生物”为灵感，探索日落时分光影变幻的迷人景象。本季系列通过色彩的巧妙对比，模拟了暮光时分天空的色彩变化，例如亮绿色针织衫与勃艮第皮革迷你裙的搭配，以及午夜蓝、灰、森林绿和黑色的组合运用，提升感官体验，展现形态的全新维度。Hypebeast的报道指出，该系列在“边缘领域”中平衡了现代主义、女性气质和安静的神秘感，呈现出多元的设计理念，并展示了多个造型图片。WWD的报道则侧重于该系列所呈现的运动风格，以及适合户外探索的实用性服装，蜿蜒的T台走秀也预示着品牌未来的设计方向，整体风格兼具优雅与活力。",
+      "key_points": [
+        "灵感源于“暮光”和“夜间生物”，探索光影变幻。",
+        "色彩对比模拟暮光时分天空的色彩变化。",
+        "平衡现代主义、女性气质和安静的神秘感。",
+        "兼具运动风格和户外探索的实用性。",
+        "蜿蜒的T台走秀预示品牌未来设计方向。"
+      ],
+      "tags": [
+        "爱马仕",
+        "Hermès",
+        "2026秋冬",
+        "巴黎时装周",
+        "Nadège Vanhee",
+        "暮光",
+        "现代主义",
+        "运动风",
+        "实用主义"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://imgix.bustle.com/uploads/getty/2026/3/7/43c9d840/paris-france-march-07.jpg?w=1200&fit=max",
+      "published": "2026-03-08T09:46:38+00:00",
+      "sources": [
+        {
+          "name": "The Zoe Report",
+          "title": "Hermès' Fall/Winter 2026 Show Was A \"Twilight\" Affair",
+          "link": "https://www.thezoereport.com/fashion/hermes-fall-winter-2026-show-review",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Hermès Fall 2026: Nocturnal Creatures",
+          "link": "https://wwd.com/runway/fall-2026/paris/hermes/review",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "The Moon Rises Over Hermès FW26",
+          "link": "https://hypebeast.com/2026/3/hermes-fall-winter-2026-paris-fashion-week-womenswear-runway",
+          "lang": "en"
+        }
+      ],
+      "article_count": 4
+    },
+    {
+      "id": "b3c6af9ad971",
+      "title": "并购市场：时尚业降温？",
+      "summary": "普华永道最新报告预测，2025年全球并购交易数量将保持稳定，但交易总额预计激增32%，达到3800亿美元，这主要得益于美国市场的大型并购项目。然而，报告同时指出，时尚行业在各个细分领域，包括服装、配饰和零售等，并购活动均呈现放缓趋势。这意味着时尚品牌在扩张和整合方面可能面临新的挑战，也预示着行业格局或将迎来调整。投资者和品牌方需密切关注市场动态，审慎评估并购风险与机遇。",
+      "key_points": [
+        "全球并购交易额预计增长32%",
+        "美国大型交易是主要驱动力",
+        "时尚行业并购活动放缓"
+      ],
+      "tags": [
+        "并购",
+        "市场分析",
+        "时尚行业",
+        "普华永道"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/c688/e1e0/cd98/eabb/9e7c/257e/c84e/96e4/6034/c87d/208x208/c87d.jpg",
+      "published": "2026-03-08T09:23:26+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "PwC: Global M&amp;A volumes steady, deal values up 32% in 2025; fashion slows across all segments",
+          "link": "https://ww.fashionnetwork.com/news/Pwc-global-m-a-volumes-steady-deal-values-up-32-in-2025-fashion-slows-across-all-segments,1813770.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "0f840a1415cb",
+      "title": "Rosie的巴黎时尚经",
+      "summary": "超模Rosie Huntington-Whiteley的巴黎胶囊衣橱堪称完美旅行范本。精简的单品选择，凸显优雅与实用。此外，文章还提供了其他时尚灵感，包括Nicole Kidman的穿搭技巧以及法式过渡季衣橱的打造建议，为读者提供全方位的时尚参考。",
+      "key_points": [
+        "Rosie Huntington-Whiteley的巴黎胶囊衣橱",
+        "推荐适合旅行的时尚单品",
+        "提供Nicole Kidman穿搭和法式衣橱灵感"
+      ],
+      "tags": [
+        "Rosie Huntington-Whiteley",
+        "胶囊衣橱",
+        "名人穿搭",
+        "旅行时尚",
+        "巴黎风格"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://cdn.mos.cms.futurecdn.net/QUnYLpseZxgTEmpa5QXGmX-1280-80.jpg",
+      "published": "2026-03-08T09:06:38+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "Rosie Huntington-Whiteley’s Paris Capsule Wardrobe Is Perfect—3 Chic Items I’m Packing For My Next Trip",
+          "link": "https://www.whowhatwear.com/fashion/celebrity-style/rosie-huntington-whiteley-paris-capsule-wardrobe-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "89124e98f9ee",
+      "title": "星象指南：3月8-14日运势解析",
+      "summary": "知名占星家Madame Clairevoyant发布最新一周星座运势（3月8日至14日）。本周月亮将依次行经天蝎座、射手座和摩羯座，星象变化将对各星座运势产生不同影响。无论你是渴望爱情、事业突破还是财务增长，这份运势指南都将为你提供参考，助你更好地把握机遇，应对挑战。",
+      "key_points": [
+        "Madame Clairevoyant每周星座运势",
+        "3月8-14日月亮星座轨迹分析",
+        "天蝎座、射手座、摩羯座影响"
+      ],
+      "tags": [
+        "星座",
+        "运势",
+        "占星",
+        "生活方式",
+        "星象"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://pyxis.nymag.com/v1/imgs/22f/449/87211cc0f41ccfd8886ee727105217e3ef-week-3-pisces.1x.rsocial.w1200.jpg",
+      "published": "2026-03-08T09:00:38+00:00",
+      "sources": [
+        {
+          "name": "The Cut",
+          "title": "Your Weekly Horoscopes by Madame Clairevoyant: March 8–14",
+          "link": "http://www.thecut.com/article/your-weekly-horoscopes-madame-clairevoyant-mar-8-14.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c2b8ddf19477",
+      "title": "本周必入！美妆新品抢鲜看",
+      "summary": "《WWD Japan》精选3月9日至15日发售的8款美妆新品，为你的美丽加分。DECENCIA推出全新美白系列，焕发肌肤光彩；REVLON高密着UV隔离再添新色，提供更全面的防护；YSL推出可重塑肌肤质感的粉饼，打造精致妆容；LOVE CHROME则带来限定梳子礼盒，附赠精美挂饰，呵护秀发。",
+      "key_points": [
+        "DECENCIA新美白系列",
+        "REVLON UV隔离新色",
+        "YSL重塑粉饼",
+        "LOVE CHROME限定礼盒"
+      ],
+      "tags": [
+        "美妆新品",
+        "YSL",
+        "Love Chrome",
+        "REVLON",
+        "DECENCIA"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2025/10/05124709/20260305%E3%81%BE%E3%81%A8%E3%82%81.jpg",
+      "published": "2026-03-08T09:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "「ラブクロム」限定品や「YSL」お直しクッションパウダーなどが登場　今週発売のビューティアイテム8選【3/9〜3/15】",
+          "link": "https://www.wwdjapan.com/articles/2235547",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "aae6ef7297ea",
+      "title": "《魔法坏女巫》戏服秘辛",
+      "summary": "《Vogue Japan》独家揭秘电影《魔法坏女巫：永远的承诺》的服装设计，由服装设计师Paul Tazewell亲自解读Elphaba和Glinda的服装密码。文章深入剖析戏服如何巧妙地展现人物性格的转变与故事情节的推进。Elphaba最初的破旧黑色斗篷象征着她的边缘化，而Glinda华丽的礼服则映射出她的社会地位与内心的渴望。这些服装不仅仅是视觉元素，更是叙事的重要组成部分，为观众提供了更深层次的解读。",
+      "key_points": [
+        "Paul Tazewell解读服装设计",
+        "Elphaba黑色斗篷的象征意义",
+        "Glinda华丽礼服的内涵"
+      ],
+      "tags": [
+        "电影服装",
+        "服装设计",
+        "魔法坏女巫",
+        "时尚解读"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vogue.co.jp/photos/699e6770039e66abc2e774df/master/pass/2552_D085_00216R-1.jpg",
+      "published": "2026-03-08T09:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue Japan",
+          "title": "映画『ウィキッド 永遠の約束』の衣装を徹底解説。ドレスに込められた意味とは？",
+          "link": "https://www.vogue.co.jp/article/wicked-for-good-costume-design-paul-tazewell",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "37a9844f1358",
+      "title": "ASSC SS26 系列鼓励“怪”起来！新品发售拥抱真我",
+      "summary": "Anti Social Social Club (ASSC) 正式发布 SS26 系列，并在官网同步发售。该系列延续品牌街头潮流美学，鼓励消费者拥抱真我，释放个性，勇敢“Get Weird”，穿出与众不同的风格。Hypebeast 等媒体也对该系列进行了报道，并展示了多张新品图片。",
+      "key_points": [
+        "ASSC 发布 SS26 系列",
+        "系列主题为“Get Weird”，鼓励拥抱真我",
+        "系列已在 ASSC 官网上发售",
+        "延续品牌标志性街头潮流美学"
+      ],
+      "tags": [
+        "ASSC",
+        "Anti Social Social Club",
+        "SS26",
+        "Get Weird",
+        "街头潮流",
+        "新品发售"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F08%2Fanti-social-social-club-spring-summer-2026-drop-1-release-info-000.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-08T08:43:12+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "Anti Social Social Club Wants You To “Get Weird” This SS26",
+          "link": "https://hypebeast.com/2026/3/anti-social-social-club-spring-summer-2026-drop-1-release-info",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
     },
     {
       "id": "c2ee63204c06",
@@ -3743,55 +4191,6 @@
       "article_count": 1
     },
     {
-      "id": "bdf272bafb10",
-      "title": "小预算，大格调：25美元以下家居奢华升级！更多平价好物，酷炫与精致并存",
-      "summary": "想用有限的预算打造精致奢华又充满个性的家居环境？不必大动干戈，也无需具备任何DIY技能！本文精选多款25美元以下的平价好物，涵盖浴室、厨房、卧室、工作空间等，助你轻松提升生活品质。除了无焰蜡烛、吸水石水龙头垫、仿皮桌面垫和干桉树等经典选择，新增木质旋转托盘、复古风格地毯、木纹贴纸、手工风格的粗陶漏盆、可遥控LED灯串、冰箱除臭器、可充电无线吸顶灯等，旨在帮助读者以较低的价格打造具有设计师感的家居环境，瞬间提升家居格调，让家更酷更舒适。",
-      "key_points": [
-        "25美元以下平价家居好物精选",
-        "涵盖浴室、厨房、卧室、工作空间等",
-        "经典好物与新增酷炫单品结合",
-        "无需DIY技能，轻松提升家居格调",
-        "打造精致奢华又充满个性的家居环境"
-      ],
-      "tags": [
-        "家居",
-        "平价好物",
-        "小预算",
-        "奢华",
-        "格调",
-        "家装",
-        "生活品质",
-        "LED灯串",
-        "冰箱除臭器",
-        "无线吸顶灯"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgix.bustle.com/uploads/image/2026/3/4/ebd73ae8/17.png?w=1200&fit=max",
-      "published": "2026-03-07T22:04:20+00:00",
-      "sources": [
-        {
-          "name": "Elite Daily",
-          "title": "The 60 Bougiest Home Upgrades You Can Make For Under $25",
-          "link": "https://www.elitedaily.com/lifestyle/the-bougiest-home-upgrades-you-can-make-for-under-25",
-          "lang": "en"
-        },
-        {
-          "name": "Bustle",
-          "title": "60 Expensive-Looking Home Upgrades Are Actually So Damn Cheap",
-          "link": "https://www.bustle.com/shopping/expensive-looking-home-upgrades-are-actually-so-damn-cheap",
-          "lang": "en"
-        },
-        {
-          "name": "Elite Daily",
-          "title": "Weird Sh*t Under $25 That'll Make Your Home So Much Cooler",
-          "link": "https://www.elitedaily.com/shopping/weird-sht-under-25-thatll-make-your-home-so-much-cooler",
-          "lang": "en"
-        }
-      ],
-      "article_count": 3
-    },
-    {
       "id": "fd4b3969b886",
       "title": "亚马逊撩人单品：平价性感风暴",
       "summary": "想要性感又不想钱包大出血？亚马逊为你精选了一系列平价性感单品，让你轻松成为焦点。从若隐若现的网纱上衣，到性感迷人的V领背心，再到优雅露背连衣裙，每一件都让你散发自信魅力。附带用户真实评价和购买链接，助你快速锁定心仪之选，用最少的预算，打造最吸睛的造型。",
@@ -4853,36 +5252,6 @@
           "name": "Essence",
           "title": "President Obama’s Eulogy For Rev. Jesse Jackson Reminds America To Keep Hope Alive",
           "link": "https://www.essence.com/news/barack-obama-jesse-jackson-speech",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "0663643f3993",
-      "title": "莉莉·柯林斯寻回失窃婚戒！",
-      "summary": "好莱坞女星莉莉·柯林斯近日在社交媒体上激动宣布，三年前在西好莱坞EDITION酒店水疗中心被盗的订婚戒指失而复得。这枚由Irene Neuwirth设计的独特玫瑰切割钻石戒指，价值超过8万美元，与她的结婚戒指及电子设备一同被盗。时隔三年，这枚珍贵的戒指终于重回主人手中，令粉丝们纷纷送上祝福。",
-      "key_points": [
-        "莉莉·柯林斯寻回被盗婚戒",
-        "戒指为Irene Neuwirth设计，价值不菲",
-        "失窃事件发生在三年前西好莱坞酒店"
-      ],
-      "tags": [
-        "莉莉·柯林斯",
-        "婚戒",
-        "珠宝",
-        "失窃",
-        "名人"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://assets.vogue.com/photos/6137e19dfdb4eea84a5dd05f/master/pass/241416034_697093368356045_7801259790541448857_n.jpg",
-      "published": "2026-03-07T16:21:05+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "Lily Collins Recovers Her Engagement Ring Three Years After It Was Stolen",
-          "link": "https://www.vogue.com/article/lily-collins-recovers-her-engagement-ring-three-years-after-it-was-stolen",
           "lang": "en"
         }
       ],
@@ -8729,35 +9098,6 @@
       "article_count": 1
     },
     {
-      "id": "3c07a7b47faf",
-      "title": "家居灵感：70款古灵精怪好物点亮生活",
-      "summary": "想为你的家注入更多趣味和个性吗？这份清单为你精选了70款设计独特、价格亲民的家居好物。从让人食欲大增的吐司坐垫，到酷炫十足的赛车宠物床，再到软萌可爱的羊驼抱枕，以及充满绿意的壁挂花盆，每一件都能为你的生活空间增添意想不到的惊喜，打造专属的个性化家居风格。",
-      "key_points": [
-        "设计独特",
-        "价格亲民",
-        "趣味家居"
-      ],
-      "tags": [
-        "家居",
-        "生活方式",
-        "设计",
-        "趣味"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgix.bustle.com/uploads/image/2026/1/30/d9238f45/17.webp?w=1200&fit=max",
-      "published": "2026-03-06T23:16:12+00:00",
-      "sources": [
-        {
-          "name": "Elite Daily",
-          "title": "70 Kooky Things For Your Home That Are So Damn Genius & Cheap",
-          "link": "https://www.elitedaily.com/shopping/kooky-things-for-your-home-that-are-so-damn-genius-cheap",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "7810e282fdd9",
       "title": "巴黎街头的早春序曲：2026秋冬时装周街拍精选，兼顾实用与精致（Vogue Fashion更新）",
       "summary": "2026巴黎时装周场外，时尚达人和模特们演绎早春潮流与秋冬趋势的碰撞。《Harper's Bazaar》总结六大春季穿搭技巧，包括轻盈西装、飞行员夹克和围巾搭配。巴黎街头风格精致考究，造型经过精心打磨，柔软面料、宽松廓形和柔和配色是关键。超模们卸下冬日厚重，拥抱轻盈单品，叠穿衬衫与T恤依旧流行，个性印花T恤吸睛。Vogue Fashion报道聚焦模特Off-Duty风格，进一步强调了轻薄夹克、开衫和西装的流行，并推荐衬衫和印花T恤等单品。Vogue精选Saint Laurent、Chanel、Dior等秀场外街拍，展示针织衫、毛衣及品牌全套造型。舒适优雅的芭蕾舞平底鞋强势回归，预示新一季时尚风向。对比是造型重点，例如oversize飞行员夹克搭配蕾丝或亮片搭配实用主义叠穿。",
@@ -9664,17 +10004,20 @@
     {
       "id": "d52b5eba13b8",
       "title": "明星街拍灵感：本周潮流单品清单",
-      "summary": "《Vogue》精选本周最受瞩目的明星街拍造型，为你解析潮流密码。无论是过渡季的巧妙搭配，还是春季的叠穿法则，都能在这里找到灵感。推荐单品包括：Madewell的柔美粉色衬衫、Levi's经典501牛仔裤、Flore的俏皮Baby Tee、Toteme的干练西装、Aeyde的优雅芭蕾舞鞋、& Other Stories的时尚褶皱裤，以及Miu Miu的潮流太阳镜。即刻拥有明星同款，打造你的专属时尚。",
+      "summary": "《Vogue》精选本周最受瞩目的明星街拍造型，为你解析潮流密码。无论是过渡季的巧妙搭配，还是春季的叠穿法则，都能在这里找到灵感。本周聚焦休闲衬衫和经典Blazer等单品，为你提供更多搭配选择。推荐单品包括：Madewell的柔美粉色衬衫、Levi's经典501牛仔裤、Flore的俏皮Baby Tee、Toteme的干练西装、Aeyde的优雅芭蕾舞鞋、& Other Stories的时尚褶皱裤，以及Miu Miu的潮流太阳镜。即刻拥有明星同款，打造你的专属时尚。",
       "key_points": [
         "明星街拍造型解析",
-        "过渡季与春季穿搭灵感",
-        "精选潮流单品推荐"
+        "过渡季和春季穿搭灵感",
+        "休闲衬衫和经典Blazer搭配",
+        "明星同款单品推荐"
       ],
       "tags": [
         "明星街拍",
-        "时尚穿搭",
-        "单品推荐",
-        "春季穿搭"
+        "潮流单品",
+        "过渡季穿搭",
+        "春季穿搭",
+        "时尚灵感",
+        "Vogue"
       ],
       "category": "street-style",
       "category_name": "街拍/造型",
@@ -9682,13 +10025,13 @@
       "published": "2026-03-06T21:34:45+00:00",
       "sources": [
         {
-          "name": "Vogue",
+          "name": "Vogue Fashion",
           "title": "Shop Our Favorite Celeb Looks of the Week | Vogue",
           "link": "https://www.vogue.com/article/best-celebrity-outfits",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "cface2614f79",
@@ -17026,358 +17369,6 @@
           "title": "We Asked the Chicest Brides-to-Be We Know: Where Did You Buy Your Bridal Shoes?",
           "link": "https://www.vogue.com/article/where-brides-shop-for-bridal-shoes",
           "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "c96bdc671f11",
-      "title": "白色情人节：轻奢好礼精选，F/STORE限时免包装费",
-      "summary": "还在为白色情人节的回礼发愁？Fashionsnap为你精选不同预算的时尚好礼，在F/STORE商店中，根据5000日元和15000日元以下的不同预算，推荐精致香氛、潮流袜子、设计感珠宝、围脖丝巾等时尚单品，总有一款能打动她的心。F/STORE更推出限时免费包装服务，让你的心意更显珍贵。快来挑选一份特别的礼物，给她一个难忘的白色情人节吧！",
-      "key_points": [
-        "Fashionsnap精选白色情人节好礼",
-        "F/STORE商店5000日元/15000日元以下预算推荐",
-        "推荐香氛、袜子、珠宝、围脖丝巾等时尚单品",
-        "F/STORE限时免费包装服务"
-      ],
-      "tags": [
-        "白色情人节",
-        "礼物",
-        "Fashionsnap",
-        "F/STORE",
-        "香氛",
-        "袜子",
-        "珠宝",
-        "围脖",
-        "丝巾",
-        "轻奢"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/whitedaytop2-f6ef243b-2dad-45e3-b32d-39a6c6b0785a.jpg",
-      "published": "2026-03-06T11:00:00+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "今年のギフトは何にする？　予算別に探すホワイトデーのお返し",
-          "link": "https://www.fashionsnap.com/article/fstore26ss-whiteday-gift",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "4522783998e4",
-      "title": "WWD BEAUTY东京美妆盛事：社交媒体营销新趋势",
-      "summary": "《WWDBEAUTY》近日于东京举办“BEAUTY TASTE TOKYO 2026”活动，聚焦美妆品牌如何玩转社交媒体。上午场深入探讨了TikTok和BeReal等平台的营销策略，强调短视频内容和真实用户反馈的重要性。下午场则邀请人气偶像村重杏奈分享她的私藏美妆好物，包括珂润（Curel）的护肤品和美宝莲（Maybelline）的睫毛膏等。本次活动旨在助力美妆品牌更有效地利用数字平台，与消费者建立更紧密的联系。",
-      "key_points": [
-        "社交媒体美妆营销",
-        "短视频内容策略",
-        "真实用户体验",
-        "名人美妆推荐"
-      ],
-      "tags": [
-        "美妆",
-        "市场营销",
-        "社交媒体",
-        "名人推荐",
-        "活动"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/05190136/0305_btt_1.jpeg",
-      "published": "2026-03-06T11:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "村重杏奈の私的ベスコスからレインボーの“お笑い”メンズコスメ講座まで　「WWDBEAUTY」がドラバラコスメのイベントを開催",
-          "link": "https://www.wwdjapan.com/articles/2343533",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "c9343ed08832",
-      "title": "Village PM：2026春夏“午后”新履",
-      "summary": "轻奢品牌Village PM抢先发布2026春夏鞋履系列，焦点落在全新1PM MID型号上。此鞋款在经典设计基础上革新，更注重穿着的灵活性与保护性。鞋头与后跟采用柔软橡胶包裹，细节之处彰显品牌对品质的极致追求。该系列预计将在未来一年内陆续上市，敬请期待。",
-      "key_points": [
-        "1PM MID新款发布",
-        "2026春夏系列",
-        "灵活性与保护性设计"
-      ],
-      "tags": [
-        "Village PM",
-        "鞋履",
-        "2026春夏",
-        "新品"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F06%2Fvillage-pm-ss26-footwear-campaign-info-0.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-06T10:55:35+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Village PM Debuts the 1PM MID Silhouette for SS26",
-          "link": "https://hypebeast.com/2026/3/village-pm-ss26-footwear-campaign-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "9ee83908f208",
-      "title": "CBK眉形回归：90年代极简风再掀浪潮",
-      "summary": "Vogue西班牙版指出，伴随电视剧《Love Story》的热播，90年代时尚icon Carolyn Bessette-Kennedy的标志性极简眉形再度成为潮流焦点。专家分析，CBK的眉毛胜在内敛，与面部轮廓浑然天成。相较于之后流行的棱角分明、过度修饰的眉形，她的眉毛线条更柔和，眉峰不突出，营造出平静、精致且平衡的视觉效果。这种less is more的眉妆理念正悄然影响着当下的美妆趋势，成为新的时尚风向标。",
-      "key_points": [
-        "CBK眉形再次流行",
-        "极简主义眉妆风潮",
-        "内敛平衡的面部美学"
-      ],
-      "tags": [
-        "眉毛",
-        "美妆趋势",
-        "90年代时尚",
-        "Carolyn Bessette-Kennedy"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.vogue.es/photos/69a8556d8bd2a16dde97db46/master/pass/GettyImages-2163652.jpg",
-      "published": "2026-03-06T10:50:50+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "Carolyn Bessette-Kennedy y sus cejas: el diseño de los 90 que vuelve a ser relevante",
-          "link": "https://www.vogue.es/articulos/cejas-carolyn-bessette-kennedy-anos-90",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "bb56eede769f",
-      "title": "Alaïa：Pieter Mulier 的告别系列，致敬传承、社群与身体之美，展望未来",
-      "summary": "Pieter Mulier 在巴黎时装周发布了他在 Maison Alaïa 的告别系列，为其五年任期画上句号。这场 2026 秋冬系列被誉为“天鹅之歌”，展现了设计师标志性的建筑感、克制设计、雕塑轮廓，以及对品牌工艺传统的尊重。发布会选址卡地亚基金会前址，由 Jean Nouvel 设计的玻璃钢结构建筑内聚集了 Mulier 的众多好友，包括 Raf Simons 等。系列不仅是对品牌传统的致敬，更回归品牌创始人 Azzedine Alaia 的理念，以极简和纯粹的风格致敬身体之美，采用紧身廓形和多种材质。行业内部人士赞扬这个大师级系列，认为这是一个充满勇气和慷慨的举动，并赞扬 Mulier 对该品牌产生的持久影响。Mulier 离职后将加入 Versace。发布会邀请函也别出心裁，参与者收到一个装有皮革紧身胸衣的盒子，上面附有组装说明。",
-      "key_points": [
-        "Pieter Mulier 在 Maison Alaïa 的告别系列，为其五年任期画上句号。",
-        "系列展现了设计师标志性的建筑感、克制设计、雕塑轮廓，以及对品牌工艺传统的尊重。",
-        "系列回归品牌创始人 Azzedine Alaia 的理念，以极简和纯粹的风格致敬身体之美，采用紧身廓形和多种材质。",
-        "Raf Simons 等众多好友到场祝贺。",
-        "Mulier 离职后将加入 Versace。"
-      ],
-      "tags": [
-        "Alaïa",
-        "Pieter Mulier",
-        "2026 秋冬系列",
-        "巴黎时装周",
-        "告别系列",
-        "Azzedine Alaia",
-        "紧身廓形",
-        "Raf Simons",
-        "Versace"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/alaia-pfw-fall-26-rtw-r-ctsy-0001.jpg?crop=0px%2C58px%2C1365px%2C763px&resize=1000%2C563",
-      "published": "2026-03-06T10:45:00+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "Maison Alaïa Summer-Fall 2026: A Pitch-Perfect Swan Song",
-          "link": "https://wwd.com/runway/fall-2026/paris/alaia/review/",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Pieter Mulier's Final Collection Delivers an Emotional Swan Song at Alaïa",
-          "link": "https://hypebeast.com/2026/3/pieter-muliers-final-collection-delivers-an-emotional-swan-song-at-alaia",
-          "lang": "en"
-        },
-        {
-          "name": "Elle",
-          "title": "Pieter Mulier Presents His Alaïa Swan Song",
-          "link": "https://www.elle.com/runway/a70611318/alaia-summer-fall-2026-review/",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "“An Act of Courage and Generosity”: First Reactions to Pieter Mulier’s Last Alaïa",
-          "link": "https://www.vogue.com/article/an-act-of-courage-and-generosity-first-reactions-to-pieter-muliers-last-alaia",
-          "lang": "en"
-        },
-        {
-          "name": "The Cut",
-          "title": "Pieter Mulier’s Final Alaïa Show",
-          "link": "http://www.thecut.com/article/pieter-mulier-alaia-final-show-fashion-review-cathy-horyn.html?utm_source=rss&utm_medium=social_acct&utm_campaign=feed-part",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Pieter Mulier’s Final Alaïa Collection Is a Love Letter to the House He Leaves Behind",
-          "link": "https://www.whowhatwear.com/fashion/runway/alaia-paris-fashion-week-fall-winter-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "At Alaïa, Pieter Mulier’s Swan Song",
-          "link": "https://www.harpersbazaar.com/fashion/fashion-week/a70619500/pieter-mulier-fall-winter-2026-review",
-          "lang": "en"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "ピーター・ミュリエ最後の「アライア」は、創業者の思いに立ち返りボディコン回帰　恩師のラフ・シモンズもハグして大団円",
-          "link": "https://www.wwdjapan.com/articles/2345733",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 9
-    },
-    {
-      "id": "e86ce9003474",
-      "title": "Robertet押注植物基生物科技",
-      "summary": "香氛原料巨头Robertet宣布投资Aethera Biotech，进一步巩固其在植物基生物技术领域的领先地位。此举精准把握了美妆行业对可持续和天然成分日益增长的强劲需求，彰显了Robertet在该领域的战略远见和坚定投入，预示着香氛原料市场的新一轮绿色变革。",
-      "key_points": [
-        "Robertet投资Aethera Biotech",
-        "加码植物基生物技术",
-        "响应美妆行业可持续需求"
-      ],
-      "tags": [
-        "香氛",
-        "生物技术",
-        "植物基",
-        "Robertet",
-        "可持续",
-        "天然成分"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/Site-Jean-Maubert-034.jpg?w=1000&h=563&crop=1",
-      "published": "2026-03-06T10:30:49+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "Robertet Leans Into Plant-based Biotechnologies",
-          "link": "https://wwd.com/beauty-industry-news/fragrance/robertet-leans-plant-based-biotechnologies-aethera-biotech-1238652502",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "9cc135ea3456",
-      "title": "彩妆风向标：新趋势解读",
-      "summary": "《Vogue Business》携手Spate发布最新美容趋势追踪报告，聚焦过去一年彩妆领域的显著增长点。报告揭示，消费者对个性化、健康和可持续性的需求日益增长，推动了自然妆容、冷色调腮红、提亮液、纯净睫毛膏以及无麸质口红等趋势的流行。同时，Tilt Beauty和Jolie Beauty等新兴品牌凭借其独特理念迅速崛起，反映了市场对包容性和创新产品的追求。",
-      "key_points": [
-        "自然妆容持续流行",
-        "新兴品牌崭露头角",
-        "健康可持续成关键"
-      ],
-      "tags": [
-        "美妆趋势",
-        "彩妆",
-        "可持续性",
-        "品牌分析"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://assets.vogue.com/photos/69a9afc727807c57d040eefd/master/pass/MAKEUP%20MAIN%20PFW_fw26_streetstyle_day1_philoh_25-story.jpg",
-      "published": "2026-03-06T10:30:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "The Vogue Business Beauty Trend Tracker",
-          "link": "https://www.vogue.com/article/the-vogue-business-beauty-tracker",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "9d165723ea48",
-      "title": "Sturm博士品牌焕新？",
-      "summary": "西班牙美妆巨头Puig集团于2024年初完成了对德国高端护肤品牌Dr. Barbara Sturm的收购。此次收购预示着品牌即将迎来重大革新。Puig集团计划加大对Dr. Barbara Sturm的科研投入，升级现有产品成分，并积极拓展全新产品线。Sturm博士本人表示，此次合作将为品牌带来前所未有的资源和发展空间，使其能够更专注于研发创新，并在全球范围内实现更具战略性的扩张。Puig集团对Dr. Barbara Sturm的投资，旨在进一步巩固其护肤品业务，该业务目前是集团增长速度第二快的部门，预计2025年销售额将达到5.51亿欧元。",
-      "key_points": [
-        "Puig集团收购Dr. Barbara Sturm",
-        "加大科研投入，升级成分",
-        "拓展全新产品线"
-      ],
-      "tags": [
-        "品牌收购",
-        "高端护肤",
-        "Puig集团"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://assets.vogue.com/photos/69a9af68ef71ec3a1d455dbf/master/pass/sturm-vogue-business-story.jpg",
-      "published": "2026-03-06T10:30:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "Life After Acquisition with Dr. Barbara Sturm",
-          "link": "https://www.vogue.com/article/life-after-acquisition-with-dr-barbara-sturm",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "e986590672b1",
-      "title": "亚马逊新生活好物清单，GQ为你精选！",
-      "summary": "《GQ Japan》倾情推荐亚马逊2026新生活促销活动中的品质好物，助你焕新生活。从提升效率的商务单品，到改善生活品质的智能家居，一应俱全。精选推荐包括耳机、充电宝、智能戒指、音箱、空气净化器、厨具、商务包、名片夹、防水鞋、雨伞等，为你提供实用且潮流的购物指南，轻松打造理想生活。",
-      "key_points": [
-        "GQ Japan推荐亚马逊促销",
-        "涵盖商务和生活好物",
-        "提供实用购物参考"
-      ],
-      "tags": [
-        "促销活动",
-        "亚马逊",
-        "生活方式",
-        "GQ推荐",
-        "品质好物"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.gqjapan.jp/photos/69aa345334f762078634ae41/master/pass/amazon-new%20life-sale-2026-tumbnail.jpg",
-      "published": "2026-03-06T10:30:00+00:00",
-      "sources": [
-        {
-          "name": "GQ Japan",
-          "title": "【Amazon新生活セール2026】いつまで？何がお得？ ガジェットと家電、ビジネスアイテムから、GQのリアルなレコメンドアイテムを発表",
-          "link": "https://www.gqjapan.jp/article/amazon-new-life-sale-2026",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "d7417a217a03",
-      "title": "松本清再下一城，美妆双旗舰闪耀涩谷",
-      "summary": "日本知名药妆连锁松本清在涩谷开设第二家旗舰店“SHIBUYA SCRAMBLE FLAG”，旨在通过与现有“SHIBUYA DOGENZAKA FLAG”店形成“双塔”效应，进一步巩固和提升其在涩谷商圈的美妆销售实力。新店由1995年开业的涩谷Part1店全面翻新而来，占地约278平方米，共三层，汇集了约13400种商品，其中健康和美妆产品占比高达95%。值得一提的是，该店还引入了药妆店首个“TAKAMI”等热门品牌，并配备先进的数字标牌，力求为消费者打造更优质的购物体验。",
-      "key_points": [
-        "松本清涩谷第二旗舰店开业",
-        "双旗舰店战略，强化美妆销售",
-        "引入TAKAMI等品牌，提升购物体验"
-      ],
-      "tags": [
-        "零售",
-        "美妆",
-        "药妆店",
-        "松本清",
-        "旗舰店",
-        "涩谷"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/06185859/0306_matsukiyo_2.jpg",
-      "published": "2026-03-06T10:30:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "マツキヨ、渋谷2店舗目の旗艦店の全貌公開　2拠点体制でビューティ販売力を強化",
-          "link": "https://www.wwdjapan.com/articles/2345740",
-          "lang": "ja"
         }
       ],
       "article_count": 1
