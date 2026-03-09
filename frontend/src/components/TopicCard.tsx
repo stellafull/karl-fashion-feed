@@ -7,9 +7,9 @@
 
 import { Clock, Layers, ChevronRight, ImageOff } from "lucide-react";
 import type { Topic } from "@/hooks/useFeedData";
-import { formatTimeAgo } from "@/hooks/useFeedData";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { formatChinaDateTimeShort } from "@/lib/time";
 
 interface TopicCardProps {
   topic: Topic;
@@ -64,7 +64,7 @@ export default function TopicCard({
           <div className="flex items-center gap-2 mt-1.5 text-[11px] text-muted-foreground font-body">
             <span>{uniqueSources.slice(0, 2).join(" · ")}</span>
             <span className="text-border">|</span>
-            <span>{formatTimeAgo(topic.published)}</span>
+            <span>{formatChinaDateTimeShort(topic.published)}</span>
             {topic.article_count > 1 && (
               <>
                 <span className="text-border">|</span>
@@ -132,7 +132,7 @@ export default function TopicCard({
             <span>{uniqueSources.slice(0, 3).join(" · ")}</span>
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              {formatTimeAgo(topic.published)}
+              {formatChinaDateTimeShort(topic.published)}
             </span>
             <span className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-gold">
               <ChevronRight className="w-3 h-3" />
@@ -219,7 +219,7 @@ export default function TopicCard({
         {/* Meta */}
         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border text-[11px] text-muted-foreground font-body">
           <Clock className="w-3 h-3" />
-          <span>{formatTimeAgo(topic.published)}</span>
+          <span>{formatChinaDateTimeShort(topic.published)}</span>
           <span className="ml-auto text-[10px]">
             {uniqueSources.slice(0, 2).join(" · ")}
           </span>

@@ -36,8 +36,8 @@ EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "openai/text-embedding-3-lar
 REQUIRE_SEMANTIC_EMBEDDING = os.environ.get("REQUIRE_SEMANTIC_EMBEDDING", "0").strip().lower() in ("1", "true", "yes")
 
 SCRIPT_DIR = Path(__file__).parent
-PROJECT_DIR = SCRIPT_DIR.parent
-OUTPUT_DIR = PROJECT_DIR / "client" / "public"
+PROJECT_DIR = SCRIPT_DIR.parent.parent
+OUTPUT_DIR = PROJECT_DIR / "frontend" / "public"
 OUTPUT_FILE = OUTPUT_DIR / "feed-data.json"
 SOURCES_FILE = SCRIPT_DIR / "sources.yaml"
 
@@ -606,14 +606,14 @@ def get_published_date(entry):
         parsed = getattr(entry, attr, None)
         if parsed:
             try:
-                return datetime.datetime(*parsed[:6]).isoformat()
+                return datetime.datetime(*parsed[:6], tzinfo=datetime.timezone.utc).isoformat()
             except Exception:
                 pass
     for attr in ["published","updated","created"]:
         val = getattr(entry, attr, None)
         if val:
             return parse_isoish_date(val)
-    return datetime.datetime.now().isoformat()
+    return datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat()
 
 def title_bigrams(title):
     t = re.sub(r"[^\w\s]", "", title.lower().strip())
@@ -730,7 +730,7 @@ def build_article_record(source, *, link, title, published="", content_text="", 
     canonical = normalize_url(canonical_url, source["dedup"]["strip_query_params"]) or normalized_link
     cleaned_text = clean_html(content_text)
     snippet = cleaned_text[:800] if cleaned_text else clean_html(fallback_snippet)[:800]
-    published_at = parse_isoish_date(published) or datetime.datetime.now().isoformat()
+    published_at = parse_isoish_date(published) or datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat()
     source_host = urlparse(canonical or normalized_link).netloc.lower()
     return {
         "id": compute_article_id(canonical or normalized_link, title, source["id"]),
@@ -1495,7 +1495,7 @@ def _fallback_no_llm(articles, clusters):
 def build_output(topics, all_sources):
     return {
         "meta": {
-            "generated_at": datetime.datetime.now().isoformat(),
+            "generated_at": datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat(),
             "total_topics": len(topics),
             "total_articles": sum(t["article_count"] for t in topics),
             "sources_count": len(all_sources),

@@ -1,9 +1,6 @@
-name: Deploy Frontend to GitHub Pages
+name: Deploy Frontend to GitHub Pages (Manual)
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
@@ -41,7 +38,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build frontend
-        run: pnpm build:client
+        run: pnpm build:frontend
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

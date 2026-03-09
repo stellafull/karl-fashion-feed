@@ -71,13 +71,13 @@ pnpm dev
 
 ```bash
 # 安装 Python 依赖
-pip install requests feedparser beautifulsoup4
+pip install -r backend/scripts/requirements.txt
 
 # 设置 API Key
 export OPENROUTER_API_KEY="your-key-here"
 
 # 运行
-python scripts/fetch_feeds.py
+python backend/scripts/fetch_feeds.py
 ```
 
 ## GitHub Actions 部署

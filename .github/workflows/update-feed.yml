@@ -1,4 +1,4 @@
-name: Update Fashion Feed
+name: Update Fashion Feed and Deploy
 
 on:
   schedule:
@@ -9,15 +9,27 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
-  update-feed:
+  update-build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
+    env:
+      GITHUB_PAGES: "true"
+    outputs:
+      should_deploy: ${{ steps.deploy-gate.outputs.should_deploy }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -26,7 +38,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r scripts/requirements.txt
+          pip install -r backend/scripts/requirements.txt
 
       - name: Validate required secrets
         env:
@@ -44,18 +56,72 @@ jobs:
           EMBEDDING_MODEL: ${{ vars.EMBEDDING_MODEL || 'openai/text-embedding-3-large' }}
           REQUIRE_SEMANTIC_EMBEDDING: '1'
         run: |
-          python scripts/fetch_feeds.py
+          python backend/scripts/fetch_feeds.py
 
       - name: Check for changes
         id: check
         run: |
-          git diff --quiet client/public/feed-data.json || echo "changed=true" >> $GITHUB_OUTPUT
+          git diff --quiet frontend/public/feed-data.json || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Decide whether to deploy
+        id: deploy-gate
+        run: |
+          if [ "${{ steps.check.outputs.changed }}" = "true" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Commit and push
         if: steps.check.outputs.changed == 'true'
         run: |
           git config user.name "Fashion Feed Bot"
           git config user.email "bot@fashion-feed.app"
-          git add client/public/feed-data.json
+          git add frontend/public/feed-data.json
           git commit -m "chore: update feed data [$(date -u '+%Y-%m-%d %H:%M UTC')]"
           git push
+
+      - name: Set up pnpm
+        if: steps.deploy-gate.outputs.should_deploy == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Set up Node.js
+        if: steps.deploy-gate.outputs.should_deploy == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        if: steps.deploy-gate.outputs.should_deploy == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        if: steps.deploy-gate.outputs.should_deploy == 'true'
+        run: pnpm build:frontend
+
+      - name: Configure GitHub Pages
+        if: steps.deploy-gate.outputs.should_deploy == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        if: steps.deploy-gate.outputs.should_deploy == 'true'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./dist/public
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: update-build
+    if: needs.update-build.outputs.should_deploy == 'true'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
