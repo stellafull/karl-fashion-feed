@@ -7,6 +7,12 @@
 - chat 回答必须支持 citation
 - story 范围内聊天必须支持按快照回放
 
+## 1.1 接口实现约定
+
+- `backend/app/` 是 API 契约的唯一实现主目录
+- `backend/server/` 只保留迁移期托管职责，不承接新增 API 逻辑
+- `backend/test/` 承担 API 契约与回归测试
+
 ## 2. 认证接口
 
 ### `GET /api/v1/auth/login`

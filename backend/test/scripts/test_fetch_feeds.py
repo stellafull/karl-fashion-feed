@@ -2,9 +2,9 @@ import sys
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
-import fetch_feeds  # noqa: E402
+from backend.scripts import fetch_feeds
 
 
 class FetchFeedsTests(unittest.TestCase):

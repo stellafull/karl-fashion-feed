@@ -17,6 +17,12 @@
 - citation 可追溯
 - memory 可审计、可失效、可检索
 
+代码承载约定：
+
+- `backend/app/`：实现 SQL model、schema、repository 与服务层
+- `backend/test/`：承载 schema 与回归验证测试
+- `backend/scripts/`：迁移期保留采集脚本
+
 ## 2. 存储职责边界
 
 ### 2.1 不进入主数据库的内容

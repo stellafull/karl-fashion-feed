@@ -1,0 +1,31 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "aiohttp>=3.13.3",
+    "beautifulsoup4>=4.14.3",
+    "dashscope>=1.25.13",
+    "dotenv>=0.9.9",
+    "fastapi[standard]>=0.135.1",
+    "feedparser>=6.0.12",
+    "httpx>=0.28.1",
+    "llama-index>=0.14.15",
+    "lxml>=6.0.2",
+    "markdown>=3.10.2",
+    "matplotlib>=3.10.8",
+    "numpy>=2.2.6",
+    "openai>=2.26.0",
+    "pandas>=2.3.3",
+    "pathlib>=1.0.1",
+    "pydantic>=2.12.5",
+    "pymilvus>=2.6.9",
+    "redis>=7.3.0",
+    "requests>=2.32.5",
+    "seaborn>=0.13.2",
+    "sqlalchemy>=2.0.48",
+    "trafilatura>=2.0.0",
+    "wordcloud>=1.9.6",
+]

@@ -17,11 +17,27 @@
 ## 当前仓库结构
 
 - `frontend/`：现有 React + Vite 前端
+- `backend/main.py`：后端包级入口，占位 CLI 入口
+- `backend/app/`：后端应用主目录，当前已包含 FastAPI ASGI 入口与配置加载
+- `backend/test/`：后端统一测试入口，当前拆分为 `app/` 与 `scripts/`
+- `backend/pyproject.toml`：后端 Python 依赖与项目配置真相源
+- `backend/uv.lock`：后端依赖锁文件
 - `backend/server/`：遗留 Node 静态托管层，仅迁移期保留
 - `backend/scripts/`：当前 Python 采集与聚合脚本
+- `backend/product.md`：面向后端开发者的产品文档
+- `backend/schema.md`：后端 schema 设计说明
 - `shared/`：共享常量
 - `docs/`：重构后的产品与工程文档
 - `plan.md`：本项目唯一主计划文档
+
+## 当前后端实现约定
+
+- `backend/app/main.py` 是 FastAPI ASGI 入口与 `create_app()` 工厂所在位置；新增 API 入口从这里向内扩展。
+- `backend/app/config.py` 负责环境变量加载与配置启动逻辑；新增后端配置优先落在这里或其后续拆分模块。
+- `backend/main.py` 仅作为后端包级入口或 CLI 占位，不承接 Web API 逻辑。
+- `backend/test/app/` 存放 FastAPI 应用、路由与契约测试。
+- `backend/test/scripts/` 存放采集脚本与数据处理回归测试。
+- `backend/pyproject.toml` 与 `backend/uv.lock` 是后端依赖管理基线；新增后端依赖时优先更新这两处，而不是继续扩散到仓库根目录。
 
 ## 目标架构约束
 
@@ -65,16 +81,24 @@
 - 不允许直接覆盖历史发布结果，必须通过切换 `published_run` 完成发布。
 - 原始 HTML 和大文件资产不入 PostgreSQL，只保存路径或 URL。
 
-## 目标目录
+## 当前后端目录
 
 ```text
 /
 ├─ backend/
 │  ├─ app/
-│  ├─ alembic/
+│  │  ├─ config.py
+│  │  └─ main.py
+│  ├─ main.py
+│  ├─ product.md
+│  ├─ pyproject.toml
+│  ├─ schema.md
 │  ├─ scripts/
 │  ├─ server/
-│  └─ tests/
+│  ├─ test/
+│  │  ├─ app/
+│  │  └─ scripts/
+│  └─ uv.lock
 ├─ frontend/
 ├─ docs/
 ├─ AGENTS.md
@@ -86,6 +110,8 @@
 当架构或 schema 发生变化时，必须同步更新：
 
 - `plan.md`
+- `backend/product.md`
+- `backend/schema.md`
 - `docs/architecture.md`
 - `docs/data-model.md`
 - `docs/api-contract.md`
@@ -116,4 +142,5 @@
 - API 输出与 `docs/api-contract.md` 一致
 - story 跨 run 连续性可验证
 - citation 能从 answer -> unit -> document -> source 完整回溯
+- 后端实现位置符合当前目录约定：Web API 进入 `backend/app/`，测试进入 `backend/test/app/` 或 `backend/test/scripts/`
 - 新增运行命令或部署依赖时，必须同步写入 `docs/ops-runbook.md`

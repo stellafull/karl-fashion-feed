@@ -1,5 +1,11 @@
 # 数据模型说明
 
+## 0. 后端实现落点
+
+- `backend/app/`：承载 SQL model、schema、repository、service 与检索编排实现
+- `backend/scripts/`：迁移期保留采集脚本
+- `backend/test/`：承载数据模型、脚本与回归验证测试
+
 ## 1. 数据职责边界
 
 ### YAML

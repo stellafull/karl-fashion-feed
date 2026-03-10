@@ -15,6 +15,13 @@
 - PostgreSQL
 - Milvus
 
+目录约定：
+
+- `backend/app/`：FastAPI 服务主目录
+- `backend/scripts/`：迁移期采集脚本目录
+- `backend/test/`：后端统一测试目录
+- `backend/server/`：遗留 Node 托管层
+
 ## 3. 配置项分类
 
 必需配置包括：
@@ -80,18 +87,21 @@
 - story 数量异常
 - citation 生成失败
 
-## 8. 规划中的标准命令
+## 8. 标准命令
 
-待 `backend/` 落地后，应统一标准命令：
+当前约定的基础命令：
 
-- 启动 API
+- 启动 API：`uvicorn backend.app.main:app --reload`
+- 运行后端测试：`python -m unittest discover -s backend/test`
+- 手动执行采集脚本：`python backend/scripts/fetch_feeds.py`
+
+待 Celery 与发布任务代码落地后，再补充以下命令：
+
 - 启动 Celery worker
 - 手动执行日重聚类
 - 手动执行增量更新
 - 重建 embedding
 - 回滚或重发某个 run
-
-具体命令名在后端骨架落地后补充到本文档。
 
 ## 9. 典型故障场景
 

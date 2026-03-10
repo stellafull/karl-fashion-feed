@@ -43,6 +43,12 @@ FastAPI
 - session 持久化
 - 检索与回答编排
 
+代码承载约定：
+
+- `backend/app/` 是 FastAPI 应用主目录
+- `backend/server/` 只保留迁移期静态托管职责
+- `backend/test/` 是后端统一测试目录
+
 ### PostgreSQL
 
 职责：
@@ -74,7 +80,28 @@ Milvus 不负责 story 历史真相源，也不负责短期 session 状态。
 - embedding 任务
 - story 发布任务
 
-## 3. 主要数据流
+## 3. 后端目录约定
+
+```text
+backend/
+├─ app/
+├─ test/
+├─ scripts/
+├─ server/
+├─ schema.md
+└─ product.md
+```
+
+目录边界：
+
+- `app/`：放 API、domain service、repository、任务入口与配置
+- `test/`：统一存放 API、数据模型、脚本与发布回归测试
+- `scripts/`：迁移期脚本保留区，后续逐步拆入 Celery 任务
+- `server/`：遗留 Node 托管层，不再作为长期后端真相源
+- `schema.md`：后端数据模型设计文档
+- `product.md`：面向后端开发者的产品文档
+
+## 4. 主要数据流
 
 ### 内容生产链路
 
@@ -115,7 +142,7 @@ Milvus 不负责 story 历史真相源，也不负责短期 session 状态。
 4. 生成带 citation 的回答
 5. 将 session 历史写入 PostgreSQL
 
-## 4. Story 身份模型
+## 5. Story 身份模型
 
 必须引入稳定 story 身份，因为：
 
@@ -129,7 +156,7 @@ Milvus 不负责 story 历史真相源，也不负责短期 session 状态。
 - `run_id`：某次发布版本标识
 - `published_run`：当前生效的发布版本
 
-## 5. 更新节奏
+## 6. 更新节奏
 
 ### 每日重聚类
 
@@ -143,14 +170,14 @@ Milvus 不负责 story 历史真相源，也不负责短期 session 状态。
 - 范围：新增文档
 - 目的：持续刷新首页和 story 内容
 
-## 6. 安全模型
+## 7. 安全模型
 
 - Feishu 是唯一登录入口
 - 仅允许 allowlist 组织访问
 - 登录结果必须写审计记录
 - 权限控制必须在服务端生效，不能只依赖前端
 
-## 7. 迁移策略
+## 8. 迁移策略
 
 迁移期间：
 

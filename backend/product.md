@@ -1,0 +1,84 @@
+# Backend 产品文档
+
+## 1. 文档目的
+
+本文档面向后端开发者，定义 `backend/` 需要支撑的产品能力、边界和落地约束。
+
+它不是字段级 schema 说明，也不是给最终用户看的产品介绍：
+
+- 字段与表设计看 `backend/schema.md`
+- 跨团队架构约束看 `docs/architecture.md`
+- API 契约看 `docs/api-contract.md`
+
+## 2. 后端要支撑的产品能力
+
+`v1` 后端必须支撑以下产品能力：
+
+- 首页信息流：向前端输出稳定的 feed 数据，并在迁移期与 `feed-data.json` 并行
+- Story 详情：按 `story_key` 提供聚合结果、成员文档与回放所需元数据
+- Feishu 登录：执行 tenant allowlist 校验并记录完整审计
+- 全局 AI：支持跨库问答、历史 session 恢复与 citation 返回
+- Story 内 AI：支持 story scope 问答，并携带 `scope_snapshot_run_id` 做回放
+- 发布与回滚：通过 `published_run` 切换线上版本，而不是覆盖历史结果
+
+## 3. 后端产品边界
+
+### 真相源边界
+
+- `sources.yaml` 继续是采集配置真相源
+- PostgreSQL 是用户、文档、story、chat、citation、memory 和 run 元数据真相源
+- Milvus 只负责检索副本，不负责 story 真相源和短期会话状态
+
+### 稳定身份边界
+
+- 对外稳定 story 标识必须是 `story_key`
+- `run_id` 只代表某次发布版本，不可替代稳定 story 标识
+- story 内聊天与 citation 回放必须同时带 `story_key` 和 `scope_snapshot_run_id`
+
+### 非目标
+
+- `v1` 不新增 `content_source` SQL 主表
+- 不把 `story_cluster_snapshot` 当成长期主表
+- 不把原始聊天记录直接镜像到 Milvus 充当唯一记忆
+- 不把大体积 HTML 或媒体文件本体写入 PostgreSQL
+
+## 4. 后端目录约定
+
+```text
+backend/
+├─ app/
+├─ test/
+├─ scripts/
+├─ server/
+├─ schema.md
+└─ product.md
+```
+
+目录职责：
+
+- `app/`：后端主应用目录，后续 FastAPI、repository、service、任务编排与配置统一放这里
+- `test/`：后端统一测试目录；新增测试不再放在 `scripts/`、`server/` 子目录内
+- `scripts/`：迁移期保留的采集与聚合脚本
+- `server/`：遗留 Node 托管层，仅在切流完成前保留
+- `schema.md`：字段级数据模型与存储设计
+- `product.md`：后端开发者产品文档
+
+## 5. 开发完成定义
+
+一次后端改动完成前，至少要满足：
+
+- 实现位置符合目录约定，新增 API 逻辑进入 `backend/app/`
+- 测试进入 `backend/test/`
+- 术语与 `docs/data-model.md` 一致
+- API 输出与 `docs/api-contract.md` 一致
+- citation 可以从 answer -> unit -> document -> source 回溯
+- 若改动运行命令或部署依赖，同步更新 `docs/ops-runbook.md`
+
+## 6. 近期开发顺序
+
+建议按以下顺序推进：
+
+1. 在 `backend/app/` 落 FastAPI 入口、配置与基础路由
+2. 把认证、feed、topic、chat 按 API 契约逐步迁入 `backend/app/`
+3. 保留 `backend/scripts/` 作为迁移期采集入口，再逐步拆到任务系统
+4. 把所有后端测试统一收敛到 `backend/test/`
