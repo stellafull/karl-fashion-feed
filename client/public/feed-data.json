@@ -1,11 +1,12 @@
 {
   "meta": {
-    "generated_at": "2026-03-10T18:44:46+00:00",
+    "generated_at": "2026-03-10T20:31:39+00:00",
     "total_topics": 500,
-    "total_articles": 1100,
-    "sources_count": 48,
+    "total_articles": 1082,
+    "sources_count": 49,
     "sources": [
       "Allure",
+      "BOF",
       "Bustle",
       "CR Fashion Book",
       "Complex Style",
@@ -57,22 +58,22 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 74,
-      "blocked_by_tombstones": 283,
-      "evicted_topics": 37,
+      "new_articles_in_2h": 41,
+      "blocked_by_tombstones": 304,
+      "evicted_topics": 23,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 34,
-        "incremental_new_topics_created": 39,
-        "cross_merge_candidates": 3,
-        "cross_merge_low_reviews": 3,
-        "cross_merge_high_reviews": 0,
+        "incremental_assigned_to_existing": 16,
+        "incremental_new_topics_created": 25,
+        "cross_merge_candidates": 4,
+        "cross_merge_low_reviews": 4,
+        "cross_merge_high_reviews": 2,
         "cross_merge_merged_topics": 2
       }
     },
     "quality": {
-      "merge_rate": 0.5455,
-      "avg_sources_per_topic": 1.43,
-      "high_confidence_topic_ratio": 0.966,
+      "merge_rate": 0.5379,
+      "avg_sources_per_topic": 1.44,
+      "high_confidence_topic_ratio": 0.962,
       "rebuild_mode": "incremental"
     }
   },
@@ -224,12 +225,20 @@
     },
     {
       "id": "05e1b390d606",
-      "title": "2026秋冬巴黎时装周：多元风格碰撞与未来趋势展望",
-      "summary": "2026秋冬巴黎时装周汇集了众多品牌，呈现出多元化的风格与对未来时尚趋势的展望。Dior以花园为灵感，打造梦幻秋冬系列；Kiko Kostadinov从鸟类世界汲取灵感，带来兼具幻想与实用的女性设计；The Row则聚焦复古元素，呈现极简主义的优雅。Carven融合未来主义廓形与复古元素，Louis Vuitton则带来由Nicolas Ghesquière主导的多元化秋季成衣系列。Sacai延续解构主义，Ottolinger庆祝品牌十周年，Chanel、Agnès b.、Akris、Ann Demeulemeester等品牌也带来了各自的精彩设计，展现了东方意境、前卫设计、极简主义等不同风格。此外，grounds、paranoid、MAD DAISY 和 ABRA 等新锐品牌也带来了极具个性的表达，探索行走哲学、纯粹世界与个性化设计。",
+      "title": "2026秋冬巴黎时装周及品牌系列：多元风格与未来趋势",
+      "summary": "2026秋冬巴黎时装周汇集众多品牌，呈现多元风格与未来趋势展望。Dior以花园为灵感，Kiko Kostadinov从鸟类世界汲取灵感，The Row聚焦复古极简，Carven融合未来主义与复古，Louis Vuitton带来多元化秋季成衣。Miu Miu延续经典风格并创新，CFCL、A.W.A.K.E. Mode和Melitta Baumeister也发布了各自的秋季系列。Nanushka则带来学院风与性感西部的碰撞。",
       "key_points": [
-        "Dior, Kiko Kostadinov, The Row等品牌呈现多元风格设计",
-        "Carven, Louis Vuitton引领未来时尚趋势",
-        "新锐品牌grounds, paranoid, MAD DAISY, ABRA带来个性化表达"
+        "Dior：花园灵感，梦幻秋冬系列",
+        "Kiko Kostadinov：鸟类灵感，幻想与实用女性设计",
+        "The Row：复古元素，极简主义优雅",
+        "Carven：未来主义廓形与复古元素融合",
+        "Louis Vuitton：Nicolas Ghesquière主导的多元化秋季成衣",
+        "Miu Miu：延续经典，廓形、材质、色彩创新",
+        "CFCL：设计师高桥佑介新作",
+        "A.W.A.K.E. Mode：90年代初权力着装与解构主义",
+        "Nanushka：学院风与性感西部融合，流苏、麂皮、皮革等西部元素",
+        "Sacai：延续解构主义",
+        "Ottolinger：庆祝品牌十周年"
       ],
       "tags": [
         "2026秋冬",
@@ -239,10 +248,16 @@
         "The Row",
         "Carven",
         "Louis Vuitton",
-        "解构主义",
-        "复古",
-        "未来主义",
-        "新锐品牌"
+        "Miu Miu",
+        "CFCL",
+        "A.W.A.K.E. Mode",
+        "Melitta Baumeister",
+        "Nanushka",
+        "Sacai",
+        "Ottolinger",
+        "成衣系列",
+        "时尚趋势",
+        "多元风格"
       ],
       "category": "runway-collection",
       "category_name": "秀场/系列",
@@ -1814,9 +1829,39 @@
           "title": "ABRA 2026AW コレクション",
           "link": "https://www.fashionsnap.com/collection/abra/2026aw",
           "lang": "ja"
+        },
+        {
+          "name": "Vogue",
+          "title": "Miu Miu Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/miu-miu",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "CFCL Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/cfcl",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "A.W.A.K.E. Mode Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/a-w-a-k-e",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Melitta Baumeister Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/melitta-baumeister",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Nanushka Fall 2026 Ready-to-Wear",
+          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/nanushka",
+          "lang": "en"
         }
       ],
-      "article_count": 271
+      "article_count": 276
     },
     {
       "id": "bc8630abc9cf",
@@ -2083,6 +2128,38 @@
       "article_count": 1
     },
     {
+      "id": "cbbeaaceb150",
+      "title": "Samba变身！阿迪达斯玛丽珍美鞋再掀复古风潮",
+      "summary": "阿迪达斯Originals为经典Samba注入新意，推出玛丽珍鞋款。保留Samba标志性元素的同时，别出心裁地采用T字鞋带和打孔皮革鞋面，增添复古优雅气质。配色多样，预计2026年4月登陆台湾。时髦女孩都在找！无论是搭配牛仔裤的率性洒脱，还是长裙的优雅浪漫，这款Samba都能轻松驾驭，完美演绎学院风与复古运动风的混搭魅力。",
+      "key_points": [
+        "阿迪达斯Originals推出玛丽珍Samba鞋款",
+        "保留经典Samba轮廓，采用T字鞋带和打孔皮革设计",
+        "预计2026年4月在台湾上市，多种配色可选",
+        "适合搭配牛仔裤、长裙等，打造学院风和复古运动风"
+      ],
+      "tags": [
+        "Adidas",
+        "Samba",
+        "玛丽珍鞋",
+        "复古风",
+        "运动时尚",
+        "2026春夏"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://ia.marieclaire.com.tw/assets/mc/202603/69AFFBDCEB8521773140956.jpeg",
+      "published": "2026-03-11T03:00:22",
+      "sources": [
+        {
+          "name": "Marie Claire Taiwan",
+          "title": "【隱藏美鞋】adidas Samba這雙瑪莉珍美得過份！T字鞋帶＋皮革鞋面，時髦女孩都在找！",
+          "link": "https://www.marieclaire.com.tw/fashion/snapshots/92211",
+          "lang": "zh"
+        }
+      ],
+      "article_count": 2
+    },
+    {
       "id": "21461df3f265",
       "title": "GD腕间“土耳其石”揭秘",
       "summary": "潮流风向标权志龙（GD）近日以一枚Piaget土耳其石腕表搭配Repossi戒指，再次引领时尚。GD向来擅长混搭，对色彩有着独到见解。此番他选择的Piaget Sixties系列腕表，不仅展现了品牌在硬石表盘上的深厚底蕴，也让土耳其石这种古老宝石重回大众视野。土耳其石又名绿松石，其独特的色彩和历史渊源，为GD的整体造型增添了一抹神秘色彩。",
@@ -2108,6 +2185,355 @@
           "title": "GD權志龍命定色彩寶石是「土耳其石」？認識Piaget同款腕錶清單",
           "link": "https://www.marieclaire.com.tw/fashion/snapshots/92217",
           "lang": "zh"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c09c0e008aa8",
+      "title": "《超级马里奥》动画电影定档！耀西加入冒险",
+      "summary": "照明娱乐与任天堂再度联手，动画电影《超级马里奥银河大电影》正式定档2026年4月24日。故事讲述马里奥和路易吉在蘑菇王国协助碧姬公主，并照看被俘的库巴。在此期间，他们结识了新伙伴——可爱的耀西。为了阻止库巴Jr.的邪恶计划，马里奥、路易吉和耀西将踏上保护罗塞塔的宇宙冒险之旅，一场充满惊喜与挑战的全新冒险即将展开！",
+      "key_points": [
+        "照明娱乐与任天堂合作",
+        "《超级马里奥银河大电影》2026年上映",
+        "耀西加入冒险团队"
+      ],
+      "tags": [
+        "任天堂",
+        "超级马里奥",
+        "动画电影",
+        "IP合作"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://www.fashion-press.net/img/news/116182/top.jpg?1710150290",
+      "published": "2026-03-10T20:23:22+00:00",
+      "sources": [
+        {
+          "name": "Fashion Press",
+          "title": "アニメ映画『ザ・スーパーマリオギャラクシー・ムービー』ヨッシー登場、クッパJr.を阻止すべく冒険へ",
+          "link": "https://www.fashion-press.net/news/116182",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1528f4313aab",
+      "title": "50+模特的时尚逆袭：香奈儿领衔的年龄多元化浪潮",
+      "summary": "Vogue西班牙聚焦意大利模特Stephanie Cavalli 50岁重返香奈儿秀场的经历，展现其成熟自信的魅力。同时，Elle报道指出，2026时装周上，包括香奈儿、Miu Miu在内的品牌纷纷启用40、50甚至60岁的模特，拥抱年龄多样性，旨在吸引更广泛受众并认可成熟女性的购买力。Stephanie Cavalli、Kristen McMenamy和Mariacarla Boscono等资深模特成为这场时尚变革的代表。",
+      "key_points": [
+        "Stephanie Cavalli 50岁重返香奈儿秀场，成为Matthieu Blazy的灵感缪斯。",
+        "2026时装周，香奈儿、Miu Miu等品牌启用40+模特，拥抱年龄多样性。",
+        "品牌希望通过启用成熟模特来吸引更广泛受众，并认可成熟女性的购买力。",
+        "Kristen McMenamy、Mariacarla Boscono等资深模特也亮相时装周。"
+      ],
+      "tags": [
+        "香奈儿",
+        "年龄多样性",
+        "模特",
+        "时装周",
+        "Stephanie Cavalli",
+        "成熟女性",
+        "时尚",
+        "秀场"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://media.vogue.es/photos/69afca98da04e308c6c642c7/master/pass/Chanel%20F26%20001.jpg",
+      "published": "2026-03-10T20:18:50+00:00",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "Quién es Stephanie Cavalli, la modelo italiana que ha vuelto a abrir el desfile de Chanel: “Los 50 son la edad adecuada para florecer”",
+          "link": "https://www.vogue.es/articulos/stephanie-cavalli-modelo-italiana",
+          "lang": "es"
+        },
+        {
+          "name": "Elle",
+          "title": "Models in Their 40s, 50s, and Even 60s Ruled Fashion Month",
+          "link": "https://www.elle.com/runway/a70698216/runway-age-diversity-fall-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "a394dcc5cfcd",
+      "title": "告别眼部干燥：专家推荐7款保湿眼霜",
+      "summary": "《Allure》杂志精选7款最佳保湿眼霜，为娇嫩眼周肌肤注入水润活力。这些眼霜不仅深层滋养，更能有效平滑细纹、改善肤质。无论是黑眼圈、细纹还是眼睑下垂，都能找到专属解决方案。SkinCeuticals、Tatcha、Estée Lauder等知名品牌均有上榜。文章还解答了眼霜与普通面霜的区别，以及眼霜在淡化细纹和黑眼圈方面的功效，助你科学护肤，焕发迷人双眸。",
+      "key_points": [
+        "《Allure》杂志推荐7款保湿眼霜",
+        "针对不同眼部问题提供解决方案",
+        "涵盖SkinCeuticals、Tatcha、Estée Lauder等品牌"
+      ],
+      "tags": [
+        "眼霜",
+        "保湿",
+        "护肤",
+        "专家推荐",
+        "眼部护理"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.allure.com/photos/6908f44696822548d3510ff0/master/pass/10.31_ALL_Best%20Hydrating%20Eye%20Creams.jpg",
+      "published": "2026-03-10T20:16:15+00:00",
+      "sources": [
+        {
+          "name": "Allure",
+          "title": "7 Best Hydrating Eye Creams, According to Experts",
+          "link": "https://www.allure.com/story/best-hydrating-eye-creams",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "9945243f6b73",
+      "title": "Whoop x A-Cold-Wall* Project Terrain：科技与潮流的两年深度联姻",
+      "summary": "运动追踪器品牌Whoop与A-Cold-Wall*创始人Samuel Ross及其SR_A工作室展开为期两年的合作，推出联名时尚系列Project Terrain。该系列巧妙融合运动科技与工业风格设计，涵盖运动内衣、短裤、跑步夹克等男女款单品。服装上设有专门口袋，方便用户放置Whoop传感器，兼顾运动数据追踪与时尚造型，首发系列将于3月12日发布，引领穿戴科技新风尚。",
+      "key_points": [
+        "Whoop与A-Cold-Wall*展开为期两年的合作",
+        "Project Terrain系列融合运动科技与工业风格设计",
+        "服装设计考虑了Whoop传感器的放置，兼顾功能性与时尚性",
+        "首发系列包含男女款单品，将于3月12日发布"
+      ],
+      "tags": [
+        "Whoop",
+        "A-Cold-Wall*",
+        "Samuel Ross",
+        "Project Terrain",
+        "运动科技",
+        "潮流",
+        "联名",
+        "可穿戴设备",
+        "SR_A"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://assets.vogue.com/photos/69af05acf04041898cde9f52/master/pass/whoop-vogue-business-story.jpg",
+      "published": "2026-03-10T20:14:53+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "Why Fitness Tracker Whoop Has Launched a Fashion Line with Samuel Ross",
+          "link": "https://www.vogue.com/article/why-fitness-tracker-whoop-has-launched-a-fashion-line-with-samuel-ross",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Samuel Ross Designs \"Project Terrain\" Apparel Line for Whoop Health Wearables",
+          "link": "https://hypebeast.com/2026/3/samuel-ross-sr-a-whoop-clothing-brand-project-terrain-release-date-info",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "049a0d55603a",
+      "title": "Nike、Adidas齐发力，Air Force 1、Samba、Superstar世界杯特别版及Air Max 90足球鞋融合款助力赛事营销",
+      "summary": "为迎接2026年世界杯，Nike和Adidas分别推出特别版运动鞋。Nike Air Force 1 Low 世界杯系列首发包含“Team USA”和“墨西哥”特别版，将经典鞋款与足球热情巧妙融合。“Team USA”以白色皮革鞋面为基底，融入美国国家队徽章和金属质感细节，预计3月23日发售。“墨西哥”版本则以米白色皮革为基底，搭配绿色皮革Swoosh标志和火焰状刺绣图案。Adidas则以1994年美国国家队世界杯客场球衣的牛仔造型为灵感，推出了Samba和Superstar等新款运动鞋。此外，Nike还将经典Air Max 90与Total 90 Laser和Hypervenom Phantom 1两款复古足球鞋融合，推出了Air Max 90 \"Hypervenom Phantom 1\"。同时，Nike还将发布两款Air Force 1新配色，设计灵感源自Kobe Bryant的母校Lower Merion High School，以此纪念Kobe Bryant。两家运动品牌巨头均旨在通过特别版产品吸引球迷和运动鞋爱好者，助力世界杯市场营销活动。",
+      "key_points": [
+        "Nike和Adidas推出世界杯特别版运动鞋，助力赛事营销。",
+        "Nike Air Force 1 Low 世界杯系列包含“Team USA”和“墨西哥”特别版。",
+        "Adidas Samba和Superstar以1994年美国国家队世界杯客场球衣为灵感。",
+        "Nike将Air Max 90与复古足球鞋Total 90 Laser和Hypervenom Phantom 1融合。",
+        "Nike发布两款Air Force 1新配色，致敬Kobe Bryant的母校Lower Merion High School。"
+      ],
+      "tags": [
+        "Nike",
+        "Adidas",
+        "Air Force 1",
+        "Samba",
+        "Superstar",
+        "Air Max 90",
+        "世界杯",
+        "Kobe Bryant",
+        "运动鞋",
+        "市场营销"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F10%2FNike-Air-Force-1-Low-Team-USA-IQ0407-100-release-info-0.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-10T20:09:14+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "Nike Prepares the Air Force 1 Low \"Team USA\" for the 2026 World Cup",
+          "link": "https://hypebeast.com/2026/3/nike-air-force-1-low-team-usa-iq0407-100-release-info",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "The Nike Air Force 1 Low “Mexico” Honors National Colors and Football Heritage",
+          "link": "https://hypebeast.com/2026/3/nike-air-force-1-mexico-ir5896-030-official-imagery",
+          "lang": "en"
+        },
+        {
+          "name": "Footwear News",
+          "title": "Nike Preps for World Cup With Air Force 1s for USA and Mexico",
+          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-force-1-low-usa-mexico-soccer-release-date-1238662180",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Adidas Brings Team USA’s Iconic Denim World Cup Look to the Samba, Superstar and More",
+          "link": "https://wwd.com/footwear-news/sneaker-news/adidas-samba-usa-denim-release-date-hp3551-1238662808",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Nike Mashes Up a Classic Air Max Sneaker With Two Retro Soccer Boots",
+          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-max-90-football-pack-release-date-1238663357",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Nike’s Air Force 1 Is Getting Two New Releases Inspired by Kobe Bryant’s Alma Mater",
+          "link": "https://wwd.com/footwear-news/sneaker-news/kobe-bryant-nike-air-force-1-low-lower-merion-aces-release-date-ib0018-101-1238663330",
+          "lang": "en"
+        }
+      ],
+      "article_count": 7
+    },
+    {
+      "id": "5e44fecc95d8",
+      "title": "SGA倾心皇家橡树：腕间神话",
+      "summary": "《Esquire》杂志近日报道了NBA球星Shai Gilgeous-Alexander（SGA）对爱彼（Audemars Piguet）皇家橡树腕表的独特见解。SGA的喜爱，再次印证了名流与顶级奢侈品之间密不可分的关系。皇家橡树腕表凭借其标志性的八角形表圈和卓越的制表工艺，一直以来都是品味和地位的象征。SGA的公开赞赏无疑将进一步提升这款腕表在时尚和收藏界的地位，也体现了明星效应在奢侈品推广中的重要作用。",
+      "key_points": [
+        "SGA喜爱皇家橡树腕表",
+        "名人效应与奢侈品推广",
+        "皇家橡树的经典设计"
+      ],
+      "tags": [
+        "爱彼",
+        "皇家橡树",
+        "腕表",
+        "Shai Gilgeous-Alexander",
+        "名人时尚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/5b629dc0-73fc-4b83-bcd5-e38aa147696e.jpg",
+      "published": "2026-03-10T20:07:00+00:00",
+      "sources": [
+        {
+          "name": "Esquire",
+          "title": "Shai Gilgeous-Alexander on the ‘Mythical’ Allure of the Audermars Piguet Royal Oak",
+          "link": "https://www.esquire.com/style/mens-accessories/a70701036/shai-gilgeous-alexander-audemars-piguet-royal-oak",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "dd818c156a72",
+      "title": "亚马逊春季男装焕新季！",
+      "summary": "《Esquire》杂志精选亚马逊春季促销男装单品，助力打造全新春季衣橱。Levi's经典牛仔裤、Lacoste Polo衫、Ray-Ban太阳镜等潮流单品均参与活动，折扣力度高达66%。现在正是升级衣橱，拥抱春日型格的绝佳时机，不容错过！",
+      "key_points": [
+        "亚马逊春季促销",
+        "男装单品折扣",
+        "Levi's牛仔裤",
+        "Lacoste Polo衫",
+        "Ray-Ban太阳镜"
+      ],
+      "tags": [
+        "亚马逊",
+        "春季促销",
+        "男装",
+        "折扣",
+        "时尚单品"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/821b5c47-6fd9-4dd1-b8f3-dbd16ed16f6f.jpg",
+      "published": "2026-03-10T20:00:00+00:00",
+      "sources": [
+        {
+          "name": "Esquire",
+          "title": "Amazon’s Spring Sale Has the Best Menswear Deals We’ve Seen This Year",
+          "link": "https://www.esquire.com/style/mens-fashion/g70609483/amazon-menswear-deals-march-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "fb0e404fb387",
+      "title": "Timothée Chalamet’s Latest Suit Would Look Right at Home at the Opera, Don’t You Think?",
+      "summary": "Timothée Chalamet身穿黑色双排扣西装出席电影《Marty Supreme》北京首映礼，内搭V领T恤，佩戴Gucci无框墨镜，整体造型简约时尚，致敬90年代风格。",
+      "key_points": [],
+      "tags": [],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/6a27d2a3-7c91-4be6-b53a-8326f265839c.jpg",
+      "published": "2026-03-10T19:59:00+00:00",
+      "sources": [
+        {
+          "name": "Harper's Bazaar",
+          "title": "Timothée Chalamet’s Latest Suit Would Look Right at Home at the Opera, Don’t You Think?",
+          "link": "https://www.harpersbazaar.com/celebrity/latest/a70699948/timothee-chalamet-marty-supreme-beijing-premiere-ballet-opera-comments-backlash",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "005c3d27f455",
+      "title": "本周必抢：科比战靴领衔球鞋风暴！",
+      "summary": "本周球鞋市场迎来一波高潮！Nike Kobe 3 Protro Low“Mamba Magic”以其独特魅力强势回归。同时，备受瞩目的联名系列也纷纷登场，包括Teyana Taylor x Jordan Brand, CAYL x New Balance, 以及Jacquemus x Nike的重磅合作。Nike更前瞻性地发布了2026年Air Max Day的革新之作Air Liquid Max，并为女性消费者倾情打造First Sight系列。Jacquemus x Nike Moon Shoe释出SS26全新配色，并由Solange Knowles倾情演绎广告大片，时尚感十足。",
+      "key_points": [
+        "Nike Kobe 3 Protro Low“Mamba Magic”发售",
+        "多个品牌联名系列发布",
+        "Nike发布2026 Air Max Day新款及女性系列"
+      ],
+      "tags": [
+        "Nike",
+        "科比",
+        "球鞋",
+        "联名",
+        "发售"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F09%2Fbest-sneaker-releases-march-2026-week-2-nike-new-balance-0.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-10T19:56:51+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "\"Mamba Magic\" Enchants the Nike Kobe 3 Protro Low in This Week's Best Footwear Drops",
+          "link": "https://hypebeast.com/2026/3/best-sneaker-releases-march-2026-week-2-nike-new-balance",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "cf2f04f90709",
+      "title": "三月艺文风向：巴黎圣罗兰的艺术邂逅",
+      "summary": "《Elle》杂志聚焦三月文化艺术亮点，特别推荐圣罗兰（Saint Laurent）在巴黎Rive Droite精品店举办的德国画家Yvonne Robert作品展。该展览由创意总监Anthony Vaccarello亲自策划，旨在扶持艺术新秀，并将精品店转型为融合生活方式与文化体验的创意空间。此次展览不仅展现了Robert的独特艺术风格，也体现了圣罗兰在时尚之外，对艺术文化领域的积极探索与投入。",
+      "key_points": [
+        "圣罗兰Rive Droite精品店举办Yvonne Robert作品展",
+        "Anthony Vaccarello策划，推广艺术家",
+        "精品店转型为生活方式和文化空间"
+      ],
+      "tags": [
+        "圣罗兰",
+        "艺术展览",
+        "文化活动",
+        "Anthony Vaccarello",
+        "巴黎"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/5c164c26-32eb-411a-b8bd-e3d567eb04bf.jpg",
+      "published": "2026-03-10T19:48:03+00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "Culture Watch: What to See and Where to Go in March",
+          "link": "https://www.elle.com/fashion/a70701017/best-new-fashion-exhibits-march-2026",
+          "lang": "en"
         }
       ],
       "article_count": 1
@@ -2141,36 +2567,6 @@
       "article_count": 1
     },
     {
-      "id": "cbbeaaceb150",
-      "title": "Samba变身！阿迪达斯玛丽珍美鞋",
-      "summary": "阿迪达斯Originals为经典Samba注入新意，推出玛丽珍鞋款。保留Samba标志性元素的同时，别出心裁地采用T字鞋带和打孔皮革鞋面，增添复古优雅气质。配色多样，预计2026年4月登陆台湾。无论是搭配牛仔裤的率性洒脱，还是长裙的优雅浪漫，这款Samba都能轻松驾驭，完美演绎学院风与复古运动风的混搭魅力。",
-      "key_points": [
-        "Samba经典重塑",
-        "T字鞋带玛丽珍设计",
-        "复古学院风"
-      ],
-      "tags": [
-        "adidas Originals",
-        "Samba",
-        "玛丽珍鞋",
-        "复古",
-        "球鞋"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://ia.marieclaire.com.tw/assets/mc/202603/69AFFBDCEB8521773140956.jpeg",
-      "published": "2026-03-10T19:43:33",
-      "sources": [
-        {
-          "name": "Marie Claire Taiwan",
-          "title": "【隱藏美鞋】adidas Samba又一雙瑪莉珍？T字鞋帶＋皮革鞋面，時髦女孩都在找！",
-          "link": "https://www.marieclaire.com.tw/fashion/snapshots/92211",
-          "lang": "zh"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "0760d5ae67bd",
       "title": "棒球明星费仔的幸运腕表",
       "summary": "混血棒球明星费尔柴尔德（昵称费仔）在备战2026年WBC世界棒球经典赛期间，始终佩戴着一枚劳力士蚝式恒动潜航者日历型腕表。据台湾《美丽佳人》报道，这款腕表对费仔意义非凡，不仅伴随他征战赛场，更见证了他人生中的重要时刻——浪漫求婚和幸福婚礼。文章还介绍了劳力士潜航者系列的经典历史与卓越性能，并提及了品牌旗下其他备受欢迎的腕表系列。",
@@ -2196,6 +2592,534 @@
           "title": "費仔2026WBC棒球賽出行東京、婚禮與求婚都戴「這款」幸運腕錶！",
           "link": "https://www.marieclaire.com.tw/fashion/news/92213",
           "lang": "zh"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "82487fb8e39b",
+      "title": "拥抱未来：13个实验室培育钻石购买指南",
+      "summary": "《Elle》杂志精选13个购买实验室培育钻石的理想场所，涵盖订婚戒指、经典手链等多种珠宝款式。实验室培育钻石在分子结构上与天然钻石无异，但价格更具优势，且在伦理和环保方面更胜一筹。Grown Brilliance、Dorsey、Ritani等品牌各具特色，满足不同消费者的需求，为追求高性价比和可持续性的你提供完美选择。",
+      "key_points": [
+        "实验室培育钻石与天然钻石分子结构相同",
+        "价格更亲民，更符合伦理道德",
+        "Grown Brilliance、Dorsey、Ritani等品牌值得关注"
+      ],
+      "tags": [
+        "实验室培育钻石",
+        "珠宝",
+        "可持续时尚",
+        "轻奢"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/vrai-jewelry-697d270198aaf.jpg",
+      "published": "2026-03-10T19:38:00+00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "13 Best Places to Buy Lab-Grown Diamonds, According to Jewelry Experts",
+          "link": "https://www.elle.com/fashion/shopping/a70173272/where-to-buy-lab-grown-diamonds",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1a60cf73f300",
+      "title": "敏感肌福音：11款舒缓保湿霜精选",
+      "summary": "《Allure》杂志近日发布了针对敏感肌肤的保湿霜评选，推荐了11款能够有效修复皮肤屏障、镇静炎症的优质产品。皮肤科医生建议，敏感肌人群应选择含有神经酰胺、甘油、透明质酸等成分的无香精配方，以温和滋润肌肤。此次推荐榜单中，SkinFix、SkinCeuticals以及Aestura等品牌的产品均榜上有名，为敏感肌人士提供了安心之选。",
+      "key_points": [
+        "《Allure》杂志评选",
+        "修复皮肤屏障，镇静炎症",
+        "推荐神经酰胺、甘油、透明质酸等成分"
+      ],
+      "tags": [
+        "敏感肌肤",
+        "保湿霜",
+        "护肤",
+        "产品推荐"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.allure.com/photos/67111ba2e5125bc806c964d0/master/pass/Best%20Face%20Moisturizers%20for%20Dry%20Sensitive%20Skin%20102024.jpg",
+      "published": "2026-03-10T19:26:31+00:00",
+      "sources": [
+        {
+          "name": "Allure",
+          "title": "11 Best Moisturizers for Sensitive Skin That Comfort, Calm, and Cushion Skin",
+          "link": "https://www.allure.com/story/face-moisturizers-for-dry-sensitive-skin",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "265822bc94a0",
+      "title": "ELLE女性力量峰会：赋能商业新纪元",
+      "summary": "ELLE杂志于近日举办了2026女性力量峰会，汇聚了来自各行各业的杰出女性领袖，包括CEO、创始人、编辑等，共同庆祝妇女历史月和国际妇女节。峰会围绕增长与创新、职业发展、规则重塑等议题展开深入探讨，强调女性之间通过建立紧密的网络、分享宝贵建议、提供资金支持和构建互助社区，能够有效地促进商业发展。值得关注的是，峰会期间还特别讨论了AI购物代理Phia，旨在利用人工智能技术帮助消费者更精准地匹配心仪品牌，提升购物体验。",
+      "key_points": [
+        "ELLE举办女性力量峰会",
+        "探讨女性商业赋能",
+        "AI购物代理Phia亮相"
+      ],
+      "tags": [
+        "女性力量",
+        "商业峰会",
+        "人工智能",
+        "购物体验",
+        "ELLE"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/e27ec4d2-f5a6-4ed2-b560-0373270ad226.jpg",
+      "published": "2026-03-10T19:24:00+00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "Watch the 2026 Female Force Summit",
+          "link": "https://www.elle.com/videos/a70699960/watch-the-2026-female-force-summit",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "9152a96eee45",
+      "title": "Madewell春季内幕折扣再升级：时髦精必入单品清单，编织托特包也参与！",
+      "summary": "轻奢品牌Madewell的Insider促销活动火热进行中！即日起至3月22日，Madewell Insider会员可享受几乎所有商品25%的折扣。经典牛仔裤、百搭衬衫、优雅风衣、柔软羊绒衫等春季必备单品均参与活动。Who What Wear, Esquire和Elle杂志也纷纷报道了此次促销，推荐了Vintage Tee和编织托特包等热门单品。别忘了凯蒂·赫尔姆斯钟爱的Essential托特包，以及成为会员可享的10美元购物金和生日礼物等福利，为你的春日造型和会员权益加码！",
+      "key_points": [
+        "Madewell Insider会员专享全场25%折扣，截止至3月22日",
+        "春季必备单品如牛仔裤、衬衫、风衣、羊绒衫等参与活动",
+        "Who What Wear, Esquire, Elle等媒体推荐，关注Vintage Tee和编织托特包",
+        "凯蒂·赫尔姆斯同款Essential托特包也在促销范围内",
+        "注册会员可享10美元购物金和生日礼物"
+      ],
+      "tags": [
+        "Madewell",
+        "春季折扣",
+        "Insider促销",
+        "时尚单品",
+        "会员福利",
+        "编织托特包",
+        "凯蒂·赫尔姆斯"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/nz442-na0338-d6-69b00bfe5dce5.jpg",
+      "published": "2026-03-10T19:19:14+00:00",
+      "sources": [
+        {
+          "name": "Harper's Bazaar",
+          "title": "Madewell’s Insider Sale Is Back and It’s Full of Chic Spring Staples",
+          "link": "https://www.harpersbazaar.com/fashion/trends/a70693439/madewell-insider-sale-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Esquire",
+          "title": "The Best Deals to Shop from Madewell's Insider Sale",
+          "link": "https://www.esquire.com/style/mens-fashion/a70695202/madewell-insider-sale-deals-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Elle",
+          "title": "Madewell’s Spring Insider Sale Has the Best Deals to Refresh Your Warm-Weather Wardrobe",
+          "link": "https://www.elle.com/fashion/shopping/a70694193/madewell-insider-sale-deals-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Wait, Everything Is On Sale at Madewell Right Now—25 Incredibly Chic Finds Worth Adding to Cart First",
+          "link": "https://www.whowhatwear.com/fashion/shopping/madewell-insider-event-sale-march-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 4
+    },
+    {
+      "id": "bbc9cebea202",
+      "title": "指尖上的复古情怀：TikTok“情绪戒指”美甲风靡",
+      "summary": "90年代的经典“情绪戒指”如今在TikTok上以美甲的形式回归！美甲师们巧妙运用磁性凝胶、珠光粉等材料，打造出色彩变幻、充满神秘感的美甲效果，仿佛指尖也拥有了感知情绪的能力。这一怀旧潮流迅速走红，用户和美甲师纷纷在社交媒体上分享教程和创意，掀起了一股DIY美甲的热潮，让指尖也玩转复古时尚。",
+      "key_points": [
+        "TikTok兴起“情绪戒指”美甲趋势",
+        "利用磁性凝胶等材料实现色彩变幻",
+        "90年代怀旧风的时尚回归"
+      ],
+      "tags": [
+        "美甲",
+        "潮流趋势",
+        "TikTok",
+        "90年代",
+        "复古风"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/10/cc404988/image-414.jpeg?w=1200&fit=max",
+      "published": "2026-03-10T19:16:20+00:00",
+      "sources": [
+        {
+          "name": "Bustle",
+          "title": "TikTok's \"Mood Ring\" Nail Trend Is Delightfully ’90s",
+          "link": "https://www.bustle.com/beauty/mood-ring-nails",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "feb13a138e8e",
+      "title": "Margot Robbie巴黎透视装引爆时尚",
+      "summary": "香奈儿品牌大使Margot Robbie现身巴黎时装周，以一身大胆前卫的造型惊艳众人。她身穿性感透视上衣，内搭精致蕾丝胸衣，下身搭配灰色半透明长裤，尽显其率性不羁的时尚态度。手拎经典香奈儿2.55手袋，更添优雅韵味。值得关注的是，Robbie一改往日长发造型，以全新清爽短发亮相，引发热议。时尚评论家认为，Robbie的着装风格转变，或暗示着其个人状态的全新阶段。",
+      "key_points": [
+        "Margot Robbie巴黎时装周造型",
+        "透视上衣搭配蕾丝胸衣",
+        "全新短发造型"
+      ],
+      "tags": [
+        "Margot Robbie",
+        "巴黎时装周",
+        "香奈儿",
+        "明星穿搭",
+        "时尚趋势",
+        "透视装"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://imgix.bustle.com/uploads/getty/2026/3/10/7165886e/paris-france-march-09.jpg?w=1200&fit=max",
+      "published": "2026-03-10T19:11:12+00:00",
+      "sources": [
+        {
+          "name": "Bustle",
+          "title": "Margot Robbie Exposed Her Bra Under A Sheer Top At Paris Fashion Week",
+          "link": "https://www.bustle.com/style/margot-robbie-exposed-bra-sheer-top-paris-fashion-week",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "2c8a836a503b",
+      "title": "2026跑步手套精选：温暖型动",
+      "summary": "《智族GQ》精选2026年度最佳跑步手套，为冬季运动爱好者提供全方位装备指南。本次推荐涵盖Smartwool、Pearl Izumi、Hoka、Lululemon等知名品牌，针对保暖、轻便、高可见度等不同需求，提供多样化选择。选购时，务必关注手套的合身性、材质以及特殊功能，确保在寒冷天气中也能舒适畅跑。",
+      "key_points": [
+        "品牌跑步手套推荐",
+        "冬季跑步装备",
+        "手套选购要点"
+      ],
+      "tags": [
+        "跑步手套",
+        "运动装备",
+        "冬季时尚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.gq.com/photos/69b05f18fd68cfed75dd253e/master/pass/running-gloves-lede-art.jpg",
+      "published": "2026-03-10T19:09:00+00:00",
+      "sources": [
+        {
+          "name": "GQ",
+          "title": "12 Best Running Gloves of 2026 to Protect Your Mitts",
+          "link": "https://www.gq.com/story/best-running-gloves",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "530c32af8ef9",
+      "title": "刘美贤LV巴黎首秀：从冰场到秀场的时尚跨界",
+      "summary": "花样滑冰奥运冠军刘美贤（Alysa Liu）亮相巴黎时装周，出席Louis Vuitton 2026秋季系列发布秀，完成个人时装周首秀。她身着与Pharrell男装系列相似的LV棕色Monogram牛仔套装，搭配Squire East West手袋，展现了冰场之外的时尚魅力和独特风格。秀场同排嘉宾包括Zendaya、Lisa等众多明星。刘美贤表示，即使未能参加米兰冬奥会，她依然积极探索滑冰之外的精彩生活。",
+      "key_points": [
+        "刘美贤巴黎时装周首秀，出席Louis Vuitton AW26发布秀",
+        "身着LV棕色Monogram牛仔套装，与Pharrell男装系列相似",
+        "同排嘉宾包括Zendaya、Lisa等明星，备受瞩目",
+        "展现冰场之外的时尚魅力，探索多元发展"
+      ],
+      "tags": [
+        "刘美贤",
+        "Alysa Liu",
+        "Louis Vuitton",
+        "路易威登",
+        "巴黎时装周",
+        "Paris Fashion Week",
+        "AW26",
+        "时装秀",
+        "时尚",
+        "明星",
+        "Zendaya",
+        "Lisa"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://assets.vogue.com/photos/69b000bf5dbae37d351abb16/master/pass/2265742776",
+      "published": "2026-03-10T19:05:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "Alysa Liu Trades Milano-Cortina for Paris Fashion Week",
+          "link": "https://www.vogue.com/article/alysa-liu-trades-milan-cortina-for-paris-fashion-week",
+          "lang": "en"
+        },
+        {
+          "name": "Harper's Bazaar",
+          "title": "Alysa Liu Takes Her Stripes to Paris for the Louis Vuitton Fall 2026 Show",
+          "link": "https://www.harpersbazaar.com/celebrity/latest/a70694160/alysa-liu-paris-fashion-week-debut-louis-vuitton-fall-2026-show",
+          "lang": "en"
+        },
+        {
+          "name": "Dazed",
+          "title": "Alysa Liu makes her Paris Fashion Week debut at Louis Vuitton",
+          "link": "https://www.dazeddigital.com/fashion/article/69868/1/alysa-liu-louis-vuitton-aw26-fw26-paris-fashion-week-pfw-nicolas-ghesquiere",
+          "lang": "en"
+        }
+      ],
+      "article_count": 3
+    },
+    {
+      "id": "f8c7096d1c61",
+      "title": "低调奢华：当代珠宝的微妙艺术",
+      "summary": "当代珠宝设计趋势趋向于精致内敛，克制、灵活和经典耐看成为关键。意大利珠宝品牌Fope凭借其卓越的工艺和对这些设计原则的坚持，在竞争激烈的市场中脱颖而出。Fope的设计理念巧妙地适应了不断变化的消费者需求，使其在当代珠宝领域保持独特的吸引力，成为低调奢华的典范。",
+      "key_points": [
+        "当代珠宝设计注重克制与内敛",
+        "Fope以精湛工艺著称",
+        "设计理念适应消费者需求"
+      ],
+      "tags": [
+        "珠宝设计",
+        "Fope",
+        "当代时尚",
+        "意大利工艺"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2025/12/SOULS.jpg?crop=0px%2C1600px%2C4794px%2C2690px&resize=1000%2C563",
+      "published": "2026-03-10T18:59:39+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "The Shape of Subtlety: Designing Contemporary Jewelry Without Excess",
+          "link": "https://wwd.com/business-news/business-features/fope-timeless-minimalist-italian-luxury-jewelry-1238408612",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "35b94f70033f",
+      "title": "Hilary Duff针织马甲与高开衩礼服的早春时尚",
+      "summary": "Hilary Duff近日以多套造型展现早春时尚。在纽约街头，她以白色T恤搭配灰色针织马甲和深色喇叭牛仔裤的简约造型亮相。为宣传新专辑《Luck... or Something》，她时隔20年重返Jimmy Fallon的节目，身着Helmut Lang黑色连衣裙和Di Petsa 2026秋季系列的开衩礼服，后者以其标志性的湿感设计与她的新歌MV相呼应，引发关注。",
+      "key_points": [
+        "Hilary Duff纽约街头针织马甲造型：白色T恤+灰色针织马甲+深色喇叭牛仔裤+黑色方头皮靴",
+        "Hilary Duff回归Jimmy Fallon节目：Helmut Lang黑色连衣裙造型",
+        "Hilary Duff回归Jimmy Fallon节目：Di Petsa 2026秋季系列高开衩礼服造型，湿感设计呼应新歌MV",
+        "Hilary Duff新专辑《Luck... or Something》宣传"
+      ],
+      "tags": [
+        "Hilary Duff",
+        "针织马甲",
+        "早春时尚",
+        "街拍",
+        "Jimmy Fallon",
+        "Helmut Lang",
+        "Di Petsa",
+        "高开衩礼服",
+        "湿感设计",
+        "Luck... or Something"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://media.glamour.com/photos/69b03a7fa90817c0de7025fd/master/pass/2265678321",
+      "published": "2026-03-10T18:58:27+00:00",
+      "sources": [
+        {
+          "name": "Glamour",
+          "title": "How to Style a Sweater Vest for Spring 2026, According to Hilary Duff",
+          "link": "https://www.glamour.com/story/how-to-style-a-sweater-vest-for-spring-2026-according-to-hilary-duff",
+          "lang": "en"
+        },
+        {
+          "name": "The Zoe Report",
+          "title": "Hilary Duff's Thigh-High Slit Dress Marked Her Return To Late Night",
+          "link": "https://www.thezoereport.com/culture/hilary-duff-thigh-high-slit-dress-late-night",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "06d0a12b8095",
+      "title": "2026春季发色：丝滑“牛奶棕”来袭！",
+      "summary": "2026年春季，告别沉闷，拥抱柔美！“牛奶棕”成为最受瞩目的染发趋势。这种色调如奶油般丝滑，在棕色的基调上融合了温暖与光泽，呈现出自然又迷人的效果。造型师Laura Elliott强调，牛奶棕适合所有发质，轻松打造春日轻盈感。Hailey Bieber和Gigi Hadid等时尚Icon也纷纷换上类似发色，引领潮流。牛奶棕巧妙地平衡了暖色和冷色调，无论是白皙还是小麦肤色，都能完美驾驭，日常维护也十分简单。",
+      "key_points": [
+        "“牛奶棕”是2026春季流行发色",
+        "色调柔和，奶油质感，自然温暖",
+        "适合所有发质和肤色，易于维护"
+      ],
+      "tags": [
+        "染发",
+        "美发潮流",
+        "牛奶棕",
+        "名人发型",
+        "2026春季"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.glamour.com/photos/69b062cef961eedf2c23f27f/master/pass/milky%20brunette.jpg",
+      "published": "2026-03-10T18:57:27+00:00",
+      "sources": [
+        {
+          "name": "Glamour",
+          "title": "‘Milky Brunette’ Is the Coolest Way to Wear Brown Hair This Spring",
+          "link": "https://www.glamour.com/story/milky-brunette-hair-color-trend",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "665b35dd4c89",
+      "title": "赫莉再现经典：27年前战袍惊艳回归",
+      "summary": "伊丽莎白·赫莉近日再次穿上她在1999年Met Gala红毯上惊艳四座的Versace礼服，时隔27年，风采依旧。这件礼服以其大胆的设计和完美的剪裁著称，是赫莉红毯造型的代表作。此次重现经典，引发时尚界广泛关注，也再次证明了经典设计永不过时的魅力。",
+      "key_points": [
+        "伊丽莎白·赫莉",
+        "1999年Met Gala礼服",
+        "Versace经典设计"
+      ],
+      "tags": [
+        "伊丽莎白·赫莉",
+        "范思哲",
+        "Met Gala",
+        "红毯造型",
+        "经典重现"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/fb4b1ccd-192b-4190-9136-132d207796b9.jpg",
+      "published": "2026-03-10T18:47:00+00:00",
+      "sources": [
+        {
+          "name": "Harper's Bazaar",
+          "title": "Elizabeth Hurley Rewears Her 1999 Met Gala Versace Gown, 27 Years Later",
+          "link": "https://www.harpersbazaar.com/celebrity/latest/a70695055/elizabeth-hurley-rewears-1999-met-gala-versace-gown-photos",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1e98e4042498",
+      "title": "丝滑美肌秘密：Josie Maran身体乳",
+      "summary": "《Essence》杂志编辑力荐Josie Maran身体乳，这款产品以其卓越的深层保湿功效、赋予肌肤自然光泽和清新怡人的香味而备受推崇。它能有效改善肌肤干燥，令肌肤触感柔滑细腻。对于追求高品质身体护理，同时注重性价比的消费者来说，Josie Maran身体乳无疑是日常护肤的理想之选。",
+      "key_points": [
+        "深层保湿，持久滋润",
+        "肌肤呈现自然健康光泽",
+        "清新香味，愉悦感官体验"
+      ],
+      "tags": [
+        "身体乳",
+        "美妆",
+        "保湿",
+        "Josie Maran",
+        "个护"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/POTW-1-1200x900.png",
+      "published": "2026-03-10T18:42:38+00:00",
+      "sources": [
+        {
+          "name": "Essence",
+          "title": "Why This Josie Maran Body Butter is My Holy Grail",
+          "link": "https://www.essence.com/news/empties-edit-josie-maran-body-butter",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "57a13b58d7da",
+      "title": "Ujoh 2026秋冬：反差之美",
+      "summary": "日本品牌Ujoh在巴黎时装周发布了其2026秋冬成衣系列。设计师Mitsuru Nishizaki和Aco Nishizaki大胆玩转对比元素，将看似冲突的材质和设计巧妙融合，打造出令人耳目一新的时尚作品。该系列通过意想不到的组合，展现了品牌独特的解构美学和对传统服装的创新诠释。",
+      "key_points": [
+        "对比设计",
+        "解构美学",
+        "创新组合"
+      ],
+      "tags": [
+        "Ujoh",
+        "2026秋冬",
+        "巴黎时装周",
+        "成衣"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/ujoh-fw-26-rtw-pfw-r-ctsy-0001.jpg?crop=0px%2C44px%2C1363px%2C763px&resize=1000%2C563",
+      "published": "2026-03-10T18:41:28+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Ujoh Fall 2026: Opposites Attract",
+          "link": "https://wwd.com/runway/fall-2026/paris/ujoh/review",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c47d30e8b923",
+      "title": "送礼指南：献给她的57种惊喜",
+      "summary": "还在为送什么礼物给那位“什么都不缺”的她而烦恼吗？《Esquire》杂志为你精选了57件别致好礼，灵感涵盖时尚潮流、精致美妆、品味生活等多个维度。虽然具体清单尚未公布，但这份指南无疑能为你打开思路，找到真正能打动她心的完美礼物。",
+      "key_points": [
+        "《Esquire》推荐57件礼物",
+        "目标人群：拥有一切的女性",
+        "品类可能包括时尚、美妆、生活方式"
+      ],
+      "tags": [
+        "礼物推荐",
+        "女性",
+        "时尚生活",
+        "轻奢"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/esq250101-digital-ecomm-giftsforwife-index-2581-691df8652b8b3.jpg",
+      "published": "2026-03-10T18:40:00+00:00",
+      "sources": [
+        {
+          "name": "Esquire",
+          "title": "57 Thoughtful Gifts for the Woman Who Has Everything",
+          "link": "https://www.esquire.com/lifestyle/g44498229/gifts-for-women-who-have-everything",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1c4aece627e2",
+      "title": "皇室联邦日聚首，BBC罕见缺席",
+      "summary": "英国皇室近日齐聚威斯敏斯特教堂，庆祝一年一度的联邦日。这是自安德鲁王子事件后，皇室成员最大规模的一次公开亮相，查尔斯三世国王、卡米拉王后、威廉王子与凯特王妃等重要成员均出席。然而，向来与皇室关系密切的英国广播公司BBC，却打破了长达37年的传统，首次未对该仪式进行直播，转而播放了一档房地产节目，引发英国社会广泛关注和猜测。此举背后的原因尚不明确，但无疑为皇室与媒体的关系增添了一丝微妙色彩。",
+      "key_points": [
+        "皇室成员大规模聚会",
+        "BBC中断37年直播传统",
+        "联邦日仪式受关注"
+      ],
+      "tags": [
+        "英国皇室",
+        "BBC",
+        "联邦日",
+        "媒体",
+        "文化"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vanityfair.com/photos/69b02b11ae8c5e4ce278aae8/master/pass/GettyImages-2265595159.jpg",
+      "published": "2026-03-10T18:38:46+00:00",
+      "sources": [
+        {
+          "name": "Vanity Fair",
+          "title": "As the Royal Family Unites for Commonwealth Day, One Important Guest Was Missing: The BBC",
+          "link": "https://www.vanityfair.com/style/story/royal-family-commonwealth-day-bbc-epstein",
+          "lang": "en"
         }
       ],
       "article_count": 1
@@ -2290,49 +3214,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "83f7055f6627",
-      "title": "2026秋季系列前瞻：Miu Miu、CFCL与A.W.A.K.E. Mode",
-      "summary": "本期聚焦Miu Miu、CFCL和A.W.A.K.E. Mode 2026秋季成衣系列。Vogue独家呈现Miu Miu本季所有造型，延续品牌经典风格，在廓形、材质与色彩上创新，打造优雅个性的现代女性形象。同时，Vogue报道了CFCL设计师高桥佑介（Yusuke Takahashi）的最新作品，并报道了A.W.A.K.E. Mode设计师Natalia Alaverdian将90年代初的权力着装与极简主义、马术风格相融合的系列。",
-      "key_points": [
-        "Miu Miu 2026秋季系列延续品牌经典风格并创新。",
-        "CFCL设计师高桥佑介（Yusuke Takahashi）的最新作品。",
-        "A.W.A.K.E. Mode将90年代初的权力着装与极简主义、马术风格相融合。"
-      ],
-      "tags": [
-        "Miu Miu",
-        "CFCL",
-        "A.W.A.K.E. Mode",
-        "2026秋季",
-        "成衣系列",
-        "时装秀"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://assets.vogue.com/photos/69b01d0cfbbdbab39b71da18/master/pass/UMB00012.jpg",
-      "published": "2026-03-10T18:32:02+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "Miu Miu Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/miu-miu",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "CFCL Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/cfcl",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "A.W.A.K.E. Mode Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/a-w-a-k-e",
-          "lang": "en"
-        }
-      ],
-      "article_count": 3
     },
     {
       "id": "b6600436d752",
@@ -2497,19 +3378,22 @@
     },
     {
       "id": "efedcce7967d",
-      "title": "怪奇少女的“怪”趣味？",
-      "summary": "《怪奇物语》女星Millie Bobby Brown近日又一次挑战时尚界限，在宣传其流浪狗救助组织Joey's Friends的视频中，大胆穿上了备受争议的Nike Air Rift分趾运动鞋。这款设计前卫的分趾鞋，以其独特的造型和凉鞋般的透气性引发两极评价。而在此之前，Brown就曾公开演绎Crocs毛绒靴，展现了她驾驭“过时”单品的独特时尚态度。看来这位年轻的时尚icon，总能将小众单品穿出自己的风格。",
+      "title": "怪奇少女的“怪”趣味再升级：Millie Bobby Brown引领小众鞋履风潮？",
+      "summary": "《怪奇物语》女星Millie Bobby Brown再次展现其独特的时尚品味。在宣传流浪狗救助组织的视频中，她大胆穿上备受争议的Nike Air Rift分趾运动鞋，引发关注。这款设计前卫的分趾鞋，因其独特的造型和舒适度，被认为是当下最流行的鞋款之一。此前，Brown还曾公开演绎Crocs毛绒靴，展现了她驾驭“过时”单品的独特时尚态度。这位年轻的时尚icon似乎总能精准捕捉小众潮流，并将其穿出自己的风格。",
       "key_points": [
-        "Millie Bobby Brown穿搭",
-        "Nike Air Rift分趾鞋",
-        "挑战传统审美"
+        "Millie Bobby Brown穿Nike Air Rift分趾运动鞋，引发时尚讨论。",
+        "分趾鞋因其独特设计和舒适度成为潮流单品。",
+        "Brown此前曾演绎Crocs毛绒靴，展现对小众鞋履的喜爱。",
+        "Brown的穿搭风格体现了她对时尚潮流的敏锐触觉。"
       ],
       "tags": [
         "Millie Bobby Brown",
+        "Nike Air Rift",
         "分趾鞋",
-        "运动鞋",
-        "名人穿搭",
-        "小众时尚"
+        "Crocs",
+        "小众潮流",
+        "明星穿搭",
+        "时尚icon"
       ],
       "category": "street-style",
       "category_name": "街拍/造型",
@@ -2518,12 +3402,12 @@
       "sources": [
         {
           "name": "Bustle",
-          "title": "Millie Bobby Brown Cosigned Fashion’s Most Controversial Shoe",
+          "title": "Millie Bobby Brown Cosigned Fashion’s Most Trendiest Shoe",
           "link": "https://www.bustle.com/style/millie-bobby-brown-controversial-shoe-nike-air-rift",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "33cbca158bcd",
@@ -2623,6 +3507,57 @@
         }
       ],
       "article_count": 1
+    },
+    {
+      "id": "0e30594b7ee1",
+      "title": "LV大廓形“童话”再续新篇：2026秋季系列探索服装人类学、自然灵感与未来主义",
+      "summary": "Louis Vuitton在巴黎时装周发布2026秋季系列，延续大廓形设计，并深入探索服装人类学。Nicolas Ghesquière从世界各地山区居民的服装中汲取灵感，以其前卫视角重新诠释传统服饰，大胆“重置”时尚规则。Vogue España报道指出，该系列名为“Super Nature”，从自然中汲取灵感，融入旅行元素，以夸张廓形和田园风光致敬自然。Fashion Network报道进一步指出，该系列充满未来主义色彩的幻想。",
+      "key_points": [
+        "Louis Vuitton 2026秋季系列延续大廓形设计。",
+        "Nicolas Ghesquière探索服装人类学，从世界各地山区服饰中汲取灵感。",
+        "系列名为“Super Nature”，从自然中汲取灵感，融入旅行元素。",
+        "该系列充满未来主义色彩的幻想。"
+      ],
+      "tags": [
+        "Louis Vuitton",
+        "2026秋季系列",
+        "巴黎时装周",
+        "大廓形",
+        "服装人类学",
+        "Super Nature",
+        "未来主义"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/a450fc1c-98b3-4054-b67f-a1b4a63be52a.jpg",
+      "published": "2026-03-10T18:19:01+00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "Bigger Is Better at Louis Vuitton",
+          "link": "https://www.elle.com/runway/a70622547/louis-vuitton-fall-2026-review",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Louis Vuitton Women’s Fall 2026: ‘An Anthropology of Fashion’",
+          "link": "https://wwd.com/runway/fall-2026/paris/louis-vuitton/review",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue España",
+          "title": "Louis Vuitton: Nicolas Ghesquière celebró la vida en conexión con la naturaleza a través de referencias viajeras y volúmenes extremos",
+          "link": "https://www.vogue.es/articulos/louis-vuitton-desfile-otono-invierno-2026-2027",
+          "lang": "es"
+        },
+        {
+          "name": "Fashion Network",
+          "title": "Paris Fashion Week climaxes with Louis Vuitton, Miu Miu",
+          "link": "https://ww.fashionnetwork.com/news/Paris-fashion-week-climaxes-with-louis-vuitton-miu-miu,1814498.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 4
     },
     {
       "id": "655acb68d151",
@@ -2726,55 +3661,6 @@
       "article_count": 1
     },
     {
-      "id": "9152a96eee45",
-      "title": "Madewell春季内幕折扣升级：时髦精的换季必BUY清单！",
-      "summary": "轻奢品牌Madewell的Insider促销活动火热进行中！即日起至3月22日，Madewell Insider会员可享受几乎所有商品25%的折扣。经典牛仔裤、百搭衬衫、优雅风衣、柔软羊绒衫等春季必备单品均参与活动。Esquire和Elle杂志也纷纷报道了此次促销，推荐了Vintage Tee等热门单品。别忘了凯蒂·赫尔姆斯钟爱的Essential托特包，以及成为会员可享的10美元购物金和生日礼物等福利，为你的春日造型和会员权益加码！",
-      "key_points": [
-        "Madewell Insider会员专享25%折扣",
-        "促销活动持续至3月22日",
-        "涵盖牛仔裤、衬衫、风衣、羊绒衫等春季单品",
-        "Esquire和Elle杂志推荐",
-        "Vintage Tee等热门单品值得关注",
-        "会员福利：10美元购物金、生日礼物",
-        "凯蒂·赫尔姆斯同款Essential托特包"
-      ],
-      "tags": [
-        "Madewell",
-        "Insider Sale",
-        "春季折扣",
-        "会员福利",
-        "时尚促销",
-        "凯蒂·赫尔姆斯",
-        "Vintage Tee",
-        "Essential托特包"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/nz442-na0338-d6-69b00bfe5dce5.jpg",
-      "published": "2026-03-10T18:13:00+00:00",
-      "sources": [
-        {
-          "name": "Harper's Bazaar",
-          "title": "Madewell’s Insider Sale Is Back and It’s Full of Chic Spring Staples",
-          "link": "https://www.harpersbazaar.com/fashion/trends/a70693439/madewell-insider-sale-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Esquire",
-          "title": "The Best Deals to Shop from Madewell's Insider Sale",
-          "link": "https://www.esquire.com/style/mens-fashion/a70695202/madewell-insider-sale-deals-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Elle",
-          "title": "Madewell’s Spring Insider Sale Has the Best Deals to Refresh Your Warm-Weather Wardrobe",
-          "link": "https://www.elle.com/fashion/shopping/a70694193/madewell-insider-sale-deals-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 3
-    },
-    {
       "id": "0fba369fbd42",
       "title": "红毯战靴：明星造型师的制胜秘诀",
       "summary": "WWD独家揭秘好莱坞顶流造型师Micaela Erlanger的红毯造型哲学。作为梅丽尔·斯特里普和露皮塔·尼永奥等巨星的御用造型师，Erlanger分享了她为颁奖季挑选礼服和鞋履的独到见解。文章特别提及了Ego Nwodim在2026年独立精神奖红毯上的惊艳亮相，她身着Giambattista Valli高级定制礼服，足蹬Gianvito Rossi经典高跟鞋，完美诠释了优雅与时尚的融合。",
@@ -2864,18 +3750,20 @@
     },
     {
       "id": "444656a64e3f",
-      "title": "巴黎时装周外：Matter and Shape设计展吸睛",
-      "summary": "在巴黎时装周的时尚浪潮中，为期四天的Matter and Shape展览于杜乐丽花园优雅展开，吸引了众多时尚与设计领域的目光。该展览聚焦最新的家居设计潮流，为时装周期间的巴黎增添了一抹别样的艺术气息，成为业内人士探索生活美学的前沿阵地。",
+      "title": "巴黎时装周外：Matter and Shape设计展持续吸睛，巩固时尚设计影响力",
+      "summary": "在巴黎时装周的时尚浪潮中，为期四天的Matter and Shape展览于杜乐丽花园优雅展开，持续吸引众多时尚与设计领域的目光。该展览聚焦最新的家居设计潮流，与巴黎时装周同期举行，不仅为时装周期间的巴黎增添了一抹别样的艺术气息，更进一步巩固了其在时尚和设计领域的影响力，成为业内人士探索生活美学的前沿阵地。",
       "key_points": [
-        "Matter and Shape展览",
-        "巴黎杜乐丽花园",
-        "家居设计趋势"
+        "Matter and Shape设计展在巴黎时装周期间举行，地点位于杜乐丽花园。",
+        "展览为期四天，吸引了时尚和设计界人士的广泛关注。",
+        "展览展示了最新的家居设计趋势，与时装周相辅相成。",
+        "Matter and Shape设计展巩固了其在时尚和设计领域的影响力。"
       ],
       "tags": [
         "巴黎时装周",
+        "Matter and Shape",
         "家居设计",
-        "展览",
-        "设计潮流"
+        "设计展",
+        "杜乐丽花园"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -2884,12 +3772,12 @@
       "sources": [
         {
           "name": "WWD",
-          "title": "Three Years In, Matter and Shape Draws Fashion and Design Crowd Amid Paris Ready-to-wear Shows",
+          "title": "Three Years In, Matter and Shape Draws Fashion and Design Set Amid Paris Ready-to-wear Shows",
           "link": "https://wwd.com/home-design/furniture/matter-and-shape-draws-crowd-paris-fashion-week-1238659093",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "2eda54c84ff6",
@@ -2981,57 +3869,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "049a0d55603a",
-      "title": "Nike、Adidas齐发力，Air Force 1、Samba、Superstar世界杯特别版助力赛事营销",
-      "summary": "为迎接2026年世界杯，Nike和Adidas分别推出世界杯特别版运动鞋。Nike Air Force 1 Low 世界杯系列首发包含“Team USA”和“墨西哥”特别版，将经典鞋款与足球热情巧妙融合。“Team USA”以白色皮革鞋面为基底，融入美国国家队徽章和金属质感细节，预计3月23日发售。“墨西哥”版本则以米白色皮革为基底，搭配绿色皮革Swoosh标志和火焰状刺绣图案。Adidas则以1994年美国国家队世界杯客场球衣的牛仔造型为灵感，推出了Samba和Superstar等新款运动鞋。两家运动品牌巨头均旨在通过特别版产品吸引球迷和运动鞋爱好者，助力世界杯市场营销活动。",
-      "key_points": [
-        "Nike Air Force 1 Low 世界杯系列包含“Team USA”和“墨西哥”特别版",
-        "Adidas推出以1994年美国国家队牛仔球衣为灵感的Samba和Superstar",
-        "两大品牌均通过特别版运动鞋助力世界杯赛事营销"
-      ],
-      "tags": [
-        "Nike",
-        "Adidas",
-        "Air Force 1",
-        "Samba",
-        "Superstar",
-        "世界杯",
-        "特别版",
-        "市场营销"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F10%2FNike-Air-Force-1-Low-Team-USA-IQ0407-100-release-info-0.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-10T17:56:17+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Nike Prepares the Air Force 1 Low \"Team USA\" for the 2026 World Cup",
-          "link": "https://hypebeast.com/2026/3/nike-air-force-1-low-team-usa-iq0407-100-release-info",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "The Nike Air Force 1 Low “Mexico” Honors National Colors and Football Heritage",
-          "link": "https://hypebeast.com/2026/3/nike-air-force-1-mexico-ir5896-030-official-imagery",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike Preps for World Cup With Air Force 1s for USA and Mexico",
-          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-force-1-low-usa-mexico-soccer-release-date-1238662180",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Adidas Brings Team USA’s Iconic Denim World Cup Look to the Samba, Superstar and More",
-          "link": "https://wwd.com/footwear-news/sneaker-news/adidas-samba-usa-denim-release-date-hp3551-1238662808",
-          "lang": "en"
-        }
-      ],
-      "article_count": 5
     },
     {
       "id": "0e00cff52d03",
@@ -3219,19 +4056,23 @@
     },
     {
       "id": "12209b1e9c40",
-      "title": "飞人传奇再现：Air Jordan 12 “黑曜石” 经典复刻！",
-      "summary": "时隔15年，Michael Jordan的Air Jordan 12 Retro “Obsidian” 终于迎来复刻回归！这款配色低调内敛，却极具OG风范的Air Jordan 12运动鞋，自首次推出以来便深受Sneakerhead们的喜爱。此次复刻无疑将再次点燃球鞋市场的热情，让众多老鞋迷重温经典，新玩家感受传奇魅力。准备好迎接这股复古风潮了吗？",
+      "title": "飞人传奇再续：Air Jordan 12 \"黑曜石\" 预计2027年复刻回归！",
+      "summary": "Air Jordan 12 Retro \"Obsidian\" 预计将于2027年迎来复刻回归，距离上次复刻已时隔15年。这款配色低调内敛，极具OG风范，最初于1997年发布，是五个原始Air Jordan 12配色之一。虽然乔丹本人未曾在比赛中穿着，但其黑曜石蓝色荔枝纹皮革鞋面和灵感来自日本旭日旗的罗纹设计，以及与乔丹母校北卡罗来纳大学相关的配色，使其备受Sneakerhead喜爱。准备好迎接这股复古风潮了吗？",
       "key_points": [
-        "Air Jordan 12 “Obsidian” 经典配色复刻",
-        "时隔15年首次回归",
-        "备受球鞋爱好者期待"
+        "Air Jordan 12 \"Obsidian\" 预计2027年复刻回归",
+        "上次复刻已时隔15年",
+        "最初于1997年发布，是五个原始Air Jordan 12配色之一",
+        "配色灵感来自乔丹母校北卡罗来纳大学",
+        "乔丹本人未曾在比赛中穿着该配色"
       ],
       "tags": [
-        "Air Jordan",
+        "Air Jordan 12",
+        "黑曜石",
+        "Obsidian",
         "复刻",
-        "运动鞋",
         "Michael Jordan",
-        "球鞋文化"
+        "球鞋",
+        "Sneaker"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -3239,13 +4080,13 @@
       "published": "2026-03-10T17:43:10+00:00",
       "sources": [
         {
-          "name": "WWD",
+          "name": "Footwear News",
           "title": "Michael Jordan’s Original Air Jordans Are Coming Back for the First Time in 15 Years",
           "link": "https://wwd.com/footwear-news/sneaker-news/air-jordan-12-retro-obsidian-2027-release-date-130690-410-1238662862",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "1e80e3b34811",
@@ -3444,6 +4285,64 @@
       "article_count": 3
     },
     {
+      "id": "c99517bf984a",
+      "title": "渔网变礼服：选美佳丽的环保时尚宣言",
+      "summary": "美国小姐缅因州选拔赛选手Jordon Hudson，近日身穿一件由36磅废弃渔网绳索制成的彩色礼服亮相缅因州渔民论坛，惊艳四座。作为渔民的女儿，Hudson一直积极利用社交媒体为渔民群体发声，并将可持续发展和渔业保护作为其选美比赛的重要议题。这件别出心裁的礼服不仅展现了她的时尚品味，更体现了她对环保事业的坚定支持，可谓是时尚与责任的完美结合。",
+      "key_points": [
+        "Jordon Hudson",
+        "废弃渔网礼服",
+        "可持续时尚"
+      ],
+      "tags": [
+        "可持续时尚",
+        "环保",
+        "礼服",
+        "选美",
+        "渔业"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://pyxis.nymag.com/v1/imgs/751/beb/4aff564aa20ecfe0e8a3124dec7d6e60bc-jordon-hudson.1x.rsocial.w1200.jpg",
+      "published": "2026-03-10T17:35:34+00:00",
+      "sources": [
+        {
+          "name": "The Cut",
+          "title": "Jordon Hudson’s Fishing-Gear Dress Is Off the Hook",
+          "link": "http://www.thecut.com/article/jordon-hudson-rope-dress-runa-maine-fishermens-forum.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "4da072f36cf0",
+      "title": "特鲁多之子：老爸与水果姐的“罗曼史”让我迷惑",
+      "summary": "加拿大前总理贾斯汀·特鲁多的儿子近日坦言，对于父亲与凯蒂·佩里的绯闻，他感到十分“困惑”。起因是他的母亲曾暗示这段关系让她感到不适。文章探讨了青少年如何看待父母的感情生活，特别是当父亲是公众人物，约会对象又是流行天后时，这种体验会变得更加复杂。",
+      "key_points": [
+        "特鲁多之子对父亲与凯蒂·佩里的关系感到困惑",
+        "母亲暗示这段关系让她“触发”",
+        "探讨青少年如何看待父母的约会"
+      ],
+      "tags": [
+        "名人八卦",
+        "家庭关系",
+        "情感生活"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://stylecaster.com/wp-content/uploads/2025/11/sophie-gregoire-katy-perry-justin-trudeau.jpg",
+      "published": "2026-03-10T17:31:03+00:00",
+      "sources": [
+        {
+          "name": "StyleCaster",
+          "title": "Justin Trudeau’s Son Confesses He Was ‘Confused’ by Katy Perry Romance After His Mom Hinted She Was ‘Triggered’ by the Relationship",
+          "link": "https://stylecaster.com/entertainment/celebrity-news/1234881473/justin-trudeau-son-katy-perry-lyric",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "a9e35d7c6632",
       "title": "Styles新歌撞调霉霉？",
       "summary": "Harry Styles新歌“Coming Up Roses”近日引发热议，原因在于其节奏和制作风格与Taylor Swift 2024年专辑《The Tortured Poets Department》中的歌曲“Chloe or Sam or Sophia or Marcus”高度相似。TikTok上涌现大量混音作品，进一步突显了两首歌的相似性，点燃了粉丝们对于两人音乐关联的讨论热情。尽管歌词主题存在差异，但两首歌曲都以情歌的形式，细腻地描绘了复杂的情感关系，预计将长期成为超级粉丝们津津乐道的话题。",
@@ -3569,6 +4468,35 @@
       "article_count": 7
     },
     {
+      "id": "f08ed95f79d5",
+      "title": "HBCU：孕育黑人政治领袖的摇篮",
+      "summary": "《Essence》杂志评论文章指出，美国传统黑人大学（HBCU）在塑造黑人政治力量方面扮演着关键角色。文章以民权运动领袖杰西·杰克逊为例，回顾了他从北卡罗来纳州农业技术大学学生会主席到全国知名政治家的历程，强调了HBCU对他的影响。此外，文章还提到了其他HBCU出身的政治人物，如伯明翰市长兰道尔·伍德芬和斯泰西·艾布拉姆斯，并回顾了1960年学生在Woolworth午餐柜台的静坐抗议活动，以此佐证HBCU在培养黑人政治领袖中的重要作用。",
+      "key_points": [
+        "HBCU在培养黑人政治力量中的作用",
+        "杰西·杰克逊的HBCU经历",
+        "HBCU与其他政治人物的联系"
+      ],
+      "tags": [
+        "HBCU",
+        "黑人政治",
+        "杰西·杰克逊",
+        "民权运动"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/GettyImages-1807251650-scaled.jpg",
+      "published": "2026-03-10T17:03:49+00:00",
+      "sources": [
+        {
+          "name": "Essence",
+          "title": "Op-Ed: Rev. Jesse Jackson’s HBCU Roots Show How Student Leadership Shapes Black Political Power",
+          "link": "https://www.essence.com/news/jesse-jackson-hbcu-student-leadership-legacy",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "d27396798222",
       "title": "奥斯卡“裸”装时刻：大胆前卫的红毯风尚",
       "summary": "回顾奥斯卡红毯历史，明星们以大胆前卫的“裸”装造型惊艳四座。从Halle Berry 2002年身穿Elie Saab透视礼服的经典瞬间，到近年来Florence Pugh的个性演绎，这些礼服不仅展现了明星的自信魅力，也引领着红毯时尚的新趋势。本文盘点了奥斯卡历史上11套最具代表性的“裸”装，解析其设计理念与文化影响。",
@@ -3597,54 +4525,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "0e30594b7ee1",
-      "title": "LV大廓形“童话”再续新篇：2026秋季系列探索服装人类学与自然灵感",
-      "summary": "Louis Vuitton在巴黎时装周发布2026秋季系列，延续大廓形设计，并深入探索服装人类学。Nicolas Ghesquière从世界各地山区居民的服装中汲取灵感，以其前卫视角重新诠释传统服饰，大胆“重置”时尚规则。同时，Vogue España报道指出，该系列名为“Super Nature”，从自然中汲取灵感，融入旅行元素，以夸张廓形和田园风光致敬自然。",
-      "key_points": [
-        "LV 2026秋季系列延续大廓形设计。",
-        "设计灵感来源于世界各地山区居民的服装和自然。",
-        "Nicolas Ghesquière以服装人类学视角重新诠释传统服饰。",
-        "系列名为“Super Nature”，融入旅行元素和自然风光。",
-        "Vogue España报道强调了该系列对自然的致敬。"
-      ],
-      "tags": [
-        "Louis Vuitton",
-        "2026秋季系列",
-        "巴黎时装周",
-        "Nicolas Ghesquière",
-        "大廓形",
-        "服装人类学",
-        "Super Nature",
-        "自然灵感",
-        "旅行元素"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/a450fc1c-98b3-4054-b67f-a1b4a63be52a.jpg",
-      "published": "2026-03-10T16:57:31+00:00",
-      "sources": [
-        {
-          "name": "Elle",
-          "title": "Bigger Is Better at Louis Vuitton",
-          "link": "https://www.elle.com/runway/a70622547/louis-vuitton-fall-2026-review",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Louis Vuitton Women’s Fall 2026: ‘An Anthropology of Fashion’",
-          "link": "https://wwd.com/runway/fall-2026/paris/louis-vuitton/review",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue España",
-          "title": "Louis Vuitton: Nicolas Ghesquière celebró la vida en conexión con la naturaleza a través de referencias viajeras y volúmenes extremos",
-          "link": "https://www.vogue.es/articulos/louis-vuitton-desfile-otono-invierno-2026-2027",
-          "lang": "es"
-        }
-      ],
-      "article_count": 3
     },
     {
       "id": "384a3fb00322",
@@ -3687,26 +4567,26 @@
     },
     {
       "id": "dcc705e1b82e",
-      "title": "Kiko Kostadinov AW26：飞鸟、凝视与ASICS Tabi",
-      "summary": "Kiko Kostadinov AW26女装系列由设计师姐妹Laura和Deanna Fanning呈现，灵感源自格林童话《费切尔的鸟》、摄影师Cindy Sherman的作品以及清晨观鸟者。本季探索观察者与被观察者之间微妙关系，并在虚实之间游走，同时展示了与ASICS合作的tabi-toe鞋款。",
+      "title": "Kiko Kostadinov FW26：飞鸟、凝视与ASICS Tabi的共生",
+      "summary": "Kiko Kostadinov FW26女装系列由设计师姐妹Laura和Deanna Fanning呈现，灵感源自格林童话《费切尔的鸟》、摄影师Cindy Sherman的作品以及清晨观鸟者。本季深入探讨“看”与“被看”的意义，探索观察者与被观察者之间微妙关系，并在虚实之间游走，同时展示了与ASICS合作的tabi-toe鞋款，象征着人与自然的融合。",
       "key_points": [
-        "AW26女装系列灵感来自《费切尔的鸟》、Cindy Sherman和观鸟者",
-        "探讨“观看与被观看”的主题",
-        "与ASICS合作推出tabi-toe鞋款"
+        "Kiko Kostadinov FW26女装系列由Laura和Deanna Fanning设计。",
+        "灵感来源于格林童话《费切尔的鸟》、Cindy Sherman的作品和观鸟者。",
+        "探讨“看”与“被看”的关系，以及人与自然的共生。",
+        "展示了与ASICS合作的tabi-toe鞋款。"
       ],
       "tags": [
         "Kiko Kostadinov",
-        "AW26",
+        "FW26",
         "女装",
         "Laura Fanning",
         "Deanna Fanning",
-        "格林童话",
-        "费切尔的鸟",
-        "Cindy Sherman",
-        "观鸟",
         "ASICS",
         "Tabi",
-        "Hypebeast Fashion"
+        "格林童话",
+        "Cindy Sherman",
+        "观鸟",
+        "秀场"
       ],
       "category": "runway-collection",
       "category_name": "秀场/系列",
@@ -3720,13 +4600,13 @@
           "lang": "en"
         },
         {
-          "name": "Hypebeast Fashion",
+          "name": "Hypebeast",
           "title": "Woman and Creature Are One at Kiko Kostadinov FW26",
           "link": "https://hypebeast.com/2026/3/kiko-kostadinov-fall-winter-2026-paris-fashion-week-womenswear-runway",
           "lang": "en"
         }
       ],
-      "article_count": 2
+      "article_count": 3
     },
     {
       "id": "49c0344038d6",
@@ -4479,35 +5359,6 @@
         }
       ],
       "article_count": 2
-    },
-    {
-      "id": "35b94f70033f",
-      "title": "Hilary Duff早春针织马甲风",
-      "summary": "Hilary Duff近日在纽约街头演绎早春时尚，以简约舒适的针织马甲造型亮相。她选择白色T恤搭配灰色针织马甲，肩披黑色毛衣，下身则以深色喇叭牛仔裤和黑色方头皮靴收尾，完美应对纽约三月多变的天气。同时，为宣传新专辑和巡演，Hilary Duff还在Jimmy Fallon的节目中展示了黑白两套风格迥异的造型，尽显时尚魅力。",
-      "key_points": [
-        "针织马甲的早春搭配",
-        "简约舒适的街头风格",
-        "明星的时尚示范"
-      ],
-      "tags": [
-        "Hilary Duff",
-        "针织马甲",
-        "早春穿搭",
-        "明星街拍"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://media.glamour.com/photos/69b03a7fa90817c0de7025fd/master/pass/2265678321",
-      "published": "2026-03-10T16:12:46+00:00",
-      "sources": [
-        {
-          "name": "Glamour",
-          "title": "How to Style a Sweater Vest for Spring 2026, According to Hilary Duff",
-          "link": "https://www.glamour.com/story/how-to-style-a-sweater-vest-for-spring-2026-according-to-hilary-duff",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
     },
     {
       "id": "acd152ab8ea2",
@@ -5533,48 +6384,6 @@
       "article_count": 1
     },
     {
-      "id": "530c32af8ef9",
-      "title": "刘美贤：从冰场到秀场，LV时尚首秀闪耀巴黎",
-      "summary": "花样滑冰奥运冠军刘美贤（Alysa Liu）亮相巴黎时装周，出席Louis Vuitton 2026秋季系列发布秀，完成个人时装周首秀。她身着LV经典Monogram牛仔套装，搭配标志性彩色挑染发型和Squire East West手袋，展现了冰场之外的时尚魅力和独特风格。刘美贤表示，即使未能参加米兰冬奥会，她依然积极探索滑冰之外的精彩生活。",
-      "key_points": [
-        "刘美贤亮相巴黎时装周，出席LV 2026秋季系列发布秀",
-        "身着LV Monogram牛仔套装，完成时装周首秀",
-        "搭配彩色挑染发型和Squire East West手袋，展现时尚风格",
-        "积极探索滑冰之外的生活，拥抱更多可能性"
-      ],
-      "tags": [
-        "刘美贤",
-        "Alysa Liu",
-        "Louis Vuitton",
-        "路易威登",
-        "巴黎时装周",
-        "时装秀",
-        "Monogram",
-        "牛仔套装",
-        "Squire East West",
-        "花样滑冰"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://assets.vogue.com/photos/69b000bf5dbae37d351abb16/master/pass/2265742776",
-      "published": "2026-03-10T14:13:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "Alysa Liu Trades Milano-Cortina for Paris Fashion Week",
-          "link": "https://www.vogue.com/article/alysa-liu-trades-milan-cortina-for-paris-fashion-week",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "Alysa Liu Takes Her Stripes to Paris for the Louis Vuitton Fall 2026 Show",
-          "link": "https://www.harpersbazaar.com/celebrity/latest/a70694160/alysa-liu-paris-fashion-week-debut-louis-vuitton-fall-2026-show",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
       "id": "e6c26a7e675b",
       "title": "Merrell“果冻灰”登陆日本",
       "summary": "户外品牌Merrell推出SpeedARC Matis“果冻灰”配色，本次为日本限定发售。鞋款以柔和的灰色和银色为主色调，搭配半透明的雕塑感覆层，设计灵感源于崎岖的越野地形，线条流畅自然。同时，搭载双密度FLOATPRO™缓冲技术，确保穿着的舒适性。预计将于2026年4月正式发售，价格约为153美元。",
@@ -5761,6 +6570,45 @@
         }
       ],
       "article_count": 1
+    },
+    {
+      "id": "8653898ead9b",
+      "title": "《名利场》奥斯卡派对：星光璀璨夜（含2026直播信息）",
+      "summary": "备受瞩目的《名利场》奥斯卡派对是奥斯卡颁奖典礼后的顶级庆祝活动，也是时尚潮流的风向标。第31届盛典依旧选在洛杉矶艺术博物馆（LACMA）举行，好莱坞一线明星云集。2026年派对直播将于3月15日美国东部时间晚上10:30在vanityfair.com和YouTube频道播出，由Brittany Broski, Jake Shane 和 Quenlin Blackwell主持红毯环节，一览明星风采。",
+      "key_points": [
+        "《名利场》奥斯卡派对是好莱坞顶级盛事",
+        "派对是奥斯卡颁奖典礼后的庆祝活动，也是时尚风向标",
+        "2026年派对直播信息：3月15日，vanityfair.com和YouTube频道",
+        "Brittany Broski, Jake Shane 和 Quenlin Blackwell主持红毯环节"
+      ],
+      "tags": [
+        "名利场",
+        "奥斯卡",
+        "派对",
+        "直播",
+        "红毯",
+        "好莱坞",
+        "时尚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vanityfair.com/photos/69af0793fc8bf4bc7f44d913/master/pass/2074971198",
+      "published": "2026-03-10T14:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vanity Fair",
+          "title": "Everything You Need to Know About the 2026 Vanity Fair Oscar Party",
+          "link": "https://www.vanityfair.com/hollywood/story/everything-you-need-to-know-about-the-2026-vanity-fair-oscar-party",
+          "lang": "en"
+        },
+        {
+          "name": "Glamour",
+          "title": "How to Watch the Vanity Fair Oscar Party 2026 Livestream",
+          "link": "https://www.glamour.com/story/how-to-watch-the-vanity-fair-oscar-party-2026-livestream",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
     },
     {
       "id": "19bb465e44f7",
@@ -9758,37 +10606,6 @@
       "article_count": 2
     },
     {
-      "id": "1528f4313aab",
-      "title": "50岁绽放：香奈儿秀场的意式优雅回归",
-      "summary": "Vogue西班牙聚焦意大利模特Stephanie Cavalli的精彩回归。曾因年龄受限，38岁暂别T台的她，如今50岁以更成熟自信的姿态重返香奈儿秀场，成为设计师Matthieu Blazy的灵感缪斯。报道深入探讨了Cavalli在时尚界的沉浮、个人成长历程以及对年龄的独到见解，展现了她标志性的银发造型和由内而外的优雅魅力，诠释了年龄不是界限，而是绽放的契机。",
-      "key_points": [
-        "Stephanie Cavalli 50岁重返香奈儿秀场",
-        "曾因年龄问题离开模特行业",
-        "优雅银发造型展现独特魅力"
-      ],
-      "tags": [
-        "香奈儿",
-        "模特",
-        "年龄",
-        "时尚",
-        "Matthieu Blazy",
-        "银发"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://media.vogue.es/photos/69afca98da04e308c6c642c7/master/pass/Chanel%20F26%20001.jpg",
-      "published": "2026-03-10T07:40:46+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "Quién es Stephanie Cavalli, la modelo italiana que ha vuelto a abrir el desfile de Chanel: “Los 50 son la edad adecuada para florecer”",
-          "link": "https://www.vogue.es/articulos/stephanie-cavalli-modelo-italiana",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "11eb0bc973f2",
       "title": "Arena Essence：优雅泳装新选择，更多款式上市",
       "summary": "Descente旗下泳装品牌Arena推出全新女性泳装系列“Arena Essence”，该系列包含多款精心设计的泳衣，如Y字背、半袖和双肩带健身分体泳衣等，在保证舒适度的同时，巧妙修饰女性身材曲线，旨在让女性在日常生活中享受与水相伴的平静时刻。该系列已在Arena直营店、Descente官网以及OSHMAN'S等店铺陆续发售，为追求品质与时尚的女性消费者带来全新选择。",
@@ -10689,36 +11506,6 @@
           "title": "「No.（ナンバードット）」から生き方が数字になるチャリティージュエリー“No.18”が登場　ダイヤモンドにはその出自をトレースできるTracr™を採用",
           "link": "https://www.wwdjapan.com/articles/2330167",
           "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "9945243f6b73",
-      "title": "Whoop联手A-Cold-Wall，科技潮服新纪元？",
-      "summary": "运动追踪器品牌Whoop携手A-Cold-Wall*创始人Samuel Ross，重磅推出联名时尚系列Project Terrain。该系列巧妙融合运动科技与潮流设计，涵盖运动内衣、短裤、跑步夹克等单品。其独特之处在于，服装上设有专门口袋，方便用户放置Whoop传感器，在运动的同时，也能兼顾时尚造型，引领穿戴科技新风尚。",
-      "key_points": [
-        "Whoop与Samuel Ross联名",
-        "Project Terrain系列融合科技与时尚",
-        "服装内置传感器口袋"
-      ],
-      "tags": [
-        "Whoop",
-        "Samuel Ross",
-        "联名系列",
-        "运动科技",
-        "时尚科技"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://assets.vogue.com/photos/69af05acf04041898cde9f52/master/pass/whoop-vogue-business-story.jpg",
-      "published": "2026-03-10T06:00:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "Why Fitness Tracker Whoop Has Launched a Fashion Line with Samuel Ross",
-          "link": "https://www.vogue.com/article/why-fitness-tracker-whoop-has-launched-a-fashion-line-with-samuel-ross",
-          "lang": "en"
         }
       ],
       "article_count": 1
@@ -14104,35 +14891,6 @@
       "article_count": 1
     },
     {
-      "id": "b0e80722bf11",
-      "title": "Nanushka：学院风的性感西部",
-      "summary": "Nanushka 2026秋季系列由设计师Sandra Sandor操刀，在品牌经典廓形中注入新意。学院风单品如赛艇夹克、礼服衬衫和菱格纹针织衫焕发活力。灯罩式紧身胸衣搭配流苏、针织衫和硬挺西装，性感又前卫。西部元素如流苏、麂皮和皮革领巾则增添了狂野气息。一件鲜红色外套展现了设计师的匈牙利传统。黑色缎面裙与宽松格纹衬衫的搭配，慵懒随性，是本季造型亮点。",
-      "key_points": [
-        "学院风与西部元素的融合",
-        "灯罩式紧身胸衣的创新搭配",
-        "匈牙利传统元素的运用"
-      ],
-      "tags": [
-        "Nanushka",
-        "2026秋冬",
-        "学院风",
-        "西部风"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://assets.vogue.com/photos/69aa060bb4288d949ddffd95/master/pass/00001-nanushka-fall-2026-ready-to-wear-credit-brand.jpg",
-      "published": "2026-03-09T20:21:16+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "Nanushka Fall 2026 Ready-to-Wear",
-          "link": "https://www.vogue.com/fashion-shows/fall-2026-ready-to-wear/nanushka",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "cbbb96a66011",
       "title": "Emrata 闪耀 KIKO 新季：复古浪漫与未来潮流的融合",
       "summary": "超模 Emily Ratajkowski 倾情代言 KIKO Milano 全新“Love Fusion”系列，该系列灵感汲取自意式浪漫喜剧的迷人魅力，巧妙融合护肤与彩妆理念。主打光泽感和持久度，推出三款明星彩妆单品，旨在打造清透、自然、光彩照人的妆容。全系列共 49 种色调，配方不含硅，兼具 24 小时保湿与保护肌肤屏障的双重功效，让美丽由内而外绽放。Emrata 在广告中身着带有白色蕾丝边的彩色碎花迷你裙、粉色开衫，以及粉色缎面铅笔裙和黄色开衫，演绎了兼具 2000 年代初复古风情与 2026 年流行色的少女感造型。",
@@ -14660,6 +15418,36 @@
       "article_count": 1
     },
     {
+      "id": "c541085dd8d6",
+      "title": "Ulta美妆盛典限时开启！",
+      "summary": "Ulta年度21 Days of Beauty美妆促销活动火热进行中！即日起至3月26日，涵盖全品类美妆产品的超值优惠轮番上阵，不容错过。无论是日常护肤、精致彩妆，还是专业美发产品，都能在本次活动中找到心仪好物，以更优惠的价格扮靓自己。快来Ulta官网或门店，开启你的美妆焕新之旅吧！",
+      "key_points": [
+        "Ulta年度促销",
+        "全品类优惠",
+        "限时折扣"
+      ],
+      "tags": [
+        "Ulta",
+        "美妆",
+        "促销",
+        "零售",
+        "折扣"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://pyxis.nymag.com/v1/imgs/316/425/5a9ccf14b4dad13369f904763a41d23ffc-ulta-lede.1x.rsocial.w1200.jpg",
+      "published": "2026-03-09T19:30:00+00:00",
+      "sources": [
+        {
+          "name": "The Cut",
+          "title": "The Best Ulta 21 Days of Beauty Deals to Shop This Week",
+          "link": "http://www.thecut.com/article/best-ulta-21-days-of-beauty-deals-2026.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "aa6ed5ee3954",
       "title": "妮可·基德曼荧幕时尚盘点",
       "summary": "《Harper's Bazaar》近日回顾了妮可·基德曼在电视剧领域的精彩表现，不仅聚焦其塑造的经典角色，更深入剖析了她在不同剧集中的时尚风格演变。从服装造型到整体形象，展现了妮可·基德曼作为演员的多元魅力和时尚影响力。无论是优雅成熟的女性形象，还是前卫大胆的时尚尝试，都值得细细品味。",
@@ -14808,17 +15596,22 @@
     },
     {
       "id": "1c10564a92c4",
-      "title": "绯闻不攻自破！杰西卡·阿尔芭甜蜜示爱男友",
-      "summary": "近日，杰西卡·阿尔芭与橄榄球明星乔·伯罗在拉斯维加斯的一张合影引发了恋情猜测。为打破谣言，阿尔芭迅速在Instagram上发布与男友丹尼·拉米雷斯的亲密合照，高调示爱，力证两人感情稳定。TMZ也报道称阿尔芭与伯罗仅为朋友关系。此举无疑是对不实传闻的有力回击，也让粉丝们吃了一颗定心丸，继续祝福这对甜蜜情侣。",
+      "title": "杰西卡·阿尔芭否认与乔·伯罗恋情传闻，高调示爱男友",
+      "summary": "近日，杰西卡·阿尔芭与橄榄球明星乔·伯罗的合影引发恋情猜测。The Cut 报道已否认该传闻。为打破谣言，阿尔芭在Instagram上发布与男友丹尼·拉米雷斯的亲密合照，高调示爱，力证两人感情稳定。TMZ也报道称阿尔芭与伯罗仅为朋友关系。此举有力回击了不实传闻，粉丝们也继续祝福这对甜蜜情侣。虽然是名人八卦，但可关注杰西卡·阿尔芭的时尚风格。",
       "key_points": [
-        "阿尔芭与伯罗合影引发绯闻",
-        "阿尔芭发布与男友合照否认恋情",
-        "TMZ报道两人只是朋友"
+        "杰西卡·阿尔芭与乔·伯罗的合影引发恋情猜测",
+        "The Cut 报道否认阿尔芭与伯罗的恋情",
+        "阿尔芭发布与男友丹尼·拉米雷斯的亲密合照，高调示爱",
+        "TMZ 报道阿尔芭与伯罗仅为朋友关系",
+        "可关注杰西卡·阿尔芭的时尚风格"
       ],
       "tags": [
         "杰西卡·阿尔芭",
-        "名人恋情",
-        "绯闻澄清"
+        "乔·伯罗",
+        "丹尼·拉米雷斯",
+        "恋情",
+        "绯闻",
+        "名人时尚"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -14830,9 +15623,15 @@
           "title": "Jessica Alba & Danny Ramirez Respond To Joe Burrow Dating Rumor",
           "link": "https://www.elitedaily.com/entertainment/jessica-alba-danny-ramirez-joe-burrow-dating-rumor-response",
           "lang": "en"
+        },
+        {
+          "name": "The Cut",
+          "title": "No, Jessica Alba and Joe Burrow Are Not Dating",
+          "link": "http://www.thecut.com/article/jessica-alba-joe-burrow-dating-rumors-vegas.html",
+          "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "db2fccc5eee4",
@@ -15159,36 +15958,6 @@
           "name": "Allure",
           "title": "6 Best Callus Removers for Cracked Heels and Rough Soles",
           "link": "https://www.allure.com/story/best-callus-removers",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "8653898ead9b",
-      "title": "《名利场》奥斯卡派对：星光璀璨夜",
-      "summary": "备受瞩目的《名利场》奥斯卡派对即将迎来第31届盛典，地点依旧选在洛杉矶艺术博物馆（LACMA）。届时，好莱坞一线明星将云集于此，共襄盛举。本次派对不仅是奥斯卡颁奖典礼后的庆祝活动，更是时尚潮流的风向标。回顾往届派对，星光熠熠的阵容和精彩纷呈的幕后花絮总是令人津津乐道。无法亲临现场的观众，亦可通过直播感受这场奢华派对的魅力。",
-      "key_points": [
-        "《名利场》第31届奥斯卡派对",
-        "洛杉矶艺术博物馆（LACMA）举办",
-        "明星云集，可通过直播观看"
-      ],
-      "tags": [
-        "奥斯卡",
-        "名利场",
-        "明星派对",
-        "好莱坞",
-        "时尚盛事"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vanityfair.com/photos/69af0793fc8bf4bc7f44d913/master/pass/2074971198",
-      "published": "2026-03-09T17:53:59+00:00",
-      "sources": [
-        {
-          "name": "Vanity Fair",
-          "title": "Everything You Need to Know About the 2026 Vanity Fair Oscar Party",
-          "link": "https://www.vanityfair.com/hollywood/story/everything-you-need-to-know-about-the-2026-vanity-fair-oscar-party",
           "lang": "en"
         }
       ],
@@ -17757,875 +18526,6 @@
           "name": "Fashion Network",
           "title": "Hugo Boss authorises share buyback totalling hundreds of millions of euros",
           "link": "https://ww.fashionnetwork.com/news/Hugo-boss-authorises-share-buyback-totalling-hundreds-of-millions-of-euros,1814091.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "57c5554e11de",
-      "title": "影史传奇单品即将拍卖！",
-      "summary": "《GQ》报道，一场备受瞩目的娱乐纪念品拍卖会即将举行，届时影迷们将有机会收藏心仪的电影珍品。本次拍卖的焦点包括杰夫·布里吉斯在经典影片《谋杀绿脚趾》中穿着的标志性毛衣，以及吉恩·哈克曼在《赤色风暴》中佩戴的劳力士腕表。此外，罗伯特·雷德福的棒球棒、基努·里维斯的冲浪板等其他电影道具也将亮相，为影迷们带来一场视觉盛宴。这些极具收藏价值的单品，无疑将引发激烈的竞拍。",
-      "key_points": [
-        "《谋杀绿脚趾》毛衣拍卖",
-        "《赤色风暴》劳力士拍卖",
-        "众多电影道具参与拍卖"
-      ],
-      "tags": [
-        "拍卖",
-        "电影",
-        "服装",
-        "配饰",
-        "名人"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.gq.com/photos/69ab1a549cbc6702b0b0fc63/master/pass/Movie%20Menswear%20Auction%20copy.jpg",
-      "published": "2026-03-09T14:40:32+00:00",
-      "sources": [
-        {
-          "name": "GQ",
-          "title": "Jeff Bridges’s ‘Big Lebowski’ Sweater and Gene Hackman’s ‘Crimson Tide’ Rolex Are Up for Sale",
-          "link": "https://www.gq.com/story/movie-menswear-auctions",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "c886eef36503",
-      "title": "2026西班牙音乐盛宴前瞻",
-      "summary": "《Vogue España》抢先报道2026年西班牙最令人期待的音乐会，届时Rosalía、Bad Bunny等国际巨星将轮番登场，引爆音乐狂潮。本土新锐音乐人Ralphie Choo和pablopablo也将带来精彩演出。值得一提的是，pablopablo此前在接受《Vogue España》采访时透露，他将...",
-      "key_points": [
-        "2026年西班牙音乐会亮点",
-        "Rosalía、Bad Bunny等巨星加盟",
-        "Ralphie Choo、pablopablo等本土音乐人演出"
-      ],
-      "tags": [
-        "音乐",
-        "演唱会",
-        "西班牙"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vogue.es/photos/699d646a386790f439b37190/master/pass/PABLOPABLO_VOGUE0140.jpg",
-      "published": "2026-03-09T14:36:10+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "Conciertos de 2026: las citas musicales más esperadas del año en España",
-          "link": "https://www.vogue.es/articulos/conciertos-de-2026-citas-musicales-mas-esperadas-espana",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "eb3854b2042c",
-      "title": "当成年人迷上迪士尼：爱与痛的边缘？",
-      "summary": "《The Cut》杂志近日聚焦“迪士尼成年人”现象，讲述了Cathy意外发现丈夫Dennis沉迷迪士尼文化的故事。文章深入剖析了这种独特的消费文化如何渗透并影响个人生活及社会关系，引发人们对群体认同和生活方式选择的思考。迪士尼情结，是童真未泯，还是逃避现实？或许每个人都有不同的答案。",
-      "key_points": [
-        "“迪士尼成年人”现象",
-        "消费文化对生活的影响",
-        "群体认同与生活方式选择"
-      ],
-      "tags": [
-        "迪士尼",
-        "文化现象",
-        "生活方式",
-        "消费文化",
-        "群体认同"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://pyxis.nymag.com/v1/imgs/4fc/b2d/d58f232881d2f0b53c11e77909654082c1-disney-gap-a.1x.rsocial.w1200.jpg",
-      "published": "2026-03-09T14:25:07+00:00",
-      "sources": [
-        {
-          "name": "The Cut",
-          "title": "‘Disney Is a Thorn In My Side’",
-          "link": "http://www.thecut.com/article/disney-adult-gap-relationships.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "d5313515e52d",
-      "title": "思薇尔40周年：郑芯恩演绎“撩波巴黎之春”",
-      "summary": "台湾内衣品牌思薇尔欢庆40周年，隆重推出2026春夏系列“撩波 巴黎之春”。品牌同时宣布，由新生代女星郑芯恩担任全新代言人，完美诠释法式浪漫美学。该系列设计灵感源自巴黎，巧妙融合精致的法式刺绣与浪漫蕾丝元素，在追求时尚美型的同时，更注重穿着的舒适度。此外，思薇尔还针对不同年龄层女性的需求，推出多元化的内衣系列，满足不同风格的偏好。为庆祝这一重要里程碑，思薇尔还特别推出一系列周年促销活动，回馈广大消费者。",
-      "key_points": [
-        "思薇尔40周年",
-        "2026春夏系列“撩波 巴黎之春”",
-        "郑芯恩担任代言人"
-      ],
-      "tags": [
-        "内衣",
-        "品牌周年",
-        "代言人",
-        "新品发布",
-        "市场活动",
-        "法式风情"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://ia.marieclaire.com.tw/assets/mc/202603/69AE67223775D1773037346.png",
-      "published": "2026-03-09T14:18:00",
-      "sources": [
-        {
-          "name": "Marie Claire Taiwan",
-          "title": "思薇爾喜迎 40 週年！2026SS「撩波 巴黎之春」浪漫登場 代言人鄭芯恩化身「花都女神｣詮釋法式美學",
-          "link": "https://www.marieclaire.com.tw/fashion/news/92176",
-          "lang": "zh"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "bb0dfd33a8ae",
-      "title": "圆梦童话：迪士尼奇妙之旅等你赢！",
-      "summary": "Elite Daily携手迪士尼，推出“Cool KIDS’ Summer”活动，送出一个幸运家庭前往华特迪士尼世界度假区的梦幻之旅！本次活动亮点包括《曼达洛人》和古古主题的“千年隼：走私者之路”，以及由通用汽车呈现的Test Track。阳光、美食、刺激的游乐设施，共同打造难忘的家庭回忆。快来参与，赢取这份独一无二的惊喜吧！",
-      "key_points": [
-        "Elite Daily举办迪士尼梦幻之旅活动",
-        "活动包含《曼达洛人》主题项目",
-        "通用汽车赞助Test Track"
-      ],
-      "tags": [
-        "迪士尼",
-        "华特迪士尼世界",
-        "家庭旅行",
-        "品牌活动",
-        "亲子"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgix.bustle.com/uploads/image/2026/3/5/d9f21865/5582200_wdwdom_ya_cks_dsktp_75x515_cbsentercom_jrod.jpg?w=1200&fit=max",
-      "published": "2026-03-09T14:14:02+00:00",
-      "sources": [
-        {
-          "name": "Elite Daily",
-          "title": "You Could Win A Dream Trip To Walt Disney World® Resort — Seriously",
-          "link": "https://www.elitedaily.com/lifestyle/disney-summer-sweepstakes",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "29fd154f73a3",
-      "title": "南洛杉矶的狂想曲：Sister Dreamer",
-      "summary": "艺术家Lauren Halsey以其最新装置作品Sister Dreamer，向她深爱的家乡南洛杉矶的“极致主义与过剩”致敬。该作品巧妙融合雕塑与建筑元素，连接过去、现在与对未来的憧憬，淋漓尽致地展现了Halsey独特的视觉语言和对社区的深切情感。Sister Dreamer不仅是一件艺术品，更是对南洛杉矶蓬勃生命力的颂歌。",
-      "key_points": [
-        "Lauren Halsey新作致敬南洛杉矶",
-        "装置艺术融合雕塑与建筑",
-        "展现艺术家对社区的深刻情感"
-      ],
-      "tags": [
-        "艺术",
-        "装置艺术",
-        "洛杉矶",
-        "社区文化",
-        "先锋艺术"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/1/1441058.jpg",
-      "published": "2026-03-09T14:11:00+00:00",
-      "sources": [
-        {
-          "name": "Dazed",
-          "title": "Lauren Halsey’s ode to the ‘maximalism and excess’ of South Central LA",
-          "link": "https://www.dazeddigital.com/art-photography/article/69858/1/lauren-halsey-sister-dreamer-south-central-los-angeles-installation-art",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "5c2090308a98",
-      "title": "Tyla巴黎时装周：高缇耶经典、麦当娜致敬与红底鞋的碰撞",
-      "summary": "新生代歌手Tyla在巴黎时装周上大胆演绎经典，不仅身着Jean Paul Gaultier标志性的锥形胸衣，搭配Christian Louboutin的黑色So Kate高跟鞋，向时尚致敬，更在Jean Paul Gaultier 2026秋冬成衣系列发布秀上以一身造型向麦当娜致敬。WWD对此进行了报道，聚焦名人在时尚活动中的穿搭选择，展现了Tyla对高缇耶经典设计的现代诠释和独特的时尚品味，成为本次时装周的亮点之一。",
-      "key_points": [
-        "Tyla在巴黎时装周身着Jean Paul Gaultier经典锥形胸衣。",
-        "Tyla搭配Christian Louboutin黑色So Kate高跟鞋。",
-        "Tyla在Jean Paul Gaultier 2026秋冬秀场造型致敬麦当娜。",
-        "WWD报道Tyla在巴黎时装周的造型选择。"
-      ],
-      "tags": [
-        "Tyla",
-        "Jean Paul Gaultier",
-        "Christian Louboutin",
-        "巴黎时装周",
-        "麦当娜",
-        "WWD",
-        "名人穿搭"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/tyla-louboutin-patent-pumps-jean-paul-gaultier-fall-2026-paris.jpg?w=1000&h=563&crop=1",
-      "published": "2026-03-09T14:04:45+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "Tyla Revisits a Gaultier Classic in Black Louboutin So Kate Pumps at Paris Fashion Week",
-          "link": "https://wwd.com/footwear-news/shoe-trends/yla-louboutin-pumps-jean-paul-gaultier-fall-2026-paris-1238658153",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "How Tyla Paid Tribute to Madonna at the Jean Paul Gaultier Show",
-          "link": "https://wwd.com/pop-culture/celebrity-news/tyla-cone-bra-dress-jean-paul-gaultier-paris-fashion-week-1238659401",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "bda3ce5ebd73",
-      "title": "梅根温情照：莉莉贝特罕见曝光",
-      "summary": "在国际妇女节之际，梅根·马克尔分享了一张与女儿莉莉贝特·戴安娜的亲密合照，照片由哈里王子亲自拍摄。照片中，梅根身着休闲服饰，莉莉贝特则穿着可爱的花朵上衣和粉色裙子，母女间的温馨互动跃然纸上。此前，梅根还在情人节分享过哈里王子与莉莉贝特的合影。梅根经常通过社交媒体，包括Netflix系列，分享家庭生活的点滴，同时也不忘宣传其个人品牌As Ever。",
-      "key_points": [
-        "梅根国际妇女节晒照",
-        "哈里王子掌镜",
-        "莉莉贝特罕见曝光",
-        "家庭生活分享",
-        "品牌宣传"
-      ],
-      "tags": [
-        "梅根·马克尔",
-        "莉莉贝特·戴安娜",
-        "国际妇女节",
-        "名人生活",
-        "亲子穿搭"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/717653a4-d2fa-4029-8d1d-2218bcf3a7cb.jpg",
-      "published": "2026-03-09T14:03:58+00:00",
-      "sources": [
-        {
-          "name": "Elle",
-          "title": "Meghan Markle Shares Touching Photo With Lilibet to Mark International Women’s Day",
-          "link": "https://www.elle.com/culture/celebrities/a70675455/meghan-markle-lilibet-photo-international-womens-day",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "Duchess Meghan Shares a Rare, Candid Photo With Daughter Lilibet",
-          "link": "https://www.harpersbazaar.com/celebrity/latest/a70676237/meghan-markle-candid-beach-photo-daughter-lilibet-taken-prince-harry",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "8376683d0b07",
-      "title": "2026春夏全球潮流趋势：多元风格涌现，巴黎街头、伦敦It Girl、纽约反潮流、公主风回潮",
-      "summary": "2026年春夏，全球时尚呈现多元化趋势。巴黎街头潮流、伦敦It Girl穿搭、纽约反潮流风尚、90年代复古、以及公主风回潮成为主要趋势。彩色夹克成为风衣的替代选择，风衣设计也迎来革新。Zara等品牌推出大量新品，满足不同风格需求。同时，针对娇小女生提供穿搭建议，助力打造专属春日造型。",
-      "key_points": [
-        "巴黎街头潮流：廓形剪裁、色彩搭配等",
-        "伦敦It Girl穿搭：未知，需根据具体内容补充",
-        "纽约反潮流风尚：极简主义回归",
-        "90年代复古风：牛仔裤、喇叭裤、鞋履等单品",
-        "公主风回潮：褶皱、丝带、头饰等元素",
-        "彩色夹克流行，成为风衣替代",
-        "风衣革新：低腰、高领等元素",
-        "Zara等品牌春季新品推荐",
-        "娇小女生春季穿搭指南"
-      ],
-      "tags": [
-        "2026春夏",
-        "潮流趋势",
-        "巴黎街头",
-        "伦敦It Girl",
-        "纽约反潮流",
-        "公主风",
-        "90年代复古",
-        "彩色夹克",
-        "风衣",
-        "Zara",
-        "娇小女生穿搭"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/t9Lm8f8BELBBnqkFRmXbeT-1280-80.jpg",
-      "published": "2026-03-09T14:00:58+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Chic Europeans Know Better Spring Outfits Happen When You Ditch These 3 Items and Go for These 3",
-          "link": "https://www.whowhatwear.com/fashion/trends/outdated-spring-basics-2026-uk",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "In London, Every It Girl's Transitional Wardrobe Includes These 7 Chic Pieces",
-          "link": "https://www.whowhatwear.com/fashion/london-girl-transitional-wardrobe-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Très Chic! 5 Street-Style Trends Taking Off in Paris Right Now",
-          "link": "https://www.whowhatwear.com/fashion/street-style/paris-fashion-week-street-style-march-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "5 Anti-Trend Outfits I'm Copying From Chic New Yorkers This Spring",
-          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/new-yorker-spring-outfits-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "I Studied Stylish Londoners to Work Out Which Trends Will Dominate This Spring—These 5 Stood Out",
-          "link": "https://www.whowhatwear.com/fashion/spring/spring-london-fashion-trends-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "No, Not a Beige Trench Coat—Chic Women Are Wearing This Spring Jacket in This Exact Colour",
-          "link": "https://www.whowhatwear.com/fashion/outerwear/best-red-bomber-jackets",
-          "lang": "en"
-        },
-        {
-          "name": "Elle",
-          "title": "The Chic Trench Coat Trends Everyone Will Be Wearing This Spring",
-          "link": "https://www.elle.com/fashion/shopping/a70608755/spring-2026-trench-coat-trends",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "I Spent Hours Trying On Zara Trench Coats—3 Sophisticated Styles That Will Be Gone Before Spring",
-          "link": "https://www.whowhatwear.com/fashion/affordable/zara-spring-trench-coat-try-on-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Fashion Girls In Oslo and Paris Are Ditching Their Trench Coats for This Far Chicer Transitional Jacket Style",
-          "link": "https://www.whowhatwear.com/fashion/outerwear/best-collarless-jackets",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Don't Know What to Wear This Spring? These Are the Chicest New Buys According to 7 of Instagram's Best-Dressed",
-          "link": "https://www.whowhatwear.com/fashion/shopping/influencer-spring-2026-wish-list",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Forget T-Shirts, the Key to Elevated Spring Dressing Rests in This Classic ‘90s Trend",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/white-button-down-shirt-trend-jennifer-lopez",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Bye, Slip Skirts! This Is the ‘90s Style Chic It Girls Are Wearing Instead",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/jodie-turner-smith-denim-skirts-spring-2026-trend",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "The It Shoe of Spring 2026 Is Here, and It's Going to Create Controversy",
-          "link": "https://www.whowhatwear.com/fashion/luxury/chloe-jelly-mules-spring-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "We’ve Done the Research: It Girls Are Wearing These Shoes This Spring",
-          "link": "https://www.whowhatwear.com/fashion/shopping/shoes/www-curates-malone-souliers-spring-edit",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "The 5 Blouses Everyone Will Wear With Jeans, Skirts, and Trousers in Spring",
-          "link": "https://www.whowhatwear.com/fashion/tops/spring-blouse-trends-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Here's a Preview of the 15 Chic Sneaker-and-Jeans Outfits You'll Spot Come March 20",
-          "link": "https://www.whowhatwear.com/chic-sneaker-and-jeans-outfits-spring-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "5 Spring Jacket Trends That'll Look Best With the Jeans You Already Own",
-          "link": "https://www.whowhatwear.com/fashion/trends/spring/spring-jacket-trends-to-wear-with-jeans-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Not Flats, Not Sneakers: Chic Women Wear This Shoe Trend With Jeans to Look Rich Without Trying",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/kitten-heels-jeans-outfit-hailey-bieber",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Making Bootcut Jeans Look Pretty for Spring Is Easy—Wear Them Like This",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/pretty-bootcut-jeans-outfit-olivia-rodrigo",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Ballet Flats! Knee-Length Skirts! Sheer Dresses! 30 Pieces I'm Excited to Wear This Spring",
-          "link": "https://www.whowhatwear.com/fashion/shopping/spring-staples-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "In a Style Rut? 7 Effortless and Elevated Outfit Ideas to Wear Now and Throughout Spring",
-          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/transitional-winter-to-spring-outfits-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "March Is Here—10 Things to Buy This Month That'll Make You Look Cool",
-          "link": "https://www.whowhatwear.com/fashion/shopping/what-to-buy-in-march-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "I'm a Former Nordstrom Buyer—These Are the 9 Spring Trends I Care About Most",
-          "link": "https://www.whowhatwear.com/fashion/shopping/nordstrom-buyer-spring-trends-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "A New York Fashion Person Walks Into Abercrombie & Fitch—24 Items They'd Grab for Spring",
-          "link": "https://www.whowhatwear.com/fashion/shopping/best-abercrombie-spring-shopping-new-york",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue Fashion",
-          "title": "9 Transitional Outfits to Step Into Spring",
-          "link": "https://www.vogue.com/article/transitional-outfit-formulas",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "The Joyful Spring Pieces We’ll Be Reaching for First This Season",
-          "link": "https://www.whowhatwear.com/fashion/shopping/www-curates-boden-spring-editor-picks",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Ruffles, Ribbons and a Tiara Triumph: How Dressing Like a Princess Is About to Become Spring’s Biggest Trend",
-          "link": "https://www.whowhatwear.com/fashion/spring/princess-fashion-trend-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "44 Chic Zara Finds That Will Keep You Looking Cool and Current This Spring",
-          "link": "https://www.whowhatwear.com/fashion/shopping/zara-spring-shopping-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "My 4'11\" Friend Wanted to Know What Spring Fashion Trends to Invest in—I Sent Her These 5",
-          "link": "https://www.whowhatwear.com/fashion/trends/spring-2026-fashion-trends-for-petites",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "It's My Job to Predict Trends—You Can Get Ahead of the Fashion Crowd Now with These 7 Summer Buys",
-          "link": "https://www.whowhatwear.com/fashion/trends/summer-2026-trend-predictions",
-          "lang": "en"
-        }
-      ],
-      "article_count": 33
-    },
-    {
-      "id": "426efb0f5409",
-      "title": "油价飙升：服装业面临涨价潮？",
-      "summary": "国际原油价格上涨给中国服装制造业带来巨大压力，原材料成本攀升或将导致服装价格上涨。地缘政治危机加剧了这一趋势，整个服装供应链都受到波及。为应对成本压力，各品牌或将重新评估定价策略，消费者可能需要为心仪的服饰支付更高的价格。",
-      "key_points": [
-        "原油价格上涨推高成本",
-        "服装企业面临涨价压力",
-        "供应链受地缘政治影响"
-      ],
-      "tags": [
-        "服装行业",
-        "价格上涨",
-        "原油价格",
-        "供应链",
-        "成本控制"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.fashionnetwork.com/m/f2c8/8372/aa28/3571/877d/f1a9/cb5f/4fa2/996a/4bd0/208x208/4bd0.jpg",
-      "published": "2026-03-09T14:00:58+00:00",
-      "sources": [
-        {
-          "name": "Fashion Network",
-          "title": "China apparel makers brace for price hikes as oil surges",
-          "link": "https://ww.fashionnetwork.com/news/China-apparel-makers-brace-for-price-hikes-as-oil-surges,1813984.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "c747f179111b",
-      "title": "Aubrey Plaza引领Polo衫新潮流，巴黎时装周造型盘点",
-      "summary": "好莱坞女星Aubrey Plaza在巴黎时装周期间展现多变时尚风格，尤以Lacoste 2026秋冬时装秀上的Polo衫造型引发热议，WWD等媒体对此进行了报道。她将经典Polo衫穿出前卫个性，预示着Polo衫搭配的新风尚。此外，她还身着The Frankie Shop休闲西装套装、搭配Dune London编织包和玛丽珍鞋，展现慵懒时尚。同时出席Loewe 2026秋冬时装秀，并以亮眼橙色Lacoste高跟鞋搭配百褶裙等单品亮相Lacoste秀场，大胆前卫。",
-      "key_points": [
-        "Aubrey Plaza在Lacoste 2026秋冬秀场Polo衫造型引发关注，引领Polo衫新穿法",
-        "Aubrey Plaza巴黎时装周期间展现多种风格，包括休闲西装、前卫撞色搭配等",
-        "明星效应推动潮流趋势，Aubrey Plaza的穿搭示范具有时尚影响力"
-      ],
-      "tags": [
-        "Aubrey Plaza",
-        "Polo衫",
-        "巴黎时装周",
-        "Lacoste",
-        "Loewe",
-        "The Frankie Shop",
-        "Dune London",
-        "明星穿搭",
-        "2026秋冬"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/aubrey-plaza-fi.jpg?w=1000&h=563&crop=1",
-      "published": "2026-03-09T14:00:38+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "Aubrey Plaza Redefines the Polo Shirt at Lacoste Show",
-          "link": "https://wwd.com/pop-culture/celebrity-news/aubrey-plaza-lacoste-outfit-paris-fashion-week-1238659103",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "Aubrey Plaza Suits Up for Paris Fashion Week With a Slouchy Set and a Woven Handbag",
-          "link": "https://www.harpersbazaar.com/celebrity/latest/a70654541/aubrey-plaza-paris-fashion-week-slouchy-suit-woven-dune-london-handbag",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Aubrey Plaza Goes Courtside Bright in Lacoste’s Orange Hybrid Heels at Paris Fashion Week",
-          "link": "https://wwd.com/footwear-news/shoe-trends/aubrey-plaza-lacoste-heels-paris-fashion-week-fall-2026-1238658007",
-          "lang": "en"
-        }
-      ],
-      "article_count": 3
-    },
-    {
-      "id": "61d16e5149a0",
-      "title": "非裔女性的非洲创业梦",
-      "summary": "一批美国黑人女性正奔赴非洲大陆，在加纳、卢旺达等地开启创业新篇章。她们涉足水疗、公关、房地产等多元领域，在异国文化中寻求商业机遇。文章聚焦她们在非洲创业所面临的挑战与机遇，以及文化融合和身份认同等深层议题，展现了她们在非洲大陆的奋斗与成长。",
-      "key_points": [
-        "美国黑人女性在非洲创业",
-        "涉及多个商业领域",
-        "文化融合与身份认同"
-      ],
-      "tags": [
-        "非洲",
-        "创业",
-        "女性",
-        "商业",
-        "文化融合"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/GettyImages-1139556591-1200x900.jpg",
-      "published": "2026-03-09T14:00:00+00:00",
-      "sources": [
-        {
-          "name": "Essence",
-          "title": "From Ghana To Rwanda, These Black American Women Are Building Businesses On The Continent",
-          "link": "https://www.essence.com/news/money-career/black-american-women-building-businesses-africa",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "1f975d9c8c46",
-      "title": "东京都助力新锐设计师闪耀巴黎",
-      "summary": "东京都推出“巴黎时装秀挑战项目”，由知名设计师森永邦彦（ANREALAGE）亲自担任监修，旨在扶持日本年轻设计师登上国际舞台。该项目不仅资助设计师在巴黎举办时装秀，更提供全方位的设计和商业指导，助力他们提升在全球时尚界的竞争力。森永邦彦表示，希望通过此项目，让年轻设计师尽早与世界顶尖水平接轨，为他们的未来发展奠定坚实基础。",
-      "key_points": [
-        "东京都“巴黎时装秀挑战项目”启动",
-        "森永邦彦（ANREALAGE）担任监修",
-        "助力日本设计师亮相巴黎时装周"
-      ],
-      "tags": [
-        "设计师",
-        "巴黎时装周",
-        "人才培养"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/09223128/sub20-8-scaled.jpg",
-      "published": "2026-03-09T14:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "若手デザイナーが世界水準を体感　森永邦彦「アンリアレイジ」デザイナーと東京都「パリ・ファッションショー挑戦プロジェクト」",
-          "link": "https://www.wwdjapan.com/articles/2349105",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "37f59e3c11c0",
-      "title": "克拉拉·加列：荧幕绽放后的沉淀",
-      "summary": "西班牙Vogue专访了炙手可热的演员克拉拉·加列，她主演的Netflix剧集《Esa noche》备受期待。克拉拉在剧中饰演一位身陷意外困境的年轻母亲，她分享了为角色所做的准备工作，以及对剧中复杂人物关系的深刻见解。这部改编自同名小说的剧集，以西班牙和加勒比地区为背景，讲述了三姐妹之间扣人心弦的故事。克拉拉坦言，在过去五年里，演艺事业的飞速发展让她几乎没有时间消化和适应，因此在完成《Esa noche》后，她选择放慢脚步，沉淀自我。",
-      "key_points": [
-        "克拉拉·加列主演Netflix新剧",
-        "饰演年轻母亲，角色充满挑战",
-        "分享角色准备及人物关系理解"
-      ],
-      "tags": [
-        "克拉拉·加列",
-        "Netflix",
-        "Esa noche",
-        "明星访谈",
-        "西班牙Vogue"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vogue.es/photos/69aeb8b350a9b83f559cbfa5/master/pass/NETFLIX_THAT_NIGHT_PEPE_LOBEZ_11_12_252251%20A2_FULLRES.jpg",
-      "published": "2026-03-09T13:56:30+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "Clara Galle, actriz: “Cuando terminé ‘Esa noche’ decidí parar un poco. En cinco años no me ha dado ni tiempo a creerme lo que ha pasado”",
-          "link": "https://www.vogue.es/articulos/clara-galle-entrevista-esa-noche",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "24e32811e604",
-      "title": "莎拉·皮珍：演绎肯尼迪夫人，时尚蜕变",
-      "summary": "因出演《爱情故事》中卡罗琳·贝赛特-肯尼迪一角，演员莎拉·皮珍的生活迎来转变。她不仅为角色改变发色，更对海莉·比伯的护肤品牌 Rhode 倾心。饰演卡罗琳让她深刻体会到公众形象与私生活的微妙平衡，并领悟到时尚的强大表达力。如今，莎拉·皮珍也成为了 Rhode 的全新代言面孔，续写着属于她的时尚故事。",
-      "key_points": [
-        "莎拉·皮珍因饰演卡罗琳·贝赛特-肯尼迪而备受关注",
-        "为角色改变发色，体现专业精神",
-        "成为 Rhode 新代言人，时尚影响力提升"
-      ],
-      "tags": [
-        "名人时尚",
-        "品牌代言",
-        "时尚灵感",
-        "美妆护肤"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vogue.es/photos/69aa8a5b4d17e47ba0b39067/master/pass/NEW-0216-4_IA_Shot1_00044_V4-SL%202.jpg",
-      "published": "2026-03-09T13:51:43+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "Sarah Pidgeon: así le ha cambiado la vida el papel de Carolyn Bessette-Kennedy",
-          "link": "https://www.vogue.es/articulos/entrevista-belleza-sarah-pidgeon-love-story",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "5ebc4d05bc3f",
-      "title": "Myha'la的McQueen时尚朝圣",
-      "summary": "好莱坞新星Myha'la惊艳亮相McQueen时装秀，其造型极具个性。她身着一套别致的肩章套装，搭配McQueen 2003年春夏系列的标志性念珠凉鞋，整体妆容清丽淡雅。Myha'la在社交媒体上分享了她在秀场内外的精彩瞬间，包括与造型团队的亲密合影，以及对秀场布置和经典鞋款的独到见解。她尤其表达了对楔形鞋强势回归的期待，预示着新一轮的时尚风潮。",
-      "key_points": [
-        "Myha'la亮相McQueen秀场",
-        "肩章套装搭配念珠凉鞋",
-        "期待楔形鞋回归"
-      ],
-      "tags": [
-        "Myha'la",
-        "McQueen",
-        "秀场造型",
-        "名人时尚",
-        "潮流趋势"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://imgix.bustle.com/uploads/image/2026/3/9/bb8c4347/img_4941.jpeg?w=1200&fit=max",
-      "published": "2026-03-09T13:51:03+00:00",
-      "sources": [
-        {
-          "name": "NYLON",
-          "title": "Ru-Veals & Rosary Shoes: Myha’la Takes NYLON To The McQueen Show",
-          "link": "https://www.nylon.com/nylon-nights/myhala-mcqueen-photo-diary-pfw-mar-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "5d9dd058091c",
-      "title": "2026三月潮流速递：轻奢风向标",
-      "summary": "2026年3月，时尚圈精彩纷呈。超模Elsa Hosk携手Montce推出性感泳装系列，Staud与Birkenstock联袂打造充满夏日风情的拉菲草凉鞋。Burberry再掀经典风衣热潮，发布全新广告大片。Lululemon则带来活力四射的春季跑步系列，Veja与Baserange的环保运动鞋合作款，则将可持续时尚进行到底。本月新品亮点颇多，引领新一季的时尚风向。",
-      "key_points": [
-        "Elsa Hosk x Montce泳装系列",
-        "Staud x Birkenstock拉菲草凉鞋",
-        "Veja x Baserange环保运动鞋"
-      ],
-      "tags": [
-        "品牌联名",
-        "新品发布",
-        "时尚趋势"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://imgix.bustle.com/uploads/image/2026/3/6/41d37905/a-closer-look-at.jpg?w=1200&fit=max",
-      "published": "2026-03-09T13:50:53+00:00",
-      "sources": [
-        {
-          "name": "The Zoe Report",
-          "title": "The March 2026 Fashion News Everyone’s Talking About",
-          "link": "https://www.thezoereport.com/fashion/march-2026-fashion-news",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "6093e4bbac61",
-      "title": "Timberland大黄靴变身潮流木屐？",
-      "summary": "Timberland大胆创新，将其标志性的大黄靴进行解构重塑，推出了可转换的木屐款式。这款木屐保留了经典的小麦色磨砂革鞋面和耐用橡胶鞋底，但舍弃了高鞋帮和鞋跟，取而代之的是类似Crocs的可调节后跟带，让硬朗工装风瞬间转变为休闲舒适的slip-on风格。这一设计充分展现了Timberland在经典设计上的创新精神，为品牌注入了新的活力。",
-      "key_points": [
-        "经典重塑",
-        "工装风休闲化",
-        "可转换设计"
-      ],
-      "tags": [
-        "Timberland",
-        "木屐",
-        "创新设计",
-        "潮流鞋履",
-        "大黄靴"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.highsnobiety.com/static-assets/dato/1773064182-timberland-clog-boot-6.jpg",
-      "published": "2026-03-09T13:50:06+00:00",
-      "sources": [
-        {
-          "name": "Highsnobiety",
-          "title": "Who Knew Timberland's Boots Would Make Such Great Clogs?",
-          "link": "https://www.highsnobiety.com/p/timberland-clog",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "5b12aed69fb4",
-      "title": "Ariana Grande再添新墨，指尖花蔓轻舞",
-      "summary": "流行天后Ariana Grande近日在手部再添新纹身，由纹身师Mira Mariah操刀，以精致的植物图案为主题。拇指上蜿蜒的藤蔓与手指上的雏菊，尽显清新风格。这并非Ariana首次纹身，此前她已拥有纪念音乐剧《Wicked》、致爱犬Toulouse等多个纹身。值得一提的是，纹身师Mira Mariah曾为其设计太阳和月亮图案，Ariana的奶奶也曾一同体验纹身的乐趣。",
-      "key_points": [
-        "Ariana Grande新增植物主题手部纹身",
-        "纹身师Mira Mariah设计",
-        "此前已有多处纹身，包括纪念作品和爱犬"
-      ],
-      "tags": [
-        "Ariana Grande",
-        "纹身",
-        "名人风格",
-        "美妆",
-        "时尚"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://media.allure.com/photos/69aecedd6368ff1c91709e02/master/pass/ariana%20grande%20new%20hand%20tattoo.jpg",
-      "published": "2026-03-09T13:50:03+00:00",
-      "sources": [
-        {
-          "name": "Allure",
-          "title": "Ariana Grande Just Got Even More Hand Tattoos—See the Photos",
-          "link": "https://www.allure.com/story/ariana-grande-new-palm-vine-tattoos",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "d959dee706ed",
-      "title": "熟龄魅力：时尚界的银发浪潮",
-      "summary": "时尚界正迎来一股“银发浪潮”，50岁以上女性的影响力日益凸显。无论是T台上优雅的灰发模特，还是时装周前排的“性感奶奶”，都展现了成熟女性的独特魅力。设计师们也越来越重视成熟消费者的需求，推出更多适合她们的时尚单品和设计。",
-      "key_points": [
-        "50+女性影响力提升",
-        "灰发模特受关注",
-        "设计师关注成熟消费者"
-      ],
-      "tags": [
-        "女性时尚",
-        "熟龄",
-        "模特",
-        "时尚趋势"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.fashionnetwork.com/m/ff03/c61d/ad02/4269/f96c/4e0f/2e0e/274e/8f42/b59e/208x208/b59e.jpg",
-      "published": "2026-03-09T13:48:16+00:00",
-      "sources": [
-        {
-          "name": "Fashion Network",
-          "title": "Women's fashion: women over 50 are gaining visibility",
-          "link": "https://ww.fashionnetwork.com/news/Women-s-fashion-women-over-50-are-gaining-visibility,1813961.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "e28ddbd1ef79",
-      "title": "工装夹克：四季皆宜的时尚利器",
-      "summary": "Highsnobiety杂志指出，工装夹克已成为时尚界备受追捧的单品，其多功能性使其能够轻松驾驭全年各种造型。无论是Stone Island的硬朗风格，还是Story mfg.的环保设计，工装夹克凭借其耐用材质、实用设计和独特风格，完美融合了功能性与时尚感，展现出强大的潮流生命力。",
-      "key_points": [
-        "工装夹克的多功能性使其适合全年穿着",
-        "Stone Island和Story mfg.是工装夹克的代表品牌",
-        "工装夹克兼具实用性与时尚感"
-      ],
-      "tags": [
-        "工装夹克",
-        "时尚潮流",
-        "全年穿搭"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://www.highsnobiety.com/static-assets/dato/1772638364-header_big.png",
-      "published": "2026-03-09T13:48:11+00:00",
-      "sources": [
-        {
-          "name": "Highsnobiety",
-          "title": "Workwear Jackets Literally Work All Year Round",
-          "link": "https://www.highsnobiety.com/p/best-workwear-jackets-online",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "4028dbb5e9d8",
-      "title": "明星同款运动鞋再度来袭！",
-      "summary": "潮流风向标！雅各布·艾洛迪和杜阿·利帕都钟爱的某品牌平价运动鞋已强势补货，售价低于200英镑。不仅如此，文章还前瞻性地揭示了2026年春季的运动鞋流行趋势，并聚焦海莉·比伯等明星的时尚穿搭。同时，Nordstrom精选的春季鞋款也为你的造型提供更多灵感。",
-      "key_points": [
-        "明星同款平价运动鞋补货",
-        "2026春季运动鞋趋势预测",
-        "海莉·比伯等明星鞋款推荐"
-      ],
-      "tags": [
-        "运动鞋",
-        "明星穿搭",
-        "平价时尚",
-        "购物推荐"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/8FXxLySp3NWXykWy4QEXLE-1280-80.jpg",
-      "published": "2026-03-09T13:04:04+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "It's True: Jacob and Dua’s Favourite Sub-£200 Trainers Have Just Been Restocked",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/jacquemus-nike-moon-shoe-trainer-trend",
           "lang": "en"
         }
       ],
