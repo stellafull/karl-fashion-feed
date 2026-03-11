@@ -20,6 +20,8 @@
 代码承载约定：
 
 - `backend/app/`：实现 SQL model、schema、repository 与服务层
+- `backend/app/service/news_collection_service.py`：当前已重写 article collection pipeline 的非持久化部分，读取 `sources.yaml` 后返回 article 列表
+- `backend/app/service/document_ingestion_service.py`：当前第一阶段负责将 article collection 结果映射并写入 PostgreSQL `document`
 - `backend/test/`：承载 schema 与回归验证测试
 - `backend/scripts/`：迁移期保留采集脚本
 
@@ -28,6 +30,7 @@
 ### 2.1 不进入主数据库的内容
 
 - `sources.yaml`：采集配置真相源
+- 当前重构路径使用 `backend/app/service/sources.yaml`；legacy `backend/scripts/sources.yaml` 暂时保留
 - 组织 allowlist 配置：可放 `.env` 或单独配置文件
 - 大体积原始 HTML、图片、视频文件本体：不直接入 PostgreSQL
 
@@ -338,9 +341,18 @@ Milvus 负责：
 
 ## `document`
 
+当前第一阶段实现：
+
+- 先只持久化 `document`
+- `document_asset` 与 `retrieval_unit_ref` 后续再接入
+- 数据库查重按 `canonical_url`
+- `article_id` 作为内部业务唯一键保留
+- `parse_status` 当前默认写 `parsed`
+
 | 字段 | 类型 | 约束 | 说明 |
 |---|---|---|---|
 | `doc_id` | `uuid` | PK, default `gen_random_uuid()` | 文档主键 |
+| `article_id` | `varchar(64)` | UNIQUE, NOT NULL | 采集链路内部业务唯一键 |
 | `source_id` | `varchar(64)` | NOT NULL | 来源 ID，对应 `sources.yaml` |
 | `external_id` | `varchar(255)` |  | 来源侧原始 ID |
 | `canonical_url` | `text` | UNIQUE, NOT NULL | 规范化后的原文地址 |
@@ -359,13 +371,14 @@ Milvus 负责：
 | `relevance_reason` | `text` |  | 相关性说明 |
 | `is_relevant` | `boolean` | NOT NULL, default `true` | 是否保留 |
 | `is_sensitive` | `boolean` | NOT NULL, default `false` | 是否敏感 |
-| `parse_status` | `parse_status` | NOT NULL | 解析状态 |
-| `source_payload` | `jsonb` | default `'{}'::jsonb` | 来源附加字段 |
+| `parse_status` | `parse_status` | NOT NULL | 解析状态；第一阶段默认写 `parsed` |
+| `source_payload` | `jsonb` | default `'{}'::jsonb` | 来源附加字段；第一阶段承载 `link`、`image`、`content_snippet`、`article_tags` 等未单独建列信息 |
 | `created_at` | `timestamptz` | NOT NULL, default `now()` | 创建时间 |
 | `updated_at` | `timestamptz` | NOT NULL, default `now()` | 更新时间 |
 
 索引建议：
 
+- unique index：`article_id`
 - unique index：`canonical_url`
 - index：`source_id`
 - index：`published_at`

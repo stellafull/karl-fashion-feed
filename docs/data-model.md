@@ -3,6 +3,8 @@
 ## 0. 后端实现落点
 
 - `backend/app/`：承载 SQL model、schema、repository、service 与检索编排实现
+- `backend/app/service/news_collection_service.py`：当前承载 article collection refactor，输出内存 article 列表，不直接落库
+- `backend/app/service/document_ingestion_service.py`：当前第一阶段负责 PostgreSQL `document` 入库
 - `backend/scripts/`：迁移期保留采集脚本
 - `backend/test/`：承载数据模型、脚本与回归验证测试
 
@@ -56,6 +58,11 @@
 - parser
 - crawl interval
 - enable 状态
+
+当前代码路径：
+
+- 重构中的 service 读取 `backend/app/service/sources.yaml`
+- `backend/scripts/sources.yaml` 仍作为 legacy 脚本输入保留
 
 ### 认证配置
 
@@ -129,6 +136,13 @@
 - `document`
 - `document_asset`
 - `retrieval_unit_ref`
+
+当前第一阶段规则：
+
+- 先只写 `document`
+- `article_id` 是采集链路业务唯一键
+- `canonical_url` 是数据库级幂等键
+- 已存在 URL 直接跳过，不回写旧记录
 
 ### Story 发布层
 

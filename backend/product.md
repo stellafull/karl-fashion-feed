@@ -26,6 +26,8 @@
 ### 真相源边界
 
 - `sources.yaml` 继续是采集配置真相源
+- 当前重构路径由 `backend/app/service/news_collection_service.py` 读取 `backend/app/service/sources.yaml`
+- 当前第一阶段已通过 `backend/app/service/document_ingestion_service.py` 将采集结果持久化进 PostgreSQL `document`
 - PostgreSQL 是用户、文档、story、chat、citation、memory 和 run 元数据真相源
 - Milvus 只负责检索副本，不负责 story 真相源和短期会话状态
 
@@ -57,6 +59,8 @@ backend/
 目录职责：
 
 - `app/`：后端主应用目录，后续 FastAPI、repository、service、任务编排与配置统一放这里
+- `app/service/news_collection_service.py`：当前已重写 source loading、采集、去重与 article 富化逻辑，先返回内存中的 article 列表，不承担 JSON 导出或持久化
+- `app/service/document_ingestion_service.py`：负责数据库查重、`document` 字段映射与 PostgreSQL 批量入库；当前通过 `backend/main.py` 手动触发
 - `test/`：后端统一测试目录；新增测试不再放在 `scripts/`、`server/` 子目录内
 - `scripts/`：迁移期保留的采集与聚合脚本
 - `server/`：遗留 Node 托管层，仅在切流完成前保留
@@ -79,6 +83,7 @@ backend/
 建议按以下顺序推进：
 
 1. 在 `backend/app/` 落 FastAPI 入口、配置与基础路由
-2. 把认证、feed、topic、chat 按 API 契约逐步迁入 `backend/app/`
-3. 保留 `backend/scripts/` 作为迁移期采集入口，再逐步拆到任务系统
-4. 把所有后端测试统一收敛到 `backend/test/`
+2. 先把 article collection 结果通过 `backend/app/service/document_ingestion_service.py` 写入 PostgreSQL `document`
+3. 把认证、feed、topic、chat 按 API 契约逐步迁入 `backend/app/`
+4. 保留 `backend/scripts/` 作为迁移期采集入口；新的 article collection 逻辑先在 `backend/app/service/news_collection_service.py` 重写，再逐步接入任务系统
+5. 把所有后端测试统一收敛到 `backend/test/`

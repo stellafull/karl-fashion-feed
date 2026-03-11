@@ -18,6 +18,7 @@
 目录约定：
 
 - `backend/app/`：FastAPI 服务主目录
+- `backend/app/service/news_collection_service.py`：当前重写后的 article collection service，供后续 API/任务系统接入
 - `backend/scripts/`：迁移期采集脚本目录
 - `backend/test/`：后端统一测试目录
 - `backend/server/`：遗留 Node 托管层
@@ -29,11 +30,17 @@
 - Feishu 认证凭证
 - 允许访问的 tenant keys
 - PostgreSQL 连接信息
+- `DATABASE_URL`
 - Redis 连接信息
 - Milvus 连接信息
 - 模型供应商配置
 - embedding 供应商配置
 - source 配置路径
+
+当前约定的 source 配置路径：
+
+- 重构中的 service：`backend/app/service/sources.yaml`
+- legacy 脚本：`backend/scripts/sources.yaml`
 
 ## 4. 定时任务
 
@@ -93,7 +100,16 @@
 
 - 启动 API：`uvicorn backend.app.main:app --reload`
 - 运行后端测试：`python -m unittest discover -s backend/test`
+- 初始化 PostgreSQL 表：`python -m backend.main init-db`
+- 手动执行文档入库：`python -m backend.main ingest-documents`
 - 手动执行采集脚本：`python backend/scripts/fetch_feeds.py`
+
+当前说明：
+
+- `backend/app/service/news_collection_service.py` 负责 article collection
+- `backend/app/service/document_ingestion_service.py` 负责 PostgreSQL `document` 入库
+- 当前人工入库入口是 `python -m backend.main ingest-documents`
+- legacy `backend/scripts/fetch_feeds.py` 仍可作为迁移期采集参考
 
 待 Celery 与发布任务代码落地后，再补充以下命令：
 

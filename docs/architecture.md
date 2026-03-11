@@ -95,6 +95,8 @@ backend/
 目录边界：
 
 - `app/`：放 API、domain service、repository、任务入口与配置
+- `app/service/news_collection_service.py`：已承接 refactor 后的 source loading、采集、去重、补图与 article 富化，当前只返回内存 article 列表
+- `app/service/document_ingestion_service.py`：负责把采集结果去重后写入 PostgreSQL `document`
 - `test/`：统一存放 API、数据模型、脚本与发布回归测试
 - `scripts/`：迁移期脚本保留区，后续逐步拆入 Celery 任务
 - `server/`：遗留 Node 托管层，不再作为长期后端真相源
@@ -109,11 +111,16 @@ backend/
 2. 拉取 RSS / crawl 来源
 3. 标准化并去重文档
 4. 做摘要、分类与基础清洗
-5. 写入 `document` 和 `document_asset`
+5. 写入 `document`
 6. 生成 retrieval units
 7. 写入 Milvus 向量
 8. 生成并发布 story 快照
 9. 更新 feed API 和迁移期 JSON 产物
+
+当前代码状态：
+
+- `backend/app/service/news_collection_service.py` 与 `backend/app/service/document_ingestion_service.py` 已覆盖 1-5 的 document persistence 子链路
+- `document_asset`、Milvus、story 发布、feed JSON 导出仍未接入这条新 service 路径
 
 ### Story 发布链路
 
