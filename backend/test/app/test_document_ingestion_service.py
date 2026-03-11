@@ -1,4 +1,5 @@
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -57,19 +58,44 @@ class DocumentIngestionServiceTests(unittest.TestCase):
             expire_on_commit=False,
             future=True,
         )
-        self.service = DocumentIngestionService(session_factory=self.session_factory)
+        self.markdown_dir = tempfile.TemporaryDirectory()
+        self.service = DocumentIngestionService(
+            session_factory=self.session_factory,
+            markdown_storage_root=self.markdown_dir.name,
+        )
+
+    def tearDown(self):
+        self.markdown_dir.cleanup()
 
     def test_map_article_to_document_preserves_core_fields(self):
-        document = map_article_to_document(build_article())
+        document = map_article_to_document(build_article(), content_md_path="/tmp/article_001.md")
 
         self.assertEqual(document.article_id, "article_001")
         self.assertEqual(document.source_id, "business-of-fashion")
         self.assertEqual(document.canonical_url, "https://example.com/story")
         self.assertEqual(document.title, "A fashion story")
         self.assertEqual(document.language, "en")
+        self.assertEqual(document.content_md_path, "/tmp/article_001.md")
         self.assertEqual(document.parse_status, "parsed")
         self.assertEqual(document.source_payload["link"], "https://example.com/story?utm_source=newsletter")
         self.assertEqual(document.source_payload["article_tags"], ["fashion", "market"])
+
+    def test_ingest_articles_persists_cleaned_markdown_and_stores_only_path(self):
+        self.service.ingest_articles([build_article()])
+
+        with self.session_factory() as session:
+            document = session.scalar(select(Document))
+
+        self.assertIsNotNone(document)
+        self.assertIsNotNone(document.content_md_path)
+        markdown_path = Path(document.content_md_path)
+        self.assertTrue(markdown_path.exists())
+        self.assertEqual(markdown_path.parent, Path(self.markdown_dir.name))
+        markdown_text = markdown_path.read_text(encoding="utf-8")
+        self.assertIn("# A fashion story", markdown_text)
+        self.assertIn("Long-form article text.", markdown_text)
+        self.assertFalse(hasattr(document, "raw_text"))
+        self.assertFalse(hasattr(document, "raw_html_path"))
 
     def test_ingest_articles_inserts_only_new_canonical_urls(self):
         first_run = self.service.ingest_articles([build_article()])

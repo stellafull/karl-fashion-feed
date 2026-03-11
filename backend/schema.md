@@ -7,13 +7,13 @@
 - PostgreSQL 建表
 - Milvus collection 创建
 - FastAPI schema 与 repository 设计
-- Celery 任务写入与发布流程
+- Celery 任务写入与聚合流程
 
 本文档是字段级设计草案，优先保证：
 
 - 首页 feed 可读
 - story 可稳定引用
-- chat 可回放
+- chat 可持续恢复
 - citation 可追溯
 - memory 可审计、可失效、可检索
 
@@ -43,10 +43,10 @@ PostgreSQL 负责：
 - 用户与组织
 - 登录审计
 - 原始文档与资产
-- 稳定 story 身份与每次发布快照
+- 稳定 story 身份与当前聚合状态
 - chat session/message/citation
 - 用户画像与长期记忆主记录
-- pipeline run 与发布状态
+- 来源运行态状态
 
 ### 2.3 Milvus 检索层
 
@@ -61,9 +61,8 @@ Milvus 负责：
 
 ### 3.1 ID 规范
 
-- PostgreSQL 主键默认使用 `uuid`
-- `story_key`、`source_id`、`unit_id`、`memory_id` 使用业务字符串主键
-- `run_id` 建议使用 `uuid`
+- 用户、组织、session、message 等交互实体可继续使用 `uuid`
+- `article_id`、`story_key`、`source_id`、`unit_id`、`memory_id` 使用业务字符串主键
 
 ### 3.2 时间字段
 
@@ -104,16 +103,12 @@ Milvus 负责：
 | `asset_type` | `image`, `video` |
 | `parse_status` | `parsed`, `failed`, `filtered` |
 | `story_status` | `active`, `archived`, `merged`, `suppressed` |
-| `run_type` | `daily_recluster`, `incremental_update`, `manual_backfill`, `reindex` |
-| `run_status` | `queued`, `running`, `success`, `failed`, `cancelled` |
-| `validation_status` | `pending`, `passed`, `failed` |
 | `scope_type` | `global`, `story`, `document` |
 | `session_status` | `active`, `archived`, `closed` |
 | `message_role` | `user`, `assistant`, `system`, `tool` |
 | `tool_execution_status` | `queued`, `running`, `success`, `failed`, `timeout`, `cancelled` |
 | `memory_type` | `semantic`, `episodic`, `preference`, `task` |
 | `memory_status` | `active`, `expired`, `deleted`, `suppressed` |
-| `publication_status` | `current`, `superseded`, `rolled_back` |
 
 ## 5. Milvus Collection 设计
 
@@ -134,7 +129,7 @@ Milvus 负责：
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | `unit_id` | `VarChar(64)` | 是 | 检索单元唯一 ID |
-| `doc_id` | `VarChar(64)` | 是 | 父文档 ID，对应 PostgreSQL `document.doc_id` |
+| `article_id` | `VarChar(64)` | 是 | 父文档 ID，对应 PostgreSQL `document.article_id` |
 | `story_key` | `VarChar(64)` | 否 | 冗余 story 标识，仅用于过滤优化，不是真相源 |
 | `source_id` | `VarChar(64)` | 是 | 来源 ID，对应 `sources.yaml` |
 | `unit_type` | `VarChar(32)` | 是 | 固定为 `text_chunk` |
@@ -163,7 +158,7 @@ Milvus 负责：
   - `text_dense_vector`
   - `text_sparse_vector`
 - 标量过滤字段：
-  - `doc_id`
+  - `article_id`
   - `story_key`
   - `source_id`
   - `unit_type`
@@ -174,7 +169,7 @@ Milvus 负责：
 约束建议：
 
 - `text_chunk` 必须有 `chunk_index`
-- `story_key` 可为空，因为 story 归属以 SQL 快照为准
+- `story_key` 可为空，因为 story 归属以 SQL 当前成员关系为准
 
 ## 5.2 `content_image_unit`
 
@@ -192,7 +187,7 @@ Milvus 负责：
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | `unit_id` | `VarChar(64)` | 是 | 检索单元唯一 ID |
-| `doc_id` | `VarChar(64)` | 是 | 父文档 ID |
+| `article_id` | `VarChar(64)` | 是 | 父文档 ID |
 | `asset_id` | `VarChar(64)` | 是 | 对应 PostgreSQL `document_asset.asset_id` |
 | `story_key` | `VarChar(64)` | 否 | 冗余 story 标识，仅用于过滤优化 |
 | `source_id` | `VarChar(64)` | 是 | 来源 ID |
@@ -224,7 +219,7 @@ Milvus 负责：
   - `image_dense_vector`
   - `image_sparse_vector`
 - 标量过滤字段：
-  - `doc_id`
+  - `article_id`
   - `asset_id`
   - `story_key`
   - `source_id`
@@ -409,13 +404,13 @@ Milvus 负责：
 - 先只持久化 `document`
 - `document_asset` 与 `retrieval_unit_ref` 后续再接入
 - 数据库查重按 `canonical_url`
-- `article_id` 作为内部业务唯一键保留
+- `article_id` 作为主键与业务唯一键
+- 清洗后的正文写到 Markdown 文件，只在数据库里保存路径
 - `parse_status` 当前默认写 `parsed`
 
 | 字段 | 类型 | 约束 | 说明 |
 |---|---|---|---|
-| `doc_id` | `uuid` | PK, default `gen_random_uuid()` | 文档主键 |
-| `article_id` | `varchar(64)` | UNIQUE, NOT NULL | 采集链路内部业务唯一键 |
+| `article_id` | `varchar(64)` | PK | 采集链路内部业务唯一键，同时作为文档主键 |
 | `source_id` | `varchar(64)` | NOT NULL | 来源 ID，对应 `sources.yaml` |
 | `external_id` | `varchar(255)` |  | 来源侧原始 ID |
 | `canonical_url` | `text` | UNIQUE, NOT NULL | 规范化后的原文地址 |
@@ -424,8 +419,7 @@ Milvus 负责：
 | `domain` | `varchar(255)` |  | 域名 |
 | `language` | `varchar(16)` |  | 语言 |
 | `published_at` | `timestamptz` |  | 发布时间 |
-| `raw_text` | `text` |  | 清洗后的全文文本 |
-| `raw_html_path` | `text` |  | 原始 HTML 存储路径 |
+| `content_md_path` | `text` |  | 清洗后 Markdown 文件路径 |
 | `content_hash` | `varchar(64)` | INDEX | 内容 hash，用于去重或追踪 |
 | `summary_zh` | `text` |  | 单篇中文摘要 |
 | `category_hint` | `varchar(64)` |  | 单篇分类提示 |
@@ -441,7 +435,6 @@ Milvus 负责：
 
 索引建议：
 
-- unique index：`article_id`
 - unique index：`canonical_url`
 - index：`source_id`
 - index：`published_at`
@@ -454,7 +447,7 @@ Milvus 负责：
 | 字段 | 类型 | 约束 | 说明 |
 |---|---|---|---|
 | `asset_id` | `uuid` | PK, default `gen_random_uuid()` | 资产主键 |
-| `doc_id` | `uuid` | FK -> `document.doc_id`, NOT NULL | 所属文档 |
+| `article_id` | `varchar(64)` | FK -> `document.article_id`, NOT NULL | 所属文档 |
 | `asset_type` | `asset_type` | NOT NULL | 当前 v1 主要使用 `image`；`video` 仅保留扩展位 |
 | `asset_url` | `text` | NOT NULL | 资源地址 |
 | `caption` | `text` |  | 图片说明文字 |
@@ -467,8 +460,8 @@ Milvus 负责：
 
 索引建议：
 
-- index：`doc_id`
-- unique index：`(doc_id, asset_url)`
+- index：`article_id`
+- unique index：`(article_id, asset_url)`
 
 ## `retrieval_unit_ref`
 
@@ -480,7 +473,7 @@ Milvus 负责：
 | 字段 | 类型 | 约束 | 说明 |
 |---|---|---|---|
 | `unit_id` | `varchar(64)` | PK | 对应 Milvus `content_text_unit.unit_id` 或 `content_image_unit.unit_id` |
-| `doc_id` | `uuid` | FK -> `document.doc_id`, NOT NULL | 所属文档 |
+| `article_id` | `varchar(64)` | FK -> `document.article_id`, NOT NULL | 所属文档 |
 | `unit_type` | `varchar(32)` | NOT NULL | `text_chunk` / `image_asset` |
 | `chunk_index` | `integer` |  | chunk 顺序 |
 | `source_url` | `text` | NOT NULL | 原文 URL |
@@ -497,25 +490,38 @@ Milvus 负责：
 
 索引建议：
 
-- index：`doc_id`
+- index：`article_id`
 - index：`unit_type`
 - index：`dense_embedding_model`
 - index：`sparse_embedding_model`
-- unique index：`(doc_id, unit_type, chunk_index)`，仅对文本 chunk 生效
+- unique index：`(article_id, unit_type, chunk_index)`，仅对文本 chunk 生效
 
-## 6.3 Story 发布层
+## 6.3 Story 当前聚合层
 
-## `story_identity`
+## `story`
 
 | 字段 | 类型 | 约束 | 说明 |
 |---|---|---|---|
 | `story_key` | `varchar(64)` | PK | 稳定 story 标识 |
-| `canonical_title` | `text` |  | 代表性标题 |
+| `title` | `text` | NOT NULL | 当前 story 标题 |
+| `summary` | `text` |  | 当前 story 摘要 |
+| `key_points` | `jsonb` | default `'[]'::jsonb` | 当前核心要点列表 |
+| `topic_tags` | `jsonb` | default `'[]'::jsonb` | 当前标签列表 |
+| `category_id` | `varchar(64)` |  | 当前分类 ID |
+| `category_name` | `varchar(128)` |  | 当前分类名称 |
+| `cover_image_url` | `text` |  | 当前封面图 |
+| `representative_article_id` | `varchar(64)` | FK -> `document.article_id` | 当前代表文档 |
+| `rank_score` | `numeric(10,4)` |  | 首页排序分数 |
+| `importance_score` | `numeric(10,4)` |  | 重要度分数 |
+| `freshness_score` | `numeric(10,4)` |  | 时效性分数 |
+| `article_count` | `integer` | NOT NULL, default `0` | 当前成员文档数 |
+| `source_count` | `integer` | NOT NULL, default `0` | 当前来源数 |
 | `status` | `story_status` | NOT NULL | story 状态 |
-| `current_category_id` | `varchar(64)` |  | 当前分类 ID |
 | `first_seen_at` | `timestamptz` | NOT NULL | 首次出现时间 |
+| `last_aggregated_at` | `timestamptz` | NOT NULL | 最近一次聚合更新时间 |
 | `last_seen_at` | `timestamptz` | NOT NULL | 最近出现时间 |
-| `merged_into_story_key` | `varchar(64)` | FK -> `story_identity.story_key` | 如被合并，指向目标 story |
+| `newest_published_at` | `timestamptz` |  | 当前成员中文档的最新发布时间 |
+| `merged_into_story_key` | `varchar(64)` | FK -> `story.story_key` | 如被合并，指向目标 story |
 | `metadata` | `jsonb` | default `'{}'::jsonb` | 连续性辅助信息 |
 | `created_at` | `timestamptz` | NOT NULL, default `now()` | 创建时间 |
 | `updated_at` | `timestamptz` | NOT NULL, default `now()` | 更新时间 |
@@ -525,115 +531,25 @@ Milvus 负责：
 - index：`status`
 - index：`last_seen_at`
 
-## `story_cluster_snapshot`
-
-说明：
-
-- 这是发布快照表，不是稳定主表
-- 主键应绑定 `run_id + story_key`
+## `story_article`
 
 | 字段 | 类型 | 约束 | 说明 |
 |---|---|---|---|
-| `run_id` | `uuid` | FK -> `pipeline_run.run_id`, NOT NULL | 所属发布 run |
-| `story_key` | `varchar(64)` | FK -> `story_identity.story_key`, NOT NULL | 稳定 story 标识 |
-| `snapshot_date` | `date` | NOT NULL | 快照日期 |
-| `title` | `text` | NOT NULL | 当前版本标题 |
-| `summary` | `text` | NOT NULL | 当前版本摘要 |
-| `key_points` | `jsonb` | default `'[]'::jsonb` | 核心要点列表 |
-| `topic_tags` | `jsonb` | default `'[]'::jsonb` | 标签列表 |
-| `category_id` | `varchar(64)` |  | 分类 ID |
-| `category_name` | `varchar(128)` |  | 分类名称 |
-| `cover_image_url` | `text` |  | 封面图 |
-| `representative_doc_id` | `uuid` | FK -> `document.doc_id` | 代表文档 |
-| `rank_score` | `numeric(10,4)` |  | 首页排序分数 |
-| `importance_score` | `numeric(10,4)` |  | 重要度分数 |
-| `freshness_score` | `numeric(10,4)` |  | 时效性分数 |
-| `article_count` | `integer` | NOT NULL, default `0` | 成员文档数 |
-| `source_count` | `integer` | NOT NULL, default `0` | 来源数 |
-| `newest_published_at` | `timestamptz` |  | 最新文档发布时间 |
-| `metadata` | `jsonb` | default `'{}'::jsonb` | 其他发布字段 |
-| `created_at` | `timestamptz` | NOT NULL, default `now()` | 创建时间 |
-
-主键建议：
-
-- `PRIMARY KEY (run_id, story_key)`
-
-索引建议：
-
-- index：`story_key`
-- index：`rank_score DESC`
-- index：`newest_published_at DESC`
-
-## `story_cluster_member_snapshot`
-
-| 字段 | 类型 | 约束 | 说明 |
-|---|---|---|---|
-| `run_id` | `uuid` | FK -> `pipeline_run.run_id`, NOT NULL | 所属 run |
-| `story_key` | `varchar(64)` | NOT NULL | 所属 story |
-| `doc_id` | `uuid` | FK -> `document.doc_id`, NOT NULL | 成员文档 |
+| `story_key` | `varchar(64)` | FK -> `story.story_key`, NOT NULL | 所属 story |
+| `article_id` | `varchar(64)` | FK -> `document.article_id`, NOT NULL | 成员文档 |
 | `member_score` | `numeric(10,4)` |  | 成员相关度分数 |
 | `sort_order` | `integer` | default `0` | 成员排序 |
 | `is_representative` | `boolean` | NOT NULL, default `false` | 是否代表文档 |
+| `created_at` | `timestamptz` | NOT NULL, default `now()` | 创建时间 |
 
 主键建议：
 
-- `PRIMARY KEY (run_id, story_key, doc_id)`
+- `PRIMARY KEY (story_key, article_id)`
 
 索引建议：
 
-- index：`doc_id`
-- index：`(run_id, story_key, sort_order)`
-
-## `pipeline_run`
-
-| 字段 | 类型 | 约束 | 说明 |
-|---|---|---|---|
-| `run_id` | `uuid` | PK, default `gen_random_uuid()` | run 主键 |
-| `run_type` | `run_type` | NOT NULL | run 类型 |
-| `status` | `run_status` | NOT NULL | run 状态 |
-| `validation_status` | `validation_status` | NOT NULL, default `'pending'` | 校验状态 |
-| `window_start` | `timestamptz` |  | 数据窗口起点 |
-| `window_end` | `timestamptz` |  | 数据窗口终点 |
-| `trigger_source` | `varchar(64)` |  | 触发来源，如 `schedule` / `manual` |
-| `trigger_actor` | `varchar(128)` |  | 触发人或任务 |
-| `total_sources` | `integer` | default `0` | 参与来源数 |
-| `total_raw_documents` | `integer` | default `0` | 原始文档数 |
-| `total_documents_after_dedup` | `integer` | default `0` | 去重后文档数 |
-| `total_stories` | `integer` | default `0` | 生成 story 数 |
-| `validation_errors` | `jsonb` | default `'[]'::jsonb` | 校验错误集合 |
-| `logs_path` | `text` |  | 日志路径 |
-| `started_at` | `timestamptz` |  | 开始时间 |
-| `finished_at` | `timestamptz` |  | 结束时间 |
-| `created_at` | `timestamptz` | NOT NULL, default `now()` | 创建时间 |
-
-索引建议：
-
-- index：`run_type`
-- index：`status`
-- index：`started_at DESC`
-
-## `published_run`
-
-说明：
-
-- 用于管理当前线上使用哪个 run
-- 不直接覆盖已有发布历史
-
-| 字段 | 类型 | 约束 | 说明 |
-|---|---|---|---|
-| `publication_id` | `uuid` | PK, default `gen_random_uuid()` | 发布记录主键 |
-| `run_id` | `uuid` | FK -> `pipeline_run.run_id`, NOT NULL | 被发布的 run |
-| `status` | `publication_status` | NOT NULL | 发布状态 |
-| `is_current` | `boolean` | NOT NULL, default `false` | 是否当前线上版本 |
-| `published_by` | `varchar(128)` |  | 发布人或任务 |
-| `replaced_publication_id` | `uuid` | FK -> `published_run.publication_id` | 被替换的发布记录 |
-| `notes` | `text` |  | 备注 |
-| `published_at` | `timestamptz` | NOT NULL, default `now()` | 发布时间 |
-
-索引建议：
-
-- index：`run_id`
-- partial unique index：`is_current = true`
+- index：`article_id`
+- index：`(story_key, sort_order)`
 
 ## 6.4 Chat 与交互
 
@@ -644,8 +560,7 @@ Milvus 负责：
 | `session_id` | `uuid` | PK, default `gen_random_uuid()` | session 主键 |
 | `user_id` | `uuid` | FK -> `app_user.user_id`, NOT NULL | 发起用户 |
 | `scope_type` | `scope_type` | NOT NULL | `global` / `story` / `document` |
-| `scope_ref_key` | `varchar(128)` |  | `story_key` 或 `doc_id` 字符串形式 |
-| `scope_snapshot_run_id` | `uuid` | FK -> `pipeline_run.run_id` | 进入对话时绑定的快照 run |
+| `scope_ref_key` | `varchar(128)` |  | `story_key` 或 `article_id` 字符串形式 |
 | `title` | `varchar(255)` |  | 会话标题 |
 | `summary_text` | `text` |  | 会话摘要 |
 | `status` | `session_status` | NOT NULL | 会话状态 |
@@ -691,7 +606,7 @@ Milvus 负责：
 |---|---|---|---|
 | `id` | `uuid` | PK, default `gen_random_uuid()` | citation 主键 |
 | `message_id` | `uuid` | FK -> `chat_message.message_id`, NOT NULL | 关联回答消息 |
-| `doc_id` | `uuid` | FK -> `document.doc_id`, NOT NULL | 引用文档 |
+| `article_id` | `varchar(64)` | FK -> `document.article_id`, NOT NULL | 引用文档 |
 | `unit_id` | `varchar(64)` | FK -> `retrieval_unit_ref.unit_id`, NOT NULL | 引用检索单元 |
 | `unit_type` | `varchar(32)` | NOT NULL | `text_chunk` / `image_asset` |
 | `source_url` | `text` | NOT NULL | 原文地址 |
@@ -703,7 +618,7 @@ Milvus 负责：
 索引建议：
 
 - index：`message_id`
-- index：`doc_id`
+- index：`article_id`
 - index：`unit_id`
 
 ## `tool_execution`
@@ -830,32 +745,31 @@ Milvus 负责：
 | `last_etag` | `text` |  | 最近 ETag |
 | `last_modified` | `text` |  | 最近 Last-Modified |
 | `last_cursor` | `text` |  | 最近游标或分页状态 |
-| `last_run_id` | `uuid` | FK -> `pipeline_run.run_id` | 最近处理 run |
 | `updated_at` | `timestamptz` | NOT NULL, default `now()` | 更新时间 |
 
 ## 7. 首页读模型映射
 
 当前前端首页需要的字段，可由以下 SQL 实体组合得到：
 
-- `meta.generated_at` <- `published_run.published_at`
-- `meta.total_topics` <- 当前 `published_run` 对应 `story_cluster_snapshot` 数量
-- `meta.total_articles` <- 当前 `published_run` 对应成员总数
-- `meta.sources_count` <- 当前 `published_run` 覆盖的 distinct `source_id` 数量
+- `meta.generated_at` <- API 生成时间或当前 `story.updated_at` 的最大值
+- `meta.total_topics` <- 当前 `story` 数量
+- `meta.total_articles` <- 当前 `story_article` 成员总数
+- `meta.sources_count` <- 当前 `story_article` + `document` 覆盖的 distinct `source_id` 数量
 - `topics[].id` <- `story_key`
-- `topics[].title` <- `story_cluster_snapshot.title`
-- `topics[].summary` <- `story_cluster_snapshot.summary`
-- `topics[].key_points` <- `story_cluster_snapshot.key_points`
-- `topics[].tags` <- `story_cluster_snapshot.topic_tags`
-- `topics[].category` <- `story_cluster_snapshot.category_id`
-- `topics[].category_name` <- `story_cluster_snapshot.category_name`
-- `topics[].image` <- `story_cluster_snapshot.cover_image_url`
-- `topics[].published` <- `story_cluster_snapshot.newest_published_at`
-- `topics[].article_count` <- `story_cluster_snapshot.article_count`
+- `topics[].title` <- `story.title`
+- `topics[].summary` <- `story.summary`
+- `topics[].key_points` <- `story.key_points`
+- `topics[].tags` <- `story.topic_tags`
+- `topics[].category` <- `story.category_id`
+- `topics[].category_name` <- `story.category_name`
+- `topics[].image` <- `story.cover_image_url`
+- `topics[].published` <- `story.newest_published_at`
+- `topics[].article_count` <- `story.article_count`
 
 ## 8. 建模注意事项
 
-- `story_key` 必须是稳定主身份，不能用 `(run_id, story_id)` 代替
-- `story_cluster_snapshot` 是发布视图，不是长期真相源
+- `story_key` 必须是稳定主身份，不能每天生成新的临时 ID
+- `story` 与 `story_article` 只保存当前聚合状态，不承担历史快照职责
 - Milvus 中的 `story_key` 只是过滤优化字段，不是 story 归属真相源
 - 长期记忆必须先写 PostgreSQL，再异步写 Milvus
 - 任何回答都应能通过 `message_citation -> retrieval_unit_ref -> document` 完整回溯

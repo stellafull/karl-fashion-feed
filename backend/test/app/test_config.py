@@ -8,6 +8,7 @@ from unittest import mock
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 from backend.app.config.embedding import get_embedding_models_config
+from backend.app.config.storage import DEFAULT_DOCUMENT_MARKDOWN_ROOT, get_document_markdown_root
 from backend.app.core.database import DatabaseSettings, build_database_url, require_database_url
 from backend.app.db.session import create_engine_from_url
 
@@ -86,6 +87,16 @@ class DatabaseConfigTests(unittest.TestCase):
         engine = create_engine_from_url("sqlite+pysqlite:///:memory:")
 
         self.assertEqual(engine.dialect.name, "sqlite")
+
+
+class StorageConfigTests(unittest.TestCase):
+    def test_document_markdown_root_defaults_to_runtime_directory(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(get_document_markdown_root(), DEFAULT_DOCUMENT_MARKDOWN_ROOT)
+
+    def test_document_markdown_root_honors_env_override(self):
+        with mock.patch.dict(os.environ, {"DOCUMENT_MARKDOWN_ROOT": "/tmp/fashion-docs"}, clear=True):
+            self.assertEqual(get_document_markdown_root(), Path("/tmp/fashion-docs"))
 
 
 class MilvusServiceImportTests(unittest.TestCase):

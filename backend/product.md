@@ -15,12 +15,12 @@
 `v1` 后端必须支撑以下产品能力：
 
 - 首页信息流：向前端输出稳定的 feed 数据，并在迁移期与 `feed-data.json` 并行
-- Story 详情：按 `story_key` 提供聚合结果、成员文档与回放所需元数据
-- Feishu 登录：执行 tenant allowlist 校验并记录完整审计
+- Story 详情：按 `story_key` 提供聚合结果、成员文档与会话恢复所需元数据
+- Feishu 登录：作为后续阶段接入的认证能力，执行 tenant allowlist 校验并记录完整审计
 - 全局 AI：支持跨库问答、历史 session 恢复与 citation 返回
-- Story 内 AI：支持 story scope 问答，并携带 `scope_snapshot_run_id` 做回放
+- Story 内 AI：支持 story scope 问答，并绑定稳定 `story_key`
 - 视觉检索：支持风格/单品/造型类 query 的图片召回与图片级 citation 返回
-- 发布与回滚：通过 `published_run` 切换线上版本，而不是覆盖历史结果
+- 当前态 story 聚合：持续刷新 `story` 与 `story_article`
 
 ## 3. 后端产品边界
 
@@ -29,20 +29,20 @@
 - `sources.yaml` 继续是采集配置真相源
 - 当前重构路径由 `backend/app/service/news_collection_service.py` 读取 `backend/app/service/sources.yaml`
 - 当前第一阶段已通过 `backend/app/service/document_ingestion_service.py` 将采集结果持久化进 PostgreSQL `document`
-- PostgreSQL 是用户、文档、story、chat、citation、memory 和 run 元数据真相源
+- PostgreSQL 是用户、文档、story、chat、citation、memory 和运行态状态真相源
 - Milvus 只负责检索副本，不负责 story 真相源和短期会话状态
 - v1 内容检索采用 `content_text_unit` + `content_image_unit` 双 collection，而不是单一 `content_unit`
 
 ### 稳定身份边界
 
 - 对外稳定 story 标识必须是 `story_key`
-- `run_id` 只代表某次发布版本，不可替代稳定 story 标识
-- story 内聊天与 citation 回放必须同时带 `story_key` 和 `scope_snapshot_run_id`
+- 当前 story 数据直接存放在 SQL 主表，不引入独立 snapshot/run 身份
+- story 内聊天与 citation 只需绑定 `story_key`
 
 ### 非目标
 
 - `v1` 不新增 `content_source` SQL 主表
-- 不把 `story_cluster_snapshot` 当成长期主表
+- 不为 story 引入额外的 snapshot 发布主表
 - 不把原始聊天记录直接镜像到 Milvus 充当唯一记忆
 - 不把大体积 HTML 或媒体文件本体写入 PostgreSQL
 
@@ -89,6 +89,7 @@ backend/
 
 1. 在 `backend/app/` 落 FastAPI 入口、配置与基础路由
 2. 先把 article collection 结果通过 `backend/app/service/document_ingestion_service.py` 写入 PostgreSQL `document`
-3. 把认证、feed、topic、chat 按 API 契约逐步迁入 `backend/app/`
+3. 把 feed、topic、chat 按 API 契约逐步迁入 `backend/app/`
 4. 保留 `backend/scripts/` 作为迁移期采集入口；新的 article collection 逻辑先在 `backend/app/service/news_collection_service.py` 重写，再逐步接入任务系统
-5. 把所有后端测试统一收敛到 `backend/test/`
+5. Feishu OAuth2 在内容与数据链路稳定后接入
+6. 把所有后端测试统一收敛到 `backend/test/`

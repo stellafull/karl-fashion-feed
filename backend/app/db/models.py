@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from uuid import uuid4
 
-from sqlalchemy import Boolean, DateTime, Integer, JSON, String, Text, Uuid
+from sqlalchemy import Boolean, DateTime, Integer, JSON, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -22,8 +21,7 @@ JSON_PAYLOAD_TYPE = JSON().with_variant(JSONB(), "postgresql")
 class Document(Base):
     __tablename__ = "document"
 
-    doc_id: Mapped[str] = mapped_column(Uuid(as_uuid=False), primary_key=True, default=lambda: str(uuid4()))
-    article_id: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    article_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     source_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     external_id: Mapped[str | None] = mapped_column(String(255))
     canonical_url: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
@@ -32,8 +30,7 @@ class Document(Base):
     domain: Mapped[str | None] = mapped_column(String(255))
     language: Mapped[str | None] = mapped_column(String(16))
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
-    raw_text: Mapped[str | None] = mapped_column(Text)
-    raw_html_path: Mapped[str | None] = mapped_column(Text)
+    content_md_path: Mapped[str | None] = mapped_column(Text)
     content_hash: Mapped[str | None] = mapped_column(String(64), index=True)
     summary_zh: Mapped[str | None] = mapped_column(Text)
     category_hint: Mapped[str | None] = mapped_column(String(64))
