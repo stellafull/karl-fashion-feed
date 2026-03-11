@@ -3,7 +3,8 @@
 ## 0. 后端实现落点
 
 - `backend/app/`：承载 SQL model、schema、repository、service 与检索编排实现
-- `backend/app/config/`：集中加载 env 与结构化配置；embedding 配置从总配置中独立维护
+- `backend/app/config/`：集中维护 embedding、Milvus 等易变服务配置
+- `backend/app/core/`：集中维护数据库与 Redis 等稳定基础设施
 - `backend/app/service/news_collection_service.py`：当前承载 article collection refactor，输出内存 article 列表，不直接落库
 - `backend/app/service/document_ingestion_service.py`：当前第一阶段负责 PostgreSQL `document` 入库
 - `backend/scripts/`：迁移期保留采集脚本
@@ -42,7 +43,8 @@
 
 作为检索层存储：
 
-- 内容检索单元
+- 文本检索单元
+- 图片检索单元
 - 用户长期记忆检索副本
 - 用户画像检索副本
 
@@ -71,11 +73,11 @@
 
 - 允许访问的 Feishu tenant
 - 应用凭证
-- 服务端连接配置统一通过 `backend/app/config/` 读取；数据库当前主契约为 `POSTGRES_*`
+- 服务端模型配置通过 `backend/app/config/` 读取；数据库基础设施通过 `backend/app/core/` 管理，主契约为 `POSTGRES_*`
 
 ## 3. Milvus Collections
 
-### `content_unit`
+### `content_text_unit`
 
 用途：
 
@@ -86,22 +88,52 @@
 实体粒度：
 
 - text chunk
-- image asset
-- video asset
 
 关键字段：
 
 - `unit_id`
 - `doc_id`
 - 可选冗余字段 `story_key`
-- `unit_type`
-- 文本或资产元数据
-- dense vector
-- sparse vector，用于 hybrid retrieval
+- `chunk_index`
+- `text_content`
+- text dense vector
+- text sparse vector，用于 hybrid retrieval
 
 规则：
 
 - story 成员关系仍以 SQL 快照为准
+- dense 使用 `qwen3-vl-embedding`
+- sparse 使用 `text-embedding-v4`
+
+### `content_image_unit`
+
+用途：
+
+- 风格/单品/造型类 query 的图片召回
+- story 与全局 AI 的 image citation 支撑
+
+实体粒度：
+
+- image asset
+
+关键字段：
+
+- `unit_id`
+- `doc_id`
+- `asset_id`
+- `asset_url`
+- `asset_text`
+- image dense vector
+- image sparse vector
+- `asset_role`
+- fashion metadata
+
+规则：
+
+- image dense 使用 `qwen3-vl-embedding`
+- image sparse 由 `asset_text` 通过 `text-embedding-v4` 生成
+- `asset_text` 来自标题、上下文、caption、visual description 与受控 fashion metadata
+- v1 不把 video asset 纳入当前 retrieval redesign
 
 ### `user_memory`
 

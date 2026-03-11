@@ -18,7 +18,8 @@
 目录约定：
 
 - `backend/app/`：FastAPI 服务主目录
-- `backend/app/config/`：后端配置包，集中管理 env 加载、数据库/Milvus 配置与 embedding 配置
+- `backend/app/config/`：后端易变配置包，集中管理 embedding 与 Milvus 等配置
+- `backend/app/core/`：后端稳定基础设施目录，集中管理数据库与 Redis
 - `backend/app/service/news_collection_service.py`：当前重写后的 article collection service，供后续 API/任务系统接入
 - `backend/scripts/`：迁移期采集脚本目录
 - `backend/test/`：后端统一测试目录
@@ -39,7 +40,9 @@
 - Redis 连接信息
 - Milvus 连接信息
 - 模型供应商配置
-- embedding 供应商配置
+- dense embedding 配置
+- sparse embedding 配置
+- image rerank 配置
 - source 配置路径
 
 当前约定的 source 配置路径：
@@ -65,7 +68,8 @@
 - 任务名：`incremental_update`
 - 预期输出：
   - 新增 documents
-  - 更新后的 retrieval units
+  - 更新后的 text/image retrieval units
+  - image enrichment backlog 被持续消费
   - 刷新的 feed 发布结果
 
 ## 5. 发布流程
@@ -96,6 +100,8 @@
 - document 解析失败
 - Milvus 写入失败
 - embedding 延迟
+- image enrichment 积压
+- rerank 失败率
 - story 数量异常
 - citation 生成失败
 
@@ -111,9 +117,13 @@
 
 当前说明：
 
-- `backend/app/config/` 统一承接服务端配置；embedding 配置已从总配置中拆出
+- `backend/app/config/` 承接易变服务配置；embedding 配置已从总配置中拆出
+- `backend/app/core/` 承接数据库与 Redis 基础设施
 - `backend/app/service/news_collection_service.py` 负责 article collection
 - `backend/app/service/document_ingestion_service.py` 负责 PostgreSQL `document` 入库
+- text 检索使用 `qwen3-vl-embedding` dense + `text-embedding-v4` sparse
+- image 检索使用 `qwen3-vl-embedding` dense + 基于 `asset_text` 的 `text-embedding-v4` sparse
+- image caption / visual description / fashion metadata 通过异步任务回写检索层
 - 当前人工入库入口是 `python -m backend.main ingest-documents`
 - legacy `backend/scripts/fetch_feeds.py` 仍可作为迁移期采集参考
 
@@ -123,6 +133,7 @@
 - 手动执行日重聚类
 - 手动执行增量更新
 - 重建 embedding
+- 重建 image enrichment
 - 回滚或重发某个 run
 
 ## 9. 典型故障场景
@@ -150,6 +161,7 @@
 检查：
 
 - retrieval 结果是否相关
+- 图片候选是否进入最终 context pack
 - citation 是否正确落库
 - 模型服务是否健康
 - session scope 是否正确传入

@@ -1,34 +1,79 @@
-"""
-数据库连接
-"""
+"""Database infrastructure helpers."""
 
-import os 
+from __future__ import annotations
+
+from dataclasses import dataclass
+from functools import lru_cache
+
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv, find_dotenv
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Session, sessionmaker
 
-# 加载环境变量
-_ = load_dotenv(find_dotenv())
+from backend.app.config.env import get_env
 
-# 从环境变量获取数据库配置
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT")
-POSTGRES_USER = os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_DB = os.getenv("POSTGRES_DB")
 
-DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+@dataclass(frozen=True)
+class DatabaseSettings:
+    host: str
+    port: int
+    user: str
+    password: str
+    name: str
 
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
+def get_database_settings() -> DatabaseSettings | None:
+    values = {
+        "POSTGRES_HOST": get_env("POSTGRES_HOST"),
+        "POSTGRES_PORT": get_env("POSTGRES_PORT"),
+        "POSTGRES_USER": get_env("POSTGRES_USER"),
+        "POSTGRES_PASSWORD": get_env("POSTGRES_PASSWORD"),
+        "POSTGRES_DB": get_env("POSTGRES_DB"),
+    }
+    if not any(values.values()):
+        return None
+
+    missing = [name for name, value in values.items() if not value]
+    if missing:
+        raise RuntimeError(
+            f"{', '.join(missing)} is not set. Configure PostgreSQL before starting backend services."
+        )
+
+    return DatabaseSettings(
+        host=values["POSTGRES_HOST"] or "",
+        port=int(values["POSTGRES_PORT"] or "0"),
+        user=values["POSTGRES_USER"] or "",
+        password=values["POSTGRES_PASSWORD"] or "",
+        name=values["POSTGRES_DB"] or "",
+    )
+
+
+def build_database_url(settings: DatabaseSettings | None = None) -> str:
+    resolved = settings or get_database_settings()
+    if resolved is None:
+        raise RuntimeError("PostgreSQL is not configured. Set POSTGRES_* environment variables first.")
+    return (
+        f"postgresql://{resolved.user}:{resolved.password}"
+        f"@{resolved.host}:{resolved.port}/{resolved.name}"
+    )
+
+
+def require_database_url() -> str:
+    return build_database_url()
+
+
+@lru_cache(maxsize=1)
+def get_engine() -> Engine:
+    return create_engine(require_database_url(), pool_pre_ping=True)
+
+
+@lru_cache(maxsize=1)
+def get_session_factory() -> sessionmaker[Session]:
+    return sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
 
 
 def get_db():
-    """获取数据库会话的依赖函数"""
-    db = SessionLocal()
+    """Yield a database session for request-scoped usage."""
+    db = get_session_factory()()
     try:
         yield db
     finally:

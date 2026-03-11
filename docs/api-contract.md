@@ -10,7 +10,8 @@
 ## 1.1 接口实现约定
 
 - `backend/app/` 是 API 契约的唯一实现主目录
-- `backend/app/config/` 负责 API 所需的服务端配置加载；不再使用单文件 `backend/app/config.py`
+- `backend/app/config/` 负责 API 所需的模型与服务配置
+- `backend/app/core/` 负责数据库与 Redis 等基础设施接入
 - `backend/app/service/news_collection_service.py` 当前只提供内部 article collection service，不新增 HTTP 接口，也不直接导出 `feed-data.json`
 - `backend/app/service/document_ingestion_service.py` 当前通过内部 CLI 持久化 `document`，不新增 HTTP 接口
 - `backend/server/` 只保留迁移期托管职责，不承接新增 API 逻辑
@@ -157,6 +158,7 @@
 - assistant answer
 - citations
 - source references
+- image citations（命中 image asset 时）
 - session 元数据
 
 后续可扩展流式输出，但不影响当前契约基线。
@@ -170,11 +172,24 @@
   {
     "doc_id": "doc_123",
     "unit_id": "unit_456",
+    "unit_type": "image_asset",
     "source_url": "https://example.com/article",
-    "title": "Original source title"
+    "title": "Original source title",
+    "asset_url": "https://example.com/look.jpg",
+    "preview_image_url": "https://example.com/look.jpg",
+    "asset_role": "hero",
+    "fashion_metadata_excerpt": {
+      "garment_types": ["shirt"],
+      "style_tags": ["minimal", "tailored"]
+    }
   }
 ]
 ```
+
+说明：
+
+- `unit_type=text_chunk` 时，`asset_url` 与 `preview_image_url` 可为空
+- `unit_type=image_asset` 时，图片 citation 是一等结果，不折叠为纯 article citation
 
 ## 6. 错误模型
 

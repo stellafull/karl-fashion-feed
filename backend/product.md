@@ -19,6 +19,7 @@
 - Feishu 登录：执行 tenant allowlist 校验并记录完整审计
 - 全局 AI：支持跨库问答、历史 session 恢复与 citation 返回
 - Story 内 AI：支持 story scope 问答，并携带 `scope_snapshot_run_id` 做回放
+- 视觉检索：支持风格/单品/造型类 query 的图片召回与图片级 citation 返回
 - 发布与回滚：通过 `published_run` 切换线上版本，而不是覆盖历史结果
 
 ## 3. 后端产品边界
@@ -30,6 +31,7 @@
 - 当前第一阶段已通过 `backend/app/service/document_ingestion_service.py` 将采集结果持久化进 PostgreSQL `document`
 - PostgreSQL 是用户、文档、story、chat、citation、memory 和 run 元数据真相源
 - Milvus 只负责检索副本，不负责 story 真相源和短期会话状态
+- v1 内容检索采用 `content_text_unit` + `content_image_unit` 双 collection，而不是单一 `content_unit`
 
 ### 稳定身份边界
 
@@ -59,7 +61,8 @@ backend/
 目录职责：
 
 - `app/`：后端主应用目录，后续 FastAPI、repository、service、任务编排与配置统一放这里
-- `app/config/`：后端配置包；集中处理 env 加载、数据库/Milvus 配置与 embedding 配置，embedding 已拆分到独立子模块
+- `app/config/`：后端易变配置包；集中处理 embedding、Milvus 等服务配置
+- `app/core/`：稳定基础设施目录；保留数据库与 Redis 连接能力
 - `app/service/news_collection_service.py`：当前已重写 source loading、采集、去重与 article 富化逻辑，先返回内存中的 article 列表，不承担 JSON 导出或持久化
 - `app/service/document_ingestion_service.py`：负责数据库查重、`document` 字段映射与 PostgreSQL 批量入库；当前通过 `backend/main.py` 手动触发
 - `test/`：后端统一测试目录；新增测试不再放在 `scripts/`、`server/` 子目录内
@@ -77,6 +80,7 @@ backend/
 - 术语与 `docs/data-model.md` 一致
 - API 输出与 `docs/api-contract.md` 一致
 - citation 可以从 answer -> unit -> document -> source 回溯
+- image citation 可以从 answer -> unit -> document_asset/document -> source 回溯
 - 若改动运行命令或部署依赖，同步更新 `docs/ops-runbook.md`
 
 ## 6. 近期开发顺序

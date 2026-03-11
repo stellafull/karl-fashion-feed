@@ -20,7 +20,8 @@
 代码承载约定：
 
 - `backend/app/`：实现 SQL model、schema、repository 与服务层
-- `backend/app/config/`：承载 env 加载与结构化配置；embedding 配置通过独立子模块维护
+- `backend/app/config/`：承载易变服务配置；embedding 配置通过独立子模块维护
+- `backend/app/core/`：承载数据库与 Redis 等稳定基础设施
 - `backend/app/service/news_collection_service.py`：当前已重写 article collection pipeline 的非持久化部分，读取 `sources.yaml` 后返回 article 列表
 - `backend/app/service/document_ingestion_service.py`：当前第一阶段负责将 article collection 结果映射并写入 PostgreSQL `document`
 - `backend/test/`：承载 schema 与回归验证测试
@@ -51,7 +52,8 @@ PostgreSQL 负责：
 
 Milvus 负责：
 
-- `content_unit`：内容检索单元
+- `content_text_unit`：文本检索单元
+- `content_image_unit`：图片检索单元
 - `user_memory`：长期记忆检索副本
 - `user_profile_memory`：用户画像检索副本
 
@@ -81,6 +83,10 @@ Milvus 负责：
   - sparse vector
 - dense vector 维度由具体 embedding 模型决定，不在 schema 中写死
 - Milvus collection 中只保存检索所需文本，不保存超长全文；全文真相源仍在 PostgreSQL
+- text dense 使用 `qwen3-vl-embedding`
+- text sparse 使用 `text-embedding-v4`
+- image dense 使用 `qwen3-vl-embedding`
+- image sparse 通过 `asset_text` 使用 `text-embedding-v4` 生成
 
 ### 3.5 推荐 PostgreSQL 扩展
 
@@ -111,7 +117,7 @@ Milvus 负责：
 
 ## 5. Milvus Collection 设计
 
-## 5.1 `content_unit`
+## 5.1 `content_text_unit`
 
 用途：
 
@@ -131,11 +137,10 @@ Milvus 负责：
 | `doc_id` | `VarChar(64)` | 是 | 父文档 ID，对应 PostgreSQL `document.doc_id` |
 | `story_key` | `VarChar(64)` | 否 | 冗余 story 标识，仅用于过滤优化，不是真相源 |
 | `source_id` | `VarChar(64)` | 是 | 来源 ID，对应 `sources.yaml` |
-| `unit_type` | `VarChar(32)` | 是 | `text_chunk` / `image_asset` / `video_asset` |
+| `unit_type` | `VarChar(32)` | 是 | 固定为 `text_chunk` |
 | `chunk_index` | `Int32` | 否 | 文本 chunk 顺序，媒体类型可空 |
-| `title` | `VarChar(512)` | 否 | 文档标题或资产标题 |
+| `title` | `VarChar(512)` | 否 | 文档标题 |
 | `text_content` | `VarChar(8192)` | 否 | 检索用文本，建议截断版本 |
-| `asset_url` | `VarChar(2048)` | 否 | 图片或视频地址 |
 | `source_url` | `VarChar(2048)` | 是 | 原文 URL |
 | `author` | `VarChar(256)` | 否 | 作者 |
 | `domain` | `VarChar(256)` | 否 | 来源域名 |
@@ -148,8 +153,6 @@ Milvus 负责：
 | `metadata` | `JSON` | 否 | 其他检索元数据 |
 | `text_dense_vector` | `FloatVector(dim_text)` | 否 | 文本 dense embedding |
 | `text_sparse_vector` | `SparseFloatVector` | 否 | 文本 sparse embedding |
-| `image_dense_vector` | `FloatVector(dim_image)` | 否 | 图片 dense embedding |
-| `video_dense_vector` | `FloatVector(dim_video)` | 否 | 视频 dense embedding |
 | `created_at_ts` | `Int64` | 是 | 创建时间戳 |
 | `updated_at_ts` | `Int64` | 是 | 更新时间戳 |
 
@@ -159,8 +162,6 @@ Milvus 负责：
 - 向量索引：
   - `text_dense_vector`
   - `text_sparse_vector`
-  - `image_dense_vector`
-  - `video_dense_vector`
 - 标量过滤字段：
   - `doc_id`
   - `story_key`
@@ -173,10 +174,71 @@ Milvus 负责：
 约束建议：
 
 - `text_chunk` 必须有 `chunk_index`
-- `image_asset`、`video_asset` 必须有 `asset_url`
 - `story_key` 可为空，因为 story 归属以 SQL 快照为准
 
-## 5.2 `user_memory`
+## 5.2 `content_image_unit`
+
+用途：
+
+- 风格/单品/造型类 query 的图片检索
+- story 与全局 AI 的图片 citation 支撑
+
+主键：
+
+- `unit_id`
+
+字段设计：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `unit_id` | `VarChar(64)` | 是 | 检索单元唯一 ID |
+| `doc_id` | `VarChar(64)` | 是 | 父文档 ID |
+| `asset_id` | `VarChar(64)` | 是 | 对应 PostgreSQL `document_asset.asset_id` |
+| `story_key` | `VarChar(64)` | 否 | 冗余 story 标识，仅用于过滤优化 |
+| `source_id` | `VarChar(64)` | 是 | 来源 ID |
+| `unit_type` | `VarChar(32)` | 是 | 固定为 `image_asset` |
+| `title` | `VarChar(512)` | 否 | 父文档标题 |
+| `asset_url` | `VarChar(2048)` | 是 | 图片地址 |
+| `source_url` | `VarChar(2048)` | 是 | 原文 URL |
+| `asset_text` | `VarChar(8192)` | 是 | 由标题、上下文、caption、visual description 与 fashion metadata 拼接而成的检索文本 |
+| `caption` | `VarChar(2048)` | 否 | 来源 caption |
+| `visual_description` | `VarChar(4096)` | 否 | visual LLM 生成的描述 |
+| `asset_role` | `VarChar(32)` | 否 | `hero` / `inline` / `gallery` |
+| `garment_types` | `JSON` | 否 | 服饰类型 |
+| `style_tags` | `JSON` | 否 | 风格标签 |
+| `color_palette` | `JSON` | 否 | 颜色标签 |
+| `season_tags` | `JSON` | 否 | 季节标签 |
+| `occasion_tags` | `JSON` | 否 | 场景标签 |
+| `has_person` | `Bool` | 否 | 是否包含人物 |
+| `hero_image_score` | `Float` | 否 | 主图价值评分 |
+| `fashion_metadata` | `JSON` | 否 | 受控属性集扩展字段 |
+| `image_dense_vector` | `FloatVector(dim_image)` | 否 | 图片 dense embedding |
+| `image_sparse_vector` | `SparseFloatVector` | 否 | 基于 `asset_text` 的 sparse embedding |
+| `created_at_ts` | `Int64` | 是 | 创建时间戳 |
+| `updated_at_ts` | `Int64` | 是 | 更新时间戳 |
+
+索引建议：
+
+- 主键：`unit_id`
+- 向量索引：
+  - `image_dense_vector`
+  - `image_sparse_vector`
+- 标量过滤字段：
+  - `doc_id`
+  - `asset_id`
+  - `story_key`
+  - `source_id`
+  - `asset_role`
+  - `has_person`
+  - `hero_image_score`
+
+约束建议：
+
+- `image_asset` 必须有 `asset_url`
+- `asset_text` 为空时不进入检索集合
+- v1 不把 `video_asset` 纳入当前 collection 设计
+
+## 5.3 `user_memory`
 
 用途：
 
@@ -224,7 +286,7 @@ Milvus 负责：
   - `status`
   - `valid_to_ts`
 
-## 5.3 `user_profile_memory`
+## 5.4 `user_profile_memory`
 
 用途：
 
@@ -393,11 +455,14 @@ Milvus 负责：
 |---|---|---|---|
 | `asset_id` | `uuid` | PK, default `gen_random_uuid()` | 资产主键 |
 | `doc_id` | `uuid` | FK -> `document.doc_id`, NOT NULL | 所属文档 |
-| `asset_type` | `asset_type` | NOT NULL | `image` / `video` |
+| `asset_type` | `asset_type` | NOT NULL | 当前 v1 主要使用 `image`；`video` 仅保留扩展位 |
 | `asset_url` | `text` | NOT NULL | 资源地址 |
-| `caption` | `text` |  | 图片/视频说明文字 |
+| `caption` | `text` |  | 图片说明文字 |
+| `asset_text` | `text` |  | 用于 sparse 检索的标准化文本 |
+| `visual_description` | `text` |  | visual LLM 生成描述 |
+| `asset_role` | `varchar(32)` |  | `hero` / `inline` / `gallery` |
 | `sort_order` | `integer` | default `0` | 展示顺序 |
-| `metadata` | `jsonb` | default `'{}'::jsonb` | 宽高、时长、来源等 |
+| `metadata` | `jsonb` | default `'{}'::jsonb` | 宽高、来源、fashion metadata 等 |
 | `created_at` | `timestamptz` | NOT NULL, default `now()` | 创建时间 |
 
 索引建议：
@@ -414,15 +479,18 @@ Milvus 负责：
 
 | 字段 | 类型 | 约束 | 说明 |
 |---|---|---|---|
-| `unit_id` | `varchar(64)` | PK | 对应 Milvus `content_unit.unit_id` |
+| `unit_id` | `varchar(64)` | PK | 对应 Milvus `content_text_unit.unit_id` 或 `content_image_unit.unit_id` |
 | `doc_id` | `uuid` | FK -> `document.doc_id`, NOT NULL | 所属文档 |
-| `unit_type` | `varchar(32)` | NOT NULL | `text_chunk` / `image_asset` / `video_asset` |
+| `unit_type` | `varchar(32)` | NOT NULL | `text_chunk` / `image_asset` |
 | `chunk_index` | `integer` |  | chunk 顺序 |
 | `source_url` | `text` | NOT NULL | 原文 URL |
 | `asset_url` | `text` |  | 资源 URL |
-| `embedding_provider` | `varchar(64)` |  | embedding 服务商 |
-| `embedding_model` | `varchar(128)` |  | embedding 模型名 |
-| `embedding_version` | `varchar(64)` |  | embedding 版本 |
+| `dense_embedding_provider` | `varchar(64)` |  | dense embedding 服务商 |
+| `dense_embedding_model` | `varchar(128)` |  | dense embedding 模型名 |
+| `dense_embedding_version` | `varchar(64)` |  | dense embedding 版本 |
+| `sparse_embedding_provider` | `varchar(64)` |  | sparse embedding 服务商 |
+| `sparse_embedding_model` | `varchar(128)` |  | sparse embedding 模型名 |
+| `sparse_embedding_version` | `varchar(64)` |  | sparse embedding 版本 |
 | `content_version_hash` | `varchar(64)` |  | 当前内容版本 hash |
 | `created_at` | `timestamptz` | NOT NULL, default `now()` | 创建时间 |
 | `updated_at` | `timestamptz` | NOT NULL, default `now()` | 更新时间 |
@@ -431,7 +499,8 @@ Milvus 负责：
 
 - index：`doc_id`
 - index：`unit_type`
-- index：`embedding_model`
+- index：`dense_embedding_model`
+- index：`sparse_embedding_model`
 - unique index：`(doc_id, unit_type, chunk_index)`，仅对文本 chunk 生效
 
 ## 6.3 Story 发布层
@@ -624,7 +693,9 @@ Milvus 负责：
 | `message_id` | `uuid` | FK -> `chat_message.message_id`, NOT NULL | 关联回答消息 |
 | `doc_id` | `uuid` | FK -> `document.doc_id`, NOT NULL | 引用文档 |
 | `unit_id` | `varchar(64)` | FK -> `retrieval_unit_ref.unit_id`, NOT NULL | 引用检索单元 |
+| `unit_type` | `varchar(32)` | NOT NULL | `text_chunk` / `image_asset` |
 | `source_url` | `text` | NOT NULL | 原文地址 |
+| `asset_url` | `text` |  | 图片 citation 对应资源地址 |
 | `citation_order` | `integer` | NOT NULL, default `0` | 引用顺序 |
 | `quote_text` | `text` |  | 可展示引用文本片段 |
 | `created_at` | `timestamptz` | NOT NULL, default `now()` | 创建时间 |

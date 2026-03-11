@@ -65,7 +65,8 @@ FastAPI
 
 职责：
 
-- `content_unit` 检索
+- `content_text_unit` 检索
+- `content_image_unit` 检索
 - `user_memory` 检索
 - `user_profile_memory` 检索
 
@@ -77,7 +78,8 @@ Milvus 不负责 story 历史真相源，也不负责短期 session 状态。
 
 - 异步任务队列
 - 采集与清洗拆分
-- embedding 任务
+- text/image embedding 任务
+- image caption / visual description / fashion metadata enrichment
 - story 发布任务
 
 ## 3. 后端目录约定
@@ -95,7 +97,8 @@ backend/
 目录边界：
 
 - `app/`：放 API、domain service、repository、任务入口与配置
-- `app/config/`：集中加载 env，并按数据库、Milvus、embedding 等子模块拆分配置
+- `app/config/`：集中维护模型与服务配置，例如 embedding 与 Milvus
+- `app/core/`：集中维护数据库与 Redis 等稳定基础设施
 - `app/service/news_collection_service.py`：已承接 refactor 后的 source loading、采集、去重、补图与 article 富化，当前只返回内存 article 列表
 - `app/service/document_ingestion_service.py`：负责把采集结果去重后写入 PostgreSQL `document`
 - `test/`：统一存放 API、数据模型、脚本与发布回归测试
@@ -113,15 +116,16 @@ backend/
 3. 标准化并去重文档
 4. 做摘要、分类与基础清洗
 5. 写入 `document`
-6. 生成 retrieval units
-7. 写入 Milvus 向量
-8. 生成并发布 story 快照
-9. 更新 feed API 和迁移期 JSON 产物
+6. 抽取 `document_asset` 中的 image asset
+7. 生成 text retrieval units 并写入 `content_text_unit`
+8. 异步生成 image `asset_text`、visual description、fashion metadata，并写入 `content_image_unit`
+9. 生成并发布 story 快照
+10. 更新 feed API 和迁移期 JSON 产物
 
 当前代码状态：
 
 - `backend/app/service/news_collection_service.py` 与 `backend/app/service/document_ingestion_service.py` 已覆盖 1-5 的 document persistence 子链路
-- `document_asset`、Milvus、story 发布、feed JSON 导出仍未接入这条新 service 路径
+- `document_asset`、Milvus、image enrichment、story 发布、feed JSON 导出仍未接入这条新 service 路径
 
 ### Story 发布链路
 
@@ -138,16 +142,18 @@ backend/
 1. 用户打开 story
 2. 用户在 story 内发问
 3. 后端先读取 story 上下文
-4. 再从 Milvus 检索相关 `content_unit`
-5. 调用模型生成回答
-6. 写入 `chat_message`、`message_citation` 与 memory 记录
+4. 生成 dense + sparse query 表示
+5. 按 query intent 同时召回 `content_text_unit` 与 `content_image_unit`
+6. 文本候选与图片候选分别 rerank 后融合
+7. 调用模型生成回答
+8. 写入 `chat_message`、`message_citation` 与 memory 记录
 
 ### 全局 AI 链路
 
 1. 用户打开左侧 AI sidebar
 2. 新建或恢复 session
-3. 后端执行全局检索与 memory 检索
-4. 生成带 citation 的回答
+3. 后端执行 text/image 双路检索与 memory 检索
+4. 生成带文本与图片 citation 的回答
 5. 将 session 历史写入 PostgreSQL
 
 ## 5. Story 身份模型

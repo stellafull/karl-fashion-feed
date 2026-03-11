@@ -7,8 +7,8 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
-from backend.app.config.database import DatabaseSettings, build_database_url, require_database_url
 from backend.app.config.embedding import get_embedding_models_config
+from backend.app.core.database import DatabaseSettings, build_database_url, require_database_url
 from backend.app.db.session import create_engine_from_url
 
 
