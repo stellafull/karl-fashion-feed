@@ -9,4 +9,4 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from sqlalchemy.orm import Session
 
-from config import milvus_uri, milvus_token
+from backend.app.config.milvus import get_milvus_settings

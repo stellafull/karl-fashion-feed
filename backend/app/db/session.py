@@ -7,7 +7,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from backend.app.config import require_database_url
+from backend.app.config.database import require_database_url
 from backend.app.db.base import Base
 
 

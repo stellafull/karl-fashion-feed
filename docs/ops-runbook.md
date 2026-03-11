@@ -18,6 +18,7 @@
 目录约定：
 
 - `backend/app/`：FastAPI 服务主目录
+- `backend/app/config/`：后端配置包，集中管理 env 加载、数据库/Milvus 配置与 embedding 配置
 - `backend/app/service/news_collection_service.py`：当前重写后的 article collection service，供后续 API/任务系统接入
 - `backend/scripts/`：迁移期采集脚本目录
 - `backend/test/`：后端统一测试目录
@@ -30,7 +31,11 @@
 - Feishu 认证凭证
 - 允许访问的 tenant keys
 - PostgreSQL 连接信息
-- `DATABASE_URL`
+- `POSTGRES_HOST`
+- `POSTGRES_PORT`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DB`
 - Redis 连接信息
 - Milvus 连接信息
 - 模型供应商配置
@@ -106,6 +111,7 @@
 
 当前说明：
 
+- `backend/app/config/` 统一承接服务端配置；embedding 配置已从总配置中拆出
 - `backend/app/service/news_collection_service.py` 负责 article collection
 - `backend/app/service/document_ingestion_service.py` 负责 PostgreSQL `document` 入库
 - 当前人工入库入口是 `python -m backend.main ingest-documents`

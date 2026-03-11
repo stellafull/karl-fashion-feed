@@ -59,6 +59,7 @@ backend/
 目录职责：
 
 - `app/`：后端主应用目录，后续 FastAPI、repository、service、任务编排与配置统一放这里
+- `app/config/`：后端配置包；集中处理 env 加载、数据库/Milvus 配置与 embedding 配置，embedding 已拆分到独立子模块
 - `app/service/news_collection_service.py`：当前已重写 source loading、采集、去重与 article 富化逻辑，先返回内存中的 article 列表，不承担 JSON 导出或持久化
 - `app/service/document_ingestion_service.py`：负责数据库查重、`document` 字段映射与 PostgreSQL 批量入库；当前通过 `backend/main.py` 手动触发
 - `test/`：后端统一测试目录；新增测试不再放在 `scripts/`、`server/` 子目录内

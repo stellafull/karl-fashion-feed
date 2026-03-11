@@ -3,6 +3,7 @@
 ## 0. 后端实现落点
 
 - `backend/app/`：承载 SQL model、schema、repository、service 与检索编排实现
+- `backend/app/config/`：集中加载 env 与结构化配置；embedding 配置从总配置中独立维护
 - `backend/app/service/news_collection_service.py`：当前承载 article collection refactor，输出内存 article 列表，不直接落库
 - `backend/app/service/document_ingestion_service.py`：当前第一阶段负责 PostgreSQL `document` 入库
 - `backend/scripts/`：迁移期保留采集脚本
@@ -70,6 +71,7 @@
 
 - 允许访问的 Feishu tenant
 - 应用凭证
+- 服务端连接配置统一通过 `backend/app/config/` 读取；数据库当前主契约为 `POSTGRES_*`
 
 ## 3. Milvus Collections
 

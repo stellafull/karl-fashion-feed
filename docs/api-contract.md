@@ -10,6 +10,7 @@
 ## 1.1 接口实现约定
 
 - `backend/app/` 是 API 契约的唯一实现主目录
+- `backend/app/config/` 负责 API 所需的服务端配置加载；不再使用单文件 `backend/app/config.py`
 - `backend/app/service/news_collection_service.py` 当前只提供内部 article collection service，不新增 HTTP 接口，也不直接导出 `feed-data.json`
 - `backend/app/service/document_ingestion_service.py` 当前通过内部 CLI 持久化 `document`，不新增 HTTP 接口
 - `backend/server/` 只保留迁移期托管职责，不承接新增 API 逻辑

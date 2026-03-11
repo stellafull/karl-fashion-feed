@@ -1,13 +1,17 @@
-from pymilvus import MilvusClient
+"""Milvus client helpers."""
 
-from config import MILVUS_URI, MILVUS_USER, MILVUS_PASSWORD
+from __future__ import annotations
 
-## 链接Milvus客户端
-client = MilvusClient(uri = MILVUS_URI,
-                      user= MILVUS_USER,
-                      password=MILVUS_PASSWORD)
+from backend.app.config.milvus import require_milvus_settings
 
-
-## Milvus Schema
 collection_name = "fashion_news"
 
+
+def get_milvus_client():
+    from pymilvus import MilvusClient
+
+    settings = require_milvus_settings()
+    client_kwargs = {"uri": settings.uri}
+    if settings.token:
+        client_kwargs["token"] = settings.token
+    return MilvusClient(**client_kwargs)

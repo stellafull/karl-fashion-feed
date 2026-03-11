@@ -95,6 +95,7 @@ backend/
 目录边界：
 
 - `app/`：放 API、domain service、repository、任务入口与配置
+- `app/config/`：集中加载 env，并按数据库、Milvus、embedding 等子模块拆分配置
 - `app/service/news_collection_service.py`：已承接 refactor 后的 source loading、采集、去重、补图与 article 富化，当前只返回内存 article 列表
 - `app/service/document_ingestion_service.py`：负责把采集结果去重后写入 PostgreSQL `document`
 - `test/`：统一存放 API、数据模型、脚本与发布回归测试

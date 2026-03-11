@@ -20,6 +20,7 @@
 代码承载约定：
 
 - `backend/app/`：实现 SQL model、schema、repository 与服务层
+- `backend/app/config/`：承载 env 加载与结构化配置；embedding 配置通过独立子模块维护
 - `backend/app/service/news_collection_service.py`：当前已重写 article collection pipeline 的非持久化部分，读取 `sources.yaml` 后返回 article 列表
 - `backend/app/service/document_ingestion_service.py`：当前第一阶段负责将 article collection 结果映射并写入 PostgreSQL `document`
 - `backend/test/`：承载 schema 与回归验证测试
