@@ -13,7 +13,7 @@ if str(ROOT_DIR) not in sys.path:
 
 from backend.app.config.source_config import load_source_configs
 from backend.app.core.database import Base, engine
-from backend.app.models import Article  # noqa: F401
+from backend.app.models import Article, ensure_article_storage_schema  # noqa: F401
 from backend.app.service.article_ingestion_service import ArticleIngestionService
 from backend.app.service.news_collection_service import NewsCollectionService
 
@@ -68,6 +68,7 @@ def run_validate_sources(_: argparse.Namespace) -> int:
 
 
 def run_ingest_articles(args: argparse.Namespace) -> int:
+    ensure_article_storage_schema(engine)
     Base.metadata.create_all(bind=engine)
     collector = NewsCollectionService(
         source_concurrency=args.source_concurrency,

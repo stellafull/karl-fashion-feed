@@ -6,6 +6,8 @@
   日常校验和增量采集入口
 - `backend/app/scripts/init_article_data.py`
   初始化或回填近一段时间的 `article`
+- `backend/app/scripts/backfill_article_storage.py`
+  将旧版 `article.content_raw/image_url` 回填到 canonical Markdown 和 `article_image`
 
 ## 常用命令
 
@@ -61,6 +63,18 @@ python -u backend/app/scripts/init_article_data.py \
   --days-back 30 \
   --source Vogue \
   --source WWD
+```
+
+旧数据回填 Markdown / 图片表：
+
+```bash
+python backend/app/scripts/backfill_article_storage.py
+```
+
+限制回填数量：
+
+```bash
+python backend/app/scripts/backfill_article_storage.py --limit 100
 ```
 
 ## 参数说明

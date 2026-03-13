@@ -15,6 +15,11 @@
 - `article` 是事实真相源。
 - `canonical_url` 归一化后是文章唯一键。
 - 同一 `canonical_url` 再次出现时按重复处理，不做补写。
+- `article` 主表只保存 metadata、摘要预览、Markdown 相对路径和主图引用。
+- canonical Markdown 一篇 article 一个文件，按日期分层落到本地 `data/articles/`。
+- Markdown 正文里的图片使用 `[image:<image_id>]` 占位。
+- 图片资产单独写入 `article_image` 表，只保存 URL 和 metadata，不保存二进制。
+- visual LLM 结果写回 `article_image`，不回写 canonical Markdown。
 - `story` 是不可变读模型，`story_key` 使用 UUID。
 - 每天北京时间 8 点只处理新增 `article`，生成新的 `story`。
 - 旧 `story` 不更新、不合并、不重写。
@@ -25,7 +30,7 @@
 ## 每日 Pipeline
 
 1. `article_collection_service`
-   抓取来源文章，清洗字段，归一化 `canonical_url`，完成去重入库。
+   抓取来源文章，清洗字段，归一化 `canonical_url`，解析为 Markdown blocks 和图片资产候选，完成去重入库。
 
 2. `article_summarization_service`
    对每篇 `article` 执行一次 LLM enrichment，产出：
@@ -42,7 +47,7 @@
    对候选簇做复核，必要时拆分，再生成最终 `story` 标题、摘要、要点、标签和分类。
 
 6. 持久化
-   写入 `story`、`story_article`、`retrieval_unit_ref`，记录本次 `pipeline_run`。
+   写入 `article`、Markdown 文件、`article_image`，再写入 `story`、`story_article`、`retrieval_unit_ref`，记录本次 `pipeline_run`。
 
 ## `sources.yaml` 格式
 
@@ -72,11 +77,13 @@
 - `canonical_url`
 - `source`
 - `title_raw`
-- `content_raw`
+- `summary_raw`
+- `markdown_rel_path`
+- `hero_image_id`
 - `lang`
 - `published_at`
 - `ingested_at`
-- `image_url`
+- `metadata_json`
 - `should_publish`
 - `reject_reason`
 - `title_zh`
@@ -85,6 +92,24 @@
 - `brands_json`
 - `category_candidates_json`
 - `cluster_text`
+
+### `article_image`
+
+- `image_id`
+- `article_id`
+- `source_url`
+- `normalized_url`
+- `role`
+- `position`
+- `alt_text`
+- `caption_raw`
+- `credit_raw`
+- `context_snippet`
+- `visual_status`
+- `observed_description`
+- `ocr_text`
+- `style_signals_json`
+- `contextual_interpretation`
 
 ### `story`
 

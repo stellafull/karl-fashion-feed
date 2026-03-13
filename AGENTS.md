@@ -14,6 +14,9 @@
 - `article` 是事实真相源。
 - `canonical_url` 归一化后作为文章唯一去重键。
 - 同一 `canonical_url` 二次抓到时直接视为重复，不做补写。
+- `article` 主表只保存 metadata、摘要预览、Markdown 相对路径和主图引用。
+- article 正文解析后写到本地 Markdown 文件，数据库只存相对路径。
+- 图片资产单独入表，Markdown 中只保留 `[image:<image_id>]` 占位符。
 - `story` 是不可变聚合结果，`story_key` 使用 UUID。
 - 每次定时任务只基于新增 `article` 生成新的 `story`。
 - `article` 全量入库，再由 LLM 判断是否适合展示给读者。
@@ -41,18 +44,20 @@
 ## 每日处理链路
 
 1. 采集文章并做 `canonical_url` 归一化去重。
-2. 对每篇文章执行 LLM enrichment：
+2. 将正文解析为 Markdown blocks，并将图片解析为独立 asset。
+3. 对每篇文章执行 LLM enrichment：
    `should_publish`、中文标题、中文摘要、标签、品牌、分类建议。
-3. 对可发布文章生成聚类文本和 embedding。
-4. 基于语义相似度做初始聚类。
-5. 用 LLM 复核聚类结果，必要时拆分，再生成最终 `story` 内容。
-6. 持久化 `story`、`story_article`、`retrieval_unit_ref`。
+4. 对可发布文章生成聚类文本和 embedding。
+5. 基于语义相似度做初始聚类。
+6. 用 LLM 复核聚类结果，必要时拆分，再生成最终 `story` 内容。
+7. 持久化 `story`、`story_article`、`retrieval_unit_ref`。
 
 ## 关键实体
 
 - `article`：原文事实、来源、发布时间、LLM enrichment 结果
 - `story`：面向读者的不可变中文聚合内容
 - `story_article`：`story` 与 `article` 的不可变映射
+- `article_image`：图片 URL、位置、caption、visual LLM 结果
 - `retrieval_unit_ref`：文章切块与检索索引桥接
 - `pipeline_run`：采集、聚类、索引任务执行记录
 

@@ -46,6 +46,7 @@ pids
 *.seed
 *.pid.lock
 backend/.runtime/
+data/articles/
 
 # Coverage directory used by tools like istanbul
 coverage/
@@ -106,6 +107,10 @@ temp/
 *.db
 *.sqlite
 *.sqlite3
+
+# Python cache
+__pycache__/
+*.py[cod]
 
 # Webdev artifacts (checkpoint zips, migrations, etc.)
 .webdev/

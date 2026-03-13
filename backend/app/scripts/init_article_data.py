@@ -18,13 +18,10 @@ if str(ROOT_DIR) not in sys.path:
 
 from backend.app.core.database import Base, SessionLocal, engine
 from backend.app.config.source_config import SourceConfig, load_source_configs
-from backend.app.models import Article  # noqa: F401
+from backend.app.models import Article, ensure_article_storage_schema  # noqa: F401
+from backend.app.service.article_contracts import CollectedArticle, SourceCollectionResult
 from backend.app.service.article_ingestion_service import ArticleIngestionService
-from backend.app.service.news_collection_service import (
-    CollectedArticle,
-    NewsCollectionService,
-    SourceCollectionResult,
-)
+from backend.app.service.news_collection_service import NewsCollectionService
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -85,6 +82,7 @@ def main() -> int:
     cutoff = datetime.now(UTC).replace(tzinfo=None) - timedelta(days=args.days_back)
 
     try:
+        ensure_article_storage_schema(engine)
         Base.metadata.create_all(bind=engine)
     except OperationalError as exc:
         print(

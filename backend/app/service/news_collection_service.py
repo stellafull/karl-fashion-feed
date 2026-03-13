@@ -1,11 +1,10 @@
-"""Collect fashion news from RSS feeds and direct web pages."""
+"""Collect fashion news into markdown blocks and image asset candidates."""
 
 from __future__ import annotations
 
 import asyncio
 import hashlib
 import re
-from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from html import unescape
@@ -14,12 +13,18 @@ from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
 
 import aiohttp
 import feedparser
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString, Tag
 
 from backend.app.config.source_config import (
     DetailConfig,
     SourceConfig,
     load_source_configs,
+)
+from backend.app.service.article_contracts import (
+    CollectedArticle,
+    CollectedImage,
+    MarkdownBlock,
+    SourceCollectionResult,
 )
 
 
@@ -38,31 +43,8 @@ QUERY_PARAM_BLOCKLIST = {
     "utm_source",
     "utm_term",
 }
-
-
-@dataclass(frozen=True)
-class CollectedArticle:
-    source_name: str
-    source_type: str
-    lang: str
-    category: str
-    url: str
-    canonical_url: str
-    title: str
-    summary: str
-    content: str
-    image_url: str | None
-    published_at: datetime | None
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
-class SourceCollectionResult:
-    source_name: str
-    source_type: str
-    articles: list[CollectedArticle] = field(default_factory=list)
-    error: Exception | None = None
-
+SKIP_TAGS = {"script", "style", "noscript", "iframe", "svg"}
+TEXT_BLOCK_KINDS = {"heading", "paragraph", "list_item", "blockquote"}
 
 FetchText = Callable[[str], Awaitable[str]]
 
@@ -143,6 +125,7 @@ class NewsCollectionService:
         }
         semaphore = asyncio.Semaphore(self._global_http_concurrency)
         async with aiohttp.ClientSession(timeout=timeout, headers=headers) as session:
+
             async def fetch_text(url: str) -> str:
                 async with semaphore:
                     async with session.get(url) as response:
@@ -283,24 +266,29 @@ class NewsCollectionService:
                 return None
 
             title = _clean_text(str(entry.get("title") or ""))
-            summary = _clean_text(
-                str(entry.get("summary") or entry.get("description") or "")
-            )
-            content = _extract_feed_content(entry) or summary
             published_at = _parse_datetime(
                 entry.get("published")
                 or entry.get("updated")
                 or entry.get("pubDate")
                 or entry.get("created")
             )
-            image_url = _extract_feed_image(entry)
-            canonical_url = self.normalize_url(link)
-            metadata = {
-                "entry_id": str(entry.get("id") or ""),
-                "source_hash": _stable_hash(link, title),
-            }
 
-            if len(content) < 280:
+            feed_summary_raw = str(entry.get("summary") or entry.get("description") or "")
+            feed_summary = _clean_text(feed_summary_raw)
+            blocks, images, excerpt = _parse_html_fragment_to_document(
+                html_fragment=_extract_feed_content_html(entry) or feed_summary_raw,
+                base_url=link,
+                source_selector="rss:entry",
+            )
+            images = _merge_meta_images(
+                _extract_feed_image_candidates(entry, normalize_url=self.normalize_url),
+                images,
+            )
+            summary = feed_summary or excerpt
+            markdown_text_length = len(_plain_text_from_blocks(blocks))
+            canonical_url = self.normalize_url(link)
+
+            if markdown_text_length < 280:
                 async with detail_semaphore:
                     try:
                         detail_html = await fetch_text(link)
@@ -312,11 +300,18 @@ class NewsCollectionService:
                         url=link,
                         detail_config=source.detail,
                     )
-                    content = detail["content"] or content
-                    summary = summary or detail["summary"]
-                    image_url = image_url or detail["image_url"]
+                    title = detail["title"] or title
+                    summary = detail["summary"] or summary
+                    blocks = detail["blocks"] or blocks
+                    images = _merge_meta_images(detail["images"], images)
                     canonical_url = self.normalize_url(detail["canonical_url"] or link)
 
+            if not blocks:
+                fallback_text = summary or title or link
+                blocks = [MarkdownBlock(kind="paragraph", text=fallback_text)]
+
+            blocks = _ensure_hero_placeholders(blocks, images)
+            images = _with_context_snippets(blocks, images)
             article = CollectedArticle(
                 source_name=source.name,
                 source_type=source.type,
@@ -325,11 +320,16 @@ class NewsCollectionService:
                 url=link,
                 canonical_url=canonical_url,
                 title=title or summary[:120] or link,
-                summary=summary or content[:280],
-                content=content,
-                image_url=image_url,
+                summary=summary or _excerpt_from_blocks(blocks),
+                markdown_blocks=tuple(blocks),
+                images=tuple(images),
                 published_at=published_at,
-                metadata=metadata,
+                metadata={
+                    "entry_id": str(entry.get("id") or ""),
+                    "source_hash": _stable_hash(link, title),
+                    "image_count": len(images),
+                    "block_count": len(blocks),
+                },
             )
             if _passes_published_window(
                 article.published_at,
@@ -369,16 +369,18 @@ class NewsCollectionService:
                     html_text = await fetch_text(url)
                 except Exception:
                     return None
+
             detail = self._extract_article_detail(
                 html_text=html_text,
                 url=url,
                 detail_config=source.detail,
             )
             title = detail["title"]
-            content = detail["content"]
-            if not title or not content:
+            blocks = detail["blocks"]
+            if not title or not blocks:
                 return None
 
+            images = _with_context_snippets(blocks, detail["images"])
             article = CollectedArticle(
                 source_name=source.name,
                 source_type=source.type,
@@ -387,11 +389,15 @@ class NewsCollectionService:
                 url=url,
                 canonical_url=self.normalize_url(detail["canonical_url"] or url),
                 title=title,
-                summary=detail["summary"],
-                content=content,
-                image_url=detail["image_url"],
+                summary=detail["summary"] or _excerpt_from_blocks(blocks),
+                markdown_blocks=tuple(blocks),
+                images=tuple(images),
                 published_at=detail["published_at"],
-                metadata={"source_hash": _stable_hash(url, title)},
+                metadata={
+                    "source_hash": _stable_hash(url, title),
+                    "image_count": len(images),
+                    "block_count": len(blocks),
+                },
             )
             if _passes_published_window(
                 article.published_at,
@@ -487,25 +493,47 @@ class NewsCollectionService:
             )
             title = _extract_node_text(title_node)
 
-        content = _extract_content_by_selectors(soup, detail_config.content_selectors)
+        content_nodes = []
+        matched_selector = ""
+        for selector in detail_config.content_selectors:
+            nodes = [node for node in soup.select(selector) if _node_has_content(node)]
+            if nodes:
+                content_nodes = nodes
+                matched_selector = selector
+                break
+        if not content_nodes and soup.body is not None:
+            content_nodes = [soup.body]
+
+        blocks, images = _build_blocks_and_images(
+            nodes=content_nodes,
+            base_url=url,
+            source_selector=matched_selector or "body",
+            normalize_url=self.normalize_url,
+        )
+
         summary = _extract_meta_content(soup, "meta[name='description']")
         if not summary:
-            summary = content[:280]
+            summary = _excerpt_from_blocks(blocks)
 
         published_text = _extract_selector_value(soup, detail_config.published_selectors)
         published_at = _parse_datetime(published_text)
 
-        image_url = _extract_selector_value(soup, detail_config.image_selectors)
-        if image_url:
-            image_url = urljoin(url, image_url)
+        hero_images = _extract_selector_image_candidates(
+            soup=soup,
+            selectors=detail_config.image_selectors,
+            base_url=url,
+            normalize_url=self.normalize_url,
+        )
+        images = _merge_meta_images(hero_images, images)
+        blocks = _ensure_hero_placeholders(blocks, images)
 
         return {
             "canonical_url": canonical_url,
             "title": title,
-            "content": content,
             "summary": summary,
             "published_at": published_at,
-            "image_url": image_url,
+            "blocks": blocks,
+            "images": images,
         }
 
     @staticmethod
@@ -529,28 +557,543 @@ class NewsCollectionService:
         return urlunparse(normalized)
 
 
-def _extract_feed_content(entry: Any) -> str:
+def _build_blocks_and_images(
+    *,
+    nodes: Iterable[Tag],
+    base_url: str,
+    source_selector: str,
+    normalize_url: Callable[[str], str],
+) -> tuple[list[MarkdownBlock], list[CollectedImage]]:
+    blocks: list[MarkdownBlock] = []
+    images: list[CollectedImage] = []
+    image_index_by_url: dict[str, int] = {}
+
+    for node in nodes:
+        _consume_node(
+            node=node,
+            blocks=blocks,
+            images=images,
+            image_index_by_url=image_index_by_url,
+            base_url=base_url,
+            source_selector=source_selector,
+            normalize_url=normalize_url,
+        )
+
+    return _normalize_blocks(blocks), images
+
+
+def _consume_node(
+    *,
+    node: Tag | NavigableString,
+    blocks: list[MarkdownBlock],
+    images: list[CollectedImage],
+    image_index_by_url: dict[str, int],
+    base_url: str,
+    source_selector: str,
+    normalize_url: Callable[[str], str],
+) -> None:
+    if isinstance(node, NavigableString):
+        text = _clean_text(str(node))
+        if text:
+            blocks.append(MarkdownBlock(kind="paragraph", text=text))
+        return
+
+    if not isinstance(node, Tag):
+        return
+    if node.name in SKIP_TAGS:
+        return
+    if node.name in {"h1", "h2", "h3", "h4", "h5", "h6"}:
+        _consume_mixed_container(
+            node=node,
+            kind="heading",
+            blocks=blocks,
+            images=images,
+            image_index_by_url=image_index_by_url,
+            base_url=base_url,
+            source_selector=source_selector,
+            normalize_url=normalize_url,
+        )
+        return
+    if node.name in {"p", "blockquote"}:
+        _consume_mixed_container(
+            node=node,
+            kind="blockquote" if node.name == "blockquote" else "paragraph",
+            blocks=blocks,
+            images=images,
+            image_index_by_url=image_index_by_url,
+            base_url=base_url,
+            source_selector=source_selector,
+            normalize_url=normalize_url,
+        )
+        return
+    if node.name in {"ul", "ol"}:
+        for child in node.find_all("li", recursive=False):
+            _consume_mixed_container(
+                node=child,
+                kind="list_item",
+                blocks=blocks,
+                images=images,
+                image_index_by_url=image_index_by_url,
+                base_url=base_url,
+                source_selector=source_selector,
+                normalize_url=normalize_url,
+            )
+        return
+    if node.name == "figure":
+        _consume_figure(
+            node=node,
+            blocks=blocks,
+            images=images,
+            image_index_by_url=image_index_by_url,
+            base_url=base_url,
+            source_selector=source_selector,
+            normalize_url=normalize_url,
+        )
+        return
+    if node.name == "img":
+        _append_image_block(
+            image_tag=node,
+            role="inline",
+            caption_raw="",
+            blocks=blocks,
+            images=images,
+            image_index_by_url=image_index_by_url,
+            base_url=base_url,
+            source_kind="inline",
+            source_selector=source_selector,
+            normalize_url=normalize_url,
+        )
+        return
+
+    child_block_tags = {
+        child.name
+        for child in node.find_all(recursive=False)
+        if isinstance(child, Tag)
+    }
+    if child_block_tags.intersection({"p", "img", "figure", "ul", "ol", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6"}):
+        for child in node.children:
+            _consume_node(
+                node=child,
+                blocks=blocks,
+                images=images,
+                image_index_by_url=image_index_by_url,
+                base_url=base_url,
+                source_selector=source_selector,
+                normalize_url=normalize_url,
+            )
+        return
+
+    text = _clean_text(node.get_text(" ", strip=True))
+    if text:
+        blocks.append(MarkdownBlock(kind="paragraph", text=text))
+
+
+def _consume_mixed_container(
+    *,
+    node: Tag,
+    kind: str,
+    blocks: list[MarkdownBlock],
+    images: list[CollectedImage],
+    image_index_by_url: dict[str, int],
+    base_url: str,
+    source_selector: str,
+    normalize_url: Callable[[str], str],
+) -> None:
+    parts: list[str] = []
+
+    def flush_text() -> None:
+        text = _clean_text(" ".join(parts))
+        parts.clear()
+        if text:
+            blocks.append(MarkdownBlock(kind=kind, text=text))
+
+    for child in node.children:
+        if isinstance(child, NavigableString):
+            text = _clean_text(str(child))
+            if text:
+                parts.append(text)
+            continue
+        if not isinstance(child, Tag):
+            continue
+        if child.name == "img":
+            flush_text()
+            _append_image_block(
+                image_tag=child,
+                role="inline",
+                caption_raw="",
+                blocks=blocks,
+                images=images,
+                image_index_by_url=image_index_by_url,
+                base_url=base_url,
+                source_kind="inline",
+                source_selector=source_selector,
+                normalize_url=normalize_url,
+            )
+            continue
+        if child.name == "figure":
+            flush_text()
+            _consume_figure(
+                node=child,
+                blocks=blocks,
+                images=images,
+                image_index_by_url=image_index_by_url,
+                base_url=base_url,
+                source_selector=source_selector,
+                normalize_url=normalize_url,
+            )
+            continue
+        text = _clean_text(child.get_text(" ", strip=True))
+        if text:
+            parts.append(text)
+
+    flush_text()
+
+
+def _consume_figure(
+    *,
+    node: Tag,
+    blocks: list[MarkdownBlock],
+    images: list[CollectedImage],
+    image_index_by_url: dict[str, int],
+    base_url: str,
+    source_selector: str,
+    normalize_url: Callable[[str], str],
+) -> None:
+    caption = _clean_text(node.find("figcaption").get_text(" ", strip=True)) if node.find("figcaption") else ""
+    for image_tag in node.find_all("img"):
+        _append_image_block(
+            image_tag=image_tag,
+            role="gallery" if len(node.find_all("img")) > 1 else "inline",
+            caption_raw=caption,
+            blocks=blocks,
+            images=images,
+            image_index_by_url=image_index_by_url,
+            base_url=base_url,
+            source_kind="figure",
+            source_selector=source_selector,
+            normalize_url=normalize_url,
+        )
+    if caption:
+        blocks.append(MarkdownBlock(kind="paragraph", text=caption))
+
+
+def _append_image_block(
+    *,
+    image_tag: Tag,
+    role: str,
+    caption_raw: str,
+    blocks: list[MarkdownBlock],
+    images: list[CollectedImage],
+    image_index_by_url: dict[str, int],
+    base_url: str,
+    source_kind: str,
+    source_selector: str,
+    normalize_url: Callable[[str], str],
+) -> None:
+    candidate = _image_from_tag(
+        image_tag=image_tag,
+        base_url=base_url,
+        role=role,
+        caption_raw=caption_raw,
+        source_kind=source_kind,
+        source_selector=source_selector,
+        normalize_url=normalize_url,
+    )
+    if candidate is None:
+        return
+
+    image_index = _upsert_image_candidate(
+        images=images,
+        image_index_by_url=image_index_by_url,
+        candidate=candidate,
+    )
+    blocks.append(MarkdownBlock(kind="image", image_index=image_index))
+
+
+def _image_from_tag(
+    *,
+    image_tag: Tag,
+    base_url: str,
+    role: str,
+    caption_raw: str,
+    source_kind: str,
+    source_selector: str,
+    normalize_url: Callable[[str], str],
+) -> CollectedImage | None:
+    raw_url = (
+        image_tag.get("src")
+        or image_tag.get("data-src")
+        or image_tag.get("data-original")
+        or _first_srcset_url(image_tag.get("srcset", ""))
+    )
+    if not raw_url:
+        return None
+    source_url = urljoin(base_url, raw_url)
+    normalized_url = normalize_url(source_url)
+    return CollectedImage(
+        source_url=source_url,
+        normalized_url=normalized_url,
+        role=role,
+        alt_text=_clean_text(image_tag.get("alt", "")),
+        caption_raw=caption_raw,
+        source_kind=source_kind,
+        source_selector=source_selector,
+    )
+
+
+def _extract_feed_content_html(entry: Any) -> str:
     contents = entry.get("content") or []
     if contents and isinstance(contents, Iterable):
         first = next(iter(contents), None)
         if isinstance(first, dict):
-            return _clean_text(str(first.get("value") or ""))
+            return str(first.get("value") or "")
+    return str(entry.get("summary") or entry.get("description") or "")
+
+
+def _extract_feed_image_candidates(
+    entry: Any,
+    *,
+    normalize_url: Callable[[str], str],
+) -> list[CollectedImage]:
+    images: list[CollectedImage] = []
+    seen: set[str] = set()
+
+    def add(url: str, role: str) -> None:
+        normalized_url = normalize_url(url)
+        if normalized_url in seen:
+            return
+        seen.add(normalized_url)
+        images.append(
+            CollectedImage(
+                source_url=url,
+                normalized_url=normalized_url,
+                role=role,
+                source_kind="feed",
+                source_selector="media",
+            )
+        )
+
+    for item in entry.get("media_content") or []:
+        if isinstance(item, dict) and item.get("url"):
+            add(str(item["url"]), "hero")
+    for item in entry.get("media_thumbnail") or []:
+        if isinstance(item, dict) and item.get("url"):
+            add(str(item["url"]), "hero")
+    for link in entry.get("links") or []:
+        if isinstance(link, dict) and str(link.get("type", "")).startswith("image/") and link.get("href"):
+            add(str(link["href"]), "hero")
+    return images
+
+
+def _extract_selector_image_candidates(
+    *,
+    soup: BeautifulSoup,
+    selectors: Iterable[str],
+    base_url: str,
+    normalize_url: Callable[[str], str],
+) -> list[CollectedImage]:
+    for selector in selectors:
+        images: list[CollectedImage] = []
+        seen: set[str] = set()
+        for node in soup.select(selector):
+            if node.name == "meta":
+                raw_url = node.get("content", "").strip()
+            elif node.name == "img":
+                raw_url = (
+                    node.get("src")
+                    or node.get("data-src")
+                    or node.get("data-original")
+                    or _first_srcset_url(node.get("srcset", ""))
+                )
+            else:
+                raw_url = ""
+
+            if not raw_url:
+                continue
+            source_url = urljoin(base_url, raw_url)
+            normalized_url = normalize_url(source_url)
+            if normalized_url in seen:
+                continue
+            seen.add(normalized_url)
+            images.append(
+                CollectedImage(
+                    source_url=source_url,
+                    normalized_url=normalized_url,
+                    role="hero",
+                    alt_text=_clean_text(node.get("alt", "")) if node.name == "img" else "",
+                    source_kind="meta" if node.name == "meta" else "selector",
+                    source_selector=selector,
+                )
+            )
+        if images:
+            return images
+    return []
+
+
+def _parse_html_fragment_to_document(
+    *,
+    html_fragment: str,
+    base_url: str,
+    source_selector: str,
+) -> tuple[list[MarkdownBlock], list[CollectedImage], str]:
+    if not html_fragment.strip():
+        return [], [], ""
+
+    fragment_soup = BeautifulSoup(f"<div>{html_fragment}</div>", "html.parser")
+    root = fragment_soup.find("div")
+    if root is None:
+        return [], [], ""
+
+    blocks, images = _build_blocks_and_images(
+        nodes=root.children,
+        base_url=base_url,
+        source_selector=source_selector,
+        normalize_url=lambda value: NewsCollectionService.normalize_url(value),
+    )
+    return blocks, images, _excerpt_from_blocks(blocks)
+
+
+def _upsert_image_candidate(
+    *,
+    images: list[CollectedImage],
+    image_index_by_url: dict[str, int],
+    candidate: CollectedImage,
+) -> int:
+    existing_index = image_index_by_url.get(candidate.normalized_url)
+    if existing_index is None:
+        candidate.position = len(images)
+        images.append(candidate)
+        image_index_by_url[candidate.normalized_url] = candidate.position
+        return candidate.position
+
+    existing = images[existing_index]
+    if _role_priority(candidate.role) < _role_priority(existing.role):
+        existing.role = candidate.role
+    if not existing.alt_text:
+        existing.alt_text = candidate.alt_text
+    if not existing.caption_raw:
+        existing.caption_raw = candidate.caption_raw
+    if not existing.credit_raw:
+        existing.credit_raw = candidate.credit_raw
+    if not existing.source_kind:
+        existing.source_kind = candidate.source_kind
+    if not existing.source_selector:
+        existing.source_selector = candidate.source_selector
+    return existing_index
+
+
+def _merge_meta_images(
+    meta_images: list[CollectedImage],
+    content_images: list[CollectedImage],
+) -> list[CollectedImage]:
+    merged = list(content_images)
+    image_index_by_url = {
+        image.normalized_url: index for index, image in enumerate(merged)
+    }
+    for candidate in meta_images:
+        existing_index = image_index_by_url.get(candidate.normalized_url)
+        if existing_index is None:
+            _upsert_image_candidate(
+                images=merged,
+                image_index_by_url=image_index_by_url,
+                candidate=candidate,
+            )
+        else:
+            existing = merged[existing_index]
+            if _role_priority(candidate.role) < _role_priority(existing.role):
+                existing.role = candidate.role
+
+    for position, image in enumerate(merged):
+        image.position = position
+    return merged
+
+
+def _ensure_hero_placeholders(
+    blocks: list[MarkdownBlock],
+    images: list[CollectedImage],
+) -> list[MarkdownBlock]:
+    referenced_indexes = {
+        block.image_index
+        for block in blocks
+        if block.kind == "image" and block.image_index is not None
+    }
+    hero_indexes = [
+        index for index, image in enumerate(images) if image.role == "hero" and index not in referenced_indexes
+    ]
+    if not hero_indexes:
+        return blocks
+
+    leading_blocks = [MarkdownBlock(kind="image", image_index=index) for index in hero_indexes]
+    return leading_blocks + blocks
+
+
+def _with_context_snippets(
+    blocks: list[MarkdownBlock],
+    images: list[CollectedImage],
+) -> list[CollectedImage]:
+    for image_index, image in enumerate(images):
+        block_positions = [
+            position
+            for position, block in enumerate(blocks)
+            if block.kind == "image" and block.image_index == image_index
+        ]
+        if not block_positions:
+            continue
+
+        block_position = block_positions[0]
+        previous_text = next(
+            (
+                block.text
+                for block in reversed(blocks[:block_position])
+                if block.kind in TEXT_BLOCK_KINDS and block.text.strip()
+            ),
+            "",
+        )
+        next_text = next(
+            (
+                block.text
+                for block in blocks[block_position + 1 :]
+                if block.kind in TEXT_BLOCK_KINDS and block.text.strip()
+            ),
+            "",
+        )
+        image.context_snippet = _clean_text(
+            f"{previous_text[-160:]} {next_text[:160]}"
+        )
+    return images
+
+
+def _normalize_blocks(blocks: list[MarkdownBlock]) -> list[MarkdownBlock]:
+    normalized: list[MarkdownBlock] = []
+    last_signature: tuple[str, str, int | None] | None = None
+    for block in blocks:
+        text = _clean_text(block.text)
+        if block.kind == "image":
+            signature = (block.kind, "", block.image_index)
+            if signature != last_signature:
+                normalized.append(block)
+            last_signature = signature
+            continue
+        if not text:
+            continue
+        signature = (block.kind, text, None)
+        if signature != last_signature:
+            normalized.append(MarkdownBlock(kind=block.kind, text=text))
+        last_signature = signature
+    return normalized
+
+
+def _excerpt_from_blocks(blocks: Iterable[MarkdownBlock]) -> str:
+    for block in blocks:
+        if block.kind in TEXT_BLOCK_KINDS and block.text.strip():
+            return block.text.strip()[:280]
     return ""
 
 
-def _extract_feed_image(entry: Any) -> str | None:
-    media_content = entry.get("media_content") or []
-    if media_content:
-        first = media_content[0]
-        if isinstance(first, dict) and first.get("url"):
-            return str(first["url"])
-
-    media_thumbnail = entry.get("media_thumbnail") or []
-    if media_thumbnail:
-        first = media_thumbnail[0]
-        if isinstance(first, dict) and first.get("url"):
-            return str(first["url"])
-    return None
+def _plain_text_from_blocks(blocks: Iterable[MarkdownBlock]) -> str:
+    return " ".join(
+        block.text.strip() for block in blocks if block.kind in TEXT_BLOCK_KINDS and block.text.strip()
+    ).strip()
 
 
 def _extract_text_by_selectors(soup: BeautifulSoup, selectors: Iterable[str]) -> str:
@@ -559,18 +1102,6 @@ def _extract_text_by_selectors(soup: BeautifulSoup, selectors: Iterable[str]) ->
         text = _extract_node_text(node)
         if text:
             return text
-    return ""
-
-
-def _extract_content_by_selectors(soup: BeautifulSoup, selectors: Iterable[str]) -> str:
-    best_text = ""
-    for selector in selectors:
-        for node in soup.select(selector):
-            text = _extract_node_text(node)
-            if len(text) > len(best_text):
-                best_text = text
-        if best_text:
-            return best_text
     return ""
 
 
@@ -606,6 +1137,10 @@ def _extract_node_text(node: Any) -> str:
     return _clean_text(node.get_text(" ", strip=True))
 
 
+def _node_has_content(node: Tag) -> bool:
+    return bool(node.get_text(" ", strip=True)) or bool(node.find("img"))
+
+
 def _clean_text(value: str) -> str:
     value = BeautifulSoup(unescape(value or ""), "html.parser").get_text(" ", strip=True)
     return re.sub(r"\s+", " ", value).strip()
@@ -632,6 +1167,12 @@ def _parse_datetime(value: Any) -> datetime | None:
         return None
 
 
+def _to_utc_naive(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value
+    return value.astimezone(UTC).replace(tzinfo=None)
+
+
 def _is_allowed_domain(url: str, allowed_domains: Iterable[str]) -> bool:
     hostname = urlparse(url).hostname or ""
     return any(
@@ -656,12 +1197,6 @@ def _stable_hash(url: str, title: str) -> str:
     return hashlib.sha256(f"{url}\n{title}".encode("utf-8")).hexdigest()
 
 
-def _to_utc_naive(value: datetime) -> datetime:
-    if value.tzinfo is None:
-        return value
-    return value.astimezone(UTC).replace(tzinfo=None)
-
-
 def _passes_published_window(
     published_at: datetime | None,
     *,
@@ -673,3 +1208,21 @@ def _passes_published_window(
     if published_at is None:
         return include_undated
     return published_at >= published_after
+
+
+def _first_srcset_url(srcset: str) -> str:
+    if not srcset.strip():
+        return ""
+    first = srcset.split(",")[0].strip()
+    return first.split(" ")[0].strip()
+
+
+def _role_priority(role: str) -> int:
+    priorities = {
+        "hero": 0,
+        "og": 1,
+        "twitter": 2,
+        "gallery": 3,
+        "inline": 4,
+    }
+    return priorities.get(role, 10)
