@@ -1,23 +1,20 @@
 """Redis 客户端"""
-import os
 import json
 from typing import Optional, Any
 import redis
+import os
 from dotenv import load_dotenv, find_dotenv
-
 # 加载环境变量
 _ = load_dotenv(find_dotenv())
 
-REDIS_HOST = os.getenv("REDIS_HOST")
-REDIS_PORT = int(os.getenv("REDIS_PORT"))
-REDIS_USER = os.getenv("REDIS_USER") or None
-REDIS_PASSWORD = os.getenv("REDIS_PASSWORD") or None
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "") or None
 
 # 创建 Redis 连接池
 redis_pool = redis.ConnectionPool(
     host=REDIS_HOST,
     port=REDIS_PORT,
-    user = REDIS_USER,
     password=REDIS_PASSWORD,
     decode_responses=True,
     max_connections=20
