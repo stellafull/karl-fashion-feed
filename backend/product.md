@@ -20,7 +20,7 @@
 - 全局 AI：支持跨库问答、历史 session 恢复与 citation 返回
 - Story 内 AI：支持 story scope 问答，并绑定稳定 `story_key`
 - 视觉检索：支持风格/单品/造型类 query 的图片召回与图片级 citation 返回
-- 当前态 story 聚合：持续刷新 `story` 与 `story_article`
+- 不可变 story 聚合：定时任务基于新增文档生成新的 `story` 与 `story_article`
 
 ## 3. 后端产品边界
 
@@ -36,13 +36,15 @@
 ### 稳定身份边界
 
 - 对外稳定 story 标识必须是 `story_key`
-- 当前 story 数据直接存放在 SQL 主表，不引入独立 snapshot/run 身份
+- story 是不可变聚合记录，创建后不再原地更新
 - story 内聊天与 citation 只需绑定 `story_key`
+- story 不是检索真相源；检索与 citation 仍以 `document`、`retrieval_unit_ref` 和 Milvus units 为准
 
 ### 非目标
 
 - `v1` 不新增 `content_source` SQL 主表
-- 不为 story 引入额外的 snapshot 发布主表
+- 不为 story 引入额外的发布主表或回放维度
+- 不让后续聚合任务原地修改既有 story
 - 不把原始聊天记录直接镜像到 Milvus 充当唯一记忆
 - 不把大体积 HTML 或媒体文件本体写入 PostgreSQL
 
@@ -60,11 +62,15 @@ backend/
 
 目录职责：
 
-- `app/`：后端主应用目录，后续 FastAPI、repository、service、任务编排与配置统一放这里
+- `app/`：后端主应用目录，后续 FastAPI、schema、service、任务编排与配置统一放这里
 - `app/config/`：后端易变配置包；集中处理 embedding、Milvus 等服务配置
-- `app/core/`：稳定基础设施目录；保留数据库与 Redis 连接能力
+- `app/core/`：稳定基础设施目录；保留数据库与 Redis 连接能力，`database.py` 负责 engine/session/Base
+- `app/models/`：集中定义 SQLAlchemy ORM models，按领域拆分文件
+- `app/router/`：集中放 FastAPI 路由与依赖注入入口
+- `app/schema/`：集中放 API request/response schema
+- `app/scripts/`：集中放应用内任务入口和可复用脚本
 - `app/service/news_collection_service.py`：当前已重写 source loading、采集、去重与 article 富化逻辑，先返回内存中的 article 列表，不承担 JSON 导出或持久化
-- `app/service/document_ingestion_service.py`：负责数据库查重、`document` 字段映射与 PostgreSQL 批量入库；当前通过 `backend/main.py` 手动触发
+- `app/service/document_ingestion_service.py`：负责数据库查重、`document` 字段映射与 PostgreSQL 批量入库；当前通过 `backend/main.py` 手动触发，service 层直接操作 ORM / Session
 - `test/`：后端统一测试目录；新增测试不再放在 `scripts/`、`server/` 子目录内
 - `scripts/`：迁移期保留的采集与聚合脚本
 - `server/`：遗留 Node 托管层，仅在切流完成前保留

@@ -2,30 +2,29 @@
 
 from __future__ import annotations
 
+import asyncio
 import datetime
 import hashlib
+import importlib
 import json
 import logging
-import os
 import re
 import time
+from dataclasses import dataclass
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
 
-import feedparser
+import aiohttp
 import requests
 import yaml
 from bs4 import BeautifulSoup
 
+from backend.app.config.llm_config import get_news_collection_llm_config
+
 
 logger = logging.getLogger(__name__)
-
-
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-OPENROUTER_CHAT_URL = "https://openrouter.ai/api/v1/chat/completions"
-LLM_MODEL = os.environ.get("LLM_MODEL", "google/gemini-2.0-flash-001")
 
 SERVICE_DIR = Path(__file__).resolve().parent
 DEFAULT_SOURCES_FILE = SERVICE_DIR / "sources.yaml"
@@ -34,7 +33,6 @@ MAX_ARTICLES_PER_FEED = 30
 LLM_CONCURRENCY = 5
 IMAGE_FETCH_CONCURRENCY = 12
 MAX_PAGE_IMAGE_FETCH = 200
-ARTICLE_ANALYSIS_INPUT_CHARS = 2200
 DEFAULT_CRAWL_PAGES = 2
 DEFAULT_FETCH_TIMEOUT = 20
 TITLE_DEDUP_THRESHOLD = 0.6
@@ -102,6 +100,17 @@ CATEGORY_MAP = {
 DEFAULT_ARTICLE_CONTENT_TYPE = "general-fashion"
 
 
+class MissingCollectionDependencyError(RuntimeError):
+    """Raised when an optional collection dependency is required at runtime."""
+
+
+@dataclass(frozen=True)
+class FetchedResponse:
+    url: str
+    text: str
+    headers: dict[str, str]
+
+
 def ensure_list(value: Any) -> list[Any]:
     if value is None:
         return []
@@ -115,17 +124,46 @@ def slugify(text: Any) -> str:
     return value.strip("-") or "source"
 
 
-def fetch_html(url: str, timeout: int = DEFAULT_FETCH_TIMEOUT) -> requests.Response:
-    resp = requests.get(url, headers=HEADERS, timeout=timeout)
-    resp.raise_for_status()
-    ctype = resp.headers.get("content-type", "").lower()
+def _validate_content_type(headers: dict[str, str]) -> None:
+    ctype = headers.get("content-type", "").lower()
     if ctype and "html" not in ctype and "xml" not in ctype:
         raise ValueError(f"Unsupported content type: {ctype}")
-    current_encoding = (resp.encoding or "").lower()
-    apparent_encoding = (getattr(resp, "apparent_encoding", None) or "").lower()
-    if apparent_encoding and current_encoding in ("", "iso-8859-1", "ascii", "gb2312"):
-        resp.encoding = apparent_encoding
-    return resp
+
+
+async def fetch_html_async(
+    url: str,
+    *,
+    session: aiohttp.ClientSession | None = None,
+    timeout: int = DEFAULT_FETCH_TIMEOUT,
+) -> FetchedResponse:
+    owns_session = session is None
+    timeout_config = aiohttp.ClientTimeout(total=timeout)
+    client = session or aiohttp.ClientSession(headers=HEADERS, timeout=timeout_config)
+    try:
+        async with client.get(url) as response:
+            response.raise_for_status()
+            headers = dict(response.headers)
+            _validate_content_type(headers)
+            return FetchedResponse(
+                url=str(response.url),
+                text=await response.text(),
+                headers=headers,
+            )
+    finally:
+        if owns_session:
+            await client.close()
+
+
+def _run_async(coro: Any) -> Any:
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(coro)
+    raise RuntimeError("Synchronous news collection helpers cannot be called from an active event loop.")
+
+
+def fetch_html(url: str, timeout: int = DEFAULT_FETCH_TIMEOUT) -> FetchedResponse:
+    return _run_async(fetch_html_async(url, timeout=timeout))
 
 
 def clean_html(html_content: str) -> str:
@@ -135,6 +173,15 @@ def clean_html(html_content: str) -> str:
     for tag in soup.find_all(["script", "style", "img", "video", "audio", "iframe", "input", "noscript"]):
         tag.decompose()
     return re.sub(r"\s+", " ", soup.get_text(separator=" ", strip=True)).strip()[:3000]
+
+
+def _require_feedparser() -> Any:
+    try:
+        return importlib.import_module("feedparser")
+    except ModuleNotFoundError as exc:
+        raise MissingCollectionDependencyError(
+            "feedparser is required to fetch RSS sources. Install the RSS collection dependency to use RSS sources."
+        ) from exc
 
 
 def normalize_url(url: str, extra_strip_params: list[str] | None = None) -> str:
@@ -276,17 +323,28 @@ def _select_first_image(soup: BeautifulSoup, selectors: list[str], base_url: str
     return ""
 
 
+def _normalize_candidate_url(
+    raw_url: str,
+    page_url: str,
+    extra_strip_params: list[str] | None = None,
+) -> str:
+    raw_value = str(raw_url or "").strip()
+    if not raw_value:
+        return ""
+    return normalize_url(urljoin(page_url, raw_value), extra_strip_params)
+
+
 def extract_canonical_url(
     soup: BeautifulSoup,
     page_url: str,
     extra_strip_params: list[str] | None = None,
 ) -> str:
     candidates = [
-        normalize_url(tag.get("href", ""), extra_strip_params)
+        _normalize_candidate_url(tag.get("href", ""), page_url, extra_strip_params)
         for tag in soup.find_all("link", attrs={"rel": re.compile("canonical", re.I)})
     ]
     candidates.extend([
-        normalize_url(tag.get("content", ""), extra_strip_params)
+        _normalize_candidate_url(tag.get("content", ""), page_url, extra_strip_params)
         for tag in soup.find_all("meta", attrs={"property": re.compile("og:url", re.I)})
     ])
     for candidate in candidates:
@@ -565,9 +623,12 @@ def _extract_image_from_article_page_fields(soup: BeautifulSoup, page_url: str) 
     return ""
 
 
-def _extract_image_from_article_page(link: str) -> str:
+async def _extract_image_from_article_page_async(
+    link: str,
+    session: aiohttp.ClientSession,
+) -> str:
     try:
-        resp = fetch_html(link)
+        resp = await fetch_html_async(link, session=session)
         page_url = resp.url or link
         soup = BeautifulSoup(resp.text, "html.parser")
         return _extract_image_from_article_page_fields(soup, page_url)
@@ -602,7 +663,11 @@ def extract_image(entry: Any) -> str:
     return ""
 
 
-def fill_missing_images_from_web(articles: list[dict[str, Any]]) -> list[dict[str, Any]]:
+async def fill_missing_images_from_web_async(
+    articles: list[dict[str, Any]],
+    *,
+    session: aiohttp.ClientSession | None = None,
+) -> list[dict[str, Any]]:
     missing_indices = []
     for index, article in enumerate(articles):
         current = normalize_image_url(article.get("image", ""), article.get("link", ""))
@@ -624,23 +689,36 @@ def fill_missing_images_from_web(articles: list[dict[str, Any]]) -> list[dict[st
     logger.info(message)
 
     resolved = 0
-    with ThreadPoolExecutor(max_workers=IMAGE_FETCH_CONCURRENCY) as executor:
-        futures = {
-            executor.submit(_extract_image_from_article_page, articles[index]["link"]): index
-            for index in target_indices
-        }
-        total = len(futures)
-        for done, future in enumerate(as_completed(futures), 1):
-            index = futures[future]
-            image_url = future.result() or ""
+    owns_session = session is None
+    timeout_config = aiohttp.ClientTimeout(total=DEFAULT_FETCH_TIMEOUT)
+    client = session or aiohttp.ClientSession(headers=HEADERS, timeout=timeout_config)
+    semaphore = asyncio.Semaphore(IMAGE_FETCH_CONCURRENCY)
+
+    async def resolve_image(index: int) -> tuple[int, str]:
+        async with semaphore:
+            image_url = await _extract_image_from_article_page_async(articles[index]["link"], client)
+            return index, image_url or ""
+
+    try:
+        tasks = [asyncio.create_task(resolve_image(index)) for index in target_indices]
+        total = len(tasks)
+        for done, task in enumerate(asyncio.as_completed(tasks), 1):
+            index, image_url = await task
             if image_url:
                 articles[index]["image"] = image_url
                 resolved += 1
             if done % 25 == 0 or done == total:
                 logger.info("  Image extraction progress: %s/%s", done, total)
+    finally:
+        if owns_session:
+            await client.close()
 
     logger.info("Image enrichment done: +%s article images from webpage content", resolved)
     return articles
+
+
+def fill_missing_images_from_web(articles: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return _run_async(fill_missing_images_from_web_async(articles))
 
 
 def get_published_date(entry: Any) -> str:
@@ -875,14 +953,15 @@ def extract_pagination_links(html: str, page_url: str, source: dict[str, Any]) -
     return links
 
 
-def fetch_article_detail(
+async def fetch_article_detail_async(
     source: dict[str, Any],
     link: str,
+    session: aiohttp.ClientSession,
     fallback: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     fallback = fallback or {}
     try:
-        resp = fetch_html(link)
+        resp = await fetch_html_async(link, session=session)
         page_url = resp.url or link
         detail_cfg = dict(source["detail"])
         detail_cfg["strip_query_params"] = source["dedup"]["strip_query_params"]
@@ -911,36 +990,95 @@ def fetch_article_detail(
         )
 
 
-def fetch_rss_source(source: dict[str, Any]) -> list[dict[str, Any]]:
+def fetch_article_detail(
+    source: dict[str, Any],
+    link: str,
+    fallback: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    async def _fetch() -> dict[str, Any]:
+        timeout_config = aiohttp.ClientTimeout(total=DEFAULT_FETCH_TIMEOUT)
+        async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout_config) as session:
+            return await fetch_article_detail_async(source, link, session, fallback)
+
+    return _run_async(_fetch())
+
+
+def _build_rss_fallback(source: dict[str, Any], entry: Any) -> dict[str, str]:
+    link = getattr(entry, "link", "")
+    title = getattr(entry, "title", "")
+
+    content = ""
+    if hasattr(entry, "content") and entry.content:
+        content = entry.content[0].get("value", "")
+    elif hasattr(entry, "description"):
+        content = entry.description or ""
+    elif hasattr(entry, "summary"):
+        content = entry.summary or ""
+
+    cleaned_content = clean_html(content)
+    return {
+        "title": title.strip(),
+        "published": get_published_date(entry),
+        "content_text": cleaned_content,
+        "image": extract_image(entry),
+        "canonical_url": normalize_url(link, source["dedup"]["strip_query_params"]),
+        "fallback_snippet": cleaned_content[:800],
+    }
+
+
+async def _fetch_rss_detail_articles(
+    source: dict[str, Any],
+    entries: list[Any],
+    session: aiohttp.ClientSession,
+) -> list[dict[str, Any]]:
+    limit = max(1, source.get("detail_concurrency", 4))
+    semaphore = asyncio.Semaphore(limit)
+
+    async def fetch_entry(entry: Any) -> dict[str, Any] | None:
+        link = getattr(entry, "link", "")
+        title = getattr(entry, "title", "")
+        if not link or not title:
+            return None
+
+        fallback = _build_rss_fallback(source, entry)
+        async with semaphore:
+            article = await fetch_article_detail_async(source, link, session, fallback)
+        if article["title"] and article["link"]:
+            return article
+        return None
+
+    tasks = [asyncio.create_task(fetch_entry(entry)) for entry in entries]
     articles: list[dict[str, Any]] = []
+    for task in asyncio.as_completed(tasks):
+        article = await task
+        if article:
+            articles.append(article)
+    return articles
+
+
+async def fetch_rss_source_async(
+    source: dict[str, Any],
+    *,
+    session: aiohttp.ClientSession | None = None,
+) -> list[dict[str, Any]]:
+    parser = _require_feedparser()
+    articles: list[dict[str, Any]] = []
+    owns_session = session is None
+    timeout_config = aiohttp.ClientTimeout(total=DEFAULT_FETCH_TIMEOUT)
+    client = session or aiohttp.ClientSession(headers=HEADERS, timeout=timeout_config)
     try:
-        resp = fetch_html(source["feed_url"])
-        feed = feedparser.parse(resp.text)
-        for entry in feed.entries[:source["max_items"]]:
-            link = getattr(entry, "link", "")
-            title = getattr(entry, "title", "")
-            if not link or not title:
-                continue
-
-            content = ""
-            if hasattr(entry, "content") and entry.content:
-                content = entry.content[0].get("value", "")
-            elif hasattr(entry, "description"):
-                content = entry.description or ""
-            elif hasattr(entry, "summary"):
-                content = entry.summary or ""
-
-            fallback = {
-                "title": title.strip(),
-                "published": get_published_date(entry),
-                "content_text": clean_html(content),
-                "image": extract_image(entry),
-                "canonical_url": normalize_url(link, source["dedup"]["strip_query_params"]),
-                "fallback_snippet": clean_html(content)[:800],
-            }
-            if source["detail"]["fetch_detail"]:
-                article = fetch_article_detail(source, link, fallback)
-            else:
+        resp = await fetch_html_async(source["feed_url"], session=client)
+        feed = parser.parse(resp.text)
+        entries = list(feed.entries[:source["max_items"]])
+        if source["detail"]["fetch_detail"]:
+            articles = await _fetch_rss_detail_articles(source, entries, client)
+        else:
+            for entry in entries:
+                link = getattr(entry, "link", "")
+                title = getattr(entry, "title", "")
+                if not link or not title:
+                    continue
+                fallback = _build_rss_fallback(source, entry)
                 article = build_article_record(
                     source,
                     link=link,
@@ -951,86 +1089,150 @@ def fetch_rss_source(source: dict[str, Any]) -> list[dict[str, Any]]:
                     canonical_url=fallback["canonical_url"],
                     fallback_snippet=fallback["fallback_snippet"],
                 )
-            if article["title"] and article["link"]:
-                articles.append(article)
+                if article["title"] and article["link"]:
+                    articles.append(article)
         logger.info("  [%s] %s articles via RSS", source["name"], len(articles))
     except Exception as exc:
         logger.error("  [%s] RSS error: %s", source["name"], exc)
+    finally:
+        if owns_session:
+            await client.close()
     return articles
 
 
-def fetch_crawl_source(source: dict[str, Any]) -> list[dict[str, Any]]:
+def fetch_rss_source(source: dict[str, Any]) -> list[dict[str, Any]]:
+    return _run_async(fetch_rss_source_async(source))
+
+
+async def _fetch_crawl_detail_articles(
+    source: dict[str, Any],
+    discovered: list[dict[str, str]],
+    session: aiohttp.ClientSession,
+) -> list[dict[str, Any]]:
+    limit = min(source.get("detail_concurrency", 4), max(1, len(discovered)))
+    semaphore = asyncio.Semaphore(max(1, limit))
+
+    async def fetch_item(item: dict[str, str]) -> dict[str, Any]:
+        async with semaphore:
+            return await fetch_article_detail_async(
+                source,
+                item["url"],
+                session,
+                {
+                    "title": item.get("title", ""),
+                    "canonical_url": item["url"],
+                },
+            )
+
+    tasks = [asyncio.create_task(fetch_item(item)) for item in discovered]
+    articles: list[dict[str, Any]] = []
+    for task in asyncio.as_completed(tasks):
+        article = await task
+        if article["title"] and article["link"]:
+            articles.append(article)
+    return articles
+
+
+async def fetch_crawl_source_async(
+    source: dict[str, Any],
+    *,
+    session: aiohttp.ClientSession | None = None,
+) -> list[dict[str, Any]]:
     queue = list(source["start_urls"])
     seen_pages: set[str] = set()
     seen_articles: set[str] = set()
     discovered: list[dict[str, str]] = []
+    owns_session = session is None
+    timeout_config = aiohttp.ClientTimeout(total=DEFAULT_FETCH_TIMEOUT)
+    client = session or aiohttp.ClientSession(headers=HEADERS, timeout=timeout_config)
 
-    while queue and len(seen_pages) < source["discovery"]["max_pages"] and len(discovered) < source["max_items"]:
-        page = queue.pop(0)
-        normalized_page = normalize_url(page, source["dedup"]["strip_query_params"])
-        if not normalized_page or normalized_page in seen_pages:
-            continue
-        seen_pages.add(normalized_page)
-        try:
-            resp = fetch_html(page)
-        except Exception as exc:
-            logger.warning("  [%s] crawl discovery failed for %s: %s", source["name"], page, exc)
-            continue
-
-        page_url = resp.url or page
-        for item in extract_discovery_links(resp.text, page_url, source):
-            if item["url"] in seen_articles:
+    try:
+        while queue and len(seen_pages) < source["discovery"]["max_pages"] and len(discovered) < source["max_items"]:
+            page = queue.pop(0)
+            normalized_page = normalize_url(page, source["dedup"]["strip_query_params"])
+            if not normalized_page or normalized_page in seen_pages:
                 continue
-            seen_articles.add(item["url"])
-            discovered.append(item)
-            if len(discovered) >= source["max_items"]:
-                break
+            seen_pages.add(normalized_page)
+            try:
+                resp = await fetch_html_async(page, session=client)
+            except Exception as exc:
+                logger.warning("  [%s] crawl discovery failed for %s: %s", source["name"], page, exc)
+                continue
 
-        if len(seen_pages) < source["discovery"]["max_pages"]:
-            for next_page in extract_pagination_links(resp.text, page_url, source):
-                if next_page not in seen_pages and next_page not in queue:
-                    queue.append(next_page)
+            page_url = resp.url or page
+            for item in extract_discovery_links(resp.text, page_url, source):
+                if item["url"] in seen_articles:
+                    continue
+                seen_articles.add(item["url"])
+                discovered.append(item)
+                if len(discovered) >= source["max_items"]:
+                    break
+
+            if len(seen_pages) < source["discovery"]["max_pages"]:
+                for next_page in extract_pagination_links(resp.text, page_url, source):
+                    if next_page not in seen_pages and next_page not in queue:
+                        queue.append(next_page)
+    finally:
+        if owns_session:
+            await client.close()
 
     if not discovered:
         logger.warning("  [%s] no article URLs discovered", source["name"])
         return []
 
     logger.info("  [%s] discovered %s candidate article links", source["name"], len(discovered))
-    articles: list[dict[str, Any]] = []
-    with ThreadPoolExecutor(
-        max_workers=min(source.get("detail_concurrency", 4), max(1, len(discovered)))
-    ) as executor:
-        futures = {
-            executor.submit(fetch_article_detail, source, item["url"], {
-                "title": item.get("title", ""),
-                "canonical_url": item["url"],
-            }): item
-            for item in discovered
-        }
-        for future in as_completed(futures):
-            article = future.result()
-            if article["title"] and article["link"]:
-                articles.append(article)
+    if owns_session:
+        async with aiohttp.ClientSession(
+            headers=HEADERS,
+            timeout=aiohttp.ClientTimeout(total=DEFAULT_FETCH_TIMEOUT),
+        ) as detail_session:
+            articles = await _fetch_crawl_detail_articles(source, discovered, detail_session)
+    else:
+        articles = await _fetch_crawl_detail_articles(source, discovered, client)
 
     logger.info("  [%s] %s articles via crawl", source["name"], len(articles))
     return articles
 
 
-def fetch_source(source: dict[str, Any]) -> list[dict[str, Any]]:
+def fetch_crawl_source(source: dict[str, Any]) -> list[dict[str, Any]]:
+    return _run_async(fetch_crawl_source_async(source))
+
+
+async def fetch_source_async(
+    source: dict[str, Any],
+    session: aiohttp.ClientSession,
+) -> list[dict[str, Any]]:
     if source["type"] == "crawl":
-        return fetch_crawl_source(source)
-    return fetch_rss_source(source)
+        return await fetch_crawl_source_async(source, session=session)
+    return await fetch_rss_source_async(source, session=session)
+
+
+def fetch_source(source: dict[str, Any]) -> list[dict[str, Any]]:
+    async def _fetch() -> list[dict[str, Any]]:
+        timeout_config = aiohttp.ClientTimeout(total=DEFAULT_FETCH_TIMEOUT)
+        async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout_config) as session:
+            return await fetch_source_async(source, session)
+
+    return _run_async(_fetch())
+
+
+async def fetch_all_sources_async(sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    all_articles: list[dict[str, Any]] = []
+    logger.info("Fetching from %s sources...", len(sources))
+    if not sources:
+        return all_articles
+
+    timeout_config = aiohttp.ClientTimeout(total=DEFAULT_FETCH_TIMEOUT)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout_config) as session:
+        tasks = [asyncio.create_task(fetch_source_async(source, session)) for source in sources]
+        for task in asyncio.as_completed(tasks):
+            all_articles.extend(await task)
+    logger.info("Total raw articles: %s", len(all_articles))
+    return all_articles
 
 
 def fetch_all_sources(sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    all_articles: list[dict[str, Any]] = []
-    logger.info("Fetching from %s sources...", len(sources))
-    with ThreadPoolExecutor(max_workers=8) as executor:
-        futures = {executor.submit(fetch_source, source): source for source in sources}
-        for future in as_completed(futures):
-            all_articles.extend(future.result())
-    logger.info("Total raw articles: %s", len(all_articles))
-    return all_articles
+    return _run_async(fetch_all_sources_async(sources))
 
 
 def _is_probable_same_article(
@@ -1097,23 +1299,30 @@ def deduplicate_articles(articles: list[dict[str, Any]]) -> list[dict[str, Any]]
     return deduped
 
 
-def call_llm(messages: list[dict[str, str]], temperature: float = 0.3, max_tokens: int = 4000) -> str | None:
-    if not OPENROUTER_API_KEY:
+def call_llm(
+    messages: list[dict[str, str]],
+    *,
+    llm_config: Any | None = None,
+    model_config: Any | None = None,
+) -> str | None:
+    llm_config = llm_config or get_news_collection_llm_config()
+    model_config = model_config or llm_config.article_analysis.model
+    if not llm_config.is_configured:
         return None
     headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Authorization": f"Bearer {llm_config.provider.api_key}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://fashion-feed.manus.space",
+        "HTTP-Referer": llm_config.provider.http_referer,
     }
     payload = {
-        "model": LLM_MODEL,
+        "model": model_config.model,
         "messages": messages,
-        "temperature": temperature,
-        "max_tokens": max_tokens,
+        "temperature": model_config.temperature,
+        "max_tokens": model_config.max_tokens,
     }
     for attempt in range(3):
         try:
-            resp = requests.post(OPENROUTER_CHAT_URL, headers=headers, json=payload, timeout=90)
+            resp = requests.post(llm_config.provider.chat_url, headers=headers, json=payload, timeout=90)
             resp.raise_for_status()
             return resp.json()["choices"][0]["message"]["content"].strip()
         except Exception as exc:
@@ -1139,10 +1348,10 @@ def extract_json(text: str | None) -> Any:
     return None
 
 
-def _article_analysis_text(article: dict[str, Any]) -> str:
+def _article_analysis_text(article: dict[str, Any], *, input_chars: int) -> str:
     title = (article.get("title") or "").strip()
     body = (article.get("content_text") or article.get("content_snippet") or "").strip()
-    body = body[:ARTICLE_ANALYSIS_INPUT_CHARS]
+    body = body[:input_chars]
     source = (article.get("source") or "").strip()
     lang = (article.get("source_lang") or "").strip()
     category = (article.get("category_hint") or "").strip()
@@ -1193,39 +1402,22 @@ def apply_article_analysis(article: dict[str, Any], analysis: dict[str, Any] | N
     return enriched
 
 
-def analyze_single_article(article: dict[str, Any]) -> dict[str, Any]:
-    if not OPENROUTER_API_KEY:
+def analyze_single_article(article: dict[str, Any], llm_config: Any | None = None) -> dict[str, Any]:
+    llm_config = llm_config or get_news_collection_llm_config()
+    if not llm_config.is_configured:
         return article
 
-    prompt = f"""请判断下面这篇报道是否应保留在时尚情报平台中。
-
-保留标准：
-1. 与时尚、奢侈品、美妆、生活方式、名人风格、品牌营销、零售、秀场、趋势、文化议题相关。
-2. 品牌联名、campaign、代言、跨界合作、时尚科技、Apple 等科技品牌与时尚行业的交叉内容，应视为相关。
-3. 纯泛科技、纯汽车、纯财经、纯社会新闻，且与时尚产业/审美/品牌动作无明显关系，才判定为不保留。
-
-请严格输出 JSON：
-{{
-  "keep": true,
-  "relevance_score": 0,
-  "reason": "一句中文原因",
-  "summary_zh": "100字以内中文摘要",
-  "category": "从以下选一个: 秀场/系列, 街拍/造型, 趋势总结, 品牌/市场",
-  "tags": ["标签1", "标签2", "标签3"],
-  "content_type": "如 brand-collab / fashion-tech / runway / market / celebrity-style / beauty / lifestyle / culture",
-  "is_sensitive": false
-}}
-
-原始内容：
-{_article_analysis_text(article)}"""
-
-    result = call_llm([
-        {
-            "role": "system",
-            "content": "你是轻奢品牌内部情报平台的资深编辑。你负责做文章摘要、分类和相关性判断。只输出 JSON。",
-        },
-        {"role": "user", "content": prompt},
-    ], temperature=0.1, max_tokens=1200)
+    analysis_config = llm_config.article_analysis
+    result = call_llm(
+        analysis_config.build_messages(
+            article_text=_article_analysis_text(
+                article,
+                input_chars=analysis_config.model.input_chars,
+            )
+        ),
+        llm_config=llm_config,
+        model_config=analysis_config.model,
+    )
 
     return apply_article_analysis(article, extract_json(result))
 
@@ -1233,14 +1425,18 @@ def analyze_single_article(article: dict[str, Any]) -> dict[str, Any]:
 def enrich_and_filter_articles(articles: list[dict[str, Any]]) -> list[dict[str, Any]]:
     if not articles:
         return []
-    if not OPENROUTER_API_KEY:
+    llm_config = get_news_collection_llm_config()
+    if not llm_config.is_configured:
         logger.warning("OPENROUTER_API_KEY is empty; article-level LLM enrichment is skipped.")
         return articles
 
     logger.info("Analyzing %s articles for relevance, summary, and category...", len(articles))
     enriched = []
     with ThreadPoolExecutor(max_workers=LLM_CONCURRENCY) as executor:
-        futures = {executor.submit(analyze_single_article, article): article for article in articles}
+        futures = {
+            executor.submit(analyze_single_article, article, llm_config): article
+            for article in articles
+        }
         total = len(futures)
         for index, future in enumerate(as_completed(futures), 1):
             try:

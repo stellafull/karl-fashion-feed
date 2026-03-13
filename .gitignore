@@ -16,6 +16,7 @@ build/
 
 # IDE and editor files
 .vscode/
+.codex/
 .idea/
 *.swp
 *.swo
@@ -44,6 +45,7 @@ pids
 *.pid
 *.seed
 *.pid.lock
+backend/.runtime/
 
 # Coverage directory used by tools like istanbul
 coverage/

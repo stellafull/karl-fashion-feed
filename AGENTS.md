@@ -33,7 +33,13 @@
 ## 当前后端实现约定
 
 - `backend/app/main.py` 是 FastAPI ASGI 入口与 `create_app()` 工厂所在位置；新增 API 入口从这里向内扩展。
-- `backend/app/config.py` 负责环境变量加载与配置启动逻辑；新增后端配置优先落在这里或其后续拆分模块。
+- `backend/app/config/` 负责外部服务与运行配置；配置模块可直接在模块内执行 dotenv bootstrap 并读取环境变量，不再新增集中式 `env.py` helper。
+- `backend/app/core/` 负责稳定基础设施与底层能力，例如数据库、Redis、安全与认证客户端；`database.py` 保留为数据库基础文件。
+- `backend/app/models/` 负责 SQLAlchemy ORM model 定义。
+- `backend/app/service/` 负责业务编排，并可直接操作 ORM / Session；不再引入 `repository/` 作为正式分层。
+- `backend/app/router/` 负责 FastAPI 路由与依赖注入入口。
+- `backend/app/schema/` 负责 API request / response schema。
+- `backend/app/scripts/` 负责应用内任务入口和可复用脚本编排。
 - `backend/main.py` 仅作为后端包级入口或 CLI 占位，不承接 Web API 逻辑。
 - `backend/test/app/` 存放 FastAPI 应用、路由与契约测试。
 - `backend/test/scripts/` 存放采集脚本与数据处理回归测试。
@@ -44,16 +50,16 @@
 ### 真相源划分
 
 - `sources.yaml` 仍然是采集配置真相源。`v1` 不允许新增 `content_source` SQL 主表。
-- `PostgreSQL` 存储用户、登录事件、文档、story 发布快照、聊天、引用、记忆主记录和运行元数据。
+- `PostgreSQL` 存储用户、登录事件、文档、不可变 story 聚合记录、聊天、引用、记忆主记录和运行元数据。
 - `Milvus` 只负责检索实体，不负责 story 真相源，也不负责短期聊天状态。
 - `feed-data.json` 在迁移期继续保留，直到前端完全切到 API。
 
 ### Story 身份规则
 
 - Story 必须使用稳定的 `story_key`。
-- 快照身份由 `run_id` 表示发布版本，不是稳定 story 身份。
-- Story 范围内的聊天和引用，在需要回放时必须同时携带 `story_key` 和 `scope_snapshot_run_id`。
-- 不允许把 `story_cluster_snapshot` 当作长期主表。
+- Story 在创建后绝对不可变；后续定时任务不会原地修改既有 story。
+- Story 范围内的聊天和引用只绑定 `story_key`。
+- 跨天或后续运行出现的相似事件，允许形成多个独立 story。
 
 ### Memory 规则
 
@@ -63,10 +69,10 @@
 
 ### Retrieval 规则
 
-- `content_unit` 是核心内容检索 collection。
+- `document` 与 retrieval `unit` 是检索与 citation 的真相源。
 - 检索实体按 chunk 或资产粒度建模，不按 article 粒度建模。
-- `content_unit` 必须支持 hybrid retrieval，`user_memory` 也应支持 hybrid retrieval。
-- Story 成员关系会变化，SQL 快照成员关系才是真相源；Milvus 中的 story 字段只能作为冗余过滤字段。
+- 内容检索 collection 必须支持 hybrid retrieval，`user_memory` 也应支持 hybrid retrieval。
+- Milvus 中的 story 字段只能作为冗余过滤字段，不能替代 SQL 中的文档与聚合关系。
 
 ### 认证规则
 
@@ -77,8 +83,8 @@
 ## 迁移期护栏
 
 - 在 API 和当前 `feed-data.json` 契约对齐前，不允许移除现有前端信息流主路径。
-- 不允许让前端路由或会话恢复直接依赖不稳定的 per-run snapshot ID。
-- 不允许直接覆盖历史发布结果，必须通过切换 `published_run` 完成发布。
+- 不允许让前端路由或会话恢复依赖可变运行态 ID。
+- 不允许让后续聚合任务原地覆盖既有 story 内容。
 - 原始 HTML 和大文件资产不入 PostgreSQL，只保存路径或 URL。
 
 ## 当前后端目录
@@ -87,7 +93,13 @@
 /
 ├─ backend/
 │  ├─ app/
-│  │  ├─ config.py
+│  │  ├─ config/
+│  │  ├─ core/
+│  │  ├─ models/
+│  │  ├─ router/
+│  │  ├─ schema/
+│  │  ├─ scripts/
+│  │  ├─ service/
 │  │  └─ main.py
 │  ├─ main.py
 │  ├─ product.md
@@ -131,8 +143,7 @@
 - 聊天模型调用层：OpenAI-compatible 抽象
 - Embedding 方案：支持多模态的适配层，规划接入 DashScope/Qwen
 - 发布节奏：
-  - `08:00`：日重聚类
-  - `10:00` 到 `18:00` 每 2 小时：增量采集与刷新
+  - `08:00`：早间批量采集与不可变 story 生成
 
 ## 质量门槛
 
@@ -140,7 +151,7 @@
 
 - schema 术语与 `docs/data-model.md` 一致
 - API 输出与 `docs/api-contract.md` 一致
-- story 跨 run 连续性可验证
+- `story_key` 对应的 story 内容不可变且可稳定回放
 - citation 能从 answer -> unit -> document -> source 完整回溯
 - 后端实现位置符合当前目录约定：Web API 进入 `backend/app/`，测试进入 `backend/test/app/` 或 `backend/test/scripts/`
 - 新增运行命令或部署依赖时，必须同步写入 `docs/ops-runbook.md`

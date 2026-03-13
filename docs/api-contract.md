@@ -5,19 +5,28 @@
 - API 是前端长期数据源
 - 迁移期尽量保持与当前 `feed-data.json` 结构接近
 - chat 回答必须支持 citation
-- story 范围内聊天必须支持按快照回放
+- story 范围内聊天绑定稳定 `story_key`
 
 ## 1.1 接口实现约定
 
 - `backend/app/` 是 API 契约的唯一实现主目录
 - `backend/app/config/` 负责 API 所需的模型与服务配置
 - `backend/app/core/` 负责数据库与 Redis 等基础设施接入
+- `backend/app/models/` 负责 ORM model 定义与 metadata 注册
+- `backend/app/router/` 负责 FastAPI 路由与依赖注入入口
+- `backend/app/schema/` 负责 API request/response schema
+- `backend/app/scripts/` 负责应用内任务入口和可复用脚本
 - `backend/app/service/news_collection_service.py` 当前只提供内部 article collection service，不新增 HTTP 接口，也不直接导出 `feed-data.json`
-- `backend/app/service/document_ingestion_service.py` 当前通过内部 CLI 持久化 `document`，不新增 HTTP 接口
+- `backend/app/service/document_ingestion_service.py` 当前通过内部 CLI 持久化 `document`，不新增 HTTP 接口；service 层直接操作 ORM / Session
 - `backend/server/` 只保留迁移期托管职责，不承接新增 API 逻辑
 - `backend/test/` 承担 API 契约与回归测试
 
 ## 2. 认证接口
+
+当前状态：
+
+- 以下接口保留为后续 Feishu OAuth2 接入的目标契约
+- 当前阶段不作为已实现接口承诺
 
 ### `GET /api/v1/auth/login`
 
@@ -55,7 +64,6 @@
 {
   "meta": {
     "generated_at": "2026-03-09T00:00:00Z",
-    "published_run_id": "run_20260309_1000",
     "total_topics": 0,
     "total_articles": 0,
     "sources_count": 0,
@@ -86,11 +94,7 @@
 用途：
 
 - 返回某个 story 的详情数据
-- 默认读取当前发布版本
-
-可选 query 参数：
-
-- `run_id`
+- 返回由 `story_key` 标识的不可变 story 聚合内容
 
 响应内容应包含：
 
@@ -119,7 +123,6 @@
 {
   "scope_type": "global",
   "scope_ref_key": null,
-  "scope_snapshot_run_id": null,
   "title": "optional"
 }
 ```
@@ -148,8 +151,7 @@
 {
   "message": "这对奢侈品牌外套方向意味着什么？",
   "scope_type": "story",
-  "scope_ref_key": "story_abc123",
-  "scope_snapshot_run_id": "run_20260309_1000"
+  "scope_ref_key": "story_abc123"
 }
 ```
 
@@ -170,7 +172,7 @@
 ```json
 [
   {
-    "doc_id": "doc_123",
+    "article_id": "article_123",
     "unit_id": "unit_456",
     "unit_type": "image_asset",
     "source_url": "https://example.com/article",
@@ -210,7 +212,6 @@ API 应统一使用错误包结构：
 - 未登录
 - 无访问权限
 - story 不存在
-- snapshot 不存在
 - session 不存在
 - 上游模型失败
 - 检索超时

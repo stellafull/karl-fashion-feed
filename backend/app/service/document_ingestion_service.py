@@ -7,12 +7,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from backend.app.config.storage import get_document_markdown_root
-from backend.app.db.models import Document
-from backend.app.db.session import get_session_factory
-from backend.app.repository.document_repository import DocumentRepository
+from backend.app.core.database import get_session_factory
+from backend.app.models import Document
 from backend.app.service.news_collection_service import collect_articles
 
 
@@ -162,9 +162,8 @@ class DocumentIngestionService:
 
         canonical_urls = [self._canonical_url(article) for article in articles]
         with self._session_factory() as session:
-            repository = DocumentRepository(session)
-            existing_urls = repository.fetch_existing_canonical_urls(canonical_urls)
-            new_articles = [article for article in articles if self._canonical_url(article) not in existing_urls]
+            existing_urls = self._fetch_existing_canonical_urls(session, canonical_urls)
+            new_articles = self._filter_new_articles(articles, existing_urls)
             written_markdown_paths: list[Path] = []
             try:
                 new_documents = []
@@ -178,7 +177,7 @@ class DocumentIngestionService:
                     new_documents.append(
                         map_article_to_document(article, content_md_path=content_md_path)
                     )
-                repository.add_documents(new_documents)
+                session.add_all(new_documents)
                 session.commit()
             except Exception:
                 session.rollback()
@@ -195,3 +194,33 @@ class DocumentIngestionService:
     @staticmethod
     def _canonical_url(article: dict[str, Any]) -> str:
         return str(article.get("canonical_url") or article.get("link") or "").strip()
+
+    @staticmethod
+    def _fetch_existing_canonical_urls(
+        session: Session,
+        canonical_urls: list[str],
+    ) -> set[str]:
+        normalized_urls = [url for url in canonical_urls if url]
+        if not normalized_urls:
+            return set()
+
+        return set(
+            session.scalars(
+                select(Document.canonical_url).where(Document.canonical_url.in_(normalized_urls))
+            ).all()
+        )
+
+    def _filter_new_articles(
+        self,
+        articles: list[dict[str, Any]],
+        existing_urls: set[str],
+    ) -> list[dict[str, Any]]:
+        new_articles: list[dict[str, Any]] = []
+        seen_urls = set(existing_urls)
+        for article in articles:
+            canonical_url = self._canonical_url(article)
+            if not canonical_url or canonical_url in seen_urls:
+                continue
+            seen_urls.add(canonical_url)
+            new_articles.append(article)
+        return new_articles

@@ -9,9 +9,8 @@ from sqlalchemy.orm import sessionmaker
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
-from backend.app.db.base import Base
-from backend.app.db.models import Document
-from backend.app.db.session import create_engine_from_url
+from backend.app.core.database import Base, create_engine_from_url
+from backend.app.models import Document
 from backend.app.service.document_ingestion_service import (
     DocumentIngestionService,
     map_article_to_document,
@@ -127,6 +126,28 @@ class DocumentIngestionServiceTests(unittest.TestCase):
         self.assertEqual(second_run.inserted_count, 1)
         self.assertEqual(count, 2)
         self.assertEqual(inserted_titles, ["A fashion story", "Another story"])
+
+    def test_ingest_articles_skips_duplicate_canonical_urls_within_same_batch(self):
+        stats = self.service.ingest_articles(
+            [
+                build_article(),
+                build_article(
+                    id="article_002",
+                    title="Duplicate in same batch",
+                    canonical_url="https://example.com/story",
+                ),
+            ]
+        )
+
+        with self.session_factory() as session:
+            count = session.scalar(select(func.count()).select_from(Document))
+            stored_titles = session.scalars(select(Document.title)).all()
+
+        self.assertEqual(stats.collected_count, 2)
+        self.assertEqual(stats.existing_count, 0)
+        self.assertEqual(stats.inserted_count, 1)
+        self.assertEqual(count, 1)
+        self.assertEqual(stored_titles, ["A fashion story"])
 
     def test_collect_and_ingest_uses_collection_output(self):
         with mock.patch(

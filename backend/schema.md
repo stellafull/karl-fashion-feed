@@ -6,7 +6,7 @@
 
 - PostgreSQL 建表
 - Milvus collection 创建
-- FastAPI schema 与 repository 设计
+- FastAPI schema 与服务层设计
 - Celery 任务写入与聚合流程
 
 本文档是字段级设计草案，优先保证：
@@ -19,11 +19,15 @@
 
 代码承载约定：
 
-- `backend/app/`：实现 SQL model、schema、repository 与服务层
+- `backend/app/`：实现 SQL model、schema 与服务层
 - `backend/app/config/`：承载易变服务配置；embedding 配置通过独立子模块维护
-- `backend/app/core/`：承载数据库与 Redis 等稳定基础设施
+- `backend/app/core/`：承载数据库与 Redis 等稳定基础设施；`database.py` 维护 engine/session/Base
+- `backend/app/models/`：集中定义 SQLAlchemy ORM models，按领域拆分文件
+- `backend/app/router/`：承载 FastAPI 路由与依赖注入入口
+- `backend/app/schema/`：承载 API request/response schema
+- `backend/app/scripts/`：承载应用内任务入口和可复用脚本
 - `backend/app/service/news_collection_service.py`：当前已重写 article collection pipeline 的非持久化部分，读取 `sources.yaml` 后返回 article 列表
-- `backend/app/service/document_ingestion_service.py`：当前第一阶段负责将 article collection 结果映射并写入 PostgreSQL `document`
+- `backend/app/service/document_ingestion_service.py`：当前第一阶段负责将 article collection 结果映射并写入 PostgreSQL `document`；service 层直接操作 ORM / Session
 - `backend/test/`：承载 schema 与回归验证测试
 - `backend/scripts/`：迁移期保留采集脚本
 
@@ -43,7 +47,7 @@ PostgreSQL 负责：
 - 用户与组织
 - 登录审计
 - 原始文档与资产
-- 稳定 story 身份与当前聚合状态
+- 稳定 story 身份与不可变聚合记录
 - chat session/message/citation
 - 用户画像与长期记忆主记录
 - 来源运行态状态
@@ -102,7 +106,7 @@ Milvus 负责：
 | `login_result` | `success`, `tenant_rejected`, `visibility_rejected`, `token_error`, `userinfo_error` |
 | `asset_type` | `image`, `video` |
 | `parse_status` | `parsed`, `failed`, `filtered` |
-| `story_status` | `active`, `archived`, `merged`, `suppressed` |
+| `story_status` | `active`, `archived`, `suppressed` |
 | `scope_type` | `global`, `story`, `document` |
 | `session_status` | `active`, `archived`, `closed` |
 | `message_role` | `user`, `assistant`, `system`, `tool` |
@@ -169,7 +173,7 @@ Milvus 负责：
 约束建议：
 
 - `text_chunk` 必须有 `chunk_index`
-- `story_key` 可为空，因为 story 归属以 SQL 当前成员关系为准
+- `story_key` 可为空，因为 story 归属以 SQL 中的固定聚合成员关系为准
 
 ## 5.2 `content_image_unit`
 
@@ -496,40 +500,35 @@ Milvus 负责：
 - index：`sparse_embedding_model`
 - unique index：`(article_id, unit_type, chunk_index)`，仅对文本 chunk 生效
 
-## 6.3 Story 当前聚合层
+## 6.3 Story 不可变聚合层
 
 ## `story`
 
 | 字段 | 类型 | 约束 | 说明 |
 |---|---|---|---|
-| `story_key` | `varchar(64)` | PK | 稳定 story 标识 |
-| `title` | `text` | NOT NULL | 当前 story 标题 |
-| `summary` | `text` |  | 当前 story 摘要 |
-| `key_points` | `jsonb` | default `'[]'::jsonb` | 当前核心要点列表 |
-| `topic_tags` | `jsonb` | default `'[]'::jsonb` | 当前标签列表 |
-| `category_id` | `varchar(64)` |  | 当前分类 ID |
-| `category_name` | `varchar(128)` |  | 当前分类名称 |
-| `cover_image_url` | `text` |  | 当前封面图 |
-| `representative_article_id` | `varchar(64)` | FK -> `document.article_id` | 当前代表文档 |
+| `story_key` | `varchar(64)` | PK | 稳定且不可变的 story 标识 |
+| `title` | `text` | NOT NULL | story 标题 |
+| `summary` | `text` |  | story 摘要 |
+| `key_points` | `jsonb` | default `'[]'::jsonb` | 核心要点列表 |
+| `topic_tags` | `jsonb` | default `'[]'::jsonb` | 标签列表 |
+| `category_id` | `varchar(64)` |  | 分类 ID |
+| `category_name` | `varchar(128)` |  | 分类名称 |
+| `cover_image_url` | `text` |  | 封面图 |
+| `representative_article_id` | `varchar(64)` | FK -> `document.article_id` | 代表文档，且必须对应同一 story 的固定成员文档 |
 | `rank_score` | `numeric(10,4)` |  | 首页排序分数 |
 | `importance_score` | `numeric(10,4)` |  | 重要度分数 |
 | `freshness_score` | `numeric(10,4)` |  | 时效性分数 |
-| `article_count` | `integer` | NOT NULL, default `0` | 当前成员文档数 |
-| `source_count` | `integer` | NOT NULL, default `0` | 当前来源数 |
-| `status` | `story_status` | NOT NULL | story 状态 |
-| `first_seen_at` | `timestamptz` | NOT NULL | 首次出现时间 |
-| `last_aggregated_at` | `timestamptz` | NOT NULL | 最近一次聚合更新时间 |
-| `last_seen_at` | `timestamptz` | NOT NULL | 最近出现时间 |
-| `newest_published_at` | `timestamptz` |  | 当前成员中文档的最新发布时间 |
-| `merged_into_story_key` | `varchar(64)` | FK -> `story.story_key` | 如被合并，指向目标 story |
-| `metadata` | `jsonb` | default `'{}'::jsonb` | 连续性辅助信息 |
+| `article_count` | `integer` | NOT NULL, default `0` | 聚合成员文档数 |
+| `source_count` | `integer` | NOT NULL, default `0` | 聚合来源数 |
+| `first_seen_at` | `timestamptz` | NOT NULL | story 生成时间 |
+| `last_aggregated_at` | `timestamptz` | NOT NULL | 创建该 story 的聚合任务时间 |
+| `newest_published_at` | `timestamptz` |  | 成员中文档的最新发布时间 |
+| `metadata` | `jsonb` | default `'{}'::jsonb` | 聚合任务元数据 |
 | `created_at` | `timestamptz` | NOT NULL, default `now()` | 创建时间 |
-| `updated_at` | `timestamptz` | NOT NULL, default `now()` | 更新时间 |
 
 索引建议：
 
-- index：`status`
-- index：`last_seen_at`
+- index：`first_seen_at`
 
 ## `story_article`
 
@@ -539,7 +538,7 @@ Milvus 负责：
 | `article_id` | `varchar(64)` | FK -> `document.article_id`, NOT NULL | 成员文档 |
 | `member_score` | `numeric(10,4)` |  | 成员相关度分数 |
 | `sort_order` | `integer` | default `0` | 成员排序 |
-| `is_representative` | `boolean` | NOT NULL, default `false` | 是否代表文档 |
+| `is_representative` | `boolean` | NOT NULL, default `false` | 是否代表文档；写入时应与 `story.representative_article_id` 保持一致 |
 | `created_at` | `timestamptz` | NOT NULL, default `now()` | 创建时间 |
 
 主键建议：
@@ -752,9 +751,9 @@ Milvus 负责：
 当前前端首页需要的字段，可由以下 SQL 实体组合得到：
 
 - `meta.generated_at` <- API 生成时间或当前 `story.updated_at` 的最大值
-- `meta.total_topics` <- 当前 `story` 数量
-- `meta.total_articles` <- 当前 `story_article` 成员总数
-- `meta.sources_count` <- 当前 `story_article` + `document` 覆盖的 distinct `source_id` 数量
+- `meta.total_topics` <- 已生成的 `story` 数量
+- `meta.total_articles` <- 已生成的 `story_article` 成员总数
+- `meta.sources_count` <- `story_article` + `document` 覆盖的 distinct `source_id` 数量
 - `topics[].id` <- `story_key`
 - `topics[].title` <- `story.title`
 - `topics[].summary` <- `story.summary`
@@ -769,7 +768,7 @@ Milvus 负责：
 ## 8. 建模注意事项
 
 - `story_key` 必须是稳定主身份，不能每天生成新的临时 ID
-- `story` 与 `story_article` 只保存当前聚合状态，不承担历史快照职责
+- `story` 与 `story_article` 表示不可变聚合记录，创建后不原地修改
 - Milvus 中的 `story_key` 只是过滤优化字段，不是 story 归属真相源
 - 长期记忆必须先写 PostgreSQL，再异步写 Milvus
 - 任何回答都应能通过 `message_citation -> retrieval_unit_ref -> document` 完整回溯

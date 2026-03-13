@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 
-from backend.app.config.env import get_env
+from dotenv import find_dotenv, load_dotenv
+
+_ = load_dotenv(find_dotenv())
 
 
 @dataclass(frozen=True)
@@ -28,9 +31,9 @@ def get_sparse_embedding_config() -> EmbeddingConfig:
 
 def get_dense_embedding_config() -> EmbeddingConfig:
     return EmbeddingConfig(
-        embedding_model=get_env("MODALITY_EMBEDDING_MODEL", "qwen3-vl-embedding")
+        embedding_model=os.getenv("MODALITY_EMBEDDING_MODEL", "qwen3-vl-embedding")
         or "qwen3-vl-embedding",
-        embedding_dimension=int(get_env("EMBEDDING_DIMENSION", "2560") or "2560"),
+        embedding_dimension=int(os.getenv("EMBEDDING_DIMENSION", "2560") or "2560"),
     )
 
 
@@ -42,7 +45,7 @@ def get_embedding_models_config() -> EmbeddingModelsConfig:
 
 
 def get_dashscope_api_key() -> str | None:
-    return get_env("DASHSCOPE_API_KEY")
+    return os.getenv("DASHSCOPE_API_KEY")
 
 
 def require_dashscope_api_key() -> str:

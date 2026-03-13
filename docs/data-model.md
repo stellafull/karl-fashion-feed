@@ -2,11 +2,15 @@
 
 ## 0. 后端实现落点
 
-- `backend/app/`：承载 SQL model、schema、repository、service 与检索编排实现
+- `backend/app/`：承载 SQL model、schema、service 与检索编排实现
 - `backend/app/config/`：集中维护 embedding、Milvus 等易变服务配置
-- `backend/app/core/`：集中维护数据库与 Redis 等稳定基础设施
+- `backend/app/core/`：集中维护数据库与 Redis 等稳定基础设施；`database.py` 提供 engine/session/Base
+- `backend/app/models/`：集中定义 SQLAlchemy ORM models，按领域拆分文件
+- `backend/app/router/`：承载 FastAPI 路由与依赖注入入口
+- `backend/app/schema/`：承载 API request/response schema
+- `backend/app/scripts/`：承载应用内任务入口和可复用脚本
 - `backend/app/service/news_collection_service.py`：当前承载 article collection refactor，输出内存 article 列表，不直接落库
-- `backend/app/service/document_ingestion_service.py`：当前第一阶段负责 PostgreSQL `document` 入库
+- `backend/app/service/document_ingestion_service.py`：当前第一阶段负责 PostgreSQL `document` 入库，service 层直接操作 ORM / Session
 - `backend/scripts/`：迁移期保留采集脚本
 - `backend/test/`：承载数据模型、脚本与回归验证测试
 
@@ -33,11 +37,11 @@
 - 组织与用户
 - 登录事件
 - 原始文档与资产
-- story 稳定身份与发布快照
+- story 稳定身份与不可变聚合记录
 - chat session 与消息
 - citation 与工具调用日志
 - 长期记忆主记录
-- pipeline run 元数据
+- 来源运行态状态
 
 ### Milvus
 
@@ -92,7 +96,7 @@
 关键字段：
 
 - `unit_id`
-- `doc_id`
+- `article_id`
 - 可选冗余字段 `story_key`
 - `chunk_index`
 - `text_content`
@@ -101,7 +105,7 @@
 
 规则：
 
-- story 成员关系仍以 SQL 快照为准
+- story 成员关系仍以 SQL 中该 story 的固定成员关系为准
 - dense 使用 `qwen3-vl-embedding`
 - sparse 使用 `text-embedding-v4`
 
@@ -119,7 +123,7 @@
 关键字段：
 
 - `unit_id`
-- `doc_id`
+- `article_id`
 - `asset_id`
 - `asset_url`
 - `asset_text`
@@ -174,17 +178,15 @@
 当前第一阶段规则：
 
 - 先只写 `document`
-- `article_id` 是采集链路业务唯一键
+- `article_id` 是采集链路业务唯一键，也是文档主键
 - `canonical_url` 是数据库级幂等键
+- `content_md_path` 保存清洗后 Markdown 地址
 - 已存在 URL 直接跳过，不回写旧记录
 
-### Story 发布层
+### Story 不可变聚合层
 
-- `story_identity`
-- `story_cluster_snapshot`
-- `story_cluster_member_snapshot`
-- `pipeline_run`
-- `published_run`
+- `story`
+- `story_article`
 
 ### Chat 与交互
 
@@ -209,26 +211,20 @@
 
 - `story_key` 是稳定 story 标识
 
-### 快照身份
+### 不可变实体
 
-- `(run_id, story_key)` 表示某次发布视图中的 story
+- `story` 保存单次聚合生成的不可变 story 主记录
+- `story_article` 保存该 story 创建时的固定成员关系
 
 ### 为什么必须拆分
 
-- 每日重聚类会影响 story 成员
-- 增量更新会改变 story 内容
+- story 是用户阅读与引用的稳定单元
+- 后续聚合运行不会原地修改既有 story
 - 用户仍然需要稳定 topic URL 和可延续的讨论上下文
 
-## 6. Story 连续性规则
+后续相似事件可以在新的运行中形成新的独立 story，这是产品设计而不是数据异常。
 
-新 cluster 复用旧 story 的顺序：
-
-1. 代表文档命中
-2. 成员文档至少重叠 2 篇，或重叠率 >= 30%
-3. 标题/摘要向量相似度 >= 0.85 且标签重叠 >= 2
-4. 否则新建 `story_key`
-
-## 7. Memory 分层
+## 6. Memory 分层
 
 ### 短期记忆
 
@@ -251,24 +247,8 @@
 - 回放
 - 人工修正
 
-## 8. 发布模型
+## 7. 不可变 Story 读模型
 
-### `pipeline_run`
-
-用于记录：
-
-- run 类型
-- 时间窗口
-- 状态
-- 开始与结束时间
-- 诊断信息
-
-### `published_run`
-
-用于记录：
-
-- 当前线上生效的是哪个 run
-- 谁或什么任务完成了发布
-- 回滚目标历史
-
-首页和 story API 默认都读取当前 `published_run`。
+- 首页和 story API 默认读取不可变 `story` / `story_article`
+- 旧 story 不会在后续运行中被原地修改
+- 需要排障时依赖 `source_runtime_state`、日志和数据库备份，而不是发布指针
