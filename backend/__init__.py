@@ -1,1 +1,0 @@
-"""Fashion Feed backend package."""
