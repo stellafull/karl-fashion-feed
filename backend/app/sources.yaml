@@ -1,0 +1,744 @@
+# Fashion Feed — 信源配置
+# 修改此文件即可增删改 RSS 或网页信源，无需改动 Python 脚本
+#
+# 兼容说明:
+#   - 所有信源必须显式声明类型；RSS 使用 `feed_url`，网页使用 `start_urls`
+#   - 新格式可显式声明 `type: rss` 或 `type: web`
+#
+# RSS 字段:
+#   name:         源名称（显示在前端）
+#   feed_url: RSS Feed URL
+#   lang:         语言代码 (en / ja / zh / fr / ko 等)
+#   category:     默认分类（LLM 可能会重新分类）
+#   enabled:      是否启用（false 则跳过）
+#   max_articles: 每次最多抓取文章数（可选，默认 30）
+#
+# Web 字段:
+#   type:                web
+#   start_urls:          列表页入口
+#   allowed_domains:     允许抓取的域名白名单
+#   discovery:
+#     link_selectors:    列表页文章链接 CSS selector
+#     article_url_patterns: 文章链接正则（可选，但建议配置）
+#     exclude_patterns:  排除链接正则
+#     pagination_selectors: 下一页 CSS selector（可选）
+#     max_pages:         最多翻页数
+#   detail:
+#     title_selectors:    标题 selector
+#     content_selectors:  正文 selector
+#     published_selectors: 发布时间 selector
+#     image_selectors:    主图 selector
+#     remove_selectors:   提取正文时需剔除的区域
+#
+# Web 模板（默认关闭，填入真实站点后启用）:
+# - name: Example Web Source
+#   type: web
+#   enabled: false
+#   lang: zh
+#   category: 品牌/市场
+#   max_articles: 20
+#   start_urls:
+#     - https://example.com/fashion
+#   allowed_domains:
+#     - example.com
+#   discovery:
+#     link_selectors:
+#       - article a[href]
+#       - .post-list a[href]
+#     article_url_patterns:
+#       - /fashion/
+#       - /news/
+#     exclude_patterns:
+#       - /tag/
+#       - /video/
+#     pagination_selectors:
+#       - a.next
+#     max_pages: 2
+#   detail:
+#     title_selectors:
+#       - h1
+#     content_selectors:
+#       - article
+#       - .article-body
+#     published_selectors:
+#       - time[datetime]
+#     image_selectors:
+#       - meta[property='og:image']
+#       - article img
+#     remove_selectors:
+#       - .ad
+#       - .newsletter
+
+# ─── 英文源 ──────────────────────────────────────────
+
+# Vogue 系列
+- name: Vogue
+  type: rss
+  feed_url: https://www.vogue.com/feed/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+- name: Vogue Fashion
+  type: rss
+  feed_url: https://www.vogue.com/feed/fashion/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+- name: Vogue Business
+  type: rss
+  feed_url: https://www.voguebusiness.com/rss
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 20
+
+# Vanity Fair
+- name: Vanity Fair
+  type: rss
+  feed_url: https://www.vanityfair.com/feed/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+# Fashion Network
+- name: Fashion Network
+  type: rss
+  feed_url: https://ww.fashionnetwork.com/rss/feed/ww,1.xml
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 30
+
+# WWD
+- name: WWD
+  type: rss
+  feed_url: https://wwd.com/feed/
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 30
+
+# Business of Fashion
+- name: BOF
+  type: rss
+  feed_url: https://www.businessoffashion.com/feed
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 30
+
+# Elle
+- name: Elle
+  type: rss
+  feed_url: https://www.elle.com/rss/all.xml/
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+# Harper's Bazaar
+- name: Harper's Bazaar
+  type: rss
+  feed_url: https://www.harpersbazaar.com/rss/all.xml/
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+# GQ
+- name: GQ
+  type: rss
+  feed_url: https://www.gq.com/feed/rss
+  lang: en
+  category: 男装风尚
+  enabled: true
+  max_articles: 30
+
+# Hypebeast 系列
+- name: Hypebeast
+  type: rss
+  feed_url: https://hypebeast.com/feed
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 30
+
+- name: Hypebeast Fashion
+  type: rss
+  feed_url: https://hypebeast.com/fashion/feed
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 20
+
+# Highsnobiety
+- name: Highsnobiety
+  type: rss
+  feed_url: https://www.highsnobiety.com/feed/
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 30
+
+# Fashionista
+- name: Fashionista
+  type: rss
+  feed_url: https://fashionista.com/.rss/full/
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 30
+
+# Dazed
+- name: Dazed
+  type: rss
+  feed_url: https://www.dazeddigital.com/rss
+  lang: en
+  category: 先锋文化
+  enabled: true
+  max_articles: 30
+
+# i-D
+- name: i-D
+  type: rss
+  feed_url: https://i-d.co/feed/
+  lang: en
+  category: 先锋文化
+  enabled: true
+  max_articles: 30
+
+# Fashion Dive (industry news)
+- name: Fashion Dive
+  type: rss
+  feed_url: https://www.fashiondive.com/feeds/news/
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 20
+
+# Glamour
+- name: Glamour
+  type: rss
+  feed_url: https://www.glamour.com/feed/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 20
+
+# Refinery29 Fashion
+- name: Refinery29
+  type: rss
+  feed_url: https://www.refinery29.com/en-us/fashion/rss.xml
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 20
+
+# Seventeen
+- name: Seventeen
+  type: rss
+  feed_url: https://www.seventeen.com/rss/default.xml
+  lang: en
+  category: 青少年时尚
+  enabled: true
+  max_articles: 20
+
+# Esquire
+- name: Esquire
+  type: rss
+  feed_url: https://www.esquire.com/rss/all.xml/
+  lang: en
+  category: 男装风尚
+  enabled: true
+  max_articles: 20
+
+# The Cut (New York Magazine)
+- name: The Cut
+  type: rss
+  feed_url: https://feeds.feedburner.com/nymag/fashion
+  lang: en
+  category: 先锋文化
+  enabled: true
+  max_articles: 20
+
+# Coveteur
+- name: Coveteur
+  type: rss
+  feed_url: https://coveteur.com/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 15
+
+# Who What Wear
+- name: Who What Wear
+  type: rss
+  feed_url: https://www.whowhatwear.com/rss
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 20
+
+# Allure
+- name: Allure
+  type: rss
+  feed_url: https://www.allure.com/feed/rss
+  lang: en
+  category: 美妆美容
+  enabled: true
+  max_articles: 20
+
+# Bustle
+- name: Bustle
+  type: rss
+  feed_url: https://www.bustle.com/rss
+  lang: en
+  category: 生活方式
+  enabled: true
+  max_articles: 20
+
+# NYLON
+- name: NYLON
+  type: rss
+  feed_url: https://www.nylon.com/rss
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 20
+
+# Essence
+- name: Essence
+  type: rss
+  feed_url: https://www.essence.com/feed/
+  lang: en
+  category: 生活方式
+  enabled: true
+  max_articles: 20
+
+# Digital Spy
+- name: Digital Spy
+  type: rss
+  feed_url: https://www.digitalspy.com/rss.xml
+  lang: en
+  category: 娱乐文化
+  enabled: true
+  max_articles: 20
+
+# Elite Daily
+- name: Elite Daily
+  type: rss
+  feed_url: https://www.elitedaily.com/rss
+  lang: en
+  category: 生活方式
+  enabled: true
+  max_articles: 20
+
+# StyleCaster
+- name: StyleCaster
+  type: rss
+  feed_url: https://stylecaster.com/feed/
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 20
+
+# The Zoe Report
+- name: The Zoe Report
+  type: rss
+  feed_url: https://www.thezoereport.com/rss
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 20
+
+# W Magazine
+- name: W Magazine
+  type: rss
+  feed_url: https://www.wmagazine.com/feed
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 20
+
+# Footwear News
+- name: Footwear News
+  type: rss
+  feed_url: https://footwearnews.com/feed/
+  lang: en
+  category: 行业动态
+  enabled: true
+  max_articles: 20
+
+# Complex Style（无稳定官方 RSS，使用 web）
+- name: Complex Style
+  type: web
+  lang: en
+  category: 潮流街头
+  enabled: true
+  max_articles: 15
+  start_urls:
+    - https://www.complex.com/style
+  allowed_domains:
+    - www.complex.com
+    - complex.com
+  discovery:
+    link_selectors:
+      - a[href*="/style/"]
+    article_url_patterns:
+      - complex\.com/style/a/.+
+    exclude_patterns:
+      - /video/
+      - /tag/
+      - /shop
+    max_pages: 1
+
+# Glamour UK（无单独官方 RSS，使用 web）
+- name: Glamour UK
+  type: web
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 12
+  start_urls:
+    - https://www.glamourmagazine.co.uk/fashion
+  allowed_domains:
+    - glamourmagazine.co.uk
+    - www.glamourmagazine.co.uk
+  discovery:
+    link_selectors:
+      - a[href*="/article/"]
+      - a[href*="/gallery/"]
+    article_url_patterns:
+      - glamourmagazine\.co\.uk/(article|gallery)/.+
+    exclude_patterns:
+      - /topic/
+      - /shopping/
+    max_pages: 1
+
+# CR Fashion Book（首页可见 fashion 流，未发现稳定官方 RSS）
+- name: CR Fashion Book
+  type: web
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 12
+  start_urls:
+    - https://crfashionbook.com/
+  allowed_domains:
+    - crfashionbook.com
+  discovery:
+    link_selectors:
+      - a[href]
+    article_url_patterns:
+      - crfashionbook\.com/(?!about/?$)(?!fashion/?$)(?!beauty/?$)(?!culture/?$)(?!lifestyle/?$)[a-z0-9-]+/?$
+    exclude_patterns:
+      - /category/
+      - /tag/
+      - /author/
+      - /search
+    max_pages: 1
+
+# PureWow Fashion（搜索到官方 fashion 内容，未发现稳定 RSS）
+- name: PureWow Fashion
+  type: web
+  lang: en
+  category: 高端时装
+  enabled: true
+  max_articles: 12
+  start_urls:
+    - https://www.purewow.com/fashion
+  allowed_domains:
+    - purewow.com
+    - www.purewow.com
+  discovery:
+    link_selectors:
+      - a[href*="/fashion/"]
+    article_url_patterns:
+      - purewow\.com/fashion/.+
+    exclude_patterns:
+      - /tags/
+      - /shopping/
+    max_pages: 1
+
+# Dazed Beauty（主站 RSS 存在，但 Beauty 频道单独补 crawl）
+- name: Dazed Beauty
+  type: web
+  lang: en
+  category: 先锋文化
+  enabled: true
+  max_articles: 12
+  start_urls:
+    - https://www.dazeddigital.com/beauty
+  allowed_domains:
+    - dazeddigital.com
+    - www.dazeddigital.com
+  discovery:
+    link_selectors:
+      - a[href*="/beauty/"]
+    article_url_patterns:
+      - dazeddigital\.com/beauty/.+
+    exclude_patterns:
+      - /tag/
+      - /video/
+    max_pages: 1
+
+# ─── 中文/港台源（官方站点无稳定 RSS，使用 web）────────────────────────
+
+- name: Vogue China
+  type: web
+  lang: zh
+  category: 高端时装
+  enabled: true
+  max_articles: 15
+  start_urls:
+    - https://www.vogue.com.cn/fashion/
+  allowed_domains:
+    - vogue.com.cn
+    - www.vogue.com.cn
+  discovery:
+    link_selectors:
+      - a[href*="/fashion/"]
+    article_url_patterns:
+      - vogue\.com\.cn/fashion/.+\.html$
+    exclude_patterns:
+      - /tag/
+      - /gallery/
+      - /video/
+    max_pages: 1
+
+- name: ELLE China
+  type: web
+  lang: zh
+  category: 高端时装
+  enabled: true
+  max_articles: 15
+  start_urls:
+    - https://www.ellechina.com/fashion/
+  allowed_domains:
+    - ellechina.com
+    - www.ellechina.com
+  discovery:
+    link_selectors:
+      - a[href*="/fashion/"]
+    article_url_patterns:
+      - ellechina\.com/fashion/.+
+    exclude_patterns:
+      - /video/
+      - /tag/
+    max_pages: 1
+
+- name: GQ China
+  type: web
+  lang: zh
+  category: 男装风尚
+  enabled: true
+  max_articles: 15
+  start_urls:
+    - https://www.gq.com.cn/fashion/news
+  allowed_domains:
+    - gq.com.cn
+    - www.gq.com.cn
+  discovery:
+    link_selectors:
+      - a[href*="/fashion/"]
+    article_url_patterns:
+      - gq\.com\.cn/fashion/.+\.html$
+    exclude_patterns:
+      - /tag/
+      - /video/
+    max_pages: 1
+
+- name: Harper's Bazaar China
+  type: web
+  lang: zh
+  category: 高端时装
+  enabled: true
+  max_articles: 15
+  start_urls:
+    - http://fashion.bazaar.com.cn/
+  allowed_domains:
+    - fashion.bazaar.com.cn
+    - bazaar.com.cn
+  discovery:
+    link_selectors:
+      - a[href*="fashion.bazaar.com.cn/"]
+      - a[href*="/20"]
+    article_url_patterns:
+      - fashion\.bazaar\.com\.cn/\d{4}/\d{4}/\d+\.shtml
+    exclude_patterns:
+      - /video/
+      - /tag/
+    max_pages: 1
+
+- name: Cosmopolitan China
+  type: web
+  lang: zh
+  category: 高端时装
+  enabled: true
+  max_articles: 15
+  start_urls:
+    - https://www.cosmopolitancn.com/
+  allowed_domains:
+    - cosmopolitancn.com
+    - www.cosmopolitancn.com
+  discovery:
+    link_selectors:
+      - a[href*="/cosmo/detail/"]
+    article_url_patterns:
+      - cosmopolitancn\.com/cosmo/detail/\d+
+    exclude_patterns:
+      - /video/
+      - /tag/
+    max_pages: 1
+
+- name: Marie Claire Taiwan
+  type: web
+  lang: zh
+  category: 高端时装
+  enabled: true
+  max_articles: 15
+  start_urls:
+    - https://www.marieclaire.com.tw/fashion/
+  allowed_domains:
+    - marieclaire.com.tw
+    - www.marieclaire.com.tw
+  discovery:
+    link_selectors:
+      - a[href*="/fashion/"]
+    article_url_patterns:
+      - marieclaire\.com\.tw/fashion/.+
+    exclude_patterns:
+      - /tag/
+      - /shopping/
+    max_pages: 1
+
+- name: PopDaily Style
+  type: web
+  lang: zh
+  category: 潮流街头
+  enabled: true
+  max_articles: 15
+  start_urls:
+    - https://www.popdaily.com.tw/style
+  allowed_domains:
+    - popdaily.com.tw
+    - www.popdaily.com.tw
+  discovery:
+    link_selectors:
+      - a[href*="/style/"]
+    article_url_patterns:
+      - popdaily\.com\.tw/style/\d+
+    exclude_patterns:
+      - /forum/
+      - /topic/
+    max_pages: 1
+
+# ─── 日文源 ──────────────────────────────────────────
+
+- name: WWD Japan
+  type: rss
+  feed_url: https://www.wwdjapan.com/feed
+  lang: ja
+  category: 行业动态
+  enabled: true
+  max_articles: 30
+
+- name: Vogue Japan
+  type: rss
+  feed_url: https://www.vogue.co.jp/feed/rss
+  lang: ja
+  category: 高端时装
+  enabled: true
+  max_articles: 30
+
+- name: GQ Japan
+  type: rss
+  feed_url: https://www.gqjapan.jp/feed/rss
+  lang: ja
+  category: 男装风尚
+  enabled: true
+  max_articles: 20
+
+- name: Fashionsnap
+  type: rss
+  feed_url: https://www.fashionsnap.com/rss.xml
+  lang: ja
+  category: 行业动态
+  enabled: true
+  max_articles: 20
+
+- name: Fashion Press
+  type: web
+  lang: ja
+  category: 高端时装
+  enabled: true
+  max_articles: 15
+  detail_concurrency: 1
+  start_urls:
+    - https://www.fashion-press.net/
+  allowed_domains:
+    - fashion-press.net
+    - www.fashion-press.net
+  discovery:
+    link_selectors:
+      - a[href*="/news/"]
+    article_url_patterns:
+      - fashion-press\.net/news/\d+
+    exclude_patterns:
+      - /collections/
+      - /snaps/
+      - /movies/
+    max_pages: 1
+
+- name: mi-mollet
+  type: web
+  lang: ja
+  category: 高端时装
+  enabled: true
+  max_articles: 12
+  start_urls:
+    - https://mi-mollet.com/
+  allowed_domains:
+    - mi-mollet.com
+  discovery:
+    link_selectors:
+      - a[href*="/articles/-/"]
+    article_url_patterns:
+      - mi-mollet\.com/articles/-/\d+
+    exclude_patterns:
+      - /lists/
+      - /authors/
+    max_pages: 1
+
+# ─── 西班牙语源 ──────────────────────────────────────
+
+- name: Vogue España
+  type: rss
+  feed_url: https://www.vogue.es/feed/rss
+  lang: es
+  category: 高端时装
+  enabled: true
+  max_articles: 20
+
+# ─── 可选源（默认关闭，按需启用）─────────────────────
+
+- name: Dezeen Fashion
+  type: rss
+  feed_url: https://www.dezeen.com/fashion/feed/
+  lang: en
+  category: 先锋文化
+  enabled: false
+  max_articles: 15
+
+- name: Drapers
+  type: rss
+  feed_url: https://www.drapersonline.com/rss
+  lang: en
+  category: 行业动态
+  enabled: false
+  max_articles: 15

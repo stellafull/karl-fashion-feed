@@ -1,101 +1,61 @@
 # KARL FASHION FEED
-全球时尚资讯平台 + Agent
 
-每天北京时间8点进行article抓取 新增article聚合story 
-目标中国区的同事 -> 多语言来源 -> 中文翻译
+全球时尚资讯平台 + Agent。
+目标用户是中国区同事，输入多语言来源，输出中文可读内容。
 
+## 核心目标
 
+- 每天北京时间 8 点执行一次采集。
+- 当天新增 `article` 聚合为新的 `story`。
+- `story` 只服务阅读，不回写历史，不做当前态刷新。
 
-## 项目概览
-backend/app/​
-├── config/              # 配置文件模块​
-├── core/                # 核心工具模块​
-├── models/              # 数据库模型（ORM）​
-├── router/              # API路由层（Controller）​
-├── schemas/             # 请求/响应模式（DTO）​
-├── scripts/             # 工具脚本​
-├── service/             # 业务逻辑层（Service）​
-│  └── agents/           # 各个Agent实现​
-│  └── RAG/              # Milvus RAG 实现
-├── sources.yaml         # 信息采集源头
-└── app_main.py          # FastAPI应用入口
+## Backend 核心约定
 
+- `article` 是事实真相源。
+- `canonical_url` 归一化后作为文章唯一去重键。
+- 同一 `canonical_url` 二次抓到时直接视为重复，不做补写。
+- `story` 是不可变聚合结果，`story_key` 使用 UUID。
+- 每次定时任务只基于新增 `article` 生成新的 `story`。
+- `article` 全量入库，再由 LLM 判断是否适合展示给读者。
+- LLM enrichment 一次完成翻译、总结、过滤、标签抽取、分类建议。
+- 仅 `should_publish=true` 的文章参与 embedding 和 story 聚类。
+- 检索与引用以 `article` / `retrieval_unit_ref` 为准，Milvus 只是检索副本。
+- Redis 仅用于缓存、锁和短期会话态，不保存核心业务真相。
 
-### /config/ 配置文件模块
-集中管理项目所有配置项 避免硬编码
-- llm_config.py         # llm模型配置
-- embedding_config.py   # dense/sparse embedding模型配置
-.....                   # 其他config 暂未决定
+## 建议目录
 
-### /core/ 核心工具模块
-底层基础设施的初始化和管理
-- database.py           # postgresSQL 连接
-- redis_client.py       # RedisClient
-- security.py           # jwt token
-- feishu_auth.py        # 上线后接入 预留入口
-......                  # 其他未定
+`backend/app/`
 
+- `config/`：模型、embedding、第三方服务配置
+- `core/`：数据库、Redis、安全、基础设施初始化
+- `models/`：ORM 模型
+- `router/`：FastAPI 路由
+- `schemas/`：Pydantic DTO
+- `service/`：业务逻辑
+- `service/agents/`：Agent 编排
+- `service/RAG/`：检索与向量能力
+- `scripts/`：初始化和运维脚本
+- `sources.yaml`：采集源配置
+- `app_main.py`：FastAPI 入口
 
-### /models/ 数据库模型(ORM)
-定义所有数据库表的结构 SQLAIchemy ORM
-- user.py
-- chat.py               # sessions/messages/memory
-- knowledge.py          # RAG
-- article.py            # 去重后article持久化
-- story.py              # 每日新增article聚合story
-......                  # 其他未定
+## 每日处理链路
 
+1. 采集文章并做 `canonical_url` 归一化去重。
+2. 对每篇文章执行 LLM enrichment：
+   `should_publish`、中文标题、中文摘要、标签、品牌、分类建议。
+3. 对可发布文章生成聚类文本和 embedding。
+4. 基于语义相似度做初始聚类。
+5. 用 LLM 复核聚类结果，必要时拆分，再生成最终 `story` 内容。
+6. 持久化 `story`、`story_article`、`retrieval_unit_ref`。
 
-### /router/ API 路由层
-定义所有http接口 处理请求/响应 调用service业务逻辑 前端行为对应的后端操作
-- auth_router.py        # /auth 仅登录 不提供用户注册权限
-- chat_router.py        # /chat
-- knowledge_router.py   # /knowledge
-- database_router.py    # /database
-- memory_router.py      # /memory
-- article_router.py     # /article
-- story_router.py       # /story
-.....                   # 其他待定
+## 关键实体
 
-### /schemas/ 请求响应模式
-使用pydantic 定义数据传出对象 DTO 实现自动校验和文档生成
-- user.py               # user schema
-- chat.py               # chat schema message/history/...
-- knowledge.py          # chunk/query/upload ....
-- search.py             # request/result
-.....                   # 其他待定
+- `article`：原文事实、来源、发布时间、LLM enrichment 结果
+- `story`：面向读者的不可变中文聚合内容
+- `story_article`：`story` 与 `article` 的不可变映射
+- `retrieval_unit_ref`：文章切块与检索索引桥接
+- `pipeline_run`：采集、聚类、索引任务执行记录
 
+## 文档入口
 
-### /scripts/ 工具脚本
-数据初始化
-- init_article_data.py  # 一次性抓取过去30天的article 按天进行article聚合 构建story
-......                  # 其他待定
-
-### /service/ 业务逻辑
-核心业务逻辑, 调用外部API 数据库 LLM
-- chat_service.py       # 聊天消息处理 上下文管理
-- memory_service.py     # 长期记忆压缩 向量检索
-- text2sql_service.py   # text2sql, schema感知
-- checkpoint_service.py # checkpoint保存恢复
-- schedular_service.py  # APScheduler定时任务
-- article_collection_service.py     # 资讯采集去重
-- database_explorer.py  # 数据库Schema探索
-- article_summarization_service.py  # 资讯总结
-- article_cluster_service.py        # article聚合为story
-- embedding_service.py  # dense/sparse embedding支持
-.....                   # 其他待定
-
-
-### /service/agents/
-agents核心逻辑 各agent实现 当前目标仅实现知识库问答与
-- rag_agent.py          # 知识库与websearch问答agent
-...                     # 其他待定
-
-### app_main.py FastAPI应用入口
-初始化FastAPI应用
-注册所有router
-配置CORS 中间件
-启动定时任务
-
-
-
+- Backend 详细约定见 `backend/README.md`
