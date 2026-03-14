@@ -1,15 +1,16 @@
 {
   "meta": {
-    "generated_at": "2026-03-14T18:30:04+00:00",
+    "generated_at": "2026-03-14T20:23:33+00:00",
     "total_topics": 500,
-    "total_articles": 1116,
-    "sources_count": 49,
+    "total_articles": 1115,
+    "sources_count": 50,
     "sources": [
       "Allure",
       "BOF",
       "Bustle",
       "CR Fashion Book",
       "Complex Style",
+      "Cosmopolitan China",
       "Coveteur",
       "Dazed",
       "Dazed Beauty",
@@ -58,20 +59,20 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 10,
-      "blocked_by_tombstones": 342,
-      "evicted_topics": 6,
+      "new_articles_in_2h": 11,
+      "blocked_by_tombstones": 340,
+      "evicted_topics": 10,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 3,
-        "incremental_new_topics_created": 7,
-        "cross_merge_candidates": 5,
-        "cross_merge_low_reviews": 5,
+        "incremental_assigned_to_existing": 1,
+        "incremental_new_topics_created": 10,
+        "cross_merge_candidates": 4,
+        "cross_merge_low_reviews": 4,
         "cross_merge_high_reviews": 0,
-        "cross_merge_merged_topics": 1
+        "cross_merge_merged_topics": 0
       }
     },
     "quality": {
-      "merge_rate": 0.552,
+      "merge_rate": 0.5516,
       "avg_sources_per_topic": 1.292,
       "high_confidence_topic_ratio": 0.942,
       "rebuild_mode": "incremental"
@@ -2865,6 +2866,244 @@
       "article_count": 1
     },
     {
+      "id": "2ea1fd5ae745",
+      "title": "奥斯卡经典瞬间：最佳获奖感言盘点",
+      "summary": "《GQ》杂志近日评选出史上最令人难忘的奥斯卡获奖感言。从汤姆·汉克斯对艾滋病危机的深情致敬，到乔·佩西惜字如金的“六字真言”，这些瞬间都已成为影史经典。文章深入剖析了这些演讲的魅力所在，包括其饱含的情感、蕴含的社会意义以及演讲者独特的个人风采。莱昂纳多·迪卡普里奥等影星的精彩演讲也榜上有名，再次唤起人们对这些荣耀时刻的回忆。",
+      "key_points": [
+        "《GQ》评选最佳奥斯卡感言",
+        "情感深度和社会意义是关键",
+        "汤姆·汉克斯、乔·佩西等入选"
+      ],
+      "tags": [
+        "奥斯卡",
+        "获奖感言",
+        "名人",
+        "经典",
+        "影史"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.gq.com/photos/69b5a812f8070db18bc9430f/master/pass/Olivia%20Coleman%20Oscar_0003_Group%201.jpg",
+      "published": "2026-03-14T19:49:23+00:00",
+      "sources": [
+        {
+          "name": "GQ",
+          "title": "The Best Oscar Speeches, Definitively Ranked",
+          "link": "https://www.gq.com/story/the-best-oscar-speeches-definitively-ranked",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "2835a8e858d2",
+      "title": "亚马逊挖宝：15美元以下惊喜好礼！",
+      "summary": "Elite Daily精选亚马逊95件15美元以下的超值好物，涵盖生活方式和美妆两大领域。无论是萌趣的猫咪花瓶、可爱的绵羊厕纸架，还是能玩转色彩的pH变色唇膏、梦幻的彩色玻璃窗挂，都能为生活增添小确幸。无论是作为贴心小礼物，还是犒劳自己的精致小物，都是不错的选择，快来亚马逊寻宝吧！",
+      "key_points": [
+        "亚马逊平价好物推荐",
+        "15美元以下超值礼物",
+        "生活方式和美妆产品"
+      ],
+      "tags": [
+        "亚马逊",
+        "平价好物",
+        "生活方式",
+        "美妆",
+        "礼物推荐"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2025/11/28/0c5c5095/11.webp?w=1200&fit=max",
+      "published": "2026-03-14T19:48:53+00:00",
+      "sources": [
+        {
+          "name": "Elite Daily",
+          "title": "95 Gifts Under $15 On Amazon That Are Legitimately Awesome",
+          "link": "https://www.elitedaily.com/shopping/gifts-under-15-on-amazon-that-are-legitimately-awesome",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "7dc04b3158b2",
+      "title": "穿搭进阶：55个颠覆认知的时髦秘技",
+      "summary": "还在为内衣肩带外露、裙子长度尴尬、腰围不合身等问题烦恼？本文精选55个实用穿搭技巧，从内衣选择到裙长调整，再到无扣腰带妙用，助你轻松解决日常穿搭难题，提升穿着舒适度和自信心。告别平庸，解锁你的时尚潜力，让每一天都穿出最佳状态。",
+      "key_points": [
+        "解决日常穿搭痛点",
+        "提升穿着舒适度",
+        "增强时尚自信"
+      ],
+      "tags": [
+        "服装技巧",
+        "穿搭秘诀",
+        "生活方式",
+        "实用技巧"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://imgix.bustle.com/uploads/image/2026/1/23/d0dc5de5/2.jpg?w=1200&fit=max",
+      "published": "2026-03-14T19:33:21+00:00",
+      "sources": [
+        {
+          "name": "Bustle",
+          "title": "55 Weird Clothing Hacks That Are Actually Life-Changing",
+          "link": "https://www.bustle.com/shopping/weird-clothing-hacks-that-are-actually-life-changing",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "03f05e7bb94f",
+      "title": "凯特·哈德森：高定与极简的奥斯卡双面魅力",
+      "summary": "好莱坞女星凯特·哈德森在奥斯卡预热活动中展现了两种截然不同的时尚风格。她先是在ICG Publicists Awards上身着Georges Chakra银色高定礼服，闪耀夺目；随后在WIF奥斯卡提名者庆祝活动上，则换上了Max Mara的浓缩咖啡色缎面礼服，尽显极简主义的优雅大气。两种风格的切换，完美诠释了凯特·哈德森对时尚的驾驭能力。",
+      "key_points": [
+        "凯特·哈德森出席奥斯卡预热派对",
+        "Georges Chakra高定礼服的华丽亮相",
+        "Max Mara极简缎面礼服的优雅诠释"
+      ],
+      "tags": [
+        "凯特·哈德森",
+        "Georges Chakra",
+        "Max Mara",
+        "奥斯卡",
+        "名人穿搭",
+        "红毯造型"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/kate-hudson-georges-chakra-max-mara-pre-oscars-dresses.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-14T19:24:43+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Kate Hudson Switches From Georges Chakra Couture to Max Mara Minimalism at Two Pre-Oscars Parties",
+          "link": "https://wwd.com/pop-culture/celebrity-news/kate-hudson-georges-chakra-max-mara-pre-oscars-1238676276",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "335c2548ad20",
+      "title": "Bella Hadid的复古时尚密码",
+      "summary": "超模Bella Hadid近日以一套充满复古韵味的造型惊艳亮相。她身穿Alaïa 1987年秋冬系列的古着紧身胸衣皮夹克，搭配经典Levi's牛仔裤，尽显率性洒脱。Loewe 2026春季系列手袋则为整体造型注入一丝现代气息，而豹纹高跟鞋的点缀更添性感魅力。据悉，这件极具历史意义的Alaïa夹克由造型师Mimi Cuttrell从Shy Online精心挑选而来，完美诠释了Bella对复古时尚的独特见解。",
+      "key_points": [
+        "Bella Hadid复古造型",
+        "Alaïa古着皮夹克",
+        "造型师Mimi Cuttrell"
+      ],
+      "tags": [
+        "Bella Hadid",
+        "Alaïa",
+        "古着",
+        "名人街拍",
+        "复古风"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/0e691515-44a5-4d30-a872-5588d303effb.jpg",
+      "published": "2026-03-14T19:22:00+00:00",
+      "sources": [
+        {
+          "name": "Harper's Bazaar",
+          "title": "Bella Hadid Wears a Vintage Alaïa Leather Jacket With a Pop of Leopard Print",
+          "link": "https://www.harpersbazaar.com/celebrity/latest/a70742172/bella-hadid-vintage-alaia-leather-jacket-leopard-print-heels",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "3194bf3583dd",
+      "title": "《吸血鬼猎人巴菲》重启梦碎？",
+      "summary": "备受期待的《吸血鬼猎人巴菲》重启项目遭遇波折。Hulu曾计划预定试播集，并有望迎来初代主演Sarah Michelle Gellar的回归。Gellar本人也证实了与制片人Gail Berman及导演赵婷的洽谈，并表示对重启持开放态度。然而，最终Gellar宣布Hulu将不再推进该项目，重启计划暂时搁浅，令无数剧迷扼腕叹息。",
+      "key_points": [
+        "Hulu曾计划重启《吸血鬼猎人巴菲》",
+        "Sarah Michelle Gellar曾有望回归",
+        "重启项目最终未能推进"
+      ],
+      "tags": [
+        "吸血鬼猎人巴菲",
+        "重启",
+        "Sarah Michelle Gellar",
+        "Hulu"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/f3eeaddb-25af-4b53-ac8e-2a9edfb5816d.jpeg",
+      "published": "2026-03-14T19:04:00+00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "Everything We Know About the <em>Buffy the Vampire Slayer</em> Reboot",
+          "link": "https://www.elle.com/culture/movies-tv/a63724100/buffy-the-vampire-slayer-reboot-news-dates-cast-spoilers",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "5716d284c42e",
+      "title": "完美婚礼：优雅交通指南",
+      "summary": "《Vogue》杂志近日发布婚礼交通规划指南，为打造完美婚礼提供实用建议。文章涵盖宾客交通指南的制定，以及如何高效安排婚礼车队，确保所有宾客安全准时抵达，享受无忧的婚礼体验。细致周到的交通安排，将为您的婚礼增添更多优雅与格调。",
+      "key_points": [
+        "宾客交通指南",
+        "车队安排技巧",
+        "提升婚礼体验"
+      ],
+      "tags": [
+        "婚礼",
+        "交通",
+        "生活方式",
+        "Vogue"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://assets.vogue.com/photos/66f5c8ab3381bf7def8ec619/master/pass/chandler-travis_045.jpg",
+      "published": "2026-03-14T18:49:30+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "Wedding Transportation: Everything to Know for Planning Your Weekend Events",
+          "link": "https://www.vogue.com/article/everything-to-know-about-wedding-transportation",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "6bc1b09a485b",
+      "title": "《猎魔女团》原声爆红，三新星闪耀奥斯卡",
+      "summary": "动画电影《Kpop Demon Hunters》（猎魔女团）原声带在全球掀起热潮，由EJAE、Audrey Nuna和Rei Ami三位实力女歌手倾情献唱，她们分别为剧中角色Rumi、Mira和Zoey赋予了独特的声音魅力。其中，单曲《Golden》更是创下白金销量，并荣获多项大奖提名。随着电影的大获成功，三位歌手也迅速走红，备受瞩目，并将登上奥斯卡颁奖典礼的舞台，带来精彩表演，令人期待。",
+      "key_points": [
+        "《Kpop Demon Hunters》原声大热",
+        "EJAE、Audrey Nuna、Rei Ami献唱",
+        "《Golden》销量破白金，提名多项大奖"
+      ],
+      "tags": [
+        "Kpop Demon Hunters",
+        "电影原声",
+        "音乐",
+        "奥斯卡",
+        "动画"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/891815dc-b4c8-49bf-8a97-049ce37ab0e5.jpeg",
+      "published": "2026-03-14T18:40:00+00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "All About EJAE, Audrey Nuna, and Rei Ami, the Singing Voices of <em>Kpop Demon Hunters</em>",
+          "link": "https://www.elle.com/culture/music/a69137744/who-are-ejae-audrey-nuna-rei-ami-kpop-demon-hunters-singers",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "59f840799b1c",
       "title": "棒球英雄的时尚品味：WBC赛场外的奢华手袋",
       "summary": "日本国家棒球队抵达迈阿密，备战WBC四分之一决赛。镁光灯下，球员们的私服穿搭也成为焦点。除了精湛球技，他们的时尚品味同样引人注目。爱马仕Garden Party的休闲优雅、Bolide Relax的低调奢华、Birkin的经典隽永，以及The Row Margaux的极简大气，都展现了球员们不俗的时尚触觉。这些奢华手袋不仅是实用单品，更是他们个性和品味的象征。",
@@ -2891,6 +3130,36 @@
           "title": "【WBC】「まさかのエルメスにザ・ロウ!?」侍ジャパンがマイアミ到着。選手の私服バッグに注目",
           "link": "https://mi-mollet.com/articles/-/58876",
           "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1d4b0b85bc4e",
+      "title": "班克斯真面目终曝光？",
+      "summary": "路透社一项调查大胆宣称，已揭开神秘街头艺术家班克斯的真实身份。调查指出，班克斯原名可能为罗宾·冈宁汉（Robin Gunningham），一位来自布里斯托尔的涂鸦艺术家，之后改名为大卫·琼斯（David Jones）。更令人惊讶的是，调查还暗示班克斯可能与英国乐队Massive Attack的主唱罗伯特·德尔·纳亚（Robert Del Naja）存在合作关系，甚至包括在乌克兰的艺术创作。",
+      "key_points": [
+        "路透社调查指向班克斯真实身份",
+        "班克斯或为罗宾·冈宁汉，后改名大卫·琼斯",
+        "或与Massive Attack主唱存在合作"
+      ],
+      "tags": [
+        "班克斯",
+        "街头艺术",
+        "身份揭秘",
+        "艺术家",
+        "文化"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vanityfair.com/photos/69b59b401c54b03a02c2c024/master/pass/1093756306",
+      "published": "2026-03-14T18:21:42+00:00",
+      "sources": [
+        {
+          "name": "Vanity Fair",
+          "title": "Banksy Unmasked: Investigation Claims To Reveal Artist's Secret Identity",
+          "link": "https://www.vanityfair.com/culture/story/banksy-real-name-reportedly-revealed",
+          "lang": "en"
         }
       ],
       "article_count": 1
@@ -3118,6 +3387,34 @@
           "title": "“Botines de madre”: ¿Ha llegado el momento de incorporarlos a nuestro armario?",
           "link": "https://www.vogue.es/articulos/botines-de-madre-tendencia-primavera-2026-look-zoe-kravitz",
           "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "6fdcd117a1e2",
+      "title": "公主“失宠”？住所或不保",
+      "summary": "在安德鲁王子风波后，比阿特丽斯公主和尤金妮公主的未来备受瞩目。近日有消息称，两位公主或将失去部分皇家特权，包括她们的住所。作为时尚界的关注焦点，两位公主的着装品味和生活方式一直影响着潮流趋势和品牌形象。她们的未来动向，无疑将持续牵动时尚界的目光。",
+      "key_points": [
+        "比阿特丽斯公主和尤金妮公主面临特权缩减",
+        "住所问题成为关注焦点",
+        "公主时尚影响力不容忽视"
+      ],
+      "tags": [
+        "英国皇室",
+        "时尚",
+        "名人生活"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://stylecaster.com/wp-content/uploads/2026/03/beatrice-eugenie.jpg",
+      "published": "2026-03-14T16:30:00+00:00",
+      "sources": [
+        {
+          "name": "StyleCaster",
+          "title": "Finally Confirmation on if Beatrice & Eugenie Can Keep Their Royal Homes After Source Claims They’re ‘Going to Have to Say Goodbye’ to Their ‘Privileges’",
+          "link": "https://stylecaster.com/entertainment/celebrity-news/1234881841/where-beatrice-eugenie-live-andrew-arrest",
+          "lang": "en"
         }
       ],
       "article_count": 1
@@ -12275,20 +12572,23 @@
     },
     {
       "id": "b387bf0e202b",
-      "title": "黛米·摩尔蓝色高衩裙再掀时尚风暴，致敬朱莉经典？",
-      "summary": "黛米·摩尔身着Saint Laurent 2026早春度假系列钴蓝色高开衩礼服，惊艳亮相SXSW电影节，宣传其新电影。该礼服由Anthony Vaccarello设计，采用垂坠面料，搭配深V领和焦橙色丝带固定。她以简约裸色细带凉鞋和金色配饰点缀，整体造型性感大胆，优雅迷人。时尚界普遍认为，这一造型足以媲美安吉丽娜·朱莉在2012年奥斯卡红毯上的经典高开衩长裙造型，引发新一轮时尚话题。",
+      "title": "黛米·摩尔蓝色高衩裙致敬朱莉经典？Saint Laurent再掀红毯时尚风暴",
+      "summary": "黛米·摩尔身着Saint Laurent 2026早春度假系列钴蓝色高开衩礼服，惊艳亮相SXSW电影节，宣传其新电影。该礼服由Anthony Vaccarello设计，采用垂坠面料，搭配深V领和焦橙色丝带固定。她以简约裸色细带凉鞋和金色配饰点缀，整体造型性感大胆，优雅迷人。时尚界普遍认为，这一造型足以媲美安吉丽娜·朱莉在2012年奥斯卡红毯上的经典高开衩长裙造型，引发新一轮时尚话题。Vogue等媒体也对此进行了报道，突显了明星时尚对品牌和潮流的巨大影响力。",
       "key_points": [
-        "黛米·摩尔身着Saint Laurent 2026早春度假系列高开衩礼服亮相SXSW电影节",
-        "礼服由Anthony Vaccarello设计，钴蓝色垂坠面料，深V领，高开衩，焦橙色丝带固定",
-        "造型被认为致敬安吉丽娜·朱莉2012年奥斯卡红毯经典造型"
+        "黛米·摩尔身穿Saint Laurent高开衩礼服亮相SXSW电影节",
+        "礼服设计性感大胆，优雅迷人，出自Anthony Vaccarello之手",
+        "造型被认为可与安吉丽娜·朱莉的经典高开衩礼服造型相媲美",
+        "事件体现了明星时尚对品牌和潮流的影响",
+        "Vogue等媒体对此进行了报道"
       ],
       "tags": [
         "黛米·摩尔",
         "Saint Laurent",
-        "高开衩",
-        "SXSW",
+        "高开衩礼服",
         "安吉丽娜·朱莉",
         "红毯造型",
+        "SXSW",
+        "明星时尚",
         "Anthony Vaccarello"
       ],
       "category": "street-style",
@@ -12297,7 +12597,7 @@
       "published": "2026-03-13T15:20:29+00:00",
       "sources": [
         {
-          "name": "Vogue",
+          "name": "Vogue Fashion",
           "title": "In Saint Laurent, Demi Moore Rivals Angelina Jolie’s Iconic Slit Dress Moment",
           "link": "https://www.vogue.com/article/demi-moore-thigh-high-slit-saint-laurent-dress-sxsw",
           "lang": "en"
@@ -12309,7 +12609,7 @@
           "lang": "en"
         }
       ],
-      "article_count": 2
+      "article_count": 3
     },
     {
       "id": "df0a6a59aa52",
@@ -18337,316 +18637,6 @@
           "name": "Fashion Press",
           "title": "ドクターマーチン”カラースタッズ”「サッチェル」バッグ＆”イエローステッチ”タウンシューズ",
           "link": "https://www.fashion-press.net/news/144365",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "974506badcf5",
-      "title": "森永xコメダ：甜蜜跨界，味蕾新体验",
-      "summary": "森永制菓再度携手コメダ珈琲店，以其经典甜点为灵感，为消费者带来一场味觉盛宴。本次合作将コメダ招牌的シロノワール、クロネージュ、以及冰咖啡欧蕾的风味巧妙融入森永旗下多款人气零食中，包括小枝巧克力、天使派和巧克力球等。无需亲临咖啡店，也能随时随地品尝到熟悉的美味，感受这份限定的甜蜜。",
-      "key_points": [
-        "森永制菓与コメダ珈琲店再度联名",
-        "コメダ经典甜点风味融入森永零食",
-        "限定发售，带来独特味觉体验"
-      ],
-      "tags": [
-        "品牌联名",
-        "限定零食",
-        "咖啡甜点",
-        "森永制菓",
-        "コメダ珈琲店"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144356/top.jpg?1773375852",
-      "published": "2026-03-13T06:39:30+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "森永製菓×コメダ珈琲店、シロノワール風サンドクッキー＆ココア味のふわもち「エンゼルパイ」",
-          "link": "https://www.fashion-press.net/news/144356",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "4a04fe1bf0d2",
-      "title": "栗原はる美的学：日常花艺的五个巧思",
-      "summary": "日本生活美学大师栗原はるみ分享了轻松享受“花样生活”的五个实用技巧，旨在鼓励大家将花艺融入日常，提升生活品质。她从花材的选择、花器的搭配入手，并分享了通过巧妙修剪和更换花器来延长鲜花观赏期的方法。即使是忙碌的都市人，也能毫不费力地在家中营造出充满生机的氛围，感受花艺带来的愉悦。",
-      "key_points": [
-        "花材选择技巧",
-        "花器搭配建议",
-        "延长鲜花观赏期的方法"
-      ],
-      "tags": [
-        "生活方式",
-        "花艺",
-        "家居美学",
-        "栗原はるみ",
-        "日式生活"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://mi-mollet.ismcdn.jp/mwimgs/2/0/-/img_200aea0aa2c1a13cf9a60df762e86ff2538605.jpg?rd=202603121355",
-      "published": "2026-03-13T06:39:24+00:00",
-      "sources": [
-        {
-          "name": "mi-mollet",
-          "title": "今日からマネしたい！栗原はるみ「花のある生活を無理なく楽しむ」５つのコツ",
-          "link": "https://mi-mollet.com/articles/-/58833",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b11a19ef8366",
-      "title": "花样时髦：街拍解密印花与荷叶边的摩登穿搭术",
-      "summary": "本季街拍潮流指向经典元素的新生。如何将略显甜腻的印花与荷叶边穿出时尚感？关键在于色彩的巧妙运用和风格的平衡混搭。借鉴街拍达人的示范，用运动风夹克搭配女性化的印花衬衫裙，或利用简洁的配饰中和繁复的设计。Phoebe Philo、Van Cleef & Arpels、Rolex等品牌的单品也为造型增添亮点，展现不俗品味。",
-      "key_points": [
-        "色彩搭配是关键",
-        "风格混搭求平衡",
-        "配饰提升时尚度"
-      ],
-      "tags": [
-        "街拍",
-        "印花",
-        "荷叶边",
-        "时尚搭配",
-        "混搭"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://mi-mollet.ismcdn.jp/mwimgs/5/7/-/img_57fee7a6d1fa467a6a544bc0e6f4a607831148.jpg?rd=202603121355",
-      "published": "2026-03-13T06:39:21+00:00",
-      "sources": [
-        {
-          "name": "mi-mollet",
-          "title": "ポイントは色！「花柄」＆「フリル」をモードに着る方法は？【スナップ】",
-          "link": "https://mi-mollet.com/articles/-/58818",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "8c82fb0d06ac",
-      "title": "JINS x BEAUTIFUL PEOPLE：视差美学",
-      "summary": "JINS与BEAUTIFUL PEOPLE再度携手，推出备受瞩目的第二弹联名系列。本次合作以“视差”为灵感，打造三款别具一格的太阳镜。设计上巧妙运用双层镜框结构，并通过色彩与光影的精妙搭配，使佩戴者在不同视角下展现出多重魅力。该系列将于3月19日在JINS和BEAUTIFUL PEOPLE指定店铺及线上渠道同步发售，敬请期待。",
-      "key_points": [
-        "JINS与BEAUTIFUL PEOPLE二度联名",
-        "太阳镜设计主题为“视差”",
-        "双层镜框结构，色彩光影营造多重视觉效果"
-      ],
-      "tags": [
-        "JINS",
-        "BEAUTIFUL PEOPLE",
-        "联名系列",
-        "太阳镜",
-        "视差",
-        "时尚单品"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/13104007/Jbp_2nd_23_1080x1350px_0209-2.jpg",
-      "published": "2026-03-13T06:30:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "「ジンズ」と「ビューティフル ピープル」のコラボ第2弾　フレームに意図的なズレを組み込んだ3型のサングラスを発売",
-          "link": "https://www.wwdjapan.com/articles/2353134",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "0fe83c3eb3a5",
-      "title": "VIVIANO限时登陆Barneys！",
-      "summary": "备受瞩目的日本品牌VIVIANO将于3月20日至4月6日在Barneys New York银座本店开设独家快闪店，这也是该品牌首次入驻Barneys New York。届时，将呈现设计师Viviano Sue精心打造的2026年春夏系列男女装新品，让时尚爱好者们零距离感受VIVIANO的前卫设计理念与精湛工艺。VIVIANO曾荣获TOKYO FASHION AWARD，其作品融合了东西方美学，充满艺术气息，不容错过。",
-      "key_points": [
-        "VIVIANO首次入驻Barneys New York",
-        "2026春夏系列男女装新品亮相",
-        "设计师Viviano Sue及其品牌背景"
-      ],
-      "tags": [
-        "VIVIANO",
-        "Barneys New York",
-        "快闪店",
-        "日本时尚",
-        "2026春夏"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/viviano-barneys-new-york-ginza-20260313-001-4ce0dabd-3284-42fe-a013-9ad503fc4b32.jpg",
-      "published": "2026-03-13T06:29:27+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "ヴィヴィアーノがバーニーズ ニューヨーク銀座本店でポップアップ開催　26年春夏の新作を用意",
-          "link": "https://www.fashionsnap.com/article/2026-03-13/viviano-barneys-new-york-ginza",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "7b66c738f454",
-      "title": "Reebok x CAP：极简联名再袭",
-      "summary": "City Ambient Products (CAP) 与 Reebok 再次携手，推出备受瞩目的第二次联名系列。本次合作一改往日运动风貌，以极简主义为设计核心，所有单品均从版型开始进行原创设计，打造焕然一新的时尚体验。该系列包含夹克、长裤以及经典Logo T恤等单品，已在SHIPS指定店铺及线上商店发售，敬请关注。",
-      "key_points": [
-        "CAP与Reebok二度联名",
-        "极简主义设计风格",
-        "单品版型均为原创"
-      ],
-      "tags": [
-        "Reebok",
-        "City Ambient Products",
-        "联名系列",
-        "极简主义",
-        "SHIPS"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/13140057/Reebok-cap_banner_260310.jpg",
-      "published": "2026-03-13T06:15:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "「シティ アンビエント プロダクツ」の「リーボック」別注第2弾　ミニマルに刷新した完全オリジナルのアイテムを発売",
-          "link": "https://www.wwdjapan.com/articles/2353752",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "f64fbccd10e9",
-      "title": "Celine 2026秋冬：经典廓形下的个性表达与感官体验",
-      "summary": "Celine 2026秋冬系列在巴黎发布，是创意总监Michael Rider上任后的第三场大秀。Rider致力于重塑Celine的巴黎衣橱，通过服装的姿态和展示方式呈现品牌当下的状态，以“一点点不对劲”的设计理念和对穿着者个性的强调，重新诠释法式风格。本季以贴合身体的廓形为核心，色彩以黑白为主，点缀红色和紫色，并加入豹纹元素。在经典利落的剪裁基础上，通过复古帽饰、羽毛头饰、立体围巾、夸张珠宝等元素的运用，注入俏皮感和活力。新款细长矩形Trio手袋和柔软的Triomphe手袋兼具时尚感和实用性。秀场空间设计延续自然光，并加入了声音元素，提升了整体的感官体验。",
-      "key_points": [
-        "Michael Rider重塑Celine巴黎衣橱",
-        "贴合身体的廓形与利落剪裁",
-        "黑白主色调，点缀红紫与豹纹",
-        "帽子、羽毛头饰、夸张珠宝等配饰增添俏皮感",
-        "新款Trio和Triomphe手袋兼具时尚与实用",
-        "自然光与声音元素提升感官体验"
-      ],
-      "tags": [
-        "Celine",
-        "2026秋冬",
-        "巴黎时装周",
-        "Michael Rider",
-        "法式风格",
-        "廓形",
-        "配饰",
-        "手袋"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://ia.marieclaire.com.tw/assets/mc/202603/69B290531AB151773310035.jpeg",
-      "published": "2026-03-13T06:00:07+00:00",
-      "sources": [
-        {
-          "name": "Marie Claire Taiwan",
-          "title": "巴黎時裝週｜Celine 2026冬季系列：「一點點不對勁」的法式優雅，Michael Rider用直覺重新定義巴黎衣櫥",
-          "link": "https://www.marieclaire.com.tw/fashion/fashion-show/92260",
-          "lang": "zh"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "構築的な服に遊び心を宿す「セリーヌ」2026年秋冬",
-          "link": "https://www.fashionsnap.com/article/celine-26aw-report",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 3
-    },
-    {
-      "id": "a9f180b92c66",
-      "title": "Yagi力推环保面料，时尚生活新选择",
-      "summary": "日本纤维商社Yagi推出“UNITO project”环保材料系列，整合有机棉、再生涤纶等五种环保材料，产品线扩展至服装、寝具和室内装饰等生活方式领域。该项目注重材料的可追溯性和可持续性，携手日本及国际纺织企业，研发功能性环保面料，并与生活方式品牌合作推出联名产品，旨在以实际行动推动可持续时尚发展，为消费者提供更环保的时尚生活选择。",
-      "key_points": [
-        "Yagi推出环保材料系列UNITO project",
-        "涵盖服装、寝具等生活方式产品",
-        "强调可追溯性和品牌合作"
-      ],
-      "tags": [
-        "可持续时尚",
-        "环保材料",
-        "品牌合作",
-        "日本"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/06105257/yagi_unito2603_og.jpg",
-      "published": "2026-03-13T06:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "ヤギの環境配慮素材シリーズ「ユナ・イト」、ライフスタイルに拡大",
-          "link": "https://www.wwdjapan.com/articles/2343866",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "072d8f0d5521",
-      "title": "东京街头酷女孩：暗黑银色系潮流",
-      "summary": "Fashionsnap聚焦东京街头，捕捉到一位24岁服装从业者风间七海的独特风格。她以黑色和银色为主色调，巧妙混搭Y/PROJECT的前卫设计、JUNYA WATANABE的解构主义、BAO BAO ISSEY MIYAKE的几何包袋以及GUCCI的经典元素，展现出个性十足的时尚态度。风间七海特别提及她的发型师Ayato，来自null神宫前店，为其造型增添亮点。",
-      "key_points": [
-        "风间七海的暗黑银色系穿搭",
-        "Y/PROJECT, JUNYA WATANABE, BAO BAO ISSEY MIYAKE, GUCCI品牌混搭",
-        "发型师Ayato (null神宫前店) 的造型加持"
-      ],
-      "tags": [
-        "街拍",
-        "东京",
-        "暗黑风"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,width=1280,height=670,gravity=auto,fit=pad/streetstyle/images/2026/02/02-19-26-11-01-3-6c70b7d6-6f0c-4425-9237-843828037bfe.jpg",
-      "published": "2026-03-13T06:00:00+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "ストリートスタイル: Job: アパレル",
-          "link": "https://www.fashionsnap.com/streetstyle/2026-03-13/486184",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "d993c63d4117",
-      "title": "ZARA母公司：业绩稳健，科技加码",
-      "summary": "Inditex集团发布最新财报，总销售额增长3.2%，虽ZARA品牌增速有所放缓，但整体表现依旧稳健。CEO表示，中东局势对集团影响有限，并强调供应链的灵活性是关键。未来，Inditex将加大对人工智能等技术的投资力度，ZARA已率先推出AI虚拟试穿应用，旨在提升消费者购物体验。",
-      "key_points": [
-        "Inditex集团销售额增长3.2%",
-        "ZARA品牌增速放缓",
-        "加大AI技术投资，推出虚拟试穿"
-      ],
-      "tags": [
-        "ZARA",
-        "Inditex",
-        "财务业绩",
-        "零售",
-        "人工智能"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/13142027/INDITEX_01.jpg",
-      "published": "2026-03-13T05:40:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "「ザラ」の親会社インディテックス、25年は3％増収と堅調　中東情勢の影響は「限定的」とCEO",
-          "link": "https://www.wwdjapan.com/articles/2353816",
           "lang": "ja"
         }
       ],
