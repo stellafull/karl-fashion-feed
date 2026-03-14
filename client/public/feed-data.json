@@ -1,14 +1,16 @@
 {
   "meta": {
-    "generated_at": "2026-03-14T08:30:06+00:00",
+    "generated_at": "2026-03-14T10:24:56+00:00",
     "total_topics": 500,
-    "total_articles": 1109,
-    "sources_count": 48,
+    "total_articles": 1111,
+    "sources_count": 50,
     "sources": [
       "Allure",
+      "BOF",
       "Bustle",
       "CR Fashion Book",
       "Complex Style",
+      "Cosmopolitan China",
       "Coveteur",
       "Dazed",
       "Dazed Beauty",
@@ -57,22 +59,22 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 34,
-      "blocked_by_tombstones": 301,
-      "evicted_topics": 29,
+      "new_articles_in_2h": 17,
+      "blocked_by_tombstones": 347,
+      "evicted_topics": 11,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 5,
-        "incremental_new_topics_created": 29,
-        "cross_merge_candidates": 3,
-        "cross_merge_low_reviews": 3,
+        "incremental_assigned_to_existing": 3,
+        "incremental_new_topics_created": 14,
+        "cross_merge_candidates": 7,
+        "cross_merge_low_reviews": 7,
         "cross_merge_high_reviews": 0,
-        "cross_merge_merged_topics": 0
+        "cross_merge_merged_topics": 3
       }
     },
     "quality": {
-      "merge_rate": 0.5491,
-      "avg_sources_per_topic": 1.296,
-      "high_confidence_topic_ratio": 0.944,
+      "merge_rate": 0.55,
+      "avg_sources_per_topic": 1.298,
+      "high_confidence_topic_ratio": 0.942,
       "rebuild_mode": "incremental"
     }
   },
@@ -2793,6 +2795,452 @@
       "article_count": 1
     },
     {
+      "id": "9eefffa0d132",
+      "title": "哆啦A梦变身！东京限定日系萌物来袭",
+      "summary": "备受期待的“100%哆啦A梦＆朋友 in 东京”展览将于2026年3月27日在东京盛大开幕。首波限定周边商品抢先曝光，一系列充满浓郁日本风情的哆啦A梦毛绒钥匙链萌翻众人。樱花、柴犬、相扑、饭团，哆啦A梦化身各种经典日式元素，可爱又别致，绝对是收藏的不二之选。",
+      "key_points": [
+        "“100%哆啦A梦＆朋友 in 东京”展览",
+        "2026年3月27日开幕",
+        "限定日式风情哆啦A梦钥匙链"
+      ],
+      "tags": [
+        "哆啦A梦",
+        "展览",
+        "限定周边",
+        "IP联名",
+        "日本文化"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://www.fashion-press.net/img/news/144383/top.jpg?1773414782",
+      "published": "2026-03-14T10:18:34+00:00",
+      "sources": [
+        {
+          "name": "Fashion Press",
+          "title": "展覧会「100％ドラえもん＆フレンズ in 東京」限定グッズ、柴犬や桜に扮したドラえもんキーチェーン",
+          "link": "https://www.fashion-press.net/news/144383",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c48f47eca513",
+      "title": "勃肯UTTI LACE：鞋床上的时尚新篇",
+      "summary": "BIRKENSTOCK勃肯推出全新UTTI LACE系列，以创新视觉聚焦其在封闭式鞋履领域的领先地位。UTTI LACE的设计灵感源自莫卡辛鞋，秉承勃肯原创鞋床的功能性原则，打造柔软而富有雕塑感的鞋型。该鞋款采用优质麂皮，搭配标志性外露缝线和精致的无金属孔眼系带，轻质橡胶外底提升穿着的灵活性。UTTI LACE的核心在于多层结构的勃肯深蓝鞋床，预计将于2026年春夏推出全新配色，敬请期待。",
+      "key_points": [
+        "UTTI LACE系列全新发布",
+        "设计灵感源自莫卡辛鞋",
+        "深蓝鞋床，2026春夏新色"
+      ],
+      "tags": [
+        "BIRKENSTOCK",
+        "勃肯鞋",
+        "UTTI LACE"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://www.cosmopolitancn.com/static/cosmo/images/nav_menu.png",
+      "published": "2026-03-14T10:18:14+00:00",
+      "sources": [
+        {
+          "name": "Cosmopolitan China",
+          "title": "时尚COSMO-BIRKENSTOCK (勃肯) 呈现 UTTI LACE 全新视觉，诠释鞋床的普适卓越性能",
+          "link": "https://www.cosmopolitancn.com/cosmo/detail/47658",
+          "lang": "zh"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1154f7f8372f",
+      "title": "2026春夏：低腰牛仔优雅回归",
+      "summary": "WWD Japan报道，2026春夏低腰牛仔裤摆脱街头感，以成熟姿态重回时尚舞台。Ann Demeulemeester、Stella McCartney、McQueen、Coach和DSQUARED2等品牌在秀场上示范了多种搭配方案：浪漫白衬衫凸显女性柔美，内衣风单品性感大胆，流苏上衣则增添波西米亚风情。巧妙调整上下身比例，更能打造令人眼前一亮的时尚造型。本季低腰牛仔不再是叛逆的象征，而是优雅与个性的完美融合。",
+      "key_points": [
+        "低腰牛仔风格转型",
+        "成熟优雅搭配是关键",
+        "比例调整塑造完美身形"
+      ],
+      "tags": [
+        "低腰牛仔裤",
+        "2026春夏趋势",
+        "时尚搭配"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/02/13173732/1-18.jpg",
+      "published": "2026-03-14T10:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "ローライズデニムが復活　今季は“大人顔”で着こなす【2026年春夏トレンド】",
+          "link": "https://www.wwdjapan.com/articles/2324305",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c2dd32bc2890",
+      "title": "极简婚纱：Less is More的优雅",
+      "summary": "《Vogue》精选34款简约婚纱，为追求Less is More的新娘们提供完美选择。这些婚纱摒弃繁复装饰，以流畅线条和高级面料凸显新娘的自然之美。Marina Moscone、Reformation、Nili Lotan和Givenchy等品牌纷纷推出极简风格婚纱，涵盖丝绸、吊带、高领、迷你裙等多种设计，满足不同新娘的需求，完美诠释简约即是永恒的时尚理念。",
+      "key_points": [
+        "《Vogue》推荐34款极简婚纱",
+        "涵盖多种款式，满足不同需求",
+        "Marina Moscone等品牌引领潮流"
+      ],
+      "tags": [
+        "婚纱",
+        "极简主义",
+        "新娘"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://assets.vogue.com/photos/69b368818dd68c217b1d5a90/master/pass/image8.jpg",
+      "published": "2026-03-14T10:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "The Best Simple Yet Striking Wedding Dresses for Minimalist Brides",
+          "link": "https://www.vogue.com/slideshow/simple-wedding-dresses",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "9fc0d0b01d8d",
+      "title": "告别明媚黄，拥抱大地棕！",
+      "summary": "凯特·哈德森的经典黄色缎面裙令人难忘，但她在2026年选择Max Mara棕色缎面裙亮相，预示着时尚风向的转变。棕色正逐渐取代黄色，成为新的潮流焦点。分析认为，棕色将在即将到来的春季继续引领时尚，成为衣橱里的必备色彩。",
+      "key_points": [
+        "凯特·哈德森的造型转变",
+        "缎面裙的色彩趋势变化",
+        "棕色系在时尚界的崛起"
+      ],
+      "tags": [
+        "凯特·哈德森",
+        "缎面裙",
+        "棕色",
+        "时尚趋势",
+        "色彩趋势"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.vogue.es/photos/69b51a72f2396cc069e716dd/master/pass/GettyImages-2266404855.jpg",
+      "published": "2026-03-14T09:55:41+00:00",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "Kate Hudson (o Andie Anderson) y por qué su icónico vestido satinado ya no será amarillo, sino marrón",
+          "link": "https://www.vogue.es/articulos/vestido-satinado-kate-hudson-look-primavera-2026",
+          "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "9f59483679e6",
+      "title": "70年代复古风潮与坡跟鞋回潮：2026春季鞋履趋势预测",
+      "summary": "Vogue西班牙版预测，70年代标志性的厚底鞋、木屐以及Isabel Marant的Bekett坡跟运动鞋将在2026年春季强势回归。受Cher和Diana Ross等时尚偶像的影响，70年代复古风潮融合了波西米亚的自由奔放和迪斯科的闪耀魅力。同时，编织芭蕾舞鞋也将成为搭配牛仔裤的理想选择，为春季穿搭提供更多选择。Bekett运动鞋的回归，预示着时尚界正从极简主义转向更具Y2K风格的潮流，宣告着大胆、个性的时代正在回归。",
+      "key_points": [
+        "70年代厚底鞋和木屐将在2026年春季回归",
+        "编织芭蕾舞鞋是搭配牛仔裤的理想选择",
+        "Isabel Marant Bekett坡跟运动鞋在洛杉矶街头复兴",
+        "时尚界从极简主义转向Y2K风格",
+        "复古风潮持续升温"
+      ],
+      "tags": [
+        "70年代",
+        "复古风",
+        "厚底鞋",
+        "木屐",
+        "芭蕾舞鞋",
+        "坡跟鞋",
+        "Bekett",
+        "Isabel Marant",
+        "2026春季",
+        "Y2K"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.vogue.es/photos/69b27b84dcba4de1e3c6f2cb/master/pass/zapatos-boho.png",
+      "published": "2026-03-14T09:34:20+00:00",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "Los zapatos de los 70 más fabulosos regresan a las tendencias de primavera 2026",
+          "link": "https://www.vogue.es/articulos/zapatos-anos-70-regresan-tendencia-primavera-2026",
+          "lang": "es"
+        },
+        {
+          "name": "Vogue España",
+          "title": "Y los zapatos clásicos de primavera 2026 que mejor quedan con pantalones vaqueros son…",
+          "link": "https://www.vogue.es/articulos/tendencias-zapatos-bailarinas-2026-trenzadas",
+          "lang": "es"
+        },
+        {
+          "name": "Vogue España",
+          "title": "Zapatillas Bekett de Isabel Marant: Acabo de volver de Los Ángeles y este zapato estaba por todas partes",
+          "link": "https://www.vogue.es/articulos/zapatillas-bekett-isabel-marant-tendencia-vuelven",
+          "lang": "es"
+        }
+      ],
+      "article_count": 3
+    },
+    {
+      "id": "9e32d2cf6b84",
+      "title": "东京街头：机修潮男的混搭哲学",
+      "summary": "Fashionsnap近日捕捉到东京街头一位25岁汽车维修员KAIRI HANEISH的时尚身影。他巧妙地将二手外套与ZARA上衣、TREASURE ISLE内搭叠穿，下身搭配Carhartt WIP工装裤，脚踩经典Dr.Martens马丁靴，头戴BIRDWELL帽子，并以GENTLE MONSTER眼镜点睛，整体造型兼具休闲与潮流感，展现出独特的个人风格。",
+      "key_points": [
+        "东京街拍",
+        "汽车维修员的时尚穿搭",
+        "混搭风格"
+      ],
+      "tags": [
+        "街拍",
+        "东京",
+        "混搭",
+        "工装风",
+        "休闲时尚"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://fashionsnap-assets.com/asset/format=auto,width=1280,height=670,gravity=auto,fit=pad/streetstyle/images/2026/02/02-23-26-11-02-5-87c77e8c-4fe6-4c2f-93a3-97e4d0e398c3.jpg",
+      "published": "2026-03-14T09:00:01+00:00",
+      "sources": [
+        {
+          "name": "Fashionsnap",
+          "title": "ストリートスタイル: Job: 自動車整備",
+          "link": "https://www.fashionsnap.com/streetstyle/2026-03-14/486298",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "f8a7b367751b",
+      "title": "复古回潮：90年代牛仔裤重塑春日时尚",
+      "summary": "靛蓝牛仔风潮依旧，但时尚达人们早已将目光锁定在更具复古韵味的90年代牛仔裤上。本季，宽松廓形、高腰设计和做旧质感的90年代牛仔裤强势回归，成为打造 effortless chic 春日造型的关键单品。无论是搭配简约T恤、精致衬衫，还是飘逸连衣裙，都能轻松提升时尚度，引领春季潮流。",
+      "key_points": [
+        "90年代牛仔裤回归",
+        "宽松高腰是关键",
+        "轻松打造时尚造型"
+      ],
+      "tags": [
+        "牛仔裤",
+        "90年代",
+        "春季时尚",
+        "复古风"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/WoE5xCDpr7jc3YvJZCNogj-1280-80.png",
+      "published": "2026-03-14T09:00:00+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "Indigo Denim Is Chic, But Fashion People Know These '90s Jeans That Are the Key to Easy, Elevated Spring Outfits",
+          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/light-wash-jeans-outfits-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "d1a5f9a0232c",
+      "title": "复古牛仔回潮：50+时尚逆袭",
+      "summary": "Who What Wear杂志预测2026年牛仔裤穿搭趋势，聚焦50岁以上女性的经典牛仔裤造型。令人惊讶的是，这些成熟优雅的搭配也引发了Z世代编辑们的关注和讨论。报道深入分析了牛仔裤的颜色选择、版型剪裁，以及如何通过巧妙搭配打造永不过时的时尚造型，为不同年龄层的女性提供了实用的穿搭灵感。",
+      "key_points": [
+        "50+牛仔裤经典搭配成潮流",
+        "Z世代编辑关注成熟风尚",
+        "牛仔裤颜色与版型选择指南"
+      ],
+      "tags": [
+        "牛仔裤",
+        "穿搭技巧",
+        "潮流趋势",
+        "Z世代",
+        "50+女性"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/VV6CyNEJE98YFcTC9jQiXE-1280-80.jpg",
+      "published": "2026-03-14T09:00:00+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "This Timeless Over-50s Jeans Outfit Has Even Our Gen Z Editors Talking",
+          "link": "https://www.whowhatwear.com/fashion/celebrity-style/cindy-crawford-boot-cut-jeans-heels-outfit",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "39c1da39f63d",
+      "title": "潮人必看：下周潮流新品抢先知！",
+      "summary": "《WWD Japan》精选下周（3月16日至22日）即将发售的16款潮流单品，涵盖运动休闲、文化IP等多个领域。备受瞩目的包括YOASOBI与ASICS运动休闲系列的跨界联名，成城石井与Anya Hindmarch合作的迷你托特包经典复刻，优衣库携手集英社推出的100周年纪念UT系列，Converse与设计师Daisuke Kondo的联名力作，Adidas全新跑鞋，以及FETICO的限定系列。潮流爱好者们敬请期待！",
+      "key_points": [
+        "YOASOBI x ASICS联名系列",
+        "成城石井 x Anya Hindmarch迷你托特包复刻",
+        "优衣库 x 集英社100周年纪念UT"
+      ],
+      "tags": [
+        "联名合作",
+        "新品发售",
+        "运动休闲",
+        "文化IP",
+        "限定系列"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2025/10/12133417/%E6%96%B0%E4%BD%9C_og.jpg",
+      "published": "2026-03-14T09:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "YOASOBI×「アシックス スポーツスタイル」や成城石井×「アニヤ」バッグなど！　来週発売のファッションアイテム16選【3/16〜3/22】",
+          "link": "https://www.wwdjapan.com/articles/2235557",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "23d1d7478904",
+      "title": "Freak's Store x A.P.C. 联名T恤释出",
+      "summary": "轻奢品牌A.P.C.携手Freak's Store推出别注系列T恤，经典款“アーペーセー ブロードTシャツ”和“リュ・マダム Tシャツ”焕新登场。本次联名亮点在于将A.P.C.标志性的品牌Logo低调处理为与衣身同色系，并采用更具潮流感的宽松廓形剪裁，打造简约而不失个性的时尚单品。该系列提供经典黑、白、灰三色可选，其中灰色款为部分店铺限定发售，售价均为16500日元。",
+      "key_points": [
+        "A.P.C.与Freak's Store联名",
+        "经典T恤Logo同色系处理",
+        "宽松版型设计"
+      ],
+      "tags": [
+        "品牌联名",
+        "T恤",
+        "A.P.C.",
+        "Freak's Store",
+        "轻奢"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/apc-freaks-20260310_001-2650f64c-f9a7-415c-b9c5-96fd6a942696.jpg",
+      "published": "2026-03-14T09:00:00+00:00",
+      "sources": [
+        {
+          "name": "Fashionsnap",
+          "title": "フリークスストアがアー・ペー・セーに別注　定番Tシャツ2型をラインナップ",
+          "link": "https://www.fashionsnap.com/article/2026-03-14/apc-freaks-store",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "2362b252c36a",
+      "title": "2026秋冬及春夏系列速递：日本新锐品牌崛起，国际品牌探索未来",
+      "summary": "2026年秋冬及春夏系列陆续发布，日本品牌表现亮眼。Eriko Yamaguchi和FUMIE TANAKA发布了2026春夏系列，前者探索品牌新方向，后者延续独特设计并创新廓形和面料。Akikoaoki, Tamme Tokyo和Attachment Tokyo则分别以“交流与摩擦”、“力量”和“Lasting”为主题，探索服装的本质与未来。Simone Rocha发布了2026-27秋冬系列，HATRA也发布了2026秋冬系列。设计师们从军事元素、工装风、人工智能等多个角度出发，呈现了对时尚与现实碰撞的思考。",
+      "key_points": [
+        "Eriko Yamaguchi 2026春夏系列探索品牌新方向",
+        "FUMIE TANAKA 2026春夏系列延续独特设计并创新",
+        "Akikoaoki, Tamme Tokyo, Attachment Tokyo 2026秋冬系列探索服装本质",
+        "Simone Rocha 2026-27秋冬系列发布",
+        "HATRA 2026秋冬系列发布",
+        "设计师从军事元素、工装风、人工智能等角度思考时尚"
+      ],
+      "tags": [
+        "2026春夏",
+        "2026秋冬",
+        "Eriko Yamaguchi",
+        "FUMIE TANAKA",
+        "Akikoaoki",
+        "Tamme Tokyo",
+        "Attachment Tokyo",
+        "Simone Rocha",
+        "HATRA",
+        "日本品牌",
+        "伦敦时装周"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/09165419/OG-70.jpg",
+      "published": "2026-03-14T08:41:22+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "「エリコヤマグチ」2026年春夏コレクション",
+          "link": "https://www.wwdjapan.com/articles/2348636",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「フミエ タナカ」2026年春夏コレクション",
+          "link": "https://www.wwdjapan.com/articles/2353382",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「シモーン ロシャ」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2350593",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "HATRA 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/hatra/2026aw",
+          "lang": "ja"
+        },
+        {
+          "name": "Vogue",
+          "title": "Akikoaoki Tokyo Fall 2026",
+          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/akikoaoki",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Tamme Tokyo Fall 2026",
+          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/tamme",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Attachment Tokyo Fall 2026",
+          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/attachment",
+          "lang": "en"
+        }
+      ],
+      "article_count": 7
+    },
+    {
+      "id": "22149e13537c",
+      "title": "伦敦新势力：三大品牌闪耀秋冬",
+      "summary": "《Vogue Japan》聚焦2026-27秋冬伦敦时装周，发掘LUEDER、Pauline Dujancourt和PETRA FAGERSTROM三大新锐品牌。报道深入剖析设计师背景、独特设计理念及系列亮点，展现伦敦作为时尚摇篮的活力，以及这些品牌所带来的创新视角和前卫风格。它们的设计不仅是对传统时尚的颠覆，更是对未来潮流的探索，预示着伦敦时尚界的新篇章。",
+      "key_points": [
+        "LUEDER, Pauline Dujancourt, PETRA FAGERSTROM三大品牌备受瞩目",
+        "设计师背景与设计风格",
+        "伦敦时装周新锐力量"
+      ],
+      "tags": [
+        "伦敦时装周",
+        "新锐设计师",
+        "秋冬系列",
+        "品牌推荐"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://media.vogue.co.jp/photos/69b222ece24c68bd80146689/master/pass/Dujancourt%20F26%20037.jpg",
+      "published": "2026-03-14T08:30:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue Japan",
+          "title": "若手の宝庫ロンドン。2026-27年秋冬コレクションで注目を集めたブランド3選",
+          "link": "https://www.vogue.co.jp/article/london-fashion-week-emerging-designers-2026-27-aw",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "36729a8247f2",
       "title": "Valentino 2026秋冬罗马大秀：Michele的多元隐喻、致敬与折衷主义的全新篇章",
       "summary": "Alessandro Michele在罗马巴贝里尼宫发布了其主导的Valentino 2026/2027秋冬系列“Interferenze”，向品牌创始人Valentino Garavani致敬，并探索自身设计理念与Valentino先生的交汇。该系列灵感来源于Valentino先生对女性赋权的理解、罗马美学与巴黎时尚的融合，以及意大利文艺复兴时期的调色板。Michele将服装与配饰巧妙地转化为对生活多样性的隐喻，在优雅与性感之间游走，并强调服装作为一种赋权形式的重要性。该系列是Garavani去世后的首个成衣系列，以克制和平衡为主题，与Michele时期的Gucci风格形成对比，展现了品牌新的设计方向和审美理念，被认为是品牌的重要转折点。Colman Domingo、Clairo 和 Mariacarla Boscono 等品牌大使也出席了在历史悠久的Palazzo Barberini宫殿举办的这场秀。整个系列包含84件作品，采用非常规的垂坠设计和闪耀元素，并以一件标志性的红色V型露背长裙作为压轴，惊艳全场。Michele将自己视为品牌美学中的“干扰”，通过折衷主义的设计，在男装和女装中都展现了大胆与细腻并存的风格，探索了秩序与脆弱之间的关系。",
@@ -2978,6 +3426,36 @@
       "article_count": 1
     },
     {
+      "id": "ed482f331e9a",
+      "title": "Vuori 跃入丹宁领域",
+      "summary": "加州运动品牌 Vuori 首次推出女性牛仔系列，此举标志着品牌战略性地拓展产品线，从核心运动服装领域延伸至更广阔的时尚市场。该系列旨在为现代女性提供兼具舒适性与时尚感的丹宁选择，进一步丰富 Vuori 的产品组合。",
+      "key_points": [
+        "Vuori 首次推出女性牛仔系列",
+        "品牌拓展产品线，进入丹宁市场",
+        "旨在提供舒适时尚的丹宁选择"
+      ],
+      "tags": [
+        "Vuori",
+        "牛仔",
+        "女性服装",
+        "新品发布",
+        "运动休闲"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/e737/3d1d/0def/1404/2439/4df0/d74b/8d42/1fd6/27ea/208x208/27ea.jpg",
+      "published": "2026-03-14T07:59:18+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Vuori launches first women’s denim collection",
+          "link": "https://ww.fashionnetwork.com/news/Vuori-launches-first-women-s-denim-collection,1815808.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "a8d0ff365540",
       "title": "Urban Outfitters x Vans 潮流据点再升级",
       "summary": "潮流品牌Urban Outfitters与Vans再度携手，于纽约先驱广场Urban Outfitters门店开设全新店中店。此举深化了双方的合作关系，旨在为消费者打造更为便捷、沉浸式的购物体验，轻松选购Vans经典鞋款及潮流单品，感受街头文化的独特魅力。",
@@ -3034,50 +3512,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "2362b252c36a",
-      "title": "2026春夏系列速递：Eriko Yamaguchi与FUMIE TANAKA引领日本时尚，Simone Rocha发布26-27秋冬系列",
-      "summary": "日本品牌Eriko Yamaguchi和FUMIE TANAKA相继发布了备受瞩目的2026春夏系列，WWD Japan对其进行了报道。Eriko Yamaguchi预示着品牌在时尚领域的全新探索与发展方向，而FUMIE TANAKA则延续了其独特的设计风格，并在廓形和面料上有所创新。此外，WWD Japan还报道了Simone Rocha发布的2026-27年秋冬系列，该系列在伦敦时装周上亮相。",
-      "key_points": [
-        "Eriko Yamaguchi 2026春夏系列预示品牌全新发展方向",
-        "FUMIE TANAKA 2026春夏系列延续独特设计风格，并在廓形和面料上创新",
-        "Simone Rocha 发布2026-27年秋冬系列，于伦敦时装周亮相"
-      ],
-      "tags": [
-        "Eriko Yamaguchi",
-        "FUMIE TANAKA",
-        "Simone Rocha",
-        "2026春夏系列",
-        "2026-27秋冬系列",
-        "WWD Japan",
-        "伦敦时装周"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/09165419/OG-70.jpg",
-      "published": "2026-03-14T07:30:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "「エリコヤマグチ」2026年春夏コレクション",
-          "link": "https://www.wwdjapan.com/articles/2348636",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「フミエ タナカ」2026年春夏コレクション",
-          "link": "https://www.wwdjapan.com/articles/2353382",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「シモーン ロシャ」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2350593",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 3
     },
     {
       "id": "9f7e9dfdfb5b",
@@ -3206,34 +3640,6 @@
       "article_count": 1
     },
     {
-      "id": "9f59483679e6",
-      "title": "70年代风潮再起：复古鞋履引领2026春季时尚",
-      "summary": "Vogue西班牙版预测，70年代标志性的厚底鞋和木屐将在2026年春季强势回归。受Cher和Diana Ross等时尚偶像的影响，这股复古风潮融合了波西米亚的自由奔放和迪斯科的闪耀魅力，势必成为下一季的焦点。无论是搭配牛仔裤还是其他春季单品，70年代风格的鞋履都能为你的造型注入独特的复古格调。",
-      "key_points": [
-        "70年代鞋履复兴",
-        "厚底鞋和木屐成焦点",
-        "搭配牛仔裤提升造型"
-      ],
-      "tags": [
-        "70年代风格",
-        "复古鞋履",
-        "春季潮流"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.vogue.es/photos/69b27b84dcba4de1e3c6f2cb/master/pass/zapatos-boho.png",
-      "published": "2026-03-14T07:13:11+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "Los zapatos de los 70 más fabulosos regresan a las tendencias de primavera 2026",
-          "link": "https://www.vogue.es/articulos/zapatos-anos-70-regresan-tendencia-primavera-2026",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "aa307bf90520",
       "title": "《Love Story》：90年代另类音乐的爱情挽歌",
       "summary": "Vogue España聚焦瑞恩·墨菲执导的电视剧《Love Story》，该剧讲述了小约翰·肯尼迪和卡罗琳·贝赛特-肯尼迪的爱情故事。音乐总监Jen Malone在采访中分享了剧中精选的90年代另类音乐，包括比约克、Cocteau Twins等艺术家的作品。这些音乐不仅是时代的印记，更深刻地烘托了剧情发展和人物复杂的情感关系，为这段传奇爱情故事增添了独特的氛围。",
@@ -3264,36 +3670,6 @@
       "article_count": 1
     },
     {
-      "id": "4705270fb7fc",
-      "title": "坡跟鞋回潮：LA街头的Bekett风",
-      "summary": "Isabel Marant的Bekett坡跟运动鞋在洛杉矶悄然复兴，成为街头新宠。这款2011年问世的经典单品，在2026年再度翻红，预示着时尚界正从极简主义的“CBK效应”转向更具Y2K风格的潮流。Bekett运动鞋的回归，无疑是复古风潮的又一力证，宣告着大胆、个性的时代正在回归。",
-      "key_points": [
-        "Isabel Marant Bekett运动鞋复兴",
-        "洛杉矶街头潮流风向标",
-        "Y2K风格回归"
-      ],
-      "tags": [
-        "Isabel Marant",
-        "坡跟运动鞋",
-        "复古潮流",
-        "洛杉矶",
-        "Y2K"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.vogue.es/photos/69afce9cda04e308c6c64306/master/pass/2264837946",
-      "published": "2026-03-14T07:12:50+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "Zapatillas Bekett de Isabel Marant: Acabo de volver de Los Ángeles y este zapato estaba por todas partes",
-          "link": "https://www.vogue.es/articulos/zapatillas-bekett-isabel-marant-tendencia-vuelven",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "93c6f14cdee2",
       "title": "裸色美甲：2026春季潮流新演绎",
       "summary": "《Vogue》西班牙版揭示2026春季美甲趋势：裸色强势回归！告别单调，镀铬光泽、法式晕染等创新手法赋予裸色美甲全新生命力。优雅与个性并存，为你打造专属指尖时尚。从经典到前卫，多种裸色美甲设计灵感，助你引领潮流。",
@@ -3318,6 +3694,36 @@
           "title": "Las mejores opciones de uñas nude que debes probar en tu próxima cita",
           "link": "https://www.vogue.es/articulos/unas-nude-manicura-mejores-opciones-probar",
           "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "a3914e58b1bd",
+      "title": "BUZZWIT原宿首店亮相！",
+      "summary": "日本EC潮牌BUZZWIT在原宿Laforet开设首家实体店“バズウィット原宿”，旨在突破线上增长瓶颈，拥抱Z世代。该品牌旗下拥有39个EC专营品牌，此前主要依赖ZOZOTOWN销售。实体店着重打造沉浸式体验，设置多个拍照打卡点，并计划邀请品牌总监与粉丝互动，以期拓展客户群体，吸引更多海外游客，实现线上线下联动。",
+      "key_points": [
+        "BUZZWIT首家实体店",
+        "原宿Laforet选址",
+        "Z世代营销策略"
+      ],
+      "tags": [
+        "EC品牌",
+        "实体店",
+        "Z世代",
+        "原宿",
+        "品牌营销"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/buzzwit_20260314-7-9517829b-951f-4d27-9641-95bc540fc9d1.jpg",
+      "published": "2026-03-14T07:03:36+00:00",
+      "sources": [
+        {
+          "name": "Fashionsnap",
+          "title": "EC専業のバズウィット、初のリアル店をラフォーレ原宿に出店　初日はレジ待ち行列",
+          "link": "https://www.fashionsnap.com/article/2026-03-14/buzzwit-laforet-open-2026",
+          "lang": "ja"
         }
       ],
       "article_count": 1
@@ -6765,52 +7171,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "472b06643183",
-      "title": "Akikoaoki, Tamme Tokyo & Attachment Tokyo：解构、力量与永恒衣橱的探索",
-      "summary": "2026秋季，Akikoaoki, Tamme Tokyo和Attachment Tokyo分别以“交流与摩擦”、“力量”和“Lasting”为主题，共同探索了时尚与现实的碰撞以及服装的本质。Akikoaoki从军事元素中汲取灵感，并首次启用男模，打破传统性别框架，将硬朗的工装风与柔美的亮片、蕾丝元素相融合，呈现高低混搭美学，并思考人工智能对未来时尚的影响。Tamme Tokyo设计师Tatsuya Tamada同样从军装和制服中汲取灵感，通过解构、替换和改变制服，创造个性化的风格，将军事元素融入日常穿着。Attachment Tokyo设计师Koki Enomoto则聚焦“永恒衣橱”的不可能性，通过高端线‘STILL’强调天然材料和服装的基本表达，带来无领长袖T恤、不对称拉链羽绒服等单品，体现对日常和感性的思考。",
-      "key_points": [
-        "Akikoaoki：军事元素、性别突破、高低混搭、AI思考",
-        "Tamme Tokyo：军装解构、制服改造、个性化风格",
-        "Attachment Tokyo：永恒衣橱、天然材料、简约设计、日常感性"
-      ],
-      "tags": [
-        "2026秋冬",
-        "Akikoaoki",
-        "Tamme Tokyo",
-        "Attachment Tokyo",
-        "解构",
-        "军事风",
-        "工装",
-        "永恒衣橱",
-        "可持续时尚"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://assets.vogue.com/photos/69b297614f3b79a9688e7248/master/pass/00001-akikoaoki-fall-2026-ready-to-wear-tokyo-credit-brand.jpg",
-      "published": "2026-03-13T20:18:49+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "Akikoaoki Tokyo Fall 2026",
-          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/akikoaoki",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Tamme Tokyo Fall 2026",
-          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/tamme",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Attachment Tokyo Fall 2026",
-          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/attachment",
-          "lang": "en"
-        }
-      ],
-      "article_count": 3
     },
     {
       "id": "5043ac289903",
@@ -13625,27 +13985,29 @@
     },
     {
       "id": "8ef5f304771a",
-      "title": "藤原浩Fragment Design x Nike Mind 001 “Black” 概念鞋款即将发售",
-      "summary": "Fragment Design与Nike再度携手，推出极具未来感的Mind 001 “Black”鞋款，隶属于藤原浩的“Concept Testing”实验项目。这款设计大胆的鞋履以黑色为主色调，点缀皇家蓝色，采用轻盈透气的Flyknit鞋面，并采用前卫的“骡子鞋”造型。中底带有原型标记和标志性的Fragment闪电Logo，最引人注目的是中底嵌入的22个感觉节点，据称旨在通过行走刺激大脑特定区域，带来独特的穿着体验。官方图片已释出，并将于3月19日发售。",
+      "title": "Fragment Design x Nike 最终联名系列 “Fragment Concept Testing” 发布：Mind 001 “Black”、“Team Red” 及 Air Liquid Max 引领潮流",
+      "summary": "潮流教父藤原浩领衔的 Fragment Design 与 Nike 推出最终联名系列“Fragment Concept Testing”，包含 Air Liquid Max、Mind 001、Mind 002 等鞋款，以极简设计语言和 Nike 的创新实验性为特色。Mind 001 系列包含此前曝光的“Black”和全新亮相的“Team Red”配色。“Black”概念鞋款隶属于藤原浩的“Concept Testing”实验项目，以黑色Flyknit鞋面和独特的“骡子鞋”造型著称，中底嵌入22个感觉节点，将于3月19日发售。新款Mind 001“Team Red”采用丰富的红色调和神经科学设计，旨在提供平静和专注的穿着体验，预计2026年4月发售。Air Liquid Max 以毒蛙为灵感，采用黑色设计，并作为 Air Max Day 的重磅鞋款发布。Mind 001和Mind 002则将于3月14日起在V.A.发售。",
       "key_points": [
-        "Fragment Design与Nike再度合作，推出Mind 001 “Black”鞋款",
-        "鞋款隶属于藤原浩的“Concept Testing”实验项目",
-        "采用黑色Flyknit鞋面，皇家蓝色点缀，前卫“骡子鞋”造型",
-        "中底带有原型标记和Fragment闪电Logo，嵌入22个感觉节点",
-        "将于3月19日正式发售"
+        "Fragment Design x Nike 最终联名系列 “Fragment Concept Testing” 发布",
+        "系列包含 Air Liquid Max、Mind 001、Mind 002 等鞋款",
+        "Mind 001 “Black” 配色采用黑色 Flyknit 鞋面和“骡子鞋”造型，3月19日发售",
+        "Mind 001 “Team Red” 配色采用红色调和神经科学设计，预计2026年4月发售",
+        "Air Liquid Max 以毒蛙为灵感，黑色设计，Air Max Day 发布",
+        "Mind 001和Mind 002将于3月14日起在V.A.发售"
       ],
       "tags": [
         "Fragment Design",
         "Nike",
         "藤原浩",
+        "联名系列",
+        "Air Liquid Max",
         "Mind 001",
-        "Concept Testing",
-        "联名",
+        "Mind 002",
         "球鞋",
-        "发售"
+        "Concept Testing"
       ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
       "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F13%2Fnike-fragment-concept-testing-mind-001-black-IQ8502-001-release-info-0.jpg?w=800&cbr=1&q=90&fit=max",
       "published": "2026-03-13T10:04:33+00:00",
       "sources": [
@@ -13660,9 +14022,171 @@
           "title": "Official Images of the fragment Concept Testing Nike Mind 001",
           "link": "https://hypebeast.com/2026/3/nike-fragment-concept-testing-mind-001-black-iq8502-001-release-inf0",
           "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Nike Channels Deep Tones With the Mind 001 \"Team Red\"",
+          "link": "https://hypebeast.com/2026/3/nike-mind-001-team-red-hq4307-601-release-info",
+          "lang": "en"
+        },
+        {
+          "name": "Footwear News",
+          "title": "Fragment Is Collaborating on Three Mind Shoes and the Newest Air Max Sneaker for a Quick Succession of Releases",
+          "link": "https://wwd.com/footwear-news/sneaker-news/fragment-nike-mind-001-002-air-liquid-max-release-dates-1238672638",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Hiroshi Fujiwara’s Eternal Influence at Nike",
+          "link": "https://hypebeast.com/2026/3/hiroshi-fujiwara-fragment-concept-testing-nike-info",
+          "lang": "en"
+        },
+        {
+          "name": "Fashion Press",
+          "title": "ナイキ×藤原ヒロシ「エア リキッド マックス」黒スニーカー、神経科学に基づくミュールも",
+          "link": "https://www.fashion-press.net/news/144345",
+          "lang": "ja"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "藤原ヒロシ×「ナイキ」最新章　“エア リキッド マックス”と”マインド”シリーズの限定シリーズ3型が登場",
+          "link": "https://www.wwdjapan.com/articles/2353091",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "ナイキと藤原ヒロシが「エア リキッド マックス」と「マインド 001」、そして「マインド 002」の限定デザインを発表！──GQ新着スニーカー",
+          "link": "https://www.gqjapan.jp/article/20260313-nike-fragment-concept-testing-news",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "ナイキ × 藤原ヒロシ、最新モデル「エア リキッド マックス」と「マインド」シリーズの限定デザインを発売",
+          "link": "https://www.fashionsnap.com/article/2026-03-13/nike-fragment-concept-testing-202603",
+          "lang": "ja"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Nike Prepares the Air Force 1 Low \"Team USA\" for the 2026 World Cup",
+          "link": "https://hypebeast.com/2026/3/nike-air-force-1-low-team-usa-iq0407-100-release-info",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "The Nike Air Force 1 Low “Mexico” Honors National Colors and Football Heritage",
+          "link": "https://hypebeast.com/2026/3/nike-air-force-1-mexico-ir5896-030-official-imagery",
+          "lang": "en"
+        },
+        {
+          "name": "Footwear News",
+          "title": "Nike Preps for World Cup With Air Force 1s for USA and Mexico",
+          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-force-1-low-usa-mexico-soccer-release-date-1238662180",
+          "lang": "en"
+        },
+        {
+          "name": "Footwear News",
+          "title": "Adidas Brings Team USA’s Iconic Denim World Cup Look to the Samba, Superstar and More",
+          "link": "https://wwd.com/footwear-news/sneaker-news/adidas-samba-usa-denim-release-date-hp3551-1238662808",
+          "lang": "en"
+        },
+        {
+          "name": "Footwear News",
+          "title": "Nike Mashes Up a Classic Air Max Sneaker With Two Retro Soccer Boots",
+          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-max-90-football-pack-release-date-1238663357",
+          "lang": "en"
+        },
+        {
+          "name": "Footwear News",
+          "title": "Nike’s Air Force 1 Is Getting Two New Releases Inspired by Kobe Bryant’s Alma Mater",
+          "link": "https://wwd.com/footwear-news/sneaker-news/kobe-bryant-nike-air-force-1-low-lower-merion-aces-release-date-ib0018-101-1238663330",
+          "lang": "en"
+        },
+        {
+          "name": "Footwear News",
+          "title": "Kobe Bryant’s Soccer-Inspired Nike Sneakers Are Coming Back in Time for the World Cup",
+          "link": "https://wwd.com/footwear-news/sneaker-news/nike-kobe-8-protro-mambacurial-release-date-io6253-500-1238664895",
+          "lang": "en"
+        },
+        {
+          "name": "Footwear News",
+          "title": "Nike Just Officially Revealed Its Futuristic New Air Liquid Max Sneaker",
+          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-liquid-max-release-date-iq7634-001-1238662225",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Nike Announces the Air Liquid Max",
+          "link": "https://hypebeast.com/2026/3/nike-air-liquid-max-announcement-info",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Official Look at fragment design's Nike Air Liquid Max",
+          "link": "https://hypebeast.com/2026/3/fragment-design-nike-air-liquid-max-iq8601-001-release",
+          "lang": "en"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "ナイキが新モデル「Air Liquid Max」を発表　毒ガエルから着想",
+          "link": "https://www.fashionsnap.com/article/2026-03-11/nike-air-liquid-max",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashion Press",
+          "title": "ナイキ”毒ガエル”着想スニーカー「エア リキッド マックス」ブラックアッパーにネオングリーンのドット",
+          "link": "https://www.fashion-press.net/news/144258",
+          "lang": "ja"
+        },
+        {
+          "name": "Footwear News",
+          "title": "Nike’s New Futuristic Air Max Sneaker Is Getting Its First Limited-Edition Collaboration",
+          "link": "https://wwd.com/footwear-news/sneaker-news/fragment-design-nike-air-liquid-max-release-date-iq8601-001-1238665313",
+          "lang": "en"
+        },
+        {
+          "name": "Footwear News",
+          "title": "Nike’s World Cup Sneaker Slate Grows With a Big Bubble Air Max 95 for England",
+          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-max-95-big-bubble-england-release-date-iq0176-100-1238665358",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Official Look at the fragment design x Nike Mind 002 \"Particle Grey\"",
+          "link": "https://hypebeast.com/2026/3/fragment-design-nike-mind-002-particle-grey-iq8504-001-release-info",
+          "lang": "en"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Nike Brings \"Blackened Blue\" to the Mind 001",
+          "link": "https://hypebeast.com/2026/3/nike-mind-001-blackened-blue-hq4307-400-release-date",
+          "lang": "en"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "「エア ジョーダン 1 LOW OG “Sail and Coconut Milk”」は華やかな花の刺繍がエレガント──GQ新着スニーカー",
+          "link": "https://www.gqjapan.jp/article/20260311-air-jordan1-og-sail-and-coconut-milk-news",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "ニューバランス「2010 “Vintage Indigo/Faded Teal”」は、機能性と粋なデザインを叶えるミッドソールに注目──GQ新着スニーカー",
+          "link": "https://www.gqjapan.jp/article/20260311-new-balance-2010-vintage-indigo-faded-teal",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "エア マックスの知見とヘリテージが融合した新作シューズ「ナイキ エア リキッド マックス」登場！──GQ新着スニーカー",
+          "link": "https://www.gqjapan.jp/article/20260311-nike-air-liquid-max-news",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "ナイキ「S.T. フレア “Atomic Pink”」は夏に映えるグラデーションカラー──GQ新着スニーカー",
+          "link": "https://www.gqjapan.jp/article/20260312-nike-st-flare-atomic-pink",
+          "lang": "ja"
         }
       ],
-      "article_count": 2
+      "article_count": 39
     },
     {
       "id": "2c9d6107eca9",
@@ -14983,6 +15507,36 @@
           "name": "Hypebeast",
           "title": "BYD Weighs Formula 1 and WEC Entry to Boost Global Image",
           "link": "https://hypebeast.com/2026/3/byd-weighs-formula-1-and-wec-entry-to-boost-global-image",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "05053930a1af",
+      "title": "森林秘境：S形极简住宅",
+      "summary": "波兰建筑事务所PL.architekci在波兹南打造了一座名为“S House”的住宅，其独特的S形平面设计巧妙地保留了场地内原有的成熟树木，使建筑与周围的森林环境和谐共生。这座住宅的设计风格极简，通透的玻璃走廊、别致的折叠屋顶以及室内外空间的无缝衔接，营造出一种既私密隐蔽又开放自然的居住体验，完美诠释了人与自然的和谐共处。",
+      "key_points": [
+        "S形平面保护树木",
+        "极简设计风格",
+        "室内外无缝衔接"
+      ],
+      "tags": [
+        "建筑设计",
+        "极简主义",
+        "环保",
+        "住宅",
+        "波兰"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F13%2Fpl-architekci-s-house-poznan-poland-0.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-13T08:09:18+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "PL.architekci’s S House Is a Pavilion Among Trees",
+          "link": "https://hypebeast.com/2026/3/pl-architekci-s-house-poznan-poland",
           "lang": "en"
         }
       ],
@@ -16666,194 +17220,6 @@
       "article_count": 2
     },
     {
-      "id": "a222907ffc8e",
-      "title": "Fragment Design x Nike 最终联名系列发布：Air Liquid Max 与 Mind 系列引领潮流",
-      "summary": "潮流教父藤原浩领衔的 Fragment Design 与 Nike 推出最终联名系列“Fragment Concept Testing”。该系列包含 Air Liquid Max、Mind 001、Mind 002 等鞋款，以极简设计语言和 Nike 的创新实验性为特色。Air Liquid Max 以毒蛙为灵感，采用黑色设计，并作为 Air Max Day 的重磅鞋款发布。Mind 001和Mind 002则将于3月14日起在V.A.独家发售，3月下旬在SNKRS发售。Air Liquid Max将于3月31日在Nike指定店铺抢先发售，随后于4月3日登陆SNKRS。",
-      "key_points": [
-        "Fragment Design 与 Nike 最终联名系列发布，由藤原浩主导",
-        "系列包含 Air Liquid Max、Mind 001、Mind 002 三款鞋款",
-        "设计理念为极简主义和 Nike 的创新实验性",
-        "Air Liquid Max 以毒蛙为灵感，黑色设计，致敬 Air Max Day",
-        "Mind 系列率先在 V.A. 独家发售，随后登陆 SNKRS",
-        "Air Liquid Max 先于 Nike 指定店铺发售，后登陆 SNKRS"
-      ],
-      "tags": [
-        "Fragment Design",
-        "Nike",
-        "藤原浩",
-        "Air Liquid Max",
-        "Mind 001",
-        "Mind 002",
-        "联名",
-        "Air Max Day",
-        "球鞋",
-        "潮流"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/fragment-nike-mind-001-002-air-liquid-max-collection-001.jpg?w=1000&h=563&crop=1",
-      "published": "2026-03-13T04:03:56+00:00",
-      "sources": [
-        {
-          "name": "Footwear News",
-          "title": "Fragment Is Collaborating on Three Mind Shoes and the Newest Air Max Sneaker for a Quick Succession of Releases",
-          "link": "https://wwd.com/footwear-news/sneaker-news/fragment-nike-mind-001-002-air-liquid-max-release-dates-1238672638",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Hiroshi Fujiwara’s Eternal Influence at Nike",
-          "link": "https://hypebeast.com/2026/3/hiroshi-fujiwara-fragment-concept-testing-nike-info",
-          "lang": "en"
-        },
-        {
-          "name": "Fashion Press",
-          "title": "ナイキ×藤原ヒロシ「エア リキッド マックス」黒スニーカー、神経科学に基づくミュールも",
-          "link": "https://www.fashion-press.net/news/144345",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "藤原ヒロシ×「ナイキ」最新章　“エア リキッド マックス”と”マインド”シリーズの限定シリーズ3型が登場",
-          "link": "https://www.wwdjapan.com/articles/2353091",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "ナイキと藤原ヒロシが「エア リキッド マックス」と「マインド 001」、そして「マインド 002」の限定デザインを発表！──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260313-nike-fragment-concept-testing-news",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "ナイキ × 藤原ヒロシ、最新モデル「エア リキッド マックス」と「マインド」シリーズの限定デザインを発売",
-          "link": "https://www.fashionsnap.com/article/2026-03-13/nike-fragment-concept-testing-202603",
-          "lang": "ja"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Nike Prepares the Air Force 1 Low \"Team USA\" for the 2026 World Cup",
-          "link": "https://hypebeast.com/2026/3/nike-air-force-1-low-team-usa-iq0407-100-release-info",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "The Nike Air Force 1 Low “Mexico” Honors National Colors and Football Heritage",
-          "link": "https://hypebeast.com/2026/3/nike-air-force-1-mexico-ir5896-030-official-imagery",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike Preps for World Cup With Air Force 1s for USA and Mexico",
-          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-force-1-low-usa-mexico-soccer-release-date-1238662180",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Adidas Brings Team USA’s Iconic Denim World Cup Look to the Samba, Superstar and More",
-          "link": "https://wwd.com/footwear-news/sneaker-news/adidas-samba-usa-denim-release-date-hp3551-1238662808",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike Mashes Up a Classic Air Max Sneaker With Two Retro Soccer Boots",
-          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-max-90-football-pack-release-date-1238663357",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike’s Air Force 1 Is Getting Two New Releases Inspired by Kobe Bryant’s Alma Mater",
-          "link": "https://wwd.com/footwear-news/sneaker-news/kobe-bryant-nike-air-force-1-low-lower-merion-aces-release-date-ib0018-101-1238663330",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Kobe Bryant’s Soccer-Inspired Nike Sneakers Are Coming Back in Time for the World Cup",
-          "link": "https://wwd.com/footwear-news/sneaker-news/nike-kobe-8-protro-mambacurial-release-date-io6253-500-1238664895",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike Just Officially Revealed Its Futuristic New Air Liquid Max Sneaker",
-          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-liquid-max-release-date-iq7634-001-1238662225",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Nike Announces the Air Liquid Max",
-          "link": "https://hypebeast.com/2026/3/nike-air-liquid-max-announcement-info",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Official Look at fragment design's Nike Air Liquid Max",
-          "link": "https://hypebeast.com/2026/3/fragment-design-nike-air-liquid-max-iq8601-001-release",
-          "lang": "en"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "ナイキが新モデル「Air Liquid Max」を発表　毒ガエルから着想",
-          "link": "https://www.fashionsnap.com/article/2026-03-11/nike-air-liquid-max",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashion Press",
-          "title": "ナイキ”毒ガエル”着想スニーカー「エア リキッド マックス」ブラックアッパーにネオングリーンのドット",
-          "link": "https://www.fashion-press.net/news/144258",
-          "lang": "ja"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike’s New Futuristic Air Max Sneaker Is Getting Its First Limited-Edition Collaboration",
-          "link": "https://wwd.com/footwear-news/sneaker-news/fragment-design-nike-air-liquid-max-release-date-iq8601-001-1238665313",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike’s World Cup Sneaker Slate Grows With a Big Bubble Air Max 95 for England",
-          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-max-95-big-bubble-england-release-date-iq0176-100-1238665358",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Official Look at the fragment design x Nike Mind 002 \"Particle Grey\"",
-          "link": "https://hypebeast.com/2026/3/fragment-design-nike-mind-002-particle-grey-iq8504-001-release-info",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Nike Brings \"Blackened Blue\" to the Mind 001",
-          "link": "https://hypebeast.com/2026/3/nike-mind-001-blackened-blue-hq4307-400-release-date",
-          "lang": "en"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "「エア ジョーダン 1 LOW OG “Sail and Coconut Milk”」は華やかな花の刺繍がエレガント──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260311-air-jordan1-og-sail-and-coconut-milk-news",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "ニューバランス「2010 “Vintage Indigo/Faded Teal”」は、機能性と粋なデザインを叶えるミッドソールに注目──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260311-new-balance-2010-vintage-indigo-faded-teal",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "エア マックスの知見とヘリテージが融合した新作シューズ「ナイキ エア リキッド マックス」登場！──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260311-nike-air-liquid-max-news",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "ナイキ「S.T. フレア “Atomic Pink”」は夏に映えるグラデーションカラー──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260312-nike-st-flare-atomic-pink",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 36
-    },
-    {
       "id": "a2e783cb53a6",
       "title": "nonnative x CONVERSE 瞩目联乘防水机能鞋款登场",
       "summary": "日本街头品牌 nonnative 再次携手 CONVERSE，带来备受期待的全新联名鞋款“All Star Gore-Tex CenterZip OX / NN”。这是双方自2024年以来的首次合作，以经典 CONVERSE All Star 为蓝本，注入 nonnative 标志性的设计语言，打造兼具时尚外观与卓越性能的防水鞋履。\n\n新款鞋履采用 GORE-TEX 防水透气科技，确保在各种天气条件下保持足部干爽舒适。鞋面选用象牙色帆布，致敬经典，并保留了 All Star 标志性的三色侧边条纹等原始设计元素。最引人注目的亮点在于鞋面中央的拉链设计，方便穿脱，更添潮流感。\n\n细节方面，鞋内配备高密度聚氨酯鞋垫，提升穿着舒适度。鞋带末端则印有 nonnative 品牌 Logo，彰显联名身份。该系列鞋款尺码范围为23-30cm，定价为27500日元，将于3月20日起在 nonnative 指定店铺发售，敬请期待。",
@@ -18281,361 +18647,6 @@
           "title": "ラ・プレリー新作エッセンス｜変化に揺らぐ肌を救う、マチュア世代の美容投資",
           "link": "https://www.vogue.co.jp/article/beauty-insider-la-prairie-pure-g-radiance",
           "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "4138d821a4db",
-      "title": "拉美时尚力量登陆巴黎",
-      "summary": "Latam Fashion Circle于巴黎启动后，首次面向拉丁美洲时尚品牌开放展厅申请。此举旨在进一步提升拉美时尚在法国首都的影响力，为更多优秀设计师提供展示平台，助力其拓展欧洲市场，巩固其国际地位。该展厅将成为连接拉美时尚与国际买家的重要桥梁。",
-      "key_points": [
-        "Latam Fashion Circle开放申请",
-        "聚焦拉丁美洲时尚品牌",
-        "巴黎展厅助力品牌拓展"
-      ],
-      "tags": [
-        "拉丁美洲时尚",
-        "巴黎",
-        "展厅",
-        "品牌拓展",
-        "国际市场"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.fashionnetwork.com/m/b361/281e/b398/013a/2c79/1803/e4f2/2c05/4804/9e05/208x208/9e05.jpg",
-      "published": "2026-03-13T00:56:34+00:00",
-      "sources": [
-        {
-          "name": "Fashion Network",
-          "title": "Latam Fashion Circle invites applications from Latin American fashion brands for its showroom",
-          "link": "https://ww.fashionnetwork.com/news/Latam-fashion-circle-invites-applications-from-latin-american-fashion-brands-for-its-showroom,1815512.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "77de05eb15eb",
-      "title": "Torishéju：风暴中的优雅骑士",
-      "summary": "Torishéju 在巴黎时装周发布了2026秋季成衣系列，设计师 Dumi 以“风暴中的骑士”为灵感，探索动荡与坚韧之间的微妙平衡。该系列在精妙剪裁的基础上，融入了大量引人注目的细节设计，展现了品牌对高品质和独特风格的追求。整体风格硬朗又不失女性的柔美，仿佛置身于一场充满力量与美的视觉盛宴。",
-      "key_points": [
-        "2026秋季系列",
-        "巴黎时装周发布",
-        "动荡与韧性"
-      ],
-      "tags": [
-        "Torishéju",
-        "2026秋季",
-        "巴黎时装周",
-        "成衣系列",
-        "设计师Dumi"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/torisheju-fall-rtw-26-r-ctsy-001.jpeg?crop=0px%2C80px%2C1570px%2C880px&resize=1000%2C563",
-      "published": "2026-03-13T00:52:04+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "Torishéju Fall 2026: Riders in the Storm",
-          "link": "https://wwd.com/runway/fall-2026/paris/torisheju/review",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "117503eb8bda",
-      "title": "BIOHEAL BOH：焕采光泽肌新方案",
-      "summary": "韩国轻奢护肤品牌BIOHEAL BOH将于3月20日推出全新光泽肌护理系列。该系列核心在于品牌独有的NADプリズセル成分，包含“NADプリズセル グロウ パワーセラム”和“NADプリズセル グロウ ブーストクリーム”两款明星产品。旨在为肌肤注入能量，提升肌肤弹润度，并提供深层保湿，由内而外焕发健康光泽，打造令人艳羡的理想肌肤。",
-      "key_points": [
-        "BIOHEAL BOH推出全新光泽肌系列",
-        "核心成分为独有NADプリズセル",
-        "主打能量注入、弹力提升和深层保湿"
-      ],
-      "tags": [
-        "BIOHEAL BOH",
-        "护肤新品",
-        "光泽肌",
-        "韩国美妆"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/06175632/20260306%E3%83%8F%E3%82%99%E3%82%A4%E3%82%AA%E3%83%92%E3%83%BC%E3%83%AB%E3%83%9B%E3%82%99og.jpg",
-      "published": "2026-03-13T00:30:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "「バイオヒールボ」が艶肌を目指す新シリーズを発売　独自成分“NADプリズセル”を配合",
-          "link": "https://www.wwdjapan.com/articles/2345652",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "2332a700c8db",
-      "title": "BEAMS品川站限时店：新干线与富士山的时尚邂逅",
-      "summary": "日本潮流名所BEAMS将于3月19日至5月31日在JR品川车站新干线检票口内开设期间限定店铺。本次快闪店不仅汇集了BEAMS旗下精选的日本各地特色商品，更特别携手知名插画家青木谦吾（AOKEN）推出独家联名系列。该系列以标志性的东海道新干线N700系A型列车和壮丽的富士山为灵感，打造了一系列充满日式风情的T恤、帽子、托特包和手巾等单品，为旅途增添一抹时尚色彩。",
-      "key_points": [
-        "BEAMS品川站开设期间限定店",
-        "携手插画家青木谦吾推出联名系列",
-        "设计灵感源于新干线和富士山"
-      ],
-      "tags": [
-        "BEAMS",
-        "期间限定店",
-        "青木谦吾",
-        "联名合作",
-        "车站零售",
-        "日本限定"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/11132642/20260311_beams_eye-2.jpg",
-      "published": "2026-03-13T00:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "ビームスが品川駅でポップアップを開催　イラストレーター・青木謙吾の描き下ろしグッズも",
-          "link": "https://www.wwdjapan.com/articles/2351062",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "95a3d8023dad",
-      "title": "沐浴焕新：奢宠级美发淋浴头",
-      "summary": "《Vogue Japan》近日聚焦两款革新性美容淋浴喷头，将日常沐浴升级为奢宠美发体验。LOVE CHROME美头髪淋浴喷头以其独特的梳状喷头设计，在沐浴时轻柔按摩头皮，促进血液循环。松下Fine Bubble淋浴喷头则运用先进的纳米气泡技术，有效去除水中的钙离子，从而显著提升洗发水的清洁和滋养效果。美容编辑亲身体验后表示，这两款淋浴喷头不仅能改善发质，更能提升整体洗护体验，让秀发焕发健康光泽。",
-      "key_points": [
-        "LOVE CHROME梳状喷头按摩头皮",
-        "松下纳米气泡技术净化水质",
-        "提升洗发效果，改善发质"
-      ],
-      "tags": [
-        "美容",
-        "淋浴喷头",
-        "美发",
-        "生活方式",
-        "科技"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vogue.co.jp/photos/69b0e3ed64db05dbc1855f05/master/pass/S__75825157.jpg",
-      "published": "2026-03-13T00:00:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue Japan",
-          "title": "浴びるだけで美しく。バスタイムを美容投資に変えるシャワーヘッド【美容ライターの体験レポート】",
-          "link": "https://www.vogue.co.jp/article/shower-head-editors-try",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "93588f4d46af",
-      "title": "Z世代视角：2026秋冬伦敦时装周新解",
-      "summary": "两位Z世代时尚评论员以其独特的视角解读了2026秋冬伦敦时装周。他们深入剖析了Simone Rocha、Harris Reed和Erdem等品牌的精彩秀场，并敏锐地捕捉到本季的关键趋势：从经典风格的解构与重塑，到对真实性和文化内涵的深度挖掘。评论员们还结合Z世代对时尚和娱乐的偏好，例如电影《岚が丘》所展现的现代女性形象，进一步阐释了时装周的深层意义，为我们呈现了一场充满活力的时尚盛宴。",
-      "key_points": [
-        "Z世代评论员解读伦敦时装周",
-        "经典解构与文化内涵成趋势",
-        "电影《岚が丘》影响现代女性形象"
-      ],
-      "tags": [
-        "伦敦时装周",
-        "Z世代",
-        "趋势分析"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/sennken-20260309-20260309001-c1b846e1-dfce-4cbf-8efa-ffa2c829e070.jpg",
-      "published": "2026-03-12T23:59:00+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "Z世代が見たロンドン・ファッションウィーク2026年秋冬",
-          "link": "https://www.fashionsnap.com/article/2026-03-13/genz-london-2026",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "28f03e678877",
-      "title": "Ulta Beauty：面临利润压力，加大营销投入",
-      "summary": "Ulta Beauty最新财报显示，第四季度营收超出预期，但盈利未能达到市场预期。由于对2026财年的展望较为保守，且为应对消费者支出不稳定和激烈的市场竞争，公司正加大营销投入以刺激需求，导致年度利润预期低于华尔街预期。市场分析师正在密切关注Ulta Beauty未来的发展策略和营销效果。",
-      "key_points": [
-        "Ulta Beauty第四季度营收超预期，但盈利未达预期。",
-        "公司2026财年展望保守，股价下跌。",
-        "为应对市场竞争和消费者支出不稳定，Ulta Beauty加大营销投入。",
-        "年度利润预期低于华尔街预期。"
-      ],
-      "tags": [
-        "Ulta Beauty",
-        "财报",
-        "美妆零售",
-        "市场营销",
-        "利润",
-        "业绩"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://wwd.com/wp-content/uploads/2026/01/MixCollage-22-Jan-2026-11-07-AM-6031.jpg?w=1000&h=563&crop=1",
-      "published": "2026-03-12T23:53:15+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "Ulta Beauty Tops Q4 Revenue Forecasts, Misses on Earnings",
-          "link": "https://wwd.com/beauty-industry-news/beauty-features/ulta-beauty-q4-revenue-forecasts-misses-on-earnings-1238673170",
-          "lang": "en"
-        },
-        {
-          "name": "Fashion Network",
-          "title": "Ulta Beauty forecasts annual profit below estimates as advertising costs rise",
-          "link": "https://ww.fashionnetwork.com/news/Ulta-beauty-forecasts-annual-profit-below-estimates-as-advertising-costs-rise,1815520.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "91f443722abb",
-      "title": "WWW编辑部私藏：本月必入时尚好物清单（含Fwrd一日促销精选）+ 大码春季时尚精选",
-      "summary": "《Who What Wear》的编辑团队和购物总监联袂推荐本月精选的时尚单品，涵盖服装、鞋履、包袋及配饰等，总计超过50件！此外，时尚购物专家还推荐了Fwrd一日促销中的21件精选单品，包括上衣等，为2026年春季及以后的穿搭提供灵感。同时，一位时尚编辑分享了大码春季时尚穿搭，为不同身材的读者提供了春季穿搭的灵感和建议，涵盖了街头风格和潮流趋势。从奢侈品牌到高街品牌，从潮流前沿的设计到经典实用的款式，这份清单为你提供全方位的购物灵感，助你轻松打造时髦造型，提升衣橱格调。无论是寻找下一季的流行趋势，还是为日常穿搭增添亮点，都能从中找到心仪之选，更是春季时尚购物的绝佳指南。FWRD20代码可享受部分商品折扣。",
-      "key_points": [
-        "《Who What Wear》编辑团队精选时尚单品推荐",
-        "Fwrd一日促销21件单品推荐（含折扣码）",
-        "大码春季时尚穿搭灵感",
-        "涵盖服装、鞋履、包袋及配饰等多种品类",
-        "提供2026年春季及以后穿搭灵感"
-      ],
-      "tags": [
-        "时尚好物",
-        "春季穿搭",
-        "Fwrd",
-        "折扣",
-        "大码时尚",
-        "Who What Wear",
-        "购物清单"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/h5dGCDe3CxnSRonbnogACa-1280-80.jpg",
-      "published": "2026-03-12T23:52:37+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Who What Wear Editors Told Me Their 25 Best Fashion Finds This Month",
-          "link": "https://www.whowhatwear.com/fashion/shopping/best-editor-fashion-items-march-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "I'm a Shopping Director—These 31 Amazing Items Are Fashion, Period",
-          "link": "https://www.whowhatwear.com/fashion/shopping/spring-fashion-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "21 Incredibly Cool Finds From Fwrd's One-Day Sale, According to a Shopping Expert",
-          "link": "https://www.whowhatwear.com/fashion/shopping/one-day-fwrd-anniversary-sale-march-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "These Plus Size Spring Styles Have This Fashion Editor’s Stamp of Approval",
-          "link": "https://www.whowhatwear.com/fashion/shopping/best-plus-size-arrivals-march-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 4
-    },
-    {
-      "id": "fe2cc0cf7701",
-      "title": "Leggings 穿搭焕新：千禧风如何引领2026潮流？",
-      "summary": "千禧一代钟爱的 leggings 穿搭在时尚界依旧占据一席之地。想要在 2026 年穿出新意，避免过时感？本文为你解读 leggings 的潮流进化。除了 leggings，我们还将聚焦 2026 年的牛仔裤风尚，探索多元搭配方案，并从明星造型中汲取灵感，助你玩转时尚。",
-      "key_points": [
-        "Leggings 穿搭升级技巧",
-        "2026 牛仔裤流行趋势",
-        "明星 Leggings 造型示范"
-      ],
-      "tags": [
-        "Leggings",
-        "千禧一代",
-        "时尚穿搭",
-        "2026潮流",
-        "牛仔裤"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/mBJbDQERq3YiKLKURUAHjN-1280-80.jpg",
-      "published": "2026-03-12T23:15:27+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Millennials Love This Legging Outfit—Here's How to Make It Look Less Dated",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/leggings-denim-jacket-outfit-diane-kruger",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "98a8911a0cd7",
-      "title": "2026必入！《Glamour》精选8款显瘦喇叭裤",
-      "summary": "《Glamour》杂志时尚编辑权威发布2026年最佳女士喇叭裤榜单，预示着喇叭裤的强势回归。本次评选针对不同需求，精选SPANX的塑形款、Sunzel的平价款、Old Navy的日常款、Aerie的舒适款、Lululemon的专业运动款、Free People的时尚款以及Alo Yoga的瑜伽款等八款单品。无论日常穿搭、旅行休闲还是专业运动，都能找到最适合你的那一款，完美展现你的身材曲线与时尚品味。",
-      "key_points": [
-        "《Glamour》杂志权威推荐",
-        "2026年喇叭裤流行趋势",
-        "八款不同品牌与功能的精选喇叭裤"
-      ],
-      "tags": [
-        "喇叭裤",
-        "时尚单品",
-        "趋势",
-        "测评推荐"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.glamour.com/photos/69b319496690e4711e88b66b/master/pass/1333787791",
-      "published": "2026-03-12T23:09:01+00:00",
-      "sources": [
-        {
-          "name": "Glamour",
-          "title": "8 Best Flared Leggings for Women 2026, As Tested by Style Editors",
-          "link": "https://www.glamour.com/gallery/best-flared-leggings-for-women",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "14d4639dfbf7",
-      "title": "2026春季运动鞋风向标",
-      "summary": "《Vogue》权威发布2026春季运动鞋潮流趋势！Celine以简约帆布鞋领跑，Prada和Miu Miu则将奢华缎面融入运动鞋设计，Dries Van Noten的亮色系款式同样吸睛。Nike与Jacquemus的联名款，以及Adidas Samba Jane的复古风潮亦不容忽视。搭配方面，无论是俏皮迷你裙、甜美泡泡裙，还是率性休闲裤，都能与这些潮流运动鞋碰撞出时尚火花。",
-      "key_points": [
-        "Celine简约帆布鞋",
-        "Prada/Miu Miu缎面运动鞋",
-        "Dries Van Noten亮色设计"
-      ],
-      "tags": [
-        "运动鞋",
-        "潮流趋势",
-        "春季时尚"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://assets.vogue.com/photos/69b1c2eaab9e1650932861e8/master/pass/03112026_Sneakers%20Holding.jpg",
-      "published": "2026-03-12T23:01:32+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "How to Style Spring’s Hottest Sneaker Trends",
-          "link": "https://www.vogue.com/article/how-to-style-sneaker-trends",
-          "lang": "en"
         }
       ],
       "article_count": 1
