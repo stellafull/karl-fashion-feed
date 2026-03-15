@@ -1,9 +1,9 @@
 {
   "meta": {
-    "generated_at": "2026-03-14T22:22:17+00:00",
+    "generated_at": "2026-03-15T01:27:09+00:00",
     "total_topics": 500,
-    "total_articles": 1121,
-    "sources_count": 48,
+    "total_articles": 1125,
+    "sources_count": 49,
     "sources": [
       "Allure",
       "BOF",
@@ -25,6 +25,7 @@
       "Fashionsnap",
       "Footwear News",
       "GQ",
+      "GQ China",
       "GQ Japan",
       "Glamour",
       "Glamour UK",
@@ -57,22 +58,22 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 11,
-      "blocked_by_tombstones": 323,
-      "evicted_topics": 5,
+      "new_articles_in_2h": 14,
+      "blocked_by_tombstones": 336,
+      "evicted_topics": 8,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 5,
-        "incremental_new_topics_created": 6,
-        "cross_merge_candidates": 5,
-        "cross_merge_low_reviews": 5,
+        "incremental_assigned_to_existing": 6,
+        "incremental_new_topics_created": 8,
+        "cross_merge_candidates": 4,
+        "cross_merge_low_reviews": 4,
         "cross_merge_high_reviews": 0,
-        "cross_merge_merged_topics": 1
+        "cross_merge_merged_topics": 0
       }
     },
     "quality": {
-      "merge_rate": 0.554,
-      "avg_sources_per_topic": 1.298,
-      "high_confidence_topic_ratio": 0.944,
+      "merge_rate": 0.5556,
+      "avg_sources_per_topic": 1.302,
+      "high_confidence_topic_ratio": 0.948,
       "rebuild_mode": "incremental"
     }
   },
@@ -2836,31 +2837,431 @@
       "article_count": 1
     },
     {
-      "id": "4c9952336e19",
-      "title": "平价美妆时尚好物精选：小众神器，轻松打造迷人魅力",
-      "summary": "想轻松提升个人魅力？精选多款平价时尚单品和美妆好物，包括精致耳饰、性感上衣、多功能润唇膏、抗衰老颈霜、角质护理笔等小众神器，助你从细节处焕发光彩。无需花费太多心思，就能以低维护的方式，打造精致迷人的外貌，瞬间提升时尚感。更有低于25美元的平价好物推荐，让你用更少的花费，变美更轻松。",
+      "id": "4f12dbe9c067",
+      "title": "解压神器再升级：平价好物治愈焦虑，提升生活品质",
+      "summary": "Elite Daily推荐多款价格亲民、实用性强的解压好物，不仅包含按摩工具、香薰精油、接地垫等舒缓焦虑的物件，更新增了滋润凝胶袜、LED脱毛器、隐形耳贴等提升生活品质的实用小物。旨在帮助高压人群有效应对压力，改善情绪波动，解决生活小烦恼，从而拥有更健康、精致的生活方式。轻奢生活，从关爱自己开始。",
       "key_points": [
-        "平价好物：推荐低于25美元的时尚单品和美妆产品。",
-        "小众神器：发掘鲜为人知的美妆好物，提升精致度。",
-        "细节提升：从耳饰、唇部、颈部、角质等细节入手，打造迷人魅力。",
-        "低维护：无需花费太多心思，轻松变美。"
+        "Elite Daily推荐多款平价解压好物",
+        "涵盖舒缓焦虑和提升生活品质两类产品",
+        "针对高压人群，提供情绪舒缓和问题解决双重方案"
       ],
       "tags": [
+        "解压",
+        "好物推荐",
+        "平价",
+        "焦虑",
+        "生活品质",
+        "Elite Daily"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/11/3a60946b/15.png?w=1200&fit=max",
+      "published": "2026-03-15T01:00:24+00:00",
+      "sources": [
+        {
+          "name": "Elite Daily",
+          "title": "If You’re Anxious AF, These 55 Weird, Cheap Things Are Legitimately Life-Changing",
+          "link": "https://www.elitedaily.com/shopping/if-youre-anxious-af-these-weird-cheap-things-are-legitimately-life-changing",
+          "lang": "en"
+        },
+        {
+          "name": "Elite Daily",
+          "title": "60 Weird-As-Hell Things For Women That Are Actually Life-Changing",
+          "link": "https://www.elitedaily.com/shopping/weird-as-hell-things-for-women-that-are-actually-life-changing",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "44e1df87e98f",
+      "title": "FENDI x DEVIALET：奢华音浪再袭",
+      "summary": "FENDI与法国音响品牌DEVIALET再度携手，推出第二代联名Mania便携音箱。这款音箱以DEVIALET经典球形设计为基础，披上FENDI标志性的黑灰双色FF Logo，将时尚格调与卓越音质完美融合。音箱采用先进的空间映射技术，能根据周围环境自动优化音效，带来360度沉浸式环绕声体验。同时，它还具备防溅水功能和便捷提手，无线续航长达10小时，是追求品质生活的时尚人士的理想之选。",
+      "key_points": [
+        "FENDI与DEVIALET二度合作",
+        "标志性FF Logo设计",
+        "360度环绕声体验"
+      ],
+      "tags": [
+        "FENDI",
+        "DEVIALET",
+        "联名款",
+        "便携音箱",
+        "奢侈品",
+        "时尚生活"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/11143410/20260311_fendi_og.jpg",
+      "published": "2026-03-15T01:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "「フェンディ」と「デビアレ」が第2弾コラボ　ロゴモノグラムをまとう限定ポータブルスピーカー",
+          "link": "https://www.wwdjapan.com/articles/2351185",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "7e968b4049bd",
+      "title": "秀发告急？专家教你揪出脱发早期信号",
+      "summary": "《Vogue Japan》近日刊登皮肤科专家文章，揭示头发稀疏的五大早期迹象：马尾辫变细、头皮日益明显、出现细小绒毛、发质脆弱易损、以及脱发数量增多。文章深入探讨了压力、激素变化和年龄增长等常见诱因，并提供了针对性的预防和改善建议，强调及早发现并采取行动的重要性，以守护秀发健康。",
+      "key_points": [
+        "五大早期迹象需警惕",
+        "压力激素是脱发元凶",
+        "及早干预是关键"
+      ],
+      "tags": [
+        "头发护理",
+        "脱发",
+        "头皮健康",
+        "美容",
+        "健康"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.vogue.co.jp/photos/69aa49c7d4d6b407e5709fdb/master/pass/GettyImages-1301572290.jpg",
+      "published": "2026-03-15T01:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue Japan",
+          "title": "薄毛の見分け方を専門家がシェア。注意すべき5つの初期症状と対策とは",
+          "link": "https://www.vogue.co.jp/article/how-to-tell-if-hair-is-thinning",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "f83479b882ea",
+      "title": "闪耀奥斯卡季：WIF盛典星光熠熠，共庆电影女性力量",
+      "summary": "年度奥斯卡颁奖季，Women in Film (WIF) 携手 Max Mara 在洛杉矶 Wheelhouse 举办第19届盛大的提名者庆祝活动。众多好莱坞明星，包括演员凯特·哈德森、瑞内特·赖因斯夫等，以及导演、制片人、服装设计师等电影人齐聚一堂，共同庆祝她们在电影领域的卓越成就，并致力于推动行业实现更大的性别平等。WIF CEO Kirsten Scaffer 在活动中再次强调了为实现性别平等而持续奋斗的重要性，彰显了 WIF 致力于支持和提升女性电影从业者的坚定决心。",
+      "key_points": [
+        "Women in Film (WIF) 携手 Max Mara 举办奥斯卡提名者庆祝活动。",
+        "众多好莱坞女性电影人出席，包括演员、导演、制片人、服装设计师等。",
+        "活动旨在庆祝女性在电影领域的成就，并推动行业性别平等。",
+        "WIF CEO Kirsten Scaffer 强调了为实现性别平等而持续奋斗的重要性。"
+      ],
+      "tags": [
+        "WIF",
+        "Max Mara",
+        "奥斯卡",
+        "电影",
+        "女性",
+        "性别平等",
+        "好莱坞"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/e7b1c47f-e87b-4c4b-a5fe-9c695e86a2fb.jpg",
+      "published": "2026-03-15T00:32:25+00:00",
+      "sources": [
+        {
+          "name": "Harper's Bazaar",
+          "title": "An Exclusive Look at the Annual Women in Film Oscar Nominees Celebration",
+          "link": "https://www.harpersbazaar.com/celebrity/latest/g70741725/exclusive-photos-women-in-film-2026-oscar-nominees-celebration",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Inside the Star-Studded Annual Women in Film Oscar Nominees Celebration",
+          "link": "https://www.vogue.com/slideshow/women-in-film-oscar-nominees-celebration-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "eb04b057aec2",
+      "title": "小预算家居改造：亚马逊及多平台平价好物精选，格调生活轻松拥有",
+      "summary": "无需花费巨资，也能轻松提升家居格调与生活品质！精选亚马逊、The Zoe Report及Bustle等多平台高性价比好物，涵盖厨房、客厅等多个空间，以及旅行、美妆、时尚等领域。从浪漫蕾丝窗帘、复古灯泡串灯等装饰小物，到冰箱除臭神器、超薄插座遮蔽器等实用好物，再到不锈钢冰球、化妆包和真丝枕套等提升生活品质的单品，助你以小预算打造专属个性空间，尽显品味。",
+      "key_points": [
+        "精选多平台平价好物：涵盖亚马逊、The Zoe Report、Bustle等。",
+        "覆盖家居、旅行、美妆、时尚等多领域，满足不同需求。",
+        "强调高性价比：无需花费巨资，即可提升生活品质。",
+        "注重格调与实用性：兼顾装饰性和功能性，打造个性空间。"
+      ],
+      "tags": [
+        "家居改造",
         "平价好物",
-        "美妆",
-        "时尚",
-        "小众",
-        "魅力提升",
+        "亚马逊",
+        "生活品质",
+        "小预算",
+        "家居装饰",
+        "实用好物",
+        "格调生活",
+        "高性价比"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/11/24dde322/3.png?w=1200&fit=max",
+      "published": "2026-03-15T00:30:25+00:00",
+      "sources": [
+        {
+          "name": "Bustle",
+          "title": "60 Pretty Home Upgrades That Are Shockingly Cheap On Amazon",
+          "link": "https://www.bustle.com/shopping/pretty-home-upgrades-that-are-shockingly-cheap-on-amazon",
+          "lang": "en"
+        },
+        {
+          "name": "Elite Daily",
+          "title": "55 Weird-As-Hell Things That Make Your Home Look More Expensive",
+          "link": "https://www.elitedaily.com/lifestyle/weird-as-hell-things-that-make-your-home-look-more-expensive",
+          "lang": "en"
+        },
+        {
+          "name": "Elite Daily",
+          "title": "60 Bougie Things That Make Your Life Better & Are So Damn Cheap On Amazon",
+          "link": "https://www.elitedaily.com/lifestyle/bougie-things-that-make-your-life-better-are-so-damn-cheap-on-amazon",
+          "lang": "en"
+        },
+        {
+          "name": "The Zoe Report",
+          "title": "The Bougiest, Most Clever Home Upgrades We Found Under $25",
+          "link": "https://www.thezoereport.com/shopping/the-bougiest-most-clever-home-upgrades-we-found-under-25",
+          "lang": "en"
+        },
+        {
+          "name": "Bustle",
+          "title": "65 Bougie Things Selling Out Because They're So Freaking Cheap",
+          "link": "https://www.bustle.com/shopping/bougie-things-selling-out-because-theyre-so-freaking-cheap",
+          "lang": "en"
+        }
+      ],
+      "article_count": 5
+    },
+    {
+      "id": "d0d62938d9db",
+      "title": "NB 991v1 鳄鱼纹 & Nike Air Max 90 新配色发布",
+      "summary": "New Balance 991v1 “Oyster Grey” 以精致鳄鱼纹皮革打造，配色经典百搭，预计3月19日全球发售。同时，Nike Air Max 90 “Silver Sage” 新款运动鞋也已发布，采用经典色彩搭配亮绿色细节，预计夏季发售。",
+      "key_points": [
+        "New Balance 991v1 “Oyster Grey”采用鳄鱼纹皮革",
+        "NB 991v1 预计3月19日全球发售，售价270欧元",
+        "Nike Air Max 90 “Silver Sage” 采用亮绿色细节",
+        "Nike Air Max 90 “Silver Sage” 预计夏季发售"
+      ],
+      "tags": [
+        "New Balance",
+        "NB 991v1",
+        "鳄鱼纹",
+        "Nike",
+        "Air Max 90",
+        "Silver Sage",
+        "运动鞋",
+        "发售信息"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.gqjapan.jp/photos/69b3ea04b52c8973400a7196/master/pass/new-balance-991v1-oyster-grey-3.jpg",
+      "published": "2026-03-15T00:30:00+00:00",
+      "sources": [
+        {
+          "name": "GQ Japan",
+          "title": "ニューバランス「991v1 “Oyster Grey”」は洗練されたクロコ仕上げのエレガントな一足──GQ新着スニーカー",
+          "link": "https://www.gqjapan.jp/article/20260313-new-balance-991v1-oyster-grey",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "ナイキ「エア マックス 90 “Silver Sage”」は麗しいグリーンのディテールに注目──GQ新着スニーカー",
+          "link": "https://www.gqjapan.jp/article/20260315-nike-air-max-90-silver-sage",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "1a81c01f88be",
+      "title": "HERNO：意式优雅的未来演绎",
+      "summary": "意大利轻奢品牌HERNO于米兰时装周发布2026-27年秋冬系列。该系列是对品牌经典风格的现代升级，在传承意式优雅的基础上，融入了更多创新设计理念。完整系列图片及细节解读，敬请关注后续报道，一同领略HERNO的未来时尚愿景。",
+      "key_points": [
+        "HERNO发布2026-27秋冬系列",
+        "米兰时装周亮相",
+        "经典风格的现代诠释"
+      ],
+      "tags": [
+        "HERNO",
+        "2026-27秋冬",
+        "米兰时装周",
+        "意大利时尚",
+        "轻奢"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/13175747/herno_og.jpg",
+      "published": "2026-03-15T00:30:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "「ヘルノ」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2354427",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "baeab9190916",
+      "title": "Petra Fagerstrom：2026秋冬伦敦新貌",
+      "summary": "WWD Japan聚焦Petra Fagerstrom于伦敦时装周发布的2026-27秋冬系列。该系列以前卫设计语言，展现了品牌对未来时尚的独特解读。报道不仅提供了高清系列图片浏览，更将Petra Fagerstrom与HERNO、Simone Rocha、Valentino等同期发布品牌并置，便于读者一览国际时尚前沿动态。",
+      "key_points": [
+        "Petra Fagerstrom发布2026-27秋冬系列",
+        "伦敦时装周首发，设计前卫",
+        "WWD Japan提供系列图片浏览"
+      ],
+      "tags": [
+        "Petra Fagerstrom",
+        "2026秋冬系列",
+        "伦敦时装周"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/11133042/petra_og.jpg",
+      "published": "2026-03-15T00:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "「ペトラ ファーゲルストロム」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2351079",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "6593c656ee9c",
+      "title": "Max Mara和PROTECA荣获日本百货店买家大奖",
+      "summary": "日本纤研新闻社揭晓2025年度百货店买家奖，Max Mara女装和PROTECA男装分别摘得畅销大奖。Max Mara凭借其标志性外套的持久魅力和卓越品质设计赢得赞誉，成为精致女性的首选。PROTECA则以其精湛的日本制造工艺和高品质行李箱脱颖而出，深受高端客户和国际游客的喜爱，是品质旅行的象征。",
+      "key_points": [
+        "Max Mara经典外套持续畅销",
+        "PROTECA日本制造行李箱受欢迎",
+        "奖项肯定品牌在百货店的卓越表现"
+      ],
+      "tags": [
+        "Max Mara",
+        "PROTECA",
+        "百货店",
+        "奖项",
+        "日本时尚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/imgi_34_large_award260310-6446f0f6-5756-4523-aca3-873a1a9f650b.jpg",
+      "published": "2026-03-14T23:59:00+00:00",
+      "sources": [
+        {
+          "name": "Fashionsnap",
+          "title": "繊研新聞社「25年度百貨店バイヤーズ賞」　ベストセラー大賞はマックスマーラとプロテカ",
+          "link": "https://www.fashionsnap.com/article/2026-03-15/25-department-store-bestseller",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "67b6ae2f1501",
+      "title": "匡威PRO LEATHER五十周年纪念款：复古新篇章，日产匠心",
+      "summary": "为纪念PRO LEATHER诞生五十周年，匡威日本发布限定版PRO LEATHER J VTG OX，隶属TimeLine系列。本次纪念款由古着球鞋店SOMA代表徳永勝文和MAGFORLIA代表山田隆也联手监修，从各自的古着收藏中汲取灵感，重现1976年款的经典细节，并融合“MADE IN JAPAN”的品质。推出紫色/金色和黑色/灰色两种配色，重现经典复古风。将于3月21日起在CONVERSE STORE HARAJUKU及指定店铺发售，售价33000日元。",
+      "key_points": [
+        "匡威PRO LEATHER迎来50周年纪念",
+        "限定版PRO LEATHER J VTG OX隶属TimeLine系列",
+        "由古着店SOMA和MAGFORLIA主理人联合监修",
+        "设计灵感源自1976年款，重现经典细节",
+        "采用“MADE IN JAPAN”高品质制作",
+        "3月21日起在CONVERSE STORE HARAJUKU及指定店铺发售，售价33000日元"
+      ],
+      "tags": [
+        "匡威",
+        "PRO LEATHER",
+        "50周年",
+        "纪念款",
+        "复古",
+        "日本限定",
+        "TimeLine",
+        "MADE IN JAPAN"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/converse-pro-leather-20251028-001-ee7047e1-785a-4b96-821d-3e04f432be4a.jpg",
+      "published": "2026-03-14T23:50:00+00:00",
+      "sources": [
+        {
+          "name": "Fashionsnap",
+          "title": "コンバースが「プロレザー」50周年を記念した限定モデル発売、「SOMA」代表 徳永勝文らが監修した2型",
+          "link": "https://www.fashionsnap.com/article/2026-03-13/converse-pro-leather-50th",
+          "lang": "ja"
+        },
+        {
+          "name": "Hypebeast",
+          "title": "Converse Japan Celebrates the 50th Anniversary of the Pro Leather With Two Vintage-Inspired Releases",
+          "link": "https://hypebeast.com/2026/3/takaya-yamada-katsufumi-tokunaga-converse-pro-leather-j-vtg-ox-50th-anniversary-collaboration-collection-release-info",
+          "lang": "en"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "コンバースの名作「プロレザー」誕生50周年、アニバーサリーモデルが登場！──GQ新着スニーカー",
+          "link": "https://www.gqjapan.jp/article/20260315-converse-timeline-proleather-news",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 3
+    },
+    {
+      "id": "968cc49fe3a0",
+      "title": "Renate Reinsve：硬朗柔美碰撞",
+      "summary": "挪威女演员Renate Reinsve近日亮相WIF奥斯卡提名者庆祝活动，身着Khaite 2026秋季系列第16套造型，成为红毯焦点。该造型巧妙融合了硬朗的剪裁线条与柔美的彩绘缎面，搭配黑色尖头高跟鞋，更显优雅气质，腰部镂空设计则增添了一丝性感。整体造型既展现了Renate Reinsve的独特个性，也完美诠释了Khaite品牌的前卫时尚理念。",
+      "key_points": [
+        "Renate Reinsve红毯造型",
+        "Khaite 2026秋季系列",
+        "硬朗剪裁与柔美缎面结合"
+      ],
+      "tags": [
+        "Renate Reinsve",
+        "Khaite",
+        "奥斯卡",
+        "名人造型",
+        "红毯穿搭"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/renate-reinsve-khaite-wif-oscars-nominees-celebration.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-14T23:37:16+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Renate Reinsve Mixes Hard Tailoring and Painted Satin in Khaite at WIF’s Oscars Nominees Celebration",
+          "link": "https://wwd.com/pop-culture/celebrity-news/renate-reinsve-khaite-wif-oscars-nominees-1238676329",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "4c9952336e19",
+      "title": "平价美妆时尚好物精选：小众神器，快速提升魅力秘籍",
+      "summary": "想轻松提升个人魅力？精选多款平价时尚单品和美妆好物，包括精致耳饰、性感上衣、多功能润唇膏、抗衰老颈霜、角质护理笔等小众神器，助你从细节处焕发光彩。现在更加入快速提升魅力的技巧，如内置胸罩背心、丰唇唇彩、胶原蛋白贴片等，均可在Amazon轻松购得。无需花费太多心思，就能以低维护的方式，打造精致迷人的外貌，瞬间提升时尚感和自信。更有低于25美元的平价好物推荐，让你用更少的花费，变美更轻松。",
+      "key_points": [
+        "平价时尚美妆好物推荐",
+        "小众神器提升细节魅力",
+        "快速提升外貌和自信的技巧",
+        "Amazon可购单品推荐",
+        "低维护打造精致外貌"
+      ],
+      "tags": [
+        "平价美妆",
+        "时尚好物",
+        "小众神器",
+        "快速提升魅力",
         "低维护",
-        "耳饰",
-        "唇部护理",
-        "颈部护理",
-        "角质护理"
+        "Amazon",
+        "自信提升"
       ],
       "category": "trend-summary",
       "category_name": "趋势总结",
       "image": "https://imgix.bustle.com/uploads/image/2026/1/22/45f530f2/10.jpg?w=1200&fit=max",
-      "published": "2026-03-14T22:00:25+00:00",
+      "published": "2026-03-14T22:58:42+00:00",
       "sources": [
         {
           "name": "Elite Daily",
@@ -2879,9 +3280,45 @@
           "title": "55 Insanely Clever Things You Didn't Know Existed That Make You Look Hotter",
           "link": "https://www.bustle.com/shopping/insanely-clever-things-you-didnt-know-existed-that-make-you-look-hotter",
           "lang": "en"
+        },
+        {
+          "name": "Bustle",
+          "title": "55 Easy Little Tweaks That Instantly Make You Look Hotter",
+          "link": "https://www.bustle.com/shopping/easy-little-tweaks-that-instantly-make-you-look-hotter",
+          "lang": "en"
         }
       ],
-      "article_count": 3
+      "article_count": 4
+    },
+    {
+      "id": "5284dd95245f",
+      "title": "艾丽西亚·希尔维斯通的奥斯卡极简风",
+      "summary": "好莱坞女星艾丽西亚·希尔维斯通在奥斯卡周末派对上以一身简约造型亮相，她身着Max Mara优雅连衣裙，搭配黑色极简穆勒鞋，尽显低调品味。WWD指出，这一造型延续了其一贯的简约风格，与其他明星在奥斯卡期间的华丽装扮形成对比，展现了另一种时尚态度。",
+      "key_points": [
+        "艾丽西亚·希尔维斯通奥斯卡周末造型",
+        "Max Mara连衣裙搭配穆勒鞋",
+        "简约风格与红毯潮流对比"
+      ],
+      "tags": [
+        "艾丽西亚·希尔维斯通",
+        "奥斯卡",
+        "明星穿搭",
+        "Max Mara",
+        "穆勒鞋"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/alicia-silverstone-strappy-sandals-wif-oscars-nominees-pre-oscars-party.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-14T22:19:15+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Alicia Silverstone Reaches for an Oscars Weekend Staple in Black Minimalist Mules",
+          "link": "https://wwd.com/footwear-news/shoe-trends/alicia-silverstone-strappy-sandal-mules-wif-oscars-nominees-1238676313",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
     },
     {
       "id": "fa405355892f",
@@ -3439,57 +3876,6 @@
       "article_count": 1
     },
     {
-      "id": "eb04b057aec2",
-      "title": "小预算家居改造：亚马逊及多平台平价好物精选，提升格调与生活品质",
-      "summary": "无需花费巨资，也能轻松提升家居格调与生活品质！精选亚马逊及The Zoe Report等多平台高性价比家居好物，涵盖厨房、客厅等多个空间，从浪漫蕾丝窗帘、复古灯泡串灯等装饰小物，到冰箱除臭神器、超薄插座遮蔽器等实用好物，助你打造专属个性空间，尽显品味。",
-      "key_points": [
-        "小预算家居改造方案",
-        "亚马逊及多平台平价好物推荐",
-        "涵盖装饰性与实用性家居用品",
-        "提升家居格调与生活品质"
-      ],
-      "tags": [
-        "家居改造",
-        "平价好物",
-        "亚马逊",
-        "The Zoe Report",
-        "生活品质",
-        "家居装饰",
-        "小预算"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://imgix.bustle.com/uploads/image/2026/3/11/24dde322/3.png?w=1200&fit=max",
-      "published": "2026-03-14T18:00:24+00:00",
-      "sources": [
-        {
-          "name": "Bustle",
-          "title": "60 Pretty Home Upgrades That Are Shockingly Cheap On Amazon",
-          "link": "https://www.bustle.com/shopping/pretty-home-upgrades-that-are-shockingly-cheap-on-amazon",
-          "lang": "en"
-        },
-        {
-          "name": "Elite Daily",
-          "title": "55 Weird-As-Hell Things That Make Your Home Look More Expensive",
-          "link": "https://www.elitedaily.com/lifestyle/weird-as-hell-things-that-make-your-home-look-more-expensive",
-          "lang": "en"
-        },
-        {
-          "name": "Elite Daily",
-          "title": "60 Bougie Things That Make Your Life Better & Are So Damn Cheap On Amazon",
-          "link": "https://www.elitedaily.com/lifestyle/bougie-things-that-make-your-life-better-are-so-damn-cheap-on-amazon",
-          "lang": "en"
-        },
-        {
-          "name": "The Zoe Report",
-          "title": "The Bougiest, Most Clever Home Upgrades We Found Under $25",
-          "link": "https://www.thezoereport.com/shopping/the-bougiest-most-clever-home-upgrades-we-found-under-25",
-          "lang": "en"
-        }
-      ],
-      "article_count": 4
-    },
-    {
       "id": "e413a7002399",
       "title": "25美元内的奢华惊喜：90款实用好礼精选",
       "summary": "还在为送礼发愁？这份清单为你精选了90款价格低于25美元的实用好礼，涵盖生活、美妆等多个领域。无论是精致的防水人造革化妆包，设计媲美大牌，还是便捷的缝纫工具，助你快速解决衣物小问题，都能让收礼人感受到你的用心。",
@@ -3600,36 +3986,6 @@
           "name": "Hypebeast",
           "title": "The Art Market Finally Stopped Spiraling",
           "link": "https://hypebeast.com/2026/3/art-basel-and-ubs-global-art-market-report-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "f83479b882ea",
-      "title": "闪耀奥斯卡季：WIF盛典星光熠熠",
-      "summary": "年度奥斯卡颁奖季，Women in Film (WIF) 携手 Max Mara 在洛杉矶 Wheelhouse 举办盛大的提名者庆祝活动。众多才华横溢的女性电影人，包括演员凯特·哈德森、瑞内特·赖因斯夫等，以及制片人、词曲作者和化妆师等齐聚一堂，共同庆祝她们在电影领域的卓越成就。WIF CEO Kirsten Scaffer 在活动中再次强调了为实现性别平等而持续奋斗的重要性，彰显了 WIF 致力于支持和提升女性电影从业者的坚定决心。",
-      "key_points": [
-        "WIF举办年度奥斯卡提名者庆祝活动",
-        "Max Mara倾情赞助",
-        "众多女性电影人出席，星光璀璨"
-      ],
-      "tags": [
-        "Women in Film",
-        "奥斯卡",
-        "Max Mara",
-        "女性电影人",
-        "颁奖季"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/e7b1c47f-e87b-4c4b-a5fe-9c695e86a2fb.jpg",
-      "published": "2026-03-14T16:42:00+00:00",
-      "sources": [
-        {
-          "name": "Harper's Bazaar",
-          "title": "An Exclusive Look at the Annual Women in Film Oscar Nominees Celebration",
-          "link": "https://www.harpersbazaar.com/celebrity/latest/g70741725/exclusive-photos-women-in-film-2026-oscar-nominees-celebration",
           "lang": "en"
         }
       ],
@@ -4230,36 +4586,6 @@
       "article_count": 1
     },
     {
-      "id": "4f12dbe9c067",
-      "title": "解压神器：55款平价好物治愈焦虑",
-      "summary": "Elite Daily推荐55款价格亲民、却能显著缓解焦虑的小物件，为高压人群提供情绪舒缓方案。这些好物涵盖按摩工具、香薰精油、接地垫等，旨在帮助使用者有效应对压力，改善情绪波动，提升睡眠质量，从而拥有更健康的生活方式。轻奢生活，从关爱自己开始。",
-      "key_points": [
-        "55款平价解压好物推荐",
-        "涵盖按摩、香薰、接地等多种方式",
-        "有效缓解焦虑，改善情绪和睡眠"
-      ],
-      "tags": [
-        "生活方式",
-        "健康",
-        "情绪舒缓",
-        "平价好物",
-        "解压"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgix.bustle.com/uploads/image/2026/3/11/3a60946b/15.png?w=1200&fit=max",
-      "published": "2026-03-14T13:15:25+00:00",
-      "sources": [
-        {
-          "name": "Elite Daily",
-          "title": "If You’re Anxious AF, These 55 Weird, Cheap Things Are Legitimately Life-Changing",
-          "link": "https://www.elitedaily.com/shopping/if-youre-anxious-af-these-weird-cheap-things-are-legitimately-life-changing",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "251332ab3455",
       "title": "海莉比伯：阳光比基尼与新手妈妈的甜蜜",
       "summary": "海莉·比伯近日在社交媒体上发布了一组身穿明黄色比基尼的照片，宣告夏日时尚季的正式开启。这位时尚icon同时分享了作为新手妈妈的心路历程，坦言正在学习如何更好地照顾儿子Jack，享受与孩子一同成长的珍贵时光。比伯的阳光造型和真诚分享，引发了粉丝们的热烈讨论。",
@@ -4432,6 +4758,36 @@
           "title": "Kim Gordon’s New Album Is All Funny Business",
           "link": "https://www.vogue.com/article/kim-gordon-play-me-album-interview",
           "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "15b3a6427876",
+      "title": "Balenciaga：光影交织的未来",
+      "summary": "Balenciaga 2026冬季系列在Pierpaolo Piccioli的掌舵下，以“光影对比”为灵感，深刻描绘了当代人的精神世界。秀场运用极具戏剧性的灯光效果，凸显服装的雕塑感廓形和材质本身的肌理。本季系列主打黑色皮革和羊毛等材质，并巧妙地穿插鲜艳色彩作为点缀。男装部分则更注重实用主义，并与J.M. WESTON合作推出联名鞋款。此外，Balenciaga还携手热门剧集《亢奋》的导演Sam Levinson，通过引人入胜的影像投影，为观众打造了沉浸式的观秀体验。",
+      "key_points": [
+        "光影对比设计理念",
+        "Pierpaolo Piccioli主导",
+        "与J.M. WESTON及Sam Levinson合作"
+      ],
+      "tags": [
+        "Balenciaga",
+        "2026秋冬",
+        "光影",
+        "Pierpaolo Piccioli",
+        "沉浸式体验"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/balenciaga_26aw_detail-20260313-003-c8a21600-7462-4f96-af35-98b93f36abaf.jpg",
+      "published": "2026-03-14T12:50:06+00:00",
+      "sources": [
+        {
+          "name": "Fashionsnap",
+          "title": "光と闇の緊張感が描く「バレンシアガ」2026年ウィンター",
+          "link": "https://www.fashionsnap.com/article/balenciaga-26aw-report",
+          "lang": "ja"
         }
       ],
       "article_count": 1
@@ -14598,35 +14954,6 @@
       "article_count": 1
     },
     {
-      "id": "d0d62938d9db",
-      "title": "NB 991v1：鳄鱼纹优雅来袭",
-      "summary": "《GQ Japan》释出New Balance 991v1 “Oyster Grey”发售信息。这款运动鞋以精致的鳄鱼纹皮革打造，配色经典百搭，尽显优雅格调。预计售价270欧元，将于3月19日在New Balance官网及指定零售店全球发售。日本地区的具体发售信息待官方进一步公布，敬请期待。",
-      "key_points": [
-        "New Balance 991v1",
-        "Oyster Grey配色",
-        "鳄鱼纹皮革"
-      ],
-      "tags": [
-        "New Balance",
-        "运动鞋",
-        "鳄鱼纹",
-        "Oyster Grey"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.gqjapan.jp/photos/69b3ea04b52c8973400a7196/master/pass/new-balance-991v1-oyster-grey-3.jpg",
-      "published": "2026-03-13T12:30:00+00:00",
-      "sources": [
-        {
-          "name": "GQ Japan",
-          "title": "ニューバランス「991v1 “Oyster Grey”」は洗練されたクロコ仕上げのエレガントな一足──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260313-new-balance-991v1-oyster-grey",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "a0b0df4b06aa",
       "title": "90年代炫彩风潮强势回归",
       "summary": "告别静奢风，90年代大胆活泼的色彩美学重返时尚前沿。曾经风靡于街头服饰和运动品牌的撞色原色、粉色、青色与紫色，如今在高定舞台上再次绽放异彩。这股复古浪潮不仅是对经典的回顾，更是对个性表达的推崇，预示着时尚界对多元化和趣味性的重新拥抱。Nike、Patagonia等品牌是这股潮流的先锋代表。",
@@ -15045,47 +15372,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "67b6ae2f1501",
-      "title": "匡威PRO LEATHER五十周年纪念款：复古新篇章",
-      "summary": "为纪念PRO LEATHER诞生五十周年，匡威日本发布限定版PRO LEATHER J VTG OX，隶属TimeLine系列。本次纪念款由古着球鞋店SOMA代表徳永勝文和MAGFORLIA代表山田隆也联手监修，推出紫色/金色和黑色/灰色两种配色，重现经典复古风。将于3月21日起在CONVERSE STORE HARAJUKU及指定店铺发售，售价33000日元。",
-      "key_points": [
-        "匡威PRO LEATHER五十周年纪念",
-        "TimeLine系列复古鞋款",
-        "徳永勝文和山田隆也联手监修",
-        "紫色/金色和黑色/灰色配色选择",
-        "3月21日发售"
-      ],
-      "tags": [
-        "匡威",
-        "PRO LEATHER",
-        "五十周年",
-        "TimeLine",
-        "复古",
-        "徳永勝文",
-        "山田隆也",
-        "限定款"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/converse-pro-leather-20251028-001-ee7047e1-785a-4b96-821d-3e04f432be4a.jpg",
-      "published": "2026-03-13T11:23:29+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "コンバースが「プロレザー」50周年を記念した限定モデル発売、「SOMA」代表 徳永勝文らが監修した2型",
-          "link": "https://www.fashionsnap.com/article/2026-03-13/converse-pro-leather-50th",
-          "lang": "ja"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Converse Japan Celebrates the 50th Anniversary of the Pro Leather With Two Vintage-Inspired Releases",
-          "link": "https://hypebeast.com/2026/3/takaya-yamada-katsufumi-tokunaga-converse-pro-leather-j-vtg-ox-50th-anniversary-collaboration-collection-release-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
     },
     {
       "id": "3420b5053626",
@@ -18422,261 +18708,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "33b4e5cfb696",
-      "title": "Mango 2026春季：轻奢风尚指南",
-      "summary": "Mango 2026春季系列以其设计师级别的质感单品，完美诠释了低调奢华的“财富密码”。编辑亲身体验了11款精选单品，并分享了独到的搭配心得，助你轻松打造高级时尚造型。此外，文章还囊括了Zara、Nordstrom和Madewell等品牌的春季新品速递，为你提供全方位的购物灵感，解锁早春潮流。",
-      "key_points": [
-        "Mango 2026春季系列主打轻奢风",
-        "编辑亲测11款单品并提供搭配建议",
-        "涵盖Zara、Nordstrom等品牌春季新品"
-      ],
-      "tags": [
-        "Mango",
-        "春季新品",
-        "时尚搭配",
-        "购物推荐",
-        "轻奢风"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://cdn.mos.cms.futurecdn.net/Gf4aQQWnuWtNraR4hsLypS-1280-80.jpg",
-      "published": "2026-03-13T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Mango's Designer-Level Collection is Full of Wealth-Coded Staples—11 I Tried",
-          "link": "https://www.whowhatwear.com/fashion/shopping/mango-selection-review-spring-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "27e1114bf0c0",
-      "title": "2026春季配饰潮流前瞻：点亮你的造型！",
-      "summary": "权威时尚媒体Who What Wear发布2026春季配饰潮流预测，聚焦手袋、鞋履、珠宝等品类，为你的春日造型注入全新活力。告别沉闷，用前沿配饰打造吸睛亮点，引领时尚风潮。",
-      "key_points": [
-        "2026春季配饰潮流趋势",
-        "手袋、鞋履、珠宝等潮流单品",
-        "为造型注入活力"
-      ],
-      "tags": [
-        "配饰",
-        "潮流趋势",
-        "春季",
-        "2026"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/CuRnB4uupCgu6HNkA5nxPP-1280-80.jpg",
-      "published": "2026-03-13T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "The Spring 2026 Accessory Trends That'll Bring Even the Most Boring Outfits to Life",
-          "link": "https://www.whowhatwear.com/fashion/trends/spring-accessory-trends-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "33949ce01150",
-      "title": "嗅觉新宠：解锁小众花香",
-      "summary": "本季香氛界涌现一股清新别致的潮流，一种独特且令人着迷的花香成为打造精致香水的关键。与此同时，美妆界也迎来春季美甲色彩的焕新，时尚达人们则在牛仔裤的搭配上玩转新花样。此外，如何选择合适的家居香氛，营造舒适氛围，也成为当下热门话题。",
-      "key_points": [
-        "独特花香引领香水潮流",
-        "春季美甲色彩趋势",
-        "牛仔裤的时尚搭配新选择"
-      ],
-      "tags": [
-        "香水",
-        "花香",
-        "美妆趋势",
-        "时尚潮流"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/ytzCqYCGs5AVCusVK7k6dX-1280-80.jpg",
-      "published": "2026-03-13T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Fresh, Unique and Addictive—This One Floral Note Makes for an Exceptionally Chic Perfume",
-          "link": "https://www.whowhatwear.com/beauty/fragrance/best-peony-perfumes",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "f864f2af03a4",
-      "title": "小众香氛秘籍：平价也能高级！",
-      "summary": "还在苦寻独特香气？本文作者分享了意外发现的平价香水+身体乳搭配，竟收获无数好评。文章不仅揭秘了这套神奇组合，更延伸至香水趋势，包括时尚偶像 Carolyn Bessette-Kennedy 的经典之选、滋润干皮的面部护理产品、充满意式风情的香氛，以及 Nordstrom 正在进行的香水促销活动。想用平价单品打造专属高级感？快来解锁这份香氛灵感！",
-      "key_points": [
-        "平价香水+身体乳的惊喜搭配",
-        "Carolyn Bessette-Kennedy 的香水选择",
-        "适合干性皮肤的面部产品推荐"
-      ],
-      "tags": [
-        "香水",
-        "身体乳",
-        "平价美妆",
-        "香氛趋势"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/YiQz4xXgPG7dKRjTTa84s9-1280-80.jpg",
-      "published": "2026-03-13T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "This $29 Perfume and Drugstore Lotion Combo Earns Me So Many Compliments, and I Got It From a Stranger",
-          "link": "https://www.whowhatwear.com/best-drugstore-perfume-and-lotion-combination",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "15a379fb7e00",
-      "title": "春日焕颜：Nordstrom美妆盛宴",
-      "summary": "Nordstrom春季促销正酣，Dior、Armani等奢华美妆品牌纷纷加入，精选15款完美彩妆单品，助你打造无瑕春日妆容。除了美妆，更有外套、牛仔裤、上衣、连衣裙等潮流单品参与活动，轻松玩转春季混搭风尚。把握机会，焕新你的春日衣橱和妆容！",
-      "key_points": [
-        "Nordstrom春季美妆促销",
-        "Dior、Armani等大牌参与",
-        "精选15款春季彩妆单品"
-      ],
-      "tags": [
-        "美妆",
-        "促销",
-        "Dior",
-        "Armani",
-        "春季",
-        "Nordstrom"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://cdn.mos.cms.futurecdn.net/fxr6GZ625w6SMKXsUVoGgF-1280-80.jpg",
-      "published": "2026-03-13T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "From Dior to Armani: 15 Flawless Spring Makeup Products Are On Sale at Nordstrom RN",
-          "link": "https://www.whowhatwear.com/nordstrom-beauty-savings-event-makeup-products",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "5120e12da317",
-      "title": "指尖上的高级定制：玩转专属美甲色 (2026趋势更新)",
-      "summary": "想拥有不落俗套的精致美甲？时尚达人们早已玩起了定制美甲色！本季最流行的趋势是巧妙混搭甲油，打造独一无二的高级质感。2026年，通过颜色组合打造高级感美甲造型依旧流行。我们为你精选了7种绝不出错的美甲配色方案，从温柔奶茶到气质灰调，总有一款能满足你的时尚品味。更有名人美甲师推荐和值得尝试的美甲设计。告别单调，用指尖色彩展现你的个性与格调。",
-      "key_points": [
-        "定制美甲色是打造独特高级感美甲的关键",
-        "巧妙混搭甲油是流行趋势",
-        "提供7种配色方案，包括温柔奶茶和气质灰调",
-        "2026年美甲颜色趋势",
-        "名人美甲师推荐",
-        "值得尝试的美甲设计"
-      ],
-      "tags": [
-        "美甲",
-        "定制美甲",
-        "美甲色",
-        "甲油",
-        "配色",
-        "2026趋势",
-        "高级感",
-        "名人美甲师"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/vsNpoqq7PgrWsLYsCtJHxJ-1280-80.jpg",
-      "published": "2026-03-13T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "The Chicest People I Know Wear a Bespoke Nail Colour—7 Layering Combos That Always Look Expensive",
-          "link": "https://www.whowhatwear.com/beauty/nails/nail-polish-layering",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "4dc800e7c4d6",
-      "title": "匡威携手MY FIRST STORY主唱，摇滚潮鞋来袭！",
-      "summary": "匡威CONVERSE宣布将于3月26日发售与日本摇滚乐队MY FIRST STORY主唱Hiro联名的运动鞋款。本次合作以NX360 MH鞋型为蓝本，推出黑/黑与白/米色两种配色选择，将在指定店铺及匡威官网同步发售。凡购买联名款运动鞋的顾客，均可获得独家原创抽绳包。更有机会参与抽奖，赢取Hiro亲笔签名的限量版T恤和海报，不容错过！",
-      "key_points": [
-        "匡威CONVERSE与MY FIRST STORY主唱Hiro联名",
-        "NX360 MH鞋型，黑/黑与白/米色配色",
-        "购买赠送抽绳包，有机会获得签名周边"
-      ],
-      "tags": [
-        "CONVERSE",
-        "匡威",
-        "MY FIRST STORY",
-        "Hiro",
-        "联名",
-        "运动鞋",
-        "潮流"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/13122742/main-94.jpg",
-      "published": "2026-03-13T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "「コンバース」がMY FIRST STORYのHiroとのコラボスニーカーを発売 　抽選でサイン入りアイテムが当たるキャンペーンも",
-          "link": "https://www.wwdjapan.com/articles/2353469",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "3a0c56a251e2",
-      "title": "JOHNBULL：2026春夏系列男女装齐发",
-      "summary": "JOHNBULL发布2026春夏男女装系列，在经典服装的框架下，注入现代设计理念。男装系列涵盖外套、衬衫及裤装等，兼顾实用性与舒适度，并巧妙融入当季潮流元素，为男士打造兼具格调与功能的衣橱。女装系列则展示了品牌在女装设计上的最新理念和风格。完整系列已登陆Fashionsnap。",
-      "key_points": [
-        "JOHNBULL发布2026春夏男装系列",
-        "JOHNBULL发布2026春夏女装系列",
-        "男女装系列均在经典服装基础上融入现代设计理念",
-        "男装注重实用性、舒适性与潮流元素的结合",
-        "女装展示品牌最新的设计理念和风格"
-      ],
-      "tags": [
-        "JOHNBULL",
-        "2026春夏",
-        "男装",
-        "女装",
-        "Fashionsnap",
-        "系列发布"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/collection/images/2026/03/JOHNBULL-26ss-mens-20260313-20250809-001-dbc32ddf-3016-465d-abd1-43f3ca3cfcd7.jpg",
-      "published": "2026-03-13T06:53:17+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "JOHNBULL -Men's- 2026SS コレクション",
-          "link": "https://www.fashionsnap.com/collection/johnbull/mens/2026ss",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "JOHNBULL -Women's- 2026SS コレクション",
-          "link": "https://www.fashionsnap.com/collection/johnbull/womens/2026ss",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 2
     }
   ]
 }
