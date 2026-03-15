@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-03-15T10:27:29+00:00",
+    "generated_at": "2026-03-15T12:37:28+00:00",
     "total_topics": 500,
-    "total_articles": 1126,
+    "total_articles": 1088,
     "sources_count": 49,
     "sources": [
       "Allure",
@@ -58,12 +58,12 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 14,
-      "blocked_by_tombstones": 345,
-      "evicted_topics": 12,
+      "new_articles_in_2h": 19,
+      "blocked_by_tombstones": 336,
+      "evicted_topics": 10,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 1,
-        "incremental_new_topics_created": 13,
+        "incremental_assigned_to_existing": 8,
+        "incremental_new_topics_created": 11,
         "cross_merge_candidates": 4,
         "cross_merge_low_reviews": 4,
         "cross_merge_high_reviews": 0,
@@ -71,9 +71,9 @@
       }
     },
     "quality": {
-      "merge_rate": 0.556,
-      "avg_sources_per_topic": 1.29,
-      "high_confidence_topic_ratio": 0.938,
+      "merge_rate": 0.5404,
+      "avg_sources_per_topic": 1.28,
+      "high_confidence_topic_ratio": 0.94,
       "rebuild_mode": "incremental"
     }
   },
@@ -2864,6 +2864,457 @@
       "article_count": 1
     },
     {
+      "id": "b582ddbad217",
+      "title": "2026/27秋冬时装周：全球视角下的潮流趋势",
+      "summary": "2026/27秋冬时装周盛大举行，涵盖巴黎、米兰、纽约、伦敦和东京五大时尚之都。本次时装周不仅有Zegna、Ralph Lauren、Dsquared2、Dolce & Gabbana、Prada、Louis Vuitton、Dior等国际知名品牌发布最新系列，更有Yoke Tokyo、KAKAN、PAYS DES FEES、YUEQI QI、ENFOLD、ANTHEM A等东京设计师品牌崭露头角。通过Vogue Japan、Vogue (en)、Fashion Press、WWD Japan等媒体的报道，深入剖析各品牌秀评与设计亮点，并通过直播平台实时呈现东京时装周盛况，为读者带来全球前沿时尚资讯。",
+      "key_points": [
+        "2026/27秋冬时装周覆盖全球五大时尚之都",
+        "国际知名品牌与东京设计师品牌同台发布",
+        "Vogue Japan等媒体提供深入秀评与设计亮点分析",
+        "东京时装周通过直播平台实时呈现"
+      ],
+      "tags": [
+        "2026秋冬",
+        "时装周",
+        "巴黎",
+        "米兰",
+        "纽约",
+        "伦敦",
+        "东京",
+        "潮流趋势",
+        "设计师品牌"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://media.vogue.co.jp/photos/6968512c0aae745fa1c5b00d/master/pass/00001-dior-men-spring-2026-mensw.jpg",
+      "published": "2026-03-15T12:26:41+00:00",
+      "sources": [
+        {
+          "name": "Vogue Japan",
+          "title": "【2026年秋冬ファッションウィーク】パリ、ミラノ、ニューヨーク、ロンドン、東京のスケジュール・レビュー",
+          "link": "https://www.vogue.co.jp/article/26-27-aw-fashion-week-schedule",
+          "lang": "ja"
+        },
+        {
+          "name": "Vogue",
+          "title": "Yoke Tokyo Fall 2026",
+          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/yoke",
+          "lang": "en"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "2026-27年秋冬「楽天 ファッション ウィーク東京」開幕！注目ショーの見どころをチェック",
+          "link": "https://www.wwdjapan.com/articles/2343316",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashion Press",
+          "title": "【ライブ配信：2026年3月16日】2026-27年秋冬楽天ファッション・ウィーク東京",
+          "link": "https://www.fashion-press.net/news/144382",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 4
+    },
+    {
+      "id": "59797520fdd8",
+      "title": "亚马逊寻宝：25美元以下时尚好物！",
+      "summary": "《The Zoe Report》精选亚马逊65款25美元以下的超值单品，涵盖美妆、配饰及生活方式等领域。个性包带延长链、保湿凝胶手套、自动浇水装置、指甲油修复液等实用好物，轻松提升生活品质，打造精致时尚感。",
+      "key_points": [
+        "亚马逊平价时尚单品推荐",
+        "涵盖美妆、配饰、生活方式多领域",
+        "25美元以下超值好物"
+      ],
+      "tags": [
+        "亚马逊",
+        "平价时尚",
+        "生活好物",
+        "美妆",
+        "配饰"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/11/a6ada789/28.png?w=1200&fit=max",
+      "published": "2026-03-15T12:00:25+00:00",
+      "sources": [
+        {
+          "name": "The Zoe Report",
+          "title": "The 65 Most Amazing Finds Under $25 On Amazon",
+          "link": "https://www.thezoereport.com/living/the-most-amazing-finds-under-25-on-amazon",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "81802a954d29",
+      "title": "锁定2026奥斯卡：观看指南、星光预测与新增奖项",
+      "summary": "时尚迷们翘首以待的2026年奥斯卡颁奖典礼即将到来！本文为你提供最全面的观影指南，无论你是想亲临现场感受星光熠熠，还是在家舒适地观看直播，都能找到所需信息。喜剧演员Conan O’Brien将连续第二年担任主持人。我们大胆预测本届奥斯卡最佳影片的激烈角逐，Paul Thomas Anderson和Ryan Coogler的作品有望展开对决，《Sinners》更以16项提名领跑。最佳男主角方面，Timothée Chalamet和Michael B. Jordan等实力派演员将展开精彩对决，谁能最终捧得小金人，让我们拭目以待！此外，今年奥斯卡还将新增最佳选角奖。",
+      "key_points": [
+        "2026年奥斯卡颁奖典礼观看方式详解",
+        "Conan O’Brien连续第二年担任主持人",
+        "最佳影片预测：《Sinners》领跑，Paul Thomas Anderson和Ryan Coogler作品有望角逐",
+        "最佳男主角预测：Timothée Chalamet和Michael B. Jordan展开竞争",
+        "新增奖项：最佳选角奖"
+      ],
+      "tags": [
+        "2026奥斯卡",
+        "奥斯卡预测",
+        "颁奖典礼",
+        "Conan O’Brien",
+        "最佳影片",
+        "最佳男主角",
+        "Timothée Chalamet",
+        "Michael B. Jordan",
+        "Sinners",
+        "最佳选角奖"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/6881a9bd-f2c5-4f85-bc6c-169db8285f80.jpeg",
+      "published": "2026-03-15T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "Esquire",
+          "title": "When and Where to Watch the 2026 Oscars",
+          "link": "https://www.esquire.com/entertainment/movies/a70733904/oscars-2026-start-time-channel",
+          "lang": "en"
+        },
+        {
+          "name": "Vanity Fair",
+          "title": "Oscars 2026: Where to Watch and What to Expect",
+          "link": "https://www.vanityfair.com/hollywood/story/oscars-2026-where-to-watch-and-what-to-expect",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "How to Watch and Stream the 2026 Oscars",
+          "link": "https://www.vogue.com/article/how-to-watch-the-2026-oscars",
+          "lang": "en"
+        }
+      ],
+      "article_count": 3
+    },
+    {
+      "id": "c921e3dfbed8",
+      "title": "2026早春手袋风向标：Balenciaga、Fendi、Dolce & Gabbana与Ferragamo新品速递",
+      "summary": "《GQ Japan》抢先披露Balenciaga、Fendi、Dolce & Gabbana和Ferragamo 2026早春系列包袋及钱包。Balenciaga对经典款“Rodeo”、“Cash”和“Le City”进行创新演绎，并带来与NBA的重磅联名“EXPLORER BACKPACK”。Fendi强调功能性与洗练设计，采用轻盈的科技面料和皮革，推出简约现代的大号托特包、旅行达夫包、二折钱包和拉链钱包等。Dolce & Gabbana则以新icon“Vittoria”为首，将品牌标志性细节与现代设计相结合。Ferragamo则以Gancini和HUG包为中心，展现卓越的工艺和现代美学。",
+      "key_points": [
+        "Balenciaga经典款创新与NBA联名",
+        "Fendi功能性与轻盈材质",
+        "Dolce & Gabbana新icon“Vittoria”与标志性细节",
+        "Ferragamo Gancini和HUG包的工艺与美学"
+      ],
+      "tags": [
+        "2026早春",
+        "手袋",
+        "Balenciaga",
+        "Fendi",
+        "Dolce & Gabbana",
+        "Ferragamo",
+        "新品",
+        "包袋",
+        "钱包"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://media.gqjapan.jp/photos/69b53ede37b5e058feffa13f/master/pass/balenciaga-bag-wallet-2026-spring-1.jpg",
+      "published": "2026-03-15T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "GQ Japan",
+          "title": "新たなリアリティを提示するバレンシアガ──2026年春、バッグと財布の最新事情",
+          "link": "https://www.gqjapan.jp/article/20260314-balenciaga-bag-wallet-2026-spring",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "エフォートレスな機能美が冴えるフェンディ──2026年春、バッグと財布の最新事情",
+          "link": "https://www.gqjapan.jp/article/20260314-fendi-bag-wallet-2026-spring",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "イタリアンラグジュアリーが際立つドルチェ&ガッバーナ──2026年春、バッグと財布の最新事情",
+          "link": "https://www.gqjapan.jp/article/20260315-dolce-and-gabbana-bag-wallet-2026-spring",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "卓越したクラフツマンシップとモダンな造形美が際立つフェラガモ──2026年春、バッグと財布の最新事情",
+          "link": "https://www.gqjapan.jp/article/20260315-ferragamo-bag-wallet-2026-spring",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 4
+    },
+    {
+      "id": "dbbebb346417",
+      "title": "2026奥斯卡提名揭晓！",
+      "summary": "《名利场》独家揭晓2026年奥斯卡提名名单，瑞恩·库格勒执导的《罪人》以破纪录的16项提名领跑，成为最大热门。保罗·托马斯·安德森的《一场又一场的战斗》紧随其后，实力不容小觑，斩获13项提名。约阿希姆·提尔的《情感价值》和乔什·萨弗迪的《马蒂至上》也成功入围，角逐各大奖项。本届奥斯卡竞争激烈，最终奖项归属引人期待！",
+      "key_points": [
+        "《罪人》领跑奥斯卡提名",
+        "《一场又一场的战斗》紧随其后",
+        "多部佳作角逐奖项"
+      ],
+      "tags": [
+        "奥斯卡",
+        "电影",
+        "明星红毯"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vanityfair.com/photos/69459ca11ccf80af980db1bd/master/pass/vf1225-monsters-sinners.jpg",
+      "published": "2026-03-15T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vanity Fair",
+          "title": "Oscar Nominations 2026: See the Full List Here",
+          "link": "https://www.vanityfair.com/hollywood/story/oscar-nominations-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c536c67d8df9",
+      "title": "告别凌乱！精选旅行美妆包焕新出行",
+      "summary": "还在为旅行中杂乱无章的化妆品烦恼？精选多款兼具颜值与功能的化妆包，助你优雅出行。Kusshi以其奢华材质和精巧设计著称；Lay-n-Go展开即用，方便快捷；Béis则凭借超大容量和多层收纳空间，成为收纳控的首选。无论你是追求精致生活，还是注重实用主义，都能找到心仪的美妆伴侣，让每一次旅程都更加完美。",
+      "key_points": [
+        "Kusshi：奢华材质，精巧设计",
+        "Lay-n-Go：一键展开，方便快捷",
+        "Béis：大容量，多层收纳"
+      ],
+      "tags": [
+        "化妆包",
+        "美妆",
+        "旅行收纳",
+        "时尚配饰"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.allure.com/photos/69b1d5d1015b3082eb92d7d2/master/pass/IMG_5289.jpg",
+      "published": "2026-03-15T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "Allure",
+          "title": "Meet the Makeup Bags That’ll Change The Way You Travel",
+          "link": "https://www.allure.com/story/best-makeup-bags",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1c9f3a79b315",
+      "title": "GQ美食编辑私藏：二月东京味蕾地图",
+      "summary": "《GQ Japan》美食编辑近日分享了其二月最爱的两处美食地标。其一是位于西麻布的精致意大利餐厅CAiTO，由主厨内田恒太掌勺，提供令人惊艳的12道菜套餐，其中鹅肝法兰是必尝的招牌美味。另一处则是拥有70年历史的上野香料老店大津屋，这里汇集了琳琅满目的香料，深受专业厨师的推崇，同时也提供便捷的在线购买渠道，让您在家也能轻松玩转美食。",
+      "key_points": [
+        "西麻布CAiTO餐厅，主厨内田恒太",
+        "CAiTO特色菜：鹅肝法兰",
+        "上野大津屋香料店，70年历史"
+      ],
+      "tags": [
+        "餐厅",
+        "美食",
+        "东京",
+        "生活方式",
+        "香料"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.gqjapan.jp/photos/699694ca8be9b45c0a5a3c1e/master/pass/gq-culture-2604.jpg",
+      "published": "2026-03-15T11:30:00+00:00",
+      "sources": [
+        {
+          "name": "GQ Japan",
+          "title": "西麻布「CAiTO」と上野「大津屋」まで、食担当がハマった2月のハイ&ロー",
+          "link": "https://www.gqjapan.jp/article/20260315-250-high-low",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "fff221629963",
+      "title": "莉莉-罗丝：Z世代浪漫实用主义穿搭范本",
+      "summary": "Vogue西班牙解析了莉莉-罗丝·德普的独特穿搭风格，完美诠释了Z世代的时尚理念。她巧妙地将浪漫主义与实用主义融合，例如，用一件饰有精致花卉刺绣的蓝色薄纱连衣裙，搭配同色系的工装马甲，既展现了女性的柔美，又不失率性洒脱。这种混搭风格正符合Z世代追求浪漫、科技感、精致与实用并存的审美趋势。",
+      "key_points": [
+        "莉莉-罗丝·德普的穿搭风格",
+        "浪漫主义与实用主义的结合",
+        "Z世代的时尚审美"
+      ],
+      "tags": [
+        "莉莉-罗丝·德普",
+        "Z世代",
+        "穿搭风格",
+        "浪漫主义",
+        "实用主义"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://media.vogue.es/photos/69b68ceb4c12c4f3dd3e025d/master/pass/GettyImages-2266143631.jpg",
+      "published": "2026-03-15T11:23:10+00:00",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "Lily-Rose Depp y la mezcla favorita de la Gen-Z: romanticismo y pragmatismo",
+          "link": "https://www.vogue.es/articulos/lily-rose-depp-look-chanel-gen-z-azul-bebe-chaleco-utilitario",
+          "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "5a538edbf830",
+      "title": "“小肯尼迪”风潮再起？",
+      "summary": "《The Cut》报道，近日纽约华盛顿广场公园上演了一场别开生面的“JFK Jr.模仿大赛”。数百名年轻女性纷纷以高领毛衣、发带和椭圆形太阳镜等经典元素，复刻小约翰·肯尼迪的标志性造型，引发了关于名人风格、复古风潮以及时尚趋势的广泛讨论。这一现象也反映了人们对经典风格的怀旧与追捧，以及名人穿搭对当代时尚的深刻影响。",
+      "key_points": [
+        "纽约举办JFK Jr.模仿大赛",
+        "年轻女性追捧经典复古风",
+        "名人风格影响时尚趋势"
+      ],
+      "tags": [
+        "JFK Jr.",
+        "名人风格",
+        "复古风",
+        "穿搭"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://pyxis.nymag.com/v1/imgs/aec/17d/6d1ab9c8704bc7420c6cc247962f335fb9-als-2-final.1x.rsocial.w1200.jpg",
+      "published": "2026-03-15T11:00:14+00:00",
+      "sources": [
+        {
+          "name": "The Cut",
+          "title": "Is Dressing Like JFK Jr. the Key to Getting a Girlfriend?",
+          "link": "http://www.thecut.com/article/are-these-jfk-jr-clones-really-getting-dates.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1addd468f401",
+      "title": "优雅解码：茱莉·安德鲁斯的魅力之谜",
+      "summary": "《Vogue》1965年刊登了Gloria Steinem的文章，深入剖析了茱莉·安德鲁斯风靡全球的秘密。她兼具皇室的高贵与少女的笨拙，既机智又带点神经质，天真与老练并存，温柔中又透着尖锐，冷静而古怪，性感且淑女。文章还生动描绘了她在迪斯科舞厅的迷人风采，展现了她多面而独特的个人魅力，至今仍是时尚界津津乐道的话题。",
+      "key_points": [
+        "茱莉·安德鲁斯的多重性格魅力",
+        "Gloria Steinem的经典评论",
+        "《Vogue》复古时尚回顾"
+      ],
+      "tags": [
+        "茱莉·安德鲁斯",
+        "名人风格",
+        "复古时尚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://assets.vogue.com/photos/69b1cc19b4ae2a1ea7522e05/master/pass/CN00005570.jpg",
+      "published": "2026-03-15T11:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "From the Archives: The Secret of Julie Andrews’s Success",
+          "link": "https://www.vogue.com/article/from-the-archives-julie-andrews",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "40dfa9c828b2",
+      "title": "半价入正品大牌？我的私藏网购秘籍！",
+      "summary": "还在为高昂的设计师品牌望而却步？本文作者分享了其以惊人折扣购入全新正品大牌服饰的线上渠道。文章不仅揭秘了省钱妙招，更强调了投资经典、高品质时装的理念。想知道如何轻松拥有梦寐以求的设计师单品？快来解锁这份独家购物指南，把握难得的折扣机会！",
+      "key_points": [
+        "半价购买全新正品设计师品牌",
+        "线上购物渠道分享",
+        "投资高品质服装的理念"
+      ],
+      "tags": [
+        "设计师品牌",
+        "折扣",
+        "网购攻略",
+        "省钱",
+        "轻奢"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://stylecaster.com/wp-content/uploads/2026/03/Rue-La-La.png",
+      "published": "2026-03-15T11:00:00+00:00",
+      "sources": [
+        {
+          "name": "StyleCaster",
+          "title": "Where I Get Authentic Designer Online at Half the Price (& It’s Not Used)",
+          "link": "https://stylecaster.com/fashion/shopping-guides/1234881768/rue-la-la-review-designer-deals",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "70f5f01eea42",
+      "title": "希腊假日风尚：Revolve, Zara, H&M平价精选",
+      "summary": "梦想着在希腊的阳光下漫步？不必花费巨资也能打造迷人度假造型。本季，Revolve、Zara和H&M等品牌推出了众多平价时尚单品，涵盖飘逸的连衣裙、清爽的亚麻衬衫、时髦的凉鞋和精致的配饰，为你的希腊之旅提供丰富的穿搭灵感。从浪漫的圣托里尼到历史悠久的雅典，无论你前往何处，都能找到心仪的单品，轻松展现你的度假时尚品味。",
+      "key_points": [
+        "Revolve, Zara, H&M等品牌平价单品推荐",
+        "适合希腊度假的服装、鞋包等",
+        "提供度假穿搭灵感"
+      ],
+      "tags": [
+        "度假风",
+        "平价时尚",
+        "Revolve",
+        "Zara",
+        "H&M",
+        "希腊",
+        "穿搭"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://cdn.mos.cms.futurecdn.net/yiqz5E3RWnW8sbKPzpgtUF-1280-80.jpg",
+      "published": "2026-03-15T11:00:00+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "I’m Flirting With the Idea of a Greece Trip—36 Affordable Vacation Finds from Revolve, Zara, and H&M I’m Eyeing",
+          "link": "https://www.whowhatwear.com/fashion/shopping/affordable-vacation-finds-revolve-zara-hm-spring-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "50b47811c749",
+      "title": "艾丽·范宁：胸针“三”重奏，优雅突围",
+      "summary": "艾丽·范宁在香奈儿奥斯卡预热派对上，以一袭黑色连衣裙搭配三个别致胸针惊艳亮相。这些胸针设计灵感源自香奈儿品牌历史，巧妙融合珍珠元素，为极简风格的连衣裙增添了华丽的装饰感。在当下极简主义盛行的时尚潮流中，范宁选择胸针作为造型亮点，无疑是对传统优雅风格的致敬与大胆突破，展现了她独特的时尚品味。",
+      "key_points": [
+        "艾丽·范宁香奈儿造型",
+        "胸针装饰黑色连衣裙",
+        "珍珠元素复古优雅"
+      ],
+      "tags": [
+        "艾丽·范宁",
+        "香奈儿",
+        "胸针",
+        "明星造型",
+        "红毯"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://media.vogue.es/photos/69b6752c1ca7e9bff8276e07/master/pass/GettyImages-2266574850.jpg",
+      "published": "2026-03-15T10:19:50+00:00",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "Ni uno ni dos, sino tres broches para triunfar: el último ‘look’ de Elle Fanning",
+          "link": "https://www.vogue.es/articulos/elle-fanning-look-chanel-vestido-negro-broches",
+          "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "5f06e73020a0",
       "title": "三月着装灵感：Vogue精选连衣裙",
       "summary": "告别冬日沉闷，拥抱轻盈春日！Vogue为你精选三月必备连衣裙，无论是日常休闲、通勤办公还是浪漫婚礼，都能找到完美选择。轻薄面料、精致印花和柔和色调是本季关键词，轻松应对过渡季节。搭配高跟凉鞋、芭蕾舞鞋或复古运动鞋，打造你的专属时尚风格。",
@@ -2915,73 +3366,6 @@
           "name": "Vogue",
           "title": "Carolyn Bessette-Kennedy Won’t Give Us What We Want",
           "link": "https://www.vogue.com/article/carolyn-bessette-kennedy-wont-give-us-what-we-want",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "91d24c2518c5",
-      "title": "2026/27秋冬东京时装周：潮流趋势抢先看",
-      "summary": "2026-27年秋冬乐天东京时装周即将盛大开幕，汇集众多设计师品牌，包括KAKAN、PAYS DES FEES、YUEQI QI、ENFOLD、ANTHEM A等。时装周将通过直播平台实时呈现，第一时间掌握最新潮流趋势，感受东京时尚的独特魅力。",
-      "key_points": [
-        "2026/27秋冬乐天东京时装周即将开幕",
-        "包含KAKAN、PAYS DES FEES、YUEQI QI、ENFOLD、ANTHEM A等品牌",
-        "可通过直播平台观看",
-        "掌握下一季潮流趋势"
-      ],
-      "tags": [
-        "东京时装周",
-        "2026秋冬",
-        "2027秋冬",
-        "潮流趋势",
-        "设计师品牌",
-        "直播"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/13180055/tokyocollection_og.jpg",
-      "published": "2026-03-15T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "2026-27年秋冬「楽天 ファッション ウィーク東京」開幕！注目ショーの見どころをチェック",
-          "link": "https://www.wwdjapan.com/articles/2343316",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashion Press",
-          "title": "【ライブ配信：2026年3月16日】2026-27年秋冬楽天ファッション・ウィーク東京",
-          "link": "https://www.fashion-press.net/news/144382",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "81802a954d29",
-      "title": "锁定2026奥斯卡：星光预测",
-      "summary": "时尚迷们翘首以待的2026年奥斯卡颁奖典礼即将到来！本文为你提供最全面的观影指南，无论你是想亲临现场感受星光熠熠，还是在家舒适地观看直播，都能找到所需信息。同时，我们大胆预测本届奥斯卡最佳影片的激烈角逐，包括备受瞩目的《Sinners》、《One Battle After Another》和《Marty Supreme》。最佳男主角方面，Michael B. Jordan等实力派演员将展开精彩对决，谁能最终捧得小金人，让我们拭目以待！",
-      "key_points": [
-        "2026奥斯卡观看指南",
-        "最佳影片预测：《Sinners》等",
-        "最佳男主角竞争：Michael B. Jordan等"
-      ],
-      "tags": [
-        "奥斯卡",
-        "电影",
-        "颁奖典礼",
-        "明星"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/6881a9bd-f2c5-4f85-bc6c-169db8285f80.jpeg",
-      "published": "2026-03-15T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "Esquire",
-          "title": "When and Where to Watch the 2026 Oscars",
-          "link": "https://www.esquire.com/entertainment/movies/a70733904/oscars-2026-start-time-channel",
           "lang": "en"
         }
       ],
@@ -3102,6 +3486,35 @@
           "name": "Hypebeast",
           "title": "Kid Cudi Announces Upcoming EP and Full-Length Album",
           "link": "https://hypebeast.com/2026/3/kid-cudi-new-ep-full-length-album-teased-singles-soundcloud-news",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "75fdb172eaed",
+      "title": "星象指南：双鱼新月开启好运之周",
+      "summary": "知名占星师Madame Clairevoyant发布最新一周（3月15日至22日）星座运势，预示着充满希望与新开始的一周。本周三的双鱼座新月将带来能量，为各星座开启新的篇章。把握时机，迎接生活中的美好转变。",
+      "key_points": [
+        "3月15-22日星座运势",
+        "双鱼座新月预示新开始",
+        "各星座迎来好运契机"
+      ],
+      "tags": [
+        "星座运势",
+        "双鱼座新月",
+        "占星",
+        "生活方式"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://pyxis.nymag.com/v1/imgs/580/2d3/9fc978e576c3b258c29592aa79ebcc95d3-Week-4.1x.rsocial.w1200.jpg",
+      "published": "2026-03-15T09:00:26+00:00",
+      "sources": [
+        {
+          "name": "The Cut",
+          "title": "Your Weekly Horoscopes by Madame Clairevoyant: March 15–22",
+          "link": "http://www.thecut.com/article/your-weekly-horoscopes-madame-clairevoyant-mar-15-22.html",
           "lang": "en"
         }
       ],
@@ -4576,34 +4989,6 @@
           "name": "WWD Japan",
           "title": "「デジャヴュ」“塗るつけまつげ”マスカラから“美フォルムタイプ”が登場　シリコンブラシで先細りフォームを演出",
           "link": "https://www.wwdjapan.com/articles/2338157",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b582ddbad217",
-      "title": "2026秋冬时装周巡礼",
-      "summary": "《Vogue Japan》全面回顾了2026年秋冬时装周盛况，涵盖巴黎、米兰、纽约、伦敦和东京五大时尚之都的日程安排。报道深入剖析了Zegna、Ralph Lauren、Dsquared2、Dolce & Gabbana、Prada、Louis Vuitton、Dior等品牌的男装系列，呈现精彩秀评与设计亮点，为读者带来前沿时尚资讯。",
-      "key_points": [
-        "五大城市时装周日程总览",
-        "重点品牌男装系列秀评",
-        "秋冬潮流趋势前瞻"
-      ],
-      "tags": [
-        "时装周",
-        "秋冬男装",
-        "潮流趋势"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://media.vogue.co.jp/photos/6968512c0aae745fa1c5b00d/master/pass/00001-dior-men-spring-2026-mensw.jpg",
-      "published": "2026-03-15T03:30:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue Japan",
-          "title": "【2026年秋冬ファッションウィーク】パリ、ミラノ、ニューヨーク、ロンドン、東京のスケジュール・レビュー",
-          "link": "https://www.vogue.co.jp/article/26-27-aw-fashion-week-schedule",
           "lang": "ja"
         }
       ],
@@ -6673,47 +7058,6 @@
       "article_count": 1
     },
     {
-      "id": "c921e3dfbed8",
-      "title": "2026早春手袋风向标：巴黎世家与Fendi新品速递",
-      "summary": "《GQ Japan》抢先披露Balenciaga和Fendi 2026早春系列包袋及钱包。Balenciaga对经典款“Rodeo”、“Cash”和“Le City”进行创新演绎，并带来与NBA的重磅联名“EXPLORER BACKPACK”，兼顾功能性与潮流感。Fendi则强调功能性与洗练设计，采用轻盈的科技面料和皮革，推出简约现代的大号托特包、旅行达夫包、二折钱包和拉链钱包等。",
-      "key_points": [
-        "Balenciaga 2026早春系列创新演绎经典款手袋",
-        "Balenciaga与NBA联名推出“EXPLORER BACKPACK”",
-        "Fendi 2026春季系列强调功能性与洗练设计",
-        "Fendi新款包袋采用轻盈的科技面料和皮革"
-      ],
-      "tags": [
-        "Balenciaga",
-        "Fendi",
-        "2026早春",
-        "手袋",
-        "钱包",
-        "新品",
-        "联名",
-        "功能性",
-        "设计"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://media.gqjapan.jp/photos/69b53ede37b5e058feffa13f/master/pass/balenciaga-bag-wallet-2026-spring-1.jpg",
-      "published": "2026-03-14T12:33:41+00:00",
-      "sources": [
-        {
-          "name": "GQ Japan",
-          "title": "新たなリアリティを提示するバレンシアガ──2026年春、バッグと財布の最新事情",
-          "link": "https://www.gqjapan.jp/article/20260314-balenciaga-bag-wallet-2026-spring",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "エフォートレスな機能美が冴えるフェンディ──2026年春、バッグと財布の最新事情",
-          "link": "https://www.gqjapan.jp/article/20260314-fendi-bag-wallet-2026-spring",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 2
-    },
-    {
       "id": "13c71d6d70c5",
       "title": "DeVoe夫妇加纳重温誓言",
       "summary": "New Edition乐队成员Ronnie DeVoe与妻子Shamari DeVoe在加纳庆祝结婚20周年，并举行了浪漫的重温誓言仪式。此前不久，这对夫妇荣获加纳公民身份，并在社交媒体上分享了这一喜讯，表达了他们对信仰、家庭以及与非洲根源深切连接的自豪之情。此次纪念活动不仅是对他们二十载相濡以沫爱情的庆祝，更象征着他们对非洲文化和身份认同的深刻承诺。",
@@ -7555,16 +7899,21 @@
     {
       "id": "c2dd32bc2890",
       "title": "极简婚纱：Less is More的优雅",
-      "summary": "《Vogue》精选34款简约婚纱，为追求Less is More的新娘们提供完美选择。这些婚纱摒弃繁复装饰，以流畅线条和高级面料凸显新娘的自然之美。Marina Moscone、Reformation、Nili Lotan和Givenchy等品牌纷纷推出极简风格婚纱，涵盖丝绸、吊带、高领、迷你裙等多种设计，满足不同新娘的需求，完美诠释简约即是永恒的时尚理念。",
+      "summary": "《Vogue》精选多款简约婚纱，为追求Less is More的新娘们提供完美选择。这些婚纱摒弃繁复装饰，以流畅线条和高级面料凸显新娘的自然之美。文章强调简洁线条和精致廓形带来的内敛魅力，并推荐了具有90年代风格的婚纱，包括丝绸吊带裙、高领连衣裙、A字裙等。Marina Moscone、Reformation、Nili Lotan和Givenchy等品牌纷纷推出极简风格婚纱，涵盖多种设计，满足不同新娘的需求，完美诠释简约即是永恒的时尚理念。",
       "key_points": [
-        "《Vogue》推荐34款极简婚纱",
-        "涵盖多种款式，满足不同需求",
-        "Marina Moscone等品牌引领潮流"
+        "极简婚纱流行趋势",
+        "Less is More的设计理念",
+        "90年代风格婚纱回归",
+        "Marina Moscone、Reformation、Nili Lotan等品牌推荐",
+        "丝绸吊带裙、高领连衣裙、A字裙等款式"
       ],
       "tags": [
+        "极简婚纱",
         "婚纱",
-        "极简主义",
-        "新娘"
+        "Less is More",
+        "简约",
+        "90年代风格",
+        "Vogue"
       ],
       "category": "trend-summary",
       "category_name": "趋势总结",
@@ -7572,13 +7921,13 @@
       "published": "2026-03-14T10:00:00+00:00",
       "sources": [
         {
-          "name": "Vogue",
+          "name": "Vogue Fashion",
           "title": "The Best Simple Yet Striking Wedding Dresses for Minimalist Brides",
           "link": "https://www.vogue.com/slideshow/simple-wedding-dresses",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "d2d8ab2b9425",
@@ -11109,19 +11458,19 @@
     {
       "id": "52fb1c005f88",
       "title": "2026唇妆：质感至上，模糊柔和",
-      "summary": "告别浓墨重彩，2026年的唇妆潮流将回归自然本真，更注重唇部的质感和妆效，而非单一的颜色。冷色调、接近自然唇色的选择将成为主流，打造柔和、模糊的唇妆效果。各类唇部产品也将大放异彩，包括勾勒精致唇形的唇线笔、滋润双唇的有色润唇膏、水润饱满的保湿唇釉、高级丝绒感的丝绒唇釉，以及深层滋养的唇部精油，满足不同需求，塑造个性美唇。",
+      "summary": "告别浓墨重彩，2026年的唇妆潮流将回归自然本真，更注重唇部的质感和妆效，而非单一的颜色。与2016年的哑光深色唇妆不同，未来更倾向于接近自然唇色的冷色调，打造柔和、模糊的唇妆效果。各类唇部产品也将大放异彩，包括勾勒精致唇形的唇线笔、滋润双唇的有色润唇膏、水润饱满的保湿唇釉、高级丝绒感的丝绒唇釉，以及深层滋养的唇部精油，满足不同需求，塑造个性美唇。",
       "key_points": [
-        "质感和妆效超越颜色，成为2026唇妆关键",
-        "冷色调和自然唇色是主流选择",
-        "模糊柔和的唇妆效果",
-        "唇线笔、有色润唇膏、唇釉、唇油等产品流行"
+        "2026唇妆趋势注重质地而非颜色。",
+        "冷色调和接近自然唇色将成为主流。",
+        "模糊柔和的唇妆效果是关键。",
+        "唇线笔、有色润唇膏、唇釉和唇油等产品将流行。"
       ],
       "tags": [
         "2026唇妆",
         "唇妆趋势",
-        "自然唇色",
-        "冷色调",
+        "质感唇妆",
         "模糊唇妆",
+        "冷色调唇妆",
         "唇线笔",
         "有色润唇膏",
         "唇釉",
@@ -11133,13 +11482,13 @@
       "published": "2026-03-13T21:00:25+00:00",
       "sources": [
         {
-          "name": "Vogue",
+          "name": "Vogue Fashion",
           "title": "Juicy and Blurred: 2026’s Lip Trends Go All In on Texture and Finish",
           "link": "https://www.vogue.com/article/lip-trends-2026",
           "lang": "en"
         }
       ],
-      "article_count": 2
+      "article_count": 3
     },
     {
       "id": "f7be65c5f75e",
@@ -15466,20 +15815,22 @@
     },
     {
       "id": "34e3b41691cc",
-      "title": "豹纹风潮再起：明星Icon的时尚新宠",
-      "summary": "Bella Hadid、Harry Styles和Jennifer Lawrence等明星纷纷加入“豹纹点缀”的时尚阵营，引领新一轮潮流。Bella Hadid以一双豹纹高跟鞋搭配简约中性色服装，向Virgil Abloh致敬；Harry Styles则选择了Chanel的豹纹包包，为造型增添亮点；Jennifer Lawrence也巧妙地运用豹纹元素，展现个性魅力。豹纹元素的回潮，预示着经典野性风的再度流行。",
+      "title": "豹纹风潮愈演愈烈：Bella Hadid、Harry Styles引领时尚新宠",
+      "summary": "Bella Hadid、Harry Styles和Jennifer Lawrence等明星持续引领“豹纹点缀”的时尚风潮。Bella Hadid以豹纹高跟鞋和整体豹纹造型亮相，向Virgil Abloh致敬，并与Harry Styles的豹纹包包造型异曲同工；Jennifer Lawrence也巧妙运用豹纹元素，展现个性魅力。豹纹元素的强势回潮，预示着经典野性风的持续流行，并成为明星Icon们的心头好。",
       "key_points": [
-        "Bella Hadid豹纹鞋致敬Virgil Abloh",
-        "Harry Styles的Chanel豹纹包",
-        "明星引领豹纹点缀风潮"
+        "Bella Hadid、Harry Styles和Jennifer Lawrence等明星持续追捧豹纹元素。",
+        "Bella Hadid的豹纹造型与Harry Styles的豹纹配饰形成呼应，展现潮流趋势。",
+        "豹纹元素的回潮代表经典野性风的再度流行，并被明星广泛采用。"
       ],
       "tags": [
+        "豹纹",
         "Bella Hadid",
         "Harry Styles",
         "Jennifer Lawrence",
-        "豹纹",
-        "名人风格",
-        "潮流趋势"
+        "时尚潮流",
+        "明星穿搭",
+        "野性风",
+        "配饰"
       ],
       "category": "trend-summary",
       "category_name": "趋势总结",
@@ -15487,13 +15838,13 @@
       "published": "2026-03-13T14:42:07+00:00",
       "sources": [
         {
-          "name": "Vogue",
+          "name": "Vogue Fashion",
           "title": "Bella Hadid Joins Harry Styles and Jennifer Lawrence on the ‘Pop of Leopard’ Train",
           "link": "https://www.vogue.com/article/bella-hadid-harry-styles-jennifer-lawrence-pop-of-leopard",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "0445a0459b7c",
@@ -18208,517 +18559,6 @@
         }
       ],
       "article_count": 18
-    },
-    {
-      "id": "43d3ab9bfcd2",
-      "title": "雷克萨斯LM焕新升级，奢享静谧空间",
-      "summary": "《GQ Japan》近日报道，雷克萨斯LM迎来更新，进一步提升其作为豪华MPV的乘坐舒适性和静谧性。新款LM在细节之处精益求精，包括新增滑动门迎宾照明，更贴心的冰箱瓶架设计，升级为USB-C充电端口，以及采用降低路噪的轮胎花纹，力求为乘客打造更极致的乘坐体验。据悉，4座Executive版售价为2030万日元，6座Version L版售价为1520万日元。",
-      "key_points": [
-        "雷克萨斯LM迎来更新",
-        "提升乘坐舒适性和静谧性",
-        "新增多项细节升级"
-      ],
-      "tags": [
-        "雷克萨斯",
-        "豪华MPV",
-        "汽车",
-        "生活方式"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.gqjapan.jp/photos/69b3d45e7888bb79249afc7f/master/pass/20260312_01_01.jpg",
-      "published": "2026-03-13T10:09:33+00:00",
-      "sources": [
-        {
-          "name": "GQ Japan",
-          "title": "新しいレクサスLM登場！ 和製高級ミニバンの進化とは──GQ新着カー",
-          "link": "https://www.gqjapan.jp/article/20260313-lexus-lm-news",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b16808c8bd87",
-      "title": "《半人》：Richard Gadd新作聚焦男性脆弱与复杂兄弟情",
-      "summary": "继《我的驯鹿宝贝》后，Richard Gadd推出HBO Max和BBC合作新剧《半人》，以格拉斯哥为背景，刻画了Niall和Ruben两位兄弟长达三十年的复杂关系。该剧由Gadd和Jamie Bell主演，深入探讨了男性气质、暴力、情感脆弱性以及社会压力下的内心挣扎与情感困境，时间跨度从80年代至今。Niall性格内向，长期遭受欺凌，并在性取向问题上挣扎；Ruben则充满攻击性，展现出强烈的男子气概。目前尚未发布预告片。",
-      "key_points": [
-        "Richard Gadd新作，继《我的驯鹿宝贝》后再次聚焦男性议题",
-        "HBO Max和BBC合作，探讨脆弱的男性气质",
-        "Richard Gadd和Jamie Bell主演，讲述兄弟三十年间的复杂关系",
-        "剧情涉及80年代至今的兄弟情谊和暴力事件"
-      ],
-      "tags": [
-        "Richard Gadd",
-        "Half Man",
-        "Jamie Bell",
-        "男性气质",
-        "兄弟情",
-        "HBO Max",
-        "BBC"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.gq.com/photos/69b2a672a8e17fb65d357b43/master/pass/GQ%20-%20Richard%20Gadd_Online_Header.jpg",
-      "published": "2026-03-13T10:09:18+00:00",
-      "sources": [
-        {
-          "name": "GQ",
-          "title": "‘Half Man’ is a Dark Odyssey Into the Heart of Male Rage",
-          "link": "https://www.gq.com/story/half-man-is-a-dark-odyssey-into-the-heart-of-male-rage",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue España",
-          "title": "Richard Gadd vuelve tras ‘Mi reno de peluche’: así es ‘Half Man’, su nueva serie sobre lo frágil de la masculinidad",
-          "link": "https://www.vogue.es/articulos/half-man-serie-richard-gadd-hbo-max",
-          "lang": "es"
-        }
-      ],
-      "article_count": 3
-    },
-    {
-      "id": "2b4cf195a3d7",
-      "title": "香奈儿Baby Blue唇膏：2026春季焕亮秘诀",
-      "summary": "西班牙Vogue率先揭秘香奈儿2026春季Denim Makeup Collection系列中的Rouge Coco Flash唇膏，色号为Baby Blue。这款带有微妙蓝色调的唇膏，被誉为改善暗沉肤色、焕发肌肤光彩的秘密武器。香奈儿彩妆大使Raquel Álvarez分享，冷色调能有效提亮肤色，并建议搭配红色系唇膏，或直接用于白皙肌肤，打造健康透亮妆容。",
-      "key_points": [
-        "香奈儿2026春季新品",
-        "Baby Blue唇膏提亮肤色",
-        "彩妆师建议搭配使用"
-      ],
-      "tags": [
-        "香奈儿",
-        "唇膏",
-        "美妆",
-        "2026春季",
-        "色彩趋势"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.vogue.es/photos/69b3e0508018a0a27ef15d2a/master/pass/Trends_Enero262931_Flavio_Orsolato_sRGB.jpg",
-      "published": "2026-03-13T10:05:04+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "El color de labios inesperado de la primavera 2026 es lo mejor que he probado para dar luz a la piel (y a la cara de cansada)",
-          "link": "https://www.vogue.es/articulos/color-labios-primavera-2026-brillo-azul-luz-piel-disimular-cara-cansada",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "8ef5f304771a",
-      "title": "Fragment Design x Nike “Fragment Concept Testing” 最终联名系列发布：Mind 001、Mind 002 及 Air Liquid Max 引领潮流",
-      "summary": "潮流教父藤原浩领衔的 Fragment Design 与 Nike 推出最终联名系列“Fragment Concept Testing”，包含 Air Liquid Max、Mind 001、Mind 002 等鞋款，以极简设计语言和 Nike 的创新实验性为特色。Mind 001 系列包含“Black”和“Team Red”配色，“Black”概念鞋款隶属于藤原浩的“Concept Testing”实验项目。同时，Nike神经科学系列新成员 Mind 002 迎来“Football Grey”配色，以纹理鞋面、雕刻感中底和柔和配色为特色。",
-      "key_points": [
-        "Fragment Design x Nike 最终联名系列 “Fragment Concept Testing” 发布",
-        "系列包含 Air Liquid Max、Mind 001、Mind 002 等鞋款",
-        "Mind 001 系列包含 “Black” 和 “Team Red” 配色",
-        "Mind 002 推出 “Football Grey” 配色，设计前卫，配色清新"
-      ],
-      "tags": [
-        "Fragment Design",
-        "Nike",
-        "藤原浩",
-        "联名",
-        "Concept Testing",
-        "Air Liquid Max",
-        "Mind 001",
-        "Mind 002",
-        "球鞋",
-        "潮流"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F13%2Fnike-fragment-concept-testing-mind-001-black-IQ8502-001-release-info-0.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-13T10:04:33+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Official Images of the fragment Concept Testing Nike Mind 001",
-          "link": "https://hypebeast.com/2026/3/nike-fragment-concept-testing-mind-001-black-iq8502-001-release-info",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Official Images of the fragment Concept Testing Nike Mind 001",
-          "link": "https://hypebeast.com/2026/3/nike-fragment-concept-testing-mind-001-black-iq8502-001-release-inf0",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Nike Channels Deep Tones With the Mind 001 \"Team Red\"",
-          "link": "https://hypebeast.com/2026/3/nike-mind-001-team-red-hq4307-601-release-info",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Fragment Is Collaborating on Three Mind Shoes and the Newest Air Max Sneaker for a Quick Succession of Releases",
-          "link": "https://wwd.com/footwear-news/sneaker-news/fragment-nike-mind-001-002-air-liquid-max-release-dates-1238672638",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Hiroshi Fujiwara’s Eternal Influence at Nike",
-          "link": "https://hypebeast.com/2026/3/hiroshi-fujiwara-fragment-concept-testing-nike-info",
-          "lang": "en"
-        },
-        {
-          "name": "Fashion Press",
-          "title": "ナイキ×藤原ヒロシ「エア リキッド マックス」黒スニーカー、神経科学に基づくミュールも",
-          "link": "https://www.fashion-press.net/news/144345",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "藤原ヒロシ×「ナイキ」最新章　“エア リキッド マックス”と”マインド”シリーズの限定シリーズ3型が登場",
-          "link": "https://www.wwdjapan.com/articles/2353091",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "ナイキと藤原ヒロシが「エア リキッド マックス」と「マインド 001」、そして「マインド 002」の限定デザインを発表！──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260313-nike-fragment-concept-testing-news",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "ナイキ × 藤原ヒロシ、最新モデル「エア リキッド マックス」と「マインド」シリーズの限定デザインを発売",
-          "link": "https://www.fashionsnap.com/article/2026-03-13/nike-fragment-concept-testing-202603",
-          "lang": "ja"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Nike Prepares the Air Force 1 Low \"Team USA\" for the 2026 World Cup",
-          "link": "https://hypebeast.com/2026/3/nike-air-force-1-low-team-usa-iq0407-100-release-info",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "The Nike Air Force 1 Low “Mexico” Honors National Colors and Football Heritage",
-          "link": "https://hypebeast.com/2026/3/nike-air-force-1-mexico-ir5896-030-official-imagery",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike Preps for World Cup With Air Force 1s for USA and Mexico",
-          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-force-1-low-usa-mexico-soccer-release-date-1238662180",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Adidas Brings Team USA’s Iconic Denim World Cup Look to the Samba, Superstar and More",
-          "link": "https://wwd.com/footwear-news/sneaker-news/adidas-samba-usa-denim-release-date-hp3551-1238662808",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike Mashes Up a Classic Air Max Sneaker With Two Retro Soccer Boots",
-          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-max-90-football-pack-release-date-1238663357",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike’s Air Force 1 Is Getting Two New Releases Inspired by Kobe Bryant’s Alma Mater",
-          "link": "https://wwd.com/footwear-news/sneaker-news/kobe-bryant-nike-air-force-1-low-lower-merion-aces-release-date-ib0018-101-1238663330",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Kobe Bryant’s Soccer-Inspired Nike Sneakers Are Coming Back in Time for the World Cup",
-          "link": "https://wwd.com/footwear-news/sneaker-news/nike-kobe-8-protro-mambacurial-release-date-io6253-500-1238664895",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike Just Officially Revealed Its Futuristic New Air Liquid Max Sneaker",
-          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-liquid-max-release-date-iq7634-001-1238662225",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Nike Announces the Air Liquid Max",
-          "link": "https://hypebeast.com/2026/3/nike-air-liquid-max-announcement-info",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Official Look at fragment design's Nike Air Liquid Max",
-          "link": "https://hypebeast.com/2026/3/fragment-design-nike-air-liquid-max-iq8601-001-release",
-          "lang": "en"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "ナイキが新モデル「Air Liquid Max」を発表　毒ガエルから着想",
-          "link": "https://www.fashionsnap.com/article/2026-03-11/nike-air-liquid-max",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashion Press",
-          "title": "ナイキ”毒ガエル”着想スニーカー「エア リキッド マックス」ブラックアッパーにネオングリーンのドット",
-          "link": "https://www.fashion-press.net/news/144258",
-          "lang": "ja"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike’s New Futuristic Air Max Sneaker Is Getting Its First Limited-Edition Collaboration",
-          "link": "https://wwd.com/footwear-news/sneaker-news/fragment-design-nike-air-liquid-max-release-date-iq8601-001-1238665313",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Nike’s World Cup Sneaker Slate Grows With a Big Bubble Air Max 95 for England",
-          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-max-95-big-bubble-england-release-date-iq0176-100-1238665358",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Official Look at the fragment design x Nike Mind 002 \"Particle Grey\"",
-          "link": "https://hypebeast.com/2026/3/fragment-design-nike-mind-002-particle-grey-iq8504-001-release-info",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Nike Brings \"Blackened Blue\" to the Mind 001",
-          "link": "https://hypebeast.com/2026/3/nike-mind-001-blackened-blue-hq4307-400-release-date",
-          "lang": "en"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "「エア ジョーダン 1 LOW OG “Sail and Coconut Milk”」は華やかな花の刺繍がエレガント──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260311-air-jordan1-og-sail-and-coconut-milk-news",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "ニューバランス「2010 “Vintage Indigo/Faded Teal”」は、機能性と粋なデザインを叶えるミッドソールに注目──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260311-new-balance-2010-vintage-indigo-faded-teal",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "エア マックスの知見とヘリテージが融合した新作シューズ「ナイキ エア リキッド マックス」登場！──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260311-nike-air-liquid-max-news",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "ナイキ「S.T. フレア “Atomic Pink”」は夏に映えるグラデーションカラー──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260312-nike-st-flare-atomic-pink",
-          "lang": "ja"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Nike Expands Its Neuroscience Lineup With the Mind 002 \"Football Grey\"",
-          "link": "https://hypebeast.com/2026/3/nike-mind-002-football-grey-hq4310-002-release-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 40
-    },
-    {
-      "id": "2c9d6107eca9",
-      "title": "ZEGNA MEMORIE香氛系列：六款嗅觉之旅，重温品牌记忆",
-      "summary": "ZEGNA全新MEMORIE香氛系列，灵感源自品牌创始人Ermenegildo Zegna的人生印记，推出六款独具个性的香氛作品。调香大师Dominique Ropion、Fabrice Pellegrin和Quentin Bisch倾力调制，涵盖丰富香调。“墨水瓶(Il Calamaio)”以皮革琥珀香调呈现深邃质感，“羊毛厂(Il Lanificio)”则以温暖的琥珀和树脂香调致敬ZEGNA的纺织传承。麦斯·米科尔森主演的电影宣传片，进一步诠释品牌格调。",
-      "key_points": [
-        "ZEGNA推出全新MEMORIE香氛系列，包含六款香水",
-        "灵感来自品牌创始人Ermenegildo Zegna的人生重要时刻和风景",
-        "由调香大师Dominique Ropion、Fabrice Pellegrin和Quentin Bisch调制",
-        "麦斯·米科尔森出演广告大片",
-        "香氛系列涵盖多种香调，如皮革琥珀、温暖琥珀和树脂等"
-      ],
-      "tags": [
-        "ZEGNA",
-        "香氛",
-        "MEMORIE",
-        "Ermenegildo Zegna",
-        "Dominique Ropion",
-        "Fabrice Pellegrin",
-        "Quentin Bisch",
-        "麦斯·米科尔森",
-        "香水"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F13%2Fzegna-memorie-fragrance-launch-release-info-0.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-13T10:03:55+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast Fashion",
-          "title": "Six Scents, Six Memories: ZEGNA Unveils MEMORIE Fragrance Collection",
-          "link": "https://hypebeast.com/2026/3/zegna-memorie-fragrance-launch-release-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "434721c0d2e0",
-      "title": "BAPE x RE BONSAI 联名盆栽：BABY MILO® 伴樱花绽放",
-      "summary": "街头潮牌 A BATHING APE® (BAPE) 携手 TOUFU TOKYO 旗下艺术项目 RE BONSAI，推出限量 20 件的联名盆栽系列。RE BONSAI 以其独到的再生技术闻名，致力于赋予枯萎盆栽第二次生命。本次合作以“樱花”为主题，将日式盆栽艺术与 BAPE 标志性的 BABY MILO® 玩偶巧妙结合，碰撞出别具一格的潮流火花。该系列将在 JAPAN EDITION 京都、BAPE STORE® 原宿、BAPE STORE® 京都发售，每款盆栽售价 66000 日元，是潮流爱好者和盆栽收藏家的不二之选。",
-      "key_points": [
-        "BAPE 与 RE BONSAI 合作推出联名盆栽系列，限量 20 件",
-        "盆栽以樱花为主题，附带 BABY MILO® 摆件",
-        "RE BONSAI 以再生技术赋予枯萎盆栽第二次生命",
-        "发售店铺包括 JAPAN EDITION 京都、BAPE STORE® 原宿、BAPE STORE® 京都"
-      ],
-      "tags": [
-        "BAPE",
-        "RE BONSAI",
-        "盆栽",
-        "BABY MILO",
-        "联名",
-        "樱花",
-        "潮流",
-        "艺术"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/bape-x-japan-edition-baby-milo-20260313-001-46f1a408-2137-4e46-ab76-e876060e16d4.jpg",
-      "published": "2026-03-13T10:00:45+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "ベイプがアートプロジェクト「REBONSAI」とコラボ、BABY MILO®が付属する盆栽を発売　限定20点",
-          "link": "https://www.fashionsnap.com/article/2026-03-13/bape-x-japan-edition-baby-milo",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "db551eb440bb",
-      "title": "本周最佳星装速递：明星春日穿搭灵感，即刻拥有同款！",
-      "summary": "《ELLE》和《Vogue》联手精选本周最受瞩目的名人造型，聚焦从冬季到春季的过渡穿搭。我们不仅为你解析明星们的时尚密码，助你轻松打造星级衣橱，紧跟潮流风向，更提供详细单品购买信息，包括Burberry风衣、Dôen连衣裙、The Row拉菲草编包、Banana Republic西装、Leset T恤、Almina Concept衬衫、Levi's牛仔裤和Chloé乐福鞋等。从品牌到价格，一网打尽，让你不再为“穿什么”而烦恼！",
-      "key_points": [
-        "《ELLE》和《Vogue》联合精选本周最佳名人造型。",
-        "聚焦冬春过渡穿搭，提供明星时尚密码解析。",
-        "提供详细单品购买信息，包括品牌和价格。"
-      ],
-      "tags": [
-        "明星穿搭",
-        "春季穿搭",
-        "时尚单品",
-        "购物推荐",
-        "名人街拍"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/kendall-jenner-wears-adidas-originals-superstar-while-out-in-los-angeles-1-jpg-69a075b55d653.jpg",
-      "published": "2026-03-13T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "Elle",
-          "title": "This Week’s Standout Celebrity Looks—and Exactly Where to Buy Each Piece",
-          "link": "https://www.elle.com/fashion/shopping/a70260547/best-celebrity-style-february-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue Fashion",
-          "title": "Shop Our Favorite Looks of the Week | Vogue",
-          "link": "https://www.vogue.com/article/best-celebrity-outfits",
-          "lang": "en"
-        }
-      ],
-      "article_count": 3
-    },
-    {
-      "id": "0b0409925c0c",
-      "title": "2026南法奢旅：Vogue精选酒店",
-      "summary": "《Vogue》杂志为计划在2026年夏季前往法国南部旅行的读者们，精心挑选了一系列顶级酒店。覆盖尼斯、圣特罗佩、马赛等地，精选历史悠久的老别墅和风景如画的海滨酒店，为您的南法之旅提供奢华舒适的住宿选择。",
-      "key_points": [
-        "《Vogue》杂志推荐",
-        "2026年夏季南法旅行",
-        "尼斯、圣特罗佩、马赛等地",
-        "历史别墅和海滨酒店"
-      ],
-      "tags": [
-        "南法",
-        "奢华旅行",
-        "酒店推荐",
-        "Vogue",
-        "2026",
-        "尼斯",
-        "圣特罗佩",
-        "马赛"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://assets.vogue.com/photos/660d927b5930e4910098fdab/master/pass/LES-ROCHES-BLANCHES-copyright-D-Delmas-_01.jpg",
-      "published": "2026-03-13T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue Fashion",
-          "title": "The Best Hotels in the South of France to Book This Summer 2026",
-          "link": "https://www.vogue.com/article/best-hotels-south-of-france-coast",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "69a791ab384c",
-      "title": "前卫之声：Theresa Hak Kyung Cha大型回顾展",
-      "summary": "《Vogue》报道，伯克利艺术博物馆与太平洋电影档案馆联袂呈现“Theresa Hak Kyung Cha: Multiple Offerings”大型回顾展，聚焦这位韩裔美国前卫艺术家及作家的多元创作生涯。展览规模空前，汇集逾百件作品及珍贵档案资料，涵盖表演艺术、实验电影、文学写作等多种媒介，力图展现Cha在语言、流亡体验以及脆弱记忆等主题上的深刻探索与跨界实践，为观众呈现一个多维度的艺术世界。",
-      "key_points": [
-        "Theresa Hak Kyung Cha大型回顾展",
-        "跨媒介艺术实践",
-        "语言、流亡与记忆主题"
-      ],
-      "tags": [
-        "艺术",
-        "回顾展",
-        "文化",
-        "前卫艺术",
-        "韩裔美国艺术家"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://assets.vogue.com/photos/69b2eda2d2ed81ffda4c0475/master/pass/02_Cha_Aveugle%20Voix%20(1975).jpg",
-      "published": "2026-03-13T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "A Landmark Retrospective Reveals Artist Theresa Hak Kyung Cha’s Many Voices",
-          "link": "https://www.vogue.com/article/theresa-hak-kyung-cha-multiple-offerings",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b92ca15bd018",
-      "title": "时装“复活”：博物馆的反思与动态演绎",
-      "summary": "巴黎时装周期间，时尚策展人Olivier Saillard在卡地亚基金会带来“Living Museum of Fashion”展览，引发对博物馆与时尚关系的思考。Saillard认为传统博物馆中时装如同失去生机的标本。本次展览旨在打破静态展示，探索如何赋予经典时装以鲜活生命。同时，Saillard还将带来每日表演，结合时尚与艺术，呈现独特的动态体验。",
-      "key_points": [
-        "Olivier Saillard的“Living Museum of Fashion”展览",
-        "对传统博物馆时装展示模式的反思",
-        "探索时装的动态展示与生命力",
-        "卡地亚基金会的展览与每日表演"
-      ],
-      "tags": [
-        "Olivier Saillard",
-        "Living Museum of Fashion",
-        "卡地亚基金会",
-        "时尚展览",
-        "时装策展",
-        "动态展示",
-        "巴黎时装周"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://assets.vogue.com/photos/69b2fa862ff3e0d2376eaf8c/master/pass/260306_RuedigerGlatz-TNB-OlivierSaillard-LeMuseeVivantDeLaMode_paris_1165_1200px.jpg",
-      "published": "2026-03-13T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue Fashion",
-          "title": "A Night at the “Living Museum of Fashion” With Olivier Saillard",
-          "link": "https://www.vogue.com/article/a-night-at-the-living-museum-of-fashion-with-olivier-saillard",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
     }
   ]
 }
