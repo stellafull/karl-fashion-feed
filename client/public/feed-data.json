@@ -1,11 +1,12 @@
 {
   "meta": {
-    "generated_at": "2026-03-16T17:03:08+00:00",
+    "generated_at": "2026-03-16T18:58:56+00:00",
     "total_topics": 500,
-    "total_articles": 1504,
-    "sources_count": 48,
+    "total_articles": 1524,
+    "sources_count": 49,
     "sources": [
       "Allure",
+      "BOF",
       "Bustle",
       "CR Fashion Book",
       "Complex Style",
@@ -57,22 +58,22 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 84,
-      "blocked_by_tombstones": 246,
-      "evicted_topics": 41,
+      "new_articles_in_2h": 62,
+      "blocked_by_tombstones": 261,
+      "evicted_topics": 31,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 28,
-        "incremental_new_topics_created": 49,
-        "cross_merge_candidates": 15,
-        "cross_merge_low_reviews": 7,
+        "incremental_assigned_to_existing": 22,
+        "incremental_new_topics_created": 38,
+        "cross_merge_candidates": 9,
+        "cross_merge_low_reviews": 8,
         "cross_merge_high_reviews": 0,
-        "cross_merge_merged_topics": 8
+        "cross_merge_merged_topics": 7
       }
     },
     "quality": {
-      "merge_rate": 0.6676,
-      "avg_sources_per_topic": 1.368,
-      "high_confidence_topic_ratio": 0.94,
+      "merge_rate": 0.6719,
+      "avg_sources_per_topic": 1.38,
+      "high_confidence_topic_ratio": 0.952,
       "rebuild_mode": "incremental"
     }
   },
@@ -2956,29 +2957,57 @@
       "article_count": 1
     },
     {
-      "id": "70b95e6a4f7f",
-      "title": "2026年奥斯卡颁奖典礼及《名利场》派对：星光璀璨的红毯时尚与多元风格",
-      "summary": "2026年奥斯卡颁奖典礼及《名利场》奥斯卡派对在洛杉矶盛大举行，众多好莱坞明星、超模及名人齐聚，红毯造型成为焦点。整体趋势告别过度裸露，拥抱精致、贴合身形的“现实主义”风格，呈现复古风潮、Y2K风格回潮以及打破常规的“反”潮流风格等多元趋势。明星在珠宝腕表的选择上各具风格，经典钻石项链备受青睐，男星则倾向于腕表与胸针的搭配。透视装是派对的一大趋势。超模们纷纷选择 Prada、香奈儿、纪梵希等高级定制礼服亮相，真人秀明星则以大胆前卫的定制礼服惊艳四座。红毯造型不仅展现了明星们的个人时尚品味，也为各大品牌带来了极高的曝光度。",
+      "id": "6ab354c64c09",
+      "title": "2026奥斯卡After Party：超模红毯争艳！",
+      "summary": "2026年奥斯卡After Party星光熠熠，超模军团的红毯造型成为焦点。《美丽佳人》台湾版特别报道，Kendall Jenner身着Chanel定制冰蓝色礼服，尽显高贵优雅；Bella Hadid则以一身Prada奶油黄套装亮相，甜美又不失性感；Hailey Bieber的Armani Privé豹纹亮片礼服，则大胆前卫，瞬间点燃全场。超模们完美演绎各大品牌华服，展现了非凡的时尚驾驭力，也让各品牌在红毯上大放异彩。",
       "key_points": [
-        "2026年奥斯卡颁奖典礼及《名利场》派对红毯星光熠熠，汇聚众多明星。",
-        "红毯趋势：告别过度裸露，追求精致、贴合身形的“现实主义”风格；复古风、Y2K回潮、反潮流等多元风格并存。",
-        "珠宝腕表：经典钻石项链受青睐，男星偏爱腕表与胸针搭配。",
-        "透视装是《名利场》派对的一大趋势。",
-        "超模：贝拉·哈迪德 (Prada), Kendall Jenner (Chanel), Kaia Gerber (Givenchy) 等选择高级定制礼服。",
-        "真人秀明星奥兰德里亚·卡森以大胆前卫的定制礼服惊艳亮相。",
-        "格温妮丝·帕特洛以Giorgio Armani Privé定制象牙色丝绸礼服展现极简奢华风格。"
+        "超模红毯造型",
+        "品牌高级定制礼服",
+        "奥斯卡After Party"
       ],
       "tags": [
         "奥斯卡",
-        "名利场",
+        "After Party",
+        "红毯造型",
+        "超模",
+        "礼服"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://ia.marieclaire.com.tw/assets/mc/202603/69B82DBE70E871773678014.jpeg",
+      "published": "2026-03-16T23:56:36",
+      "sources": [
+        {
+          "name": "Marie Claire Taiwan",
+          "title": "超模齊聚2026奧斯卡After party：Kendall、Bella……看她們走紅毯是種享受！",
+          "link": "https://www.marieclaire.com.tw/fashion/news/92349",
+          "lang": "zh"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "70b95e6a4f7f",
+      "title": "2026年奥斯卡红毯：多元风格碰撞，性感风潮依旧",
+      "summary": "2026年奥斯卡颁奖典礼及《名利场》派对在洛杉矶举行，红毯造型呈现多元化趋势。整体风格精致且贴合身形，复古风、Y2K回潮与大胆前卫的“反”潮流风格并存。“兔女郎”风格礼服和透视“裸装”成为焦点，侧臀设计崭露头角。明星珠宝腕表选择各具特色，服装设计师的红毯造型则更富个人表达。大胆前卫的着装再次引发关于女性形象和自我表达的讨论。",
+      "key_points": [
+        "红毯风格多元化：精致贴身、复古、Y2K、前卫风格并存",
+        "性感风潮：“兔女郎”风格礼服、透视“裸装”受关注，侧臀设计成新趋势",
+        "珠宝腕表：经典钻石项链受青睐，男星偏爱腕表与胸针搭配",
+        "服装师的红毯宣言：通过服装表达对行业的理解与热爱",
+        "大胆着装引发关于女性形象和自我表达的讨论"
+      ],
+      "tags": [
+        "奥斯卡",
         "红毯",
         "时尚",
-        "明星",
         "礼服",
+        "明星",
+        "趋势",
+        "透视装",
+        "兔女郎风格",
         "珠宝",
-        "腕表",
-        "高级定制",
-        "潮流趋势"
+        "腕表"
       ],
       "category": "trend-summary",
       "category_name": "趋势总结",
@@ -3977,7 +4006,7 @@
         },
         {
           "name": "Vogue Fashion",
-          "title": "The 2026 Oscars-Nominated Costume Designers Wore Looks Filled With Intention",
+          "title": "The 2026 Oscar-Nominated Costume Designers Wore Looks Filled With Intention",
           "link": "https://www.vogue.com/article/2026-oscars-costume-designer-nominees-fashion-outfits",
           "lang": "en"
         },
@@ -4684,7 +4713,7 @@
           "lang": "en"
         },
         {
-          "name": "Vogue",
+          "name": "Vogue Fashion",
           "title": "The ‘Jessica Rabbit’ Dress Was Everywhere at the 2026 Oscars",
           "link": "https://www.vogue.com/article/jessica-rabbit-dress-trend-oscars-2026",
           "lang": "en"
@@ -4904,9 +4933,51 @@
           "title": "Teyana Taylor Slips Into a White Chanel Gown for the Vanity Fair 2026 Oscar Party",
           "link": "https://wwd.com/pop-culture/celebrity-news/teyana-taylor-chanel-dress-vanity-fair-2026-1238678630",
           "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "The Red Carpet Rundown: Every Must-See Look From the 2026 Oscars",
+          "link": "https://www.whowhatwear.com/oscars-red-carpet",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue España",
+          "title": "Renate Reinsve se atreve con un ‘naked dress’ en la afterparty de los Oscar 2026",
+          "link": "https://www.vogue.es/articulos/oscar-2026-renate-reinsve-vestido-negro-afterparty-vanity-fair",
+          "lang": "es"
+        },
+        {
+          "name": "Vogue",
+          "title": "Peek-a-Butt! At the 2026 Oscars, Side Butt Was the New Side Boob",
+          "link": "https://www.vogue.com/article/2026-oscars-side-butt",
+          "lang": "en"
+        },
+        {
+          "name": "Bustle",
+          "title": "2026’s Nakedest Oscars After-Party Looks Include Olandria's Sheer Gown",
+          "link": "https://www.bustle.com/style/oscars-2026-after-party-naked-looks",
+          "lang": "en"
+        },
+        {
+          "name": "NYLON",
+          "title": "Whatever Happened To Fun Party Dresses?",
+          "link": "https://www.nylon.com/fashion/oscars-afterparty-dresses-personality-fun-trend",
+          "lang": "en"
+        },
+        {
+          "name": "NYLON",
+          "title": "Our Final Power Ranking Of The 2026 Awards Season’s Best-Dressed Stars",
+          "link": "https://www.nylon.com/fashion/awards-season-best-dressed-power-ranking-2025-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Bustle",
+          "title": "The 13 Nippliest Moments In Oscars History: From 1997 To 2026",
+          "link": "https://www.bustle.com/style/free-the-nipple-oscars-looks",
+          "lang": "en"
         }
       ],
-      "article_count": 379
+      "article_count": 388
     },
     {
       "id": "a3fb4ae4c542",
@@ -4972,6 +5043,1427 @@
       "article_count": 1
     },
     {
+      "id": "abf51d939819",
+      "title": "阿根廷时装周的隐忧",
+      "summary": "布宜诺斯艾利斯时装周的华丽落幕，再次聚焦了阿根廷本土设计师的创意力量。然而，在这场时尚盛宴的背后，阿根廷纺织业正经历着严峻的挑战。行业内部人士透露，市场竞争加剧、原材料成本上涨等因素，正使得这个传统产业步履维艰。尽管设计师们努力在国际舞台上发声，但纺织业的困境无疑为阿根廷时尚产业的未来蒙上了一层阴影。",
+      "key_points": [
+        "阿根廷时装周展示本土设计",
+        "纺织业面临严峻挑战",
+        "市场竞争和成本上涨是主因"
+      ],
+      "tags": [
+        "阿根廷时装周",
+        "纺织业",
+        "设计师",
+        "市场挑战"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/0109/4b61/fa2b/1582/6ea5/8098/25db/c65f/6733/f221/208x208/f221.jpg",
+      "published": "2026-03-16T18:32:57+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Behind fashion week glamour, Argentina's textile backbone buckles",
+          "link": "https://ww.fashionnetwork.com/news/Behind-fashion-week-glamour-argentina-s-textile-backbone-buckles,1816143.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "7e466dad8bcc",
+      "title": "奥莉维亚新造型，预示风格转型？",
+      "summary": "奥莉维亚·罗德里戈在2026年《名利场》奥斯卡派对上，以一身Saint Laurent粉色羽毛迷你裙惊艳亮相，搭配同色系高跟鞋，尽显甜美俏皮。粉丝们纷纷猜测，这一身粉嫩装扮或许暗示着她即将到来的第三张专辑的风格转变。此前，奥莉维亚也曾多次选择粉色系服装，更增添了这一猜测的可能性，令人期待她的音乐新方向。",
+      "key_points": [
+        "奥莉维亚·罗德里戈奥斯卡派对造型",
+        "Saint Laurent粉色羽毛裙",
+        "粉丝猜测风格转型"
+      ],
+      "tags": [
+        "奥莉维亚·罗德里戈",
+        "Saint Laurent",
+        "奥斯卡",
+        "明星造型",
+        "粉色",
+        "羽毛裙"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://imgix.bustle.com/uploads/getty/2026/3/16/99a30771/olivia-rodrigo-attends-the.jpg?w=1200&fit=max",
+      "published": "2026-03-16T18:32:50+00:00",
+      "sources": [
+        {
+          "name": "Bustle",
+          "title": "Olivia Rodrigo's 2026 Oscars After-Party Dress May Be An Easter Egg",
+          "link": "https://www.bustle.com/style/olivia-rodrigo-2026-oscars-after-party-strapless-dress-easter-egg",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "5c7551f05159",
+      "title": "香奈儿门前长队：饥饿营销再现？",
+      "summary": "The Cut杂志近日报道，即使在工作日的中午，香奈儿精品店外依然出现排队购买高价商品的现象。在寒冷的天气中，消费者们为了可能价值高达1500美元的商品甘愿等待。这一现象引发了关于香奈儿品牌营销策略以及消费者购买行为的广泛讨论，人们开始关注这种排队现象背后的深层原因，以及品牌如何利用稀缺性来刺激消费。",
+      "key_points": [
+        "香奈儿门店外排队现象",
+        "高价商品与消费者行为",
+        "品牌营销策略分析"
+      ],
+      "tags": [
+        "香奈儿",
+        "奢侈品",
+        "饥饿营销",
+        "消费者心理"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://pyxis.nymag.com/v1/imgs/48a/5e9/d854e0223870f4770b814c70008f786278-Chanel-57.1x.rsocial.w1200.png",
+      "published": "2026-03-16T18:31:34+00:00",
+      "sources": [
+        {
+          "name": "The Cut",
+          "title": "The Hype Line Comes for Chanel",
+          "link": "http://www.thecut.com/article/the-hype-line-comes-for-chanel.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1cb701c47886",
+      "title": "长发公主驾到：拉斯维加斯“发”力",
+      "summary": "i-D杂志带你走进首届“长发小姐”（Miss Rapunzel）大赛，在拉斯维加斯见证一场别开生面的选美。摄影师Taryn Segal捕捉了来自世界各地的参赛者，她们为了角逐最佳发质、最长秀发等奖项而来。报道通过对几位参赛者的访谈，揭示了她们留长发的不同动因，以及对美的多元解读。镜头也深入后台，展现了选手们为这场美丽盛事所做的精心准备，令人一窥长发背后的故事。",
+      "key_points": [
+        "首届长发小姐大赛在拉斯维加斯举办",
+        "参赛者争夺最佳发质、最长秀发等奖项",
+        "展现了参赛者留长发的原因和对美的独特理解"
+      ],
+      "tags": [
+        "长发",
+        "选美比赛",
+        "拉斯维加斯",
+        "审美",
+        "生活方式"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://i-d.co/wp-content/uploads/2026/03/rapunzel-hair-15.png?quality=90&w=1600",
+      "published": "2026-03-16T18:30:35+00:00",
+      "sources": [
+        {
+          "name": "i-D",
+          "title": "Rapunzel, Rapunzel Let Down Your Hair (In Vegas)",
+          "link": "https://i-d.co/article/rapunzel-rapunzel-let-down-your-hair-in-vegas",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "34a36876223b",
+      "title": "中性爱好者的2026春季色彩指南",
+      "summary": "Who What Wear 报道，即使是中性色爱好者，也能在2026春季的色彩趋势中找到亮点。紫色、腮红粉、干邑色、苹果绿和蓝色等色彩将成为潮流前沿。文章探讨了如何将这些色彩融入个人风格，为衣橱增添一抹亮色，即使是偏爱经典风格的时尚达人也能轻松驾驭。",
+      "key_points": [
+        "2026春季流行色：紫色、腮红粉、干邑色、苹果绿、蓝色",
+        "中性色爱好者也能轻松驾驭",
+        "色彩在个人风格中的应用"
+      ],
+      "tags": [
+        "色彩趋势",
+        "春季时尚",
+        "流行色",
+        "2026"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/nsASf2ckfiNt3VJPsFkprc-1280-80.jpg",
+      "published": "2026-03-16T18:29:57+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "5 Spring Color Trends That Are Speaking to Me, a Neutrals Lover",
+          "link": "https://www.whowhatwear.com/fashion/shopping/spring-2026-color-trends-shopbop-nordstrom-ssense",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "7d35524bc1a0",
+      "title": "Dree回应：尊重Daryl的“爱情故事”批评",
+      "summary": "Dree Hemingway在《爱情故事》中饰演Daryl Hannah，后者公开批评该剧对她的刻画“令人恼火、自我陶醉”，并指责剧集带有厌女色彩。Dree Hemingway近日回应，表示尊重Daryl Hannah的观点。这场风波引发了关于影视作品中女性形象塑造的讨论，以及演员对自身银幕形象的权利诉求。",
+      "key_points": [
+        "Dree Hemingway饰演Daryl Hannah",
+        "Daryl Hannah批评《爱情故事》",
+        "Dree Hemingway尊重Daryl的观点"
+      ],
+      "tags": [
+        "Dree Hemingway",
+        "Daryl Hannah",
+        "爱情故事",
+        "女性形象",
+        "影视作品"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://pyxis.nymag.com/v1/imgs/49d/f34/49e18eedb93afcf88a81b3f26c1bf64265-dree-hemingway-daryl-hannah.1x.rsocial.w1200.jpg",
+      "published": "2026-03-16T18:28:15+00:00",
+      "sources": [
+        {
+          "name": "The Cut",
+          "title": "Dree Hemingway ‘Respects’ Daryl Hannah’s Love Story Reaction",
+          "link": "http://www.thecut.com/article/dree-hemingway-respects-daryl-hannahs-love-story-take.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c7879d3d8c8d",
+      "title": "2026春季：指尖一抹绿意",
+      "summary": "《Harper's Bazaar》预测2026年春季，绿色美甲将引领潮流。从清新抹茶到柔和开心果，再到深邃祖母绿、成熟橄榄绿以及活泼黄绿，各种绿色调将占据指尖。Gucci Beauty、Hermès和Chanel等奢华品牌也纷纷推出绿色指甲油系列，为这场绿色风潮推波助澜。想要更具艺术感？不妨尝试添加精致微晶、玩转色调渐变，甚至融入自然植物元素，让你的绿色美甲更具个性。",
+      "key_points": [
+        "2026春季流行绿色美甲",
+        "多种绿色色调可选",
+        "奢牌推出绿色指甲油"
+      ],
+      "tags": [
+        "美甲",
+        "绿色",
+        "春季",
+        "潮流趋势",
+        "轻奢"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/aec762de-a20f-4d5e-83b1-ddc4c00eee34.jpg",
+      "published": "2026-03-16T18:26:00+00:00",
+      "sources": [
+        {
+          "name": "Harper's Bazaar",
+          "title": "Matcha Manicures and More Green Nail Ideas for Spring 2026",
+          "link": "https://www.harpersbazaar.com/beauty/nails/g70714641/green-nails",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e9b4fa7aba0a",
+      "title": "《穿Prada的恶魔2》无望？Nate扮演者自曝原因",
+      "summary": "艾德里安·格尼尔（Adrian Grenier）坦言，他可能无缘出演《穿Prada的恶魔2》，原因在于观众对他饰演的Nate一角反感强烈。格尼尔表示理解这一决定，但仍期待未来能有衍生剧的机会，让观众看到角色的更多可能性。影迷们对于Nate的争议性评价，或许成为了续集选角的重要考量因素。",
+      "key_points": [
+        "Adrian Grenier未收到《穿Prada的恶魔2》邀约",
+        "观众对Nate角色反感或是主因",
+        "Grenier期待未来衍生剧机会"
+      ],
+      "tags": [
+        "穿Prada的恶魔",
+        "电影续集",
+        "时尚文化",
+        "演员访谈"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/getty/2026/3/16/d41d4600/beverly-hills-california-august.jpg?w=1200&fit=max",
+      "published": "2026-03-16T18:18:14+00:00",
+      "sources": [
+        {
+          "name": "Elite Daily",
+          "title": "Adrian Grenier Thinks Nate \"Backlash\" Cost Him 'Devil Wears Prada 2'",
+          "link": "https://www.elitedaily.com/entertainment/adrian-grenier-nate-backlash-devil-wears-prada-2",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "ae4538876fca",
+      "title": "凯莉·卢瑟福再携手珠宝品牌",
+      "summary": "演员凯莉·卢瑟福与轻奢珠宝品牌The TwentyFour Six宣布扩大合作，推出全新系列。继去年的成功合作后，双方再度携手，带来包含18K金耳环和纯银饰品的精致作品，为消费者提供更多时尚选择。",
+      "key_points": [
+        "凯莉·卢瑟福合作款",
+        "18K金耳环",
+        "纯银饰品"
+      ],
+      "tags": [
+        "珠宝",
+        "品牌合作",
+        "名人联名"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/Kelly-Rutherford-Photographer-Iulia-Matei.jpg?crop=0px%2C316px%2C1332px%2C747px&resize=1000%2C563",
+      "published": "2026-03-16T18:15:51+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Kelly Rutherford and The TwentyFour Six Expand Jewelry Collaboration",
+          "link": "https://wwd.com/accessories-news/jewelry/kelly-rutherford-twentyfour-six-gold-jewelry-launch-1238679408",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "17839fe60865",
+      "title": "平价宝藏：Levi's 皮夹克成时尚新宠",
+      "summary": "《Harper's Bazaar》编辑力荐 Levi's 一款定价低于400美元的皮夹克，宽松廓形与柔软皮革带来舒适穿着体验。略微褪色的棕色更显复古质感，百搭属性使其成为衣橱必备。无论是冬季搭配厚毛衣，还是春季搭配T恤与轻盈裙装，皆能轻松驾驭，尽显时尚品味。",
+      "key_points": [
+        "《Harper's Bazaar》编辑推荐",
+        "Levi's 皮夹克，价格低于400美元",
+        "宽松廓形，柔软皮革，复古棕色，百搭单品"
+      ],
+      "tags": [
+        "Levi's",
+        "皮夹克",
+        "时尚单品",
+        "平价时尚",
+        "穿搭推荐"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/cecbdb0d-e4dd-45aa-a7cf-cf3f8d3e0eb3.jpg",
+      "published": "2026-03-16T18:15:00+00:00",
+      "sources": [
+        {
+          "name": "Harper's Bazaar",
+          "title": "I Found the Perfect Leather Bomber (and It's Under $400)",
+          "link": "https://www.harpersbazaar.com/fashion/trends/a70726274/levis-kennedy-dad-jacket-review",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "673a5381ac81",
+      "title": "Earl Sweatshirt & MIKE：十年磨一辑",
+      "summary": "Hypebeast回顾了两位另类说唱歌手Earl Sweatshirt和MIKE长达十年的合作历程，聚焦两人从Bandcamp时期开始的音乐碰撞，最终催生了他们的首张合作专辑《POMPEII/UTILITY》。文章深入剖析了这两位分别来自洛杉矶和纽约的音乐人，如何在音乐风格和创作主题上产生共鸣，并探讨了他们之间深厚的友谊和创意协同效应，为乐迷呈现了一段难能可贵的音乐合作佳话。",
+      "key_points": [
+        "Earl Sweatshirt和MIKE十年合作回顾",
+        "首张合作专辑《POMPEII/UTILITY》",
+        "音乐风格与主题的共鸣"
+      ],
+      "tags": [
+        "音乐",
+        "合作",
+        "说唱",
+        "专辑"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F12%2Fchronicling-earl-sweatshirt-mike-x-surf-gang-collaborative-history-pompeii-utility-album-release-info-0.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-16T18:12:54+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "Chronicling Earl Sweatshirt x MIKE's Collaborative History",
+          "link": "https://hypebeast.com/2026/3/chronicling-earl-sweatshirt-mike-x-surf-gang-collaborative-history-pompeii-utility-album-release-info",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "77f596b911b9",
+      "title": "赛琳娜·戈麦斯因Rare Beauty活动缺席奥斯卡派对，与丈夫Benny Blanco甜蜜日常曝光",
+      "summary": "赛琳娜·戈麦斯因旗下美妆品牌Rare Beauty在纽约举办活动，缺席2026年《名利场》奥斯卡派对。同时，赛琳娜在社交媒体上分享了与丈夫Benny Blanco的亲密生活照，包括派对、海滩和居家生活等场景，展现了两人甜蜜恩爱的日常。此前，赛琳娜曾在Blanco的播客节目中大方谈论婚礼话题，感情稳定。回顾赛琳娜往年奥斯卡派对造型，2025年与2016年的红毯形象令人印象深刻。",
+      "key_points": [
+        "赛琳娜·戈麦斯缺席2026年《名利场》奥斯卡派对，原因是Rare Beauty活动",
+        "赛琳娜在社交媒体分享与丈夫Benny Blanco的甜蜜生活照",
+        "照片场景包括派对、海滩和居家生活",
+        "赛琳娜曾在Blanco的播客节目中谈论婚礼话题",
+        "回顾赛琳娜往年奥斯卡派对造型"
+      ],
+      "tags": [
+        "赛琳娜·戈麦斯",
+        "Benny Blanco",
+        "奥斯卡派对",
+        "Rare Beauty",
+        "明星情感",
+        "社交媒体"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/319609b9-8367-491f-aa54-d4814f40b7ff.jpeg",
+      "published": "2026-03-16T18:09:25+00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "Why Selena Gomez and Benny Blanco Weren’t at the 2026 <em>Vanity Fair</em> Oscar Party",
+          "link": "https://www.elle.com/culture/celebrities/a70744470/why-selena-gomez-benny-blanco-skipped-vanity-fair-oscar-party-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Elle",
+          "title": "Selena Gomez Shares Intimate New Pics from Life with Benny Blanco",
+          "link": "https://www.elle.com/culture/celebrities/a70741906/selena-gomez-benny-blanco-new-photos-march-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "b26487e18183",
+      "title": "电商监管风向突变？欧洲或加速落地“推定进口商”",
+      "summary": "欧洲纺织服装、鞋履、美妆及零售业的多家协会近日联合发声，呼吁欧盟加快推行针对电商平台的“推定进口商”制度。此举旨在明确电商平台在进口商品方面的责任，提升监管效率，或将重塑相关行业的竞争格局和运营模式。若该制度落地，电商平台或需承担更多合规义务，对跨境电商业务产生深远影响。行业专家认为，此举反映了欧洲对电商平台监管日益收紧的趋势。",
+      "key_points": [
+        "欧洲多行业协会联合呼吁",
+        "加速落地“推定进口商”制度",
+        "或重塑电商行业格局"
+      ],
+      "tags": [
+        "电商",
+        "零售",
+        "行业政策",
+        "欧洲"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/36f8/c78b/d56f/6e9c/d1e9/25d1/addb/be13/d63c/173f/208x208/173f.jpg",
+      "published": "2026-03-16T18:05:10+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "European industry bodies call for the introduction of \"deemed importer\" status for e-commerce to be brought forward",
+          "link": "https://ww.fashionnetwork.com/news/European-industry-bodies-call-for-the-introduction-of-deemed-importer-status-for-e-commerce-to-be-brought-forward,1816135.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "873d6d0053d7",
+      "title": "奥斯卡新星动向追踪：荧幕新作抢先看",
+      "summary": "《名利场》独家揭秘2026年奥斯卡表演奖提名者们的最新工作安排。从好莱坞巨制到热门剧集，星光熠熠。迈克尔·B·乔丹或将加盟马丁·斯科塞斯新作，艾丽·范宁、雅各布·艾洛迪、凯特·哈德森等也将带来全新作品，涵盖电影和电视剧领域，敬请期待。",
+      "key_points": [
+        "2026奥斯卡提名者后续计划曝光",
+        "迈克尔·B·乔丹或出演斯科塞斯电影",
+        "艾丽·范宁等明星新剧值得期待"
+      ],
+      "tags": [
+        "奥斯卡",
+        "名人",
+        "电影",
+        "电视剧",
+        "好莱坞"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vanityfair.com/photos/69b7f420d36431e15a33ae54/master/pass/2266760002",
+      "published": "2026-03-16T18:04:45+00:00",
+      "sources": [
+        {
+          "name": "Vanity Fair",
+          "title": "What the 2026 Oscar Acting Nominees Are Doing Next",
+          "link": "https://www.vanityfair.com/hollywood/story/oscar-nominees-2026-next-projects",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "83e7e8107f91",
+      "title": "莎拉·皮格奥奥斯卡季时尚盘点：致敬CBK与香奈儿优雅",
+      "summary": "莎拉·皮格奥在2026奥斯卡颁奖季备受瞩目，红毯造型致敬卡罗琳·贝赛特-肯尼迪的极简风格，同时在香奈儿Pre-Oscar派对上展现优雅魅力。《爱情故事》CP的再次合体也成为焦点。",
+      "key_points": [
+        "莎拉·皮格奥在奥斯卡红毯及Vanity Fair派对身着定制Calvin Klein礼服，致敬CBK。",
+        "CK礼服以铂金色水晶和亮片镶嵌，搭配CK One手包，发型简约，是对CBK经典风格的现代诠释。",
+        "在香奈儿Pre-Oscar派对上，莎拉·皮格奥身着Matthieu Blazy设计的Métiers d’art 2026系列礼服，搭配香奈儿鞋履和珠宝。",
+        "《爱情故事》CP（莎拉·皮格奥和保罗·安东尼·凯利）在香奈儿派对上的互动和造型引人关注。"
+      ],
+      "tags": [
+        "莎拉·皮格奥",
+        "奥斯卡",
+        "卡罗琳·贝赛特-肯尼迪",
+        "Calvin Klein",
+        "香奈儿",
+        "Métiers d’art 2026",
+        "红毯造型",
+        "极简主义",
+        "爱情故事",
+        "Paul Anthony Kelly"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://assets.vogue.com/photos/69b7ba3f79f542d9b9bdfa75/master/pass/2266734248",
+      "published": "2026-03-16T18:04:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue Fashion",
+          "title": "Sarah Pidgeon Minted Her First Oscars in CBK-Coded, Custom Calvin Klein Collection",
+          "link": "https://www.vogue.com/article/sarah-pidgeon-vanity-fair-2026-oscars-party-calvin-klein",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue España",
+          "title": "Sarah Pidgeon homenajea a Carolyn Bessette Kennedy en la fiesta de Vanity Fair de los Oscar 2026",
+          "link": "https://www.vogue.es/articulos/sarah-pidgeon-homenajea-a-carolyn-bessette-kennedy-en-la-fiesta-de-vanity-fair-de-los-oscar-2026",
+          "lang": "es"
+        },
+        {
+          "name": "Harper's Bazaar",
+          "title": "The Carolyn Bessette Kennedy Minimalism Craze Hit the Oscars Red Carpet...Kind Of",
+          "link": "https://www.harpersbazaar.com/fashion/a70759072/carolyn-bessette-kennedy-minimalism-red-carpet-oscars-2026-fashion",
+          "lang": "en"
+        },
+        {
+          "name": "Harper's Bazaar",
+          "title": "Sarah Pidgeon Gives a Wink to Carolyn Bessette Kennedy in Her Oscars After-Party Dress",
+          "link": "https://www.harpersbazaar.com/celebrity/latest/a70758806/sarah-pidgeon-cbk-calvin-klein-dress-2026-oscars-after-party-red-carpet-photos",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue Fashion",
+          "title": "Love Story’s Sarah Pidgeon and Paul Anthony Kelly Brought Rom-Com Energy to Chanel’s Pre-Oscars Party",
+          "link": "https://www.vogue.com/article/love-story-sarah-pidgeon-paul-anthony-kelly-chanel-charles-finch-oscars-party",
+          "lang": "en"
+        }
+      ],
+      "article_count": 9
+    },
+    {
+      "id": "03f4b2c32b0b",
+      "title": "穆勒鞋：优雅回归，引领时尚新潮",
+      "summary": "《Harper's Bazaar》敏锐捕捉到穆勒鞋的时尚回潮，并深入解析了其搭配精髓。无论是休闲平底、清凉凉鞋，还是性感高跟，穆勒鞋都能轻松驾驭。文章不仅提供了裤装、裙装等多样化的搭配方案，更精选推荐了多个品牌的潮流穆勒鞋款式，助你玩转足尖时尚，尽显优雅品味。",
+      "key_points": [
+        "穆勒鞋再度流行",
+        "不同款式穆勒鞋的搭配技巧",
+        "精选品牌穆勒鞋推荐"
+      ],
+      "tags": [
+        "穆勒鞋",
+        "时尚趋势",
+        "鞋履搭配",
+        "潮流单品"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/d0f06fda-81e9-4c68-accd-9b4f529c56ab.jpg",
+      "published": "2026-03-16T18:04:00+00:00",
+      "sources": [
+        {
+          "name": "Harper's Bazaar",
+          "title": "It's the Moment of the Mule. These are the Best Styles.",
+          "link": "https://www.harpersbazaar.com/fashion/trends/a70667980/best-mules-for-women",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "096cd7666ff5",
+      "title": "奥斯卡派对夜：鞋履星光熠熠",
+      "summary": "2026年Vanity Fair奥斯卡派对星光熠熠，女星们在红毯上展现了各自独特的时尚品味。Priyanka Chopra Jonas选择了简约风格，搭配Jimmy Choo凉鞋，她在奥斯卡颁奖典礼期间也穿着了另一款Jimmy Choo的鞋子。Mindy Kaling则以一身闪耀造型亮相，Christian Louboutin水晶高跟鞋与她礼服领口的闪光细节相呼应，延续了她在WWD Style Awards之后对Louboutin的喜爱。Rita Ora则大胆选择了透视刺绣礼服，搭配D’Accori的黑色Belle高跟鞋，薄纱、浅蓝色花卉珠饰和羽毛帽的巧妙组合，使她的造型成为当晚的亮点之一。",
+      "key_points": [
+        "Priyanka Chopra Jonas的简约Jimmy Choo风",
+        "Mindy Kaling的水晶Louboutin高跟鞋",
+        "Rita Ora的透视刺绣与D’Accori高跟鞋的搭配"
+      ],
+      "tags": [
+        "奥斯卡",
+        "Vanity Fair",
+        "名人造型",
+        "红毯",
+        "鞋履"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/Priyanka-Chopra-Jonas-1.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-16T18:01:43+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Priyanka Chopra Jonas Goes Minimalist With Jimmy Choo Sandals for Vanity Fair’s Oscar Party",
+          "link": "https://wwd.com/footwear-news/shoe-trends/priyanka-chopra-jonas-jimmy-choo-vanity-fair-oscar-party-1238679356",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Mindy Kaling Shimmers in Christian Louboutin Crystal Pumps at the Vanity Fair Oscars Party",
+          "link": "https://wwd.com/footwear-news/shoe-trends/mindy-kaling-louboutin-iriza-crystal-pumps-vanity-fair-2026-1238679417",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Rita Ora Balances Sheer Embroidery With Sky-high D’Accori Platforms at the Vanity Fair Oscars Party",
+          "link": "https://wwd.com/footwear-news/shoe-trends/rita-ora-daccori-platform-sandals-vanity-fair-2026-1238679202",
+          "lang": "en"
+        }
+      ],
+      "article_count": 3
+    },
+    {
+      "id": "afcc0d592202",
+      "title": "哈德森·威廉姆斯与康纳·斯托里奥斯卡派对透视装引热议：恋情公开，时尚新宠地位稳固",
+      "summary": "哈德森·威廉姆斯在2026年奥斯卡颁奖典礼上以“心动光”妆容引发关注，并携女友Katelyn Larson首次公开亮相红毯，恋情正式公开。在《Vanity Fair》奥斯卡派对上，威廉姆斯身着Balenciaga透视装亮相，同剧组演员康纳·斯托里也以Saint Laurent透视装出席，两人默契的透视造型成为焦点，引发热议。《宿敌》主演两人均已成为时尚界的宠儿，并与多个奢侈品牌建立了合作关系。威廉姆斯公开恋情后，与女友Larson大胆亮相，备受瞩目。",
+      "key_points": [
+        "哈德森·威廉姆斯携女友Katelyn Larson首次公开亮相红毯，正式公开恋情。",
+        "哈德森·威廉姆斯与康纳·斯托里在《Vanity Fair》奥斯卡派对上不约而同选择透视装，成为时尚焦点。",
+        "两人分别身着Balenciaga和Saint Laurent透视装，造型师称默契选择纯属巧合。",
+        "哈德森·威廉姆斯和康纳·斯托里因《宿敌》走红，成为时尚界新宠，与多个奢侈品牌合作。",
+        "文章回顾了威廉姆斯成名后的绯闻和恋情，以及他与女友Larson的恋情时间线。"
+      ],
+      "tags": [
+        "哈德森·威廉姆斯",
+        "康纳·斯托里",
+        "Katelyn Larson",
+        "透视装",
+        "奥斯卡派对",
+        "恋情公开",
+        "红毯造型",
+        "Balenciaga",
+        "Saint Laurent",
+        "时尚宠儿"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://stylecaster.com/wp-content/uploads/2026/01/hudson-williams-beauty-routine.png",
+      "published": "2026-03-16T17:56:39+00:00",
+      "sources": [
+        {
+          "name": "StyleCaster",
+          "title": "Hudson Williams’ Beauty Routine Is Working Overtime—Here Are 50 Products Uses, Including the 2026 Oscars",
+          "link": "https://stylecaster.com/beauty/skin-care/1234876452/hudson-williams-beauty-routine",
+          "lang": "en"
+        },
+        {
+          "name": "Glamour",
+          "title": "How Hudson Williams Achieved His ‘Heartthrob Glow’ for the 2026 Oscars",
+          "link": "https://www.glamour.com/story/how-hudson-williams-skincare-artist-achieved-his-heartthrob-glow-for-the-oscars",
+          "lang": "en"
+        },
+        {
+          "name": "Glamour",
+          "title": "Hudson Williams and Girlfriend Katelyn Larson: A Complete Relationship Timeline",
+          "link": "https://www.glamour.com/story/hudson-williamss-girlfriend-what-we-know-about-the-actors-relationship",
+          "lang": "en"
+        },
+        {
+          "name": "Vanity Fair",
+          "title": "Hudson Williams and Girlfriend Katelyn Larson Make Their Red Carpet Debut at the Vanity Fair Oscar Party 2026",
+          "link": "https://www.vanityfair.com/hollywood/story/hudson-williams-girlfriend-katelyn-larson-vanity-fair-oscar-party-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Harper's Bazaar",
+          "title": "Hudson Williams and Girlfriend Katelyn Larson Make Their Red-Carpet Debut on Oscars Night",
+          "link": "https://www.harpersbazaar.com/celebrity/latest/a70756212/hudson-williams-girlfriend-katelyn-larson-2026-oscars-after-party-red-carpet-debut-photos",
+          "lang": "en"
+        },
+        {
+          "name": "Elle",
+          "title": "Why Connor Storrie Isn’t at the 2026 Oscars",
+          "link": "https://www.elle.com/culture/celebrities/a70748799/why-connor-storrie-missed-oscars-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Harper's Bazaar",
+          "title": "Hudson Williams and Connor Storrie Reunite at the Star-Studded CAA Pre-Oscars Party",
+          "link": "https://www.harpersbazaar.com/celebrity/latest/a70741928/hudson-williams-connor-storrie-reunite-caa-pre-oscars-party-photos",
+          "lang": "en"
+        },
+        {
+          "name": "StyleCaster",
+          "title": "The Real Reason Connor Storrie Isn’t at the Oscars with Hudson Williams Finally Revealed",
+          "link": "https://stylecaster.com/entertainment/celebrity-news/1234881933/why-connor-storrie-not-at-oscars",
+          "lang": "en"
+        },
+        {
+          "name": "Elle",
+          "title": "Connor Storrie and Hudson Williams Wear Matching Sheer Looks for Their <em>Vanity Fair </em>Oscar Party Debut",
+          "link": "https://www.elle.com/culture/celebrities/a70744433/connor-storrie-hudson-williams-photos-vanity-fair-oscar-party-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Harper's Bazaar",
+          "title": "Connor Storrie and Hudson Williams Coordinate in Kinky Sheer Tops at the Oscars After-Party",
+          "link": "https://www.harpersbazaar.com/celebrity/latest/a70755712/hudson-williams-connor-storrie-sheer-tops-red-carpet-photos-2026-oscars-after-party",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Connor Storrie And Hudson Williams Were Everyone’s Favorite Duo at the 2026 Oscars After-Party",
+          "link": "https://www.vogue.com/article/connor-storrie-hudson-williams-favorite-duo-2026-oscars-after-party",
+          "lang": "en"
+        },
+        {
+          "name": "Elite Daily",
+          "title": "Connor Storrie & Hudson Williams' Matching Oscars Looks Were See-Through",
+          "link": "https://www.elitedaily.com/entertainment/connor-storrie-hudson-williams-matching-oscars-looks-see-through",
+          "lang": "en"
+        },
+        {
+          "name": "GQ",
+          "title": "Connor Storrie and Hudson Williams ‘Didn’t Plan’ on Matching Sheer Shirts at the Vanity Fair Oscar Party",
+          "link": "https://www.gq.com/story/hudson-williams-connor-storrie-2026-oscars-after-party-sheer-shirts",
+          "lang": "en"
+        },
+        {
+          "name": "Bustle",
+          "title": "Hudson Williams & Girlfriend Katelyn Larson Make Red-Carpet Debut",
+          "link": "https://www.bustle.com/entertainment/hudson-williams-girlfriend-katelyn-larson-red-carpet-debut-oscars",
+          "lang": "en"
+        },
+        {
+          "name": "The Cut",
+          "title": "Hudson Williams Brought His Girlfriend to the Oscars After-party",
+          "link": "http://www.thecut.com/article/hudson-williams-brought-his-girlfriend-to-the-oscars-afterparty.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 17
+    },
+    {
+      "id": "dd7643c3908e",
+      "title": "巴黎世家也浪漫？ Printemps买手解读时装周新风向",
+      "summary": "Printemps百货女装采购总监Maud Pupato分享了她在米兰和巴黎时装周的独到见解。她表示，本季时装周弥漫着一股浪漫主义风潮，即使是向来以前卫著称的品牌，也纷纷在设计中融入了浪漫元素。作为百货公司的重要买手，她的观察反映了零售业对未来时尚趋势的敏锐嗅觉，也为消费者提供了重要的风向标。",
+      "key_points": [
+        "浪漫主义趋势",
+        "Printemps买手视角",
+        "米兰巴黎时装周"
+      ],
+      "tags": [
+        "时装周",
+        "买手",
+        "Printemps百货",
+        "时尚趋势",
+        "零售"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.fashionnetwork.com/m/03f9/e0f4/f3f1/f81c/4020/94d5/9b97/db9e/5ba3/6fda/208x208/6fda.jpeg",
+      "published": "2026-03-16T17:55:30+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Buyers' view: Printemps' Maud Pupato is captivated by a wave of romanticism felt across Milan and Paris",
+          "link": "https://ww.fashionnetwork.com/news/Buyers-view-printemps-maud-pupato-is-captivated-by-a-wave-of-romanticism-felt-across-milan-and-paris,1816127.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "265c8ed37209",
+      "title": "告别脏污！10美元耳机清洁神器",
+      "summary": "《Esquire》杂志力荐一款售价仅10美元的Hyashee清洁套装，专为解决AirPods等电子产品的清洁难题。文章强调，保持耳机清洁不仅关乎个人卫生，更是延长设备寿命的关键。这款清洁工具提供了一种更便捷高效的解决方案，让你的AirPods焕然一新，告别恼人的污垢。",
+      "key_points": [
+        "《Esquire》推荐Hyashee清洁套装",
+        "有效清洁AirPods等电子产品",
+        "保持清洁关乎卫生和设备维护"
+      ],
+      "tags": [
+        "AirPods",
+        "清洁工具",
+        "耳机",
+        "个人护理",
+        "生活方式"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/43466b5a-283d-4554-b3dc-318b012df4b7.jpg",
+      "published": "2026-03-16T17:55:00+00:00",
+      "sources": [
+        {
+          "name": "Esquire",
+          "title": "This $10 Gadget Will (Finally) Clean the Gunk out of Your Earbuds",
+          "link": "https://www.esquire.com/lifestyle/tech/a70735646/how-to-clean-airpods",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "ea885a682e28",
+      "title": "斯卡斯加德：银幕之外的真我",
+      "summary": "《Esquire》杂志近日刊登了对瑞典演员斯特兰·斯卡斯加德的深度访谈。访谈内容涵盖了他对奥斯卡奖的看法、作为父亲的感悟，以及与已故喜剧大师罗宾·威廉姆斯的珍贵回忆。虽然文章主要聚焦于个人生活和职业生涯，但从中亦可窥见斯卡斯加德低调内敛的个人风格，以及他对经典男装的偏爱。他所展现出的成熟魅力和生活态度，无疑是当代绅士的典范。",
+      "key_points": [
+        "斯特兰·斯卡斯加德的奥斯卡观点",
+        "作为父亲的生活感悟",
+        "回忆与罗宾·威廉姆斯的友谊"
+      ],
+      "tags": [
+        "斯特兰·斯卡斯加德",
+        "Esquire",
+        "名人访谈",
+        "绅士风度",
+        "成熟魅力"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/57255acc-2f59-48fd-a79b-b944803e6c3c.jpg",
+      "published": "2026-03-16T17:45:00+00:00",
+      "sources": [
+        {
+          "name": "Esquire",
+          "title": "Stellan Skarsgård on the Oscars, Fatherhood, and Robin Williams",
+          "link": "https://www.esquire.com/style/mens-fashion/a70759556/stellan-skarsgard-oscars-fatherhood-robin-williams-zegna",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "3ed3879e9119",
+      "title": "布鲁克林的格鲁吉亚风情：Jamieri咖啡馆",
+      "summary": "在纽约布鲁克林，一家名为Jamieri的全新咖啡馆正在掀起一股格鲁吉亚文化热潮。由Keti Chichinadze创立的Jamieri不仅仅是一家咖啡馆，更是一个集咖啡、茶点、美食、设计和文化于一体的创意空间。在这里，你可以品尝到地道的格鲁吉亚风味，同时欣赏和购买精美的格鲁吉亚陶瓷、家具、时装和印刷品。Jamieri致力于打造一个充满格鲁吉亚文化气息的生活方式体验。",
+      "key_points": [
+        "布鲁克林新开格鲁吉亚咖啡馆Jamieri",
+        "提供格鲁吉亚美食、饮品和文化产品",
+        "打造格鲁吉亚文化生活方式体验"
+      ],
+      "tags": [
+        "咖啡馆",
+        "格鲁吉亚",
+        "文化",
+        "设计",
+        "生活方式"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://assets.vogue.com/photos/69b83f2a7525a45d7d22fc55/master/pass/cason-latimer-jamieri-38.jpg",
+      "published": "2026-03-16T17:40:22+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "This New Café in Brooklyn Is a Stylish Ode to Georgian Food and Design",
+          "link": "https://www.vogue.com/article/jamieri-georgian-design-studio-cafe-red-hook-brooklyn",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "7d6007755266",
+      "title": "凯特·哈德森：奥斯卡翠绿惊艳",
+      "summary": "凯特·哈德森在2026年奥斯卡红毯上以一袭Armani Privé 2026春季系列的翠绿色礼服惊艳亮相。令人惊讶的是，她竟然是在颁奖典礼当天早上才最终敲定这身战袍，为了避免红毯前的焦虑，她选择了自己一直信任的品牌Armani。礼服搭配Garatti的绿色钻石珠宝，在优雅中更添一份璀璨夺目，完美诠释了好莱坞的经典魅力。",
+      "key_points": [
+        "凯特·哈德森奥斯卡红毯造型",
+        "Armani Privé翠绿色礼服",
+        "Garatti绿色钻石珠宝"
+      ],
+      "tags": [
+        "凯特·哈德森",
+        "Armani",
+        "奥斯卡",
+        "红毯造型",
+        "明星穿搭"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://assets.vogue.com/photos/69b83c5df23928c1f02fe90a/master/pass/Photo%201.JPG",
+      "published": "2026-03-16T17:38:09+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "Kate Hudson Chose Her Dress the Morning of the 2026 Oscars",
+          "link": "https://www.vogue.com/slideshow/kate-hudson-2026-oscars",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "d11a587a820b",
+      "title": "开云集团深化珠宝战略：成立珠宝部门，Duplaix掌舵",
+      "summary": "开云集团正式成立独立的珠宝部门Kering Jewelry，由Jean-Marc Duplaix担任首席执行官。此举整合了宝诗龙、Pomellato、Dodo、麒麟以及Raselli Franco Group等珠宝品牌，标志着开云集团进一步加强在高级珠宝领域的战略布局，旨在通过更专注的管理和运营，挖掘奢侈品珠宝市场的增长潜力，或将重塑市场竞争格局。",
+      "key_points": [
+        "开云集团成立独立珠宝部门Kering Jewelry",
+        "Jean-Marc Duplaix被任命为Kering Jewelry首席执行官",
+        "整合宝诗龙、Pomellato、Dodo、麒麟及Raselli Franco Group等珠宝品牌",
+        "进一步加强开云集团在奢侈品珠宝领域的战略布局",
+        "旨在挖掘珠宝市场增长潜力，或重塑市场竞争格局"
+      ],
+      "tags": [
+        "开云集团",
+        "Kering Jewelry",
+        "高级珠宝",
+        "Jean-Marc Duplaix",
+        "奢侈品市场",
+        "宝诗龙",
+        "Pomellato",
+        "Dodo",
+        "麒麟",
+        "Raselli Franco Group"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2026/02/BOUCHERON_XINTIANDI-2.jpg?crop=0px%2C172px%2C1984px%2C1111px&resize=1000%2C563",
+      "published": "2026-03-16T17:36:52+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Kering Creates Dedicated Jewelry Division to Power Growth",
+          "link": "https://wwd.com/business-news/human-resources/kering-jewelry-division-ceo-jean-marc-duplaix-1238679299",
+          "lang": "en"
+        },
+        {
+          "name": "Fashion Network",
+          "title": "Kering launches jewellery division, appoints Jean-Marc Duplaix as CEO",
+          "link": "https://ww.fashionnetwork.com/news/Kering-launches-jewellery-division-appoints-jean-marc-duplaix-as-ceo,1816197.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "da5c72c1b701",
+      "title": "2026奥斯卡幕后：红毯“热”情！",
+      "summary": "《名利场》独家揭秘2026年奥斯卡颁奖典礼不为人知的幕后花絮。红毯之上星光熠熠，但高温也让明星们叫苦不迭，纷纷祭出迷你风扇降温。除了争奇斗艳的华服，明星们的配饰选择也颇具看点，细节之处尽显时尚品味。更多红毯趣闻和造型亮点，尽在我们的深度报道。",
+      "key_points": [
+        "红毯高温，明星降温妙招",
+        "明星造型与配饰选择",
+        "奥斯卡幕后花絮"
+      ],
+      "tags": [
+        "奥斯卡",
+        "红毯造型",
+        "明星时尚",
+        "时尚配饰",
+        "幕后花絮"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://media.vanityfair.com/photos/69b83b026d5d33499547cf8e/master/pass/2266725780",
+      "published": "2026-03-16T17:35:48+00:00",
+      "sources": [
+        {
+          "name": "Vanity Fair",
+          "title": "Oscars 2026: What You Didn’t See on TV",
+          "link": "https://www.vanityfair.com/hollywood/story/oscars-2026-what-you-didnt-see-on-tv",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "bd3970a48763",
+      "title": "小李子奥斯卡“腕”美瞬间：劳力士与影帝的双重光芒，及2026奥斯卡最佳腕表盘点",
+      "summary": "莱昂纳多·迪卡普里奥在2026年奥斯卡颁奖礼上佩戴铂金劳力士1908腕表（型号52506‑0003）亮相，冰蓝色玑镂米粒纹表盘搭配黑色鳄鱼皮表带，尽显低调奢华的绅士品格。GQ和Complex Style均报道了此次奥斯卡颁奖典礼上的明星腕表选择，迪卡普里奥的劳力士与迈克尔·B·乔丹的古董伯爵、Zendaya的钻石劳力士、Ryan Coogler的卡地亚Tank à Guichets等一同成为焦点。当晚，迪卡普里奥主演的《一场接一场的战斗》荣获奥斯卡最佳影片奖，可谓双喜临门。",
+      "key_points": [
+        "莱昂纳多·迪卡普里奥佩戴铂金劳力士1908腕表亮相2026奥斯卡。",
+        "多家媒体报道了奥斯卡明星腕表选择，包括劳力士、伯爵、卡地亚等品牌。",
+        "Complex Style盘点了2026奥斯卡最佳腕表，展示了明星们在重要场合的腕表选择及价格。"
+      ],
+      "tags": [
+        "莱昂纳多·迪卡普里奥",
+        "劳力士",
+        "奥斯卡",
+        "腕表",
+        "明星腕表",
+        "红毯造型",
+        "1908",
+        "Zendaya",
+        "Ryan Coogler",
+        "卡地亚",
+        "伯爵"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F16%2Fwrist-check-leonardo-dicaprio-rolex-1908-ref-52506-platinum-ice-blue-guilloche-rice-grain-dial-2026-oscars-000.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-16T17:32:37.058000+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "Wrist Check: Leonardo DiCaprio Flexes a Platinum Rolex 1908 at the 2026 Oscars",
+          "link": "https://hypebeast.com/2026/3/wrist-check-leonardo-dicaprio-rolex-1908-ref-52506-platinum-ice-blue-guilloche-rice-grain-dial-2026-oscars",
+          "lang": "en"
+        },
+        {
+          "name": "GQ",
+          "title": "All the Best Watches From the 2026 Oscars",
+          "link": "https://www.gq.com/gallery/2026-oscars-best-watches",
+          "lang": "en"
+        },
+        {
+          "name": "Complex Style",
+          "title": "The Best Watches at the 2026 Oscars",
+          "link": "https://www.complex.com/style/a/mike-destefano/2026-oscars-best-watches",
+          "lang": "en"
+        }
+      ],
+      "article_count": 3
+    },
+    {
+      "id": "1af7848334d8",
+      "title": "指尖上的时间：戒指腕表重回时尚前沿",
+      "summary": "WWD报道，在纽约时装周AKNVAS 2026秋季秀场上，戒指腕表以其独特的魅力脱颖而出，成为引人注目的配饰焦点。这一复古潮流预示着将在即将到来的春季大放异彩。戒指腕表不仅是实用工具，更是彰显个性的时尚宣言，为整体造型增添精致细节。文章深入解读了这一趋势，并提供了精选购买指南，助力时尚爱好者们紧跟潮流。",
+      "key_points": [
+        "戒指腕表在NYFW秀场上成为焦点",
+        "预测将成为春季流行趋势",
+        "兼具实用性与时尚感"
+      ],
+      "tags": [
+        "戒指腕表",
+        "配饰潮流",
+        "纽约时装周",
+        "时尚趋势"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/watch-rings-accessory-trend-spring-2026.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-16T17:29:08+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Ring Watches Are Seriously Trending Right Now, and These Ones Come Straight Off the NYFW Runway",
+          "link": "https://wwd.com/shop/shop-fashion/ring-watch-clock-rings-trend-shop-best-watches-for-spring-1238662721",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "b5f841f8bd16",
+      "title": "鞋宫 Melrose 大道再添旗舰店",
+      "summary": "知名鞋履零售商 Shoe Palace 宣布将其独特的“Nine Three”旗舰店概念扩展至洛杉矶 Melrose 大道。这是该公司计划开设的七家“Nine Three”旗舰店中的第四家，标志着 Shoe Palace 在零售领域的持续扩张和对潮流市场的重视。 Melrose 大道新店将为消费者带来更优质的购物体验。",
+      "key_points": [
+        "Shoe Palace 扩张“Nine Three”旗舰店概念",
+        "Melrose 大道开设新店",
+        "计划开设七家“Nine Three”旗舰店"
+      ],
+      "tags": [
+        "Shoe Palace",
+        "零售",
+        "旗舰店",
+        "鞋履"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/Shoe-Palace-Exterior-Street-Tight-Shot.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-16T17:28:16+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Shoe Palace Brings Its ‘Nine Three’ Flagship Store Concept to Melrose Avenue",
+          "link": "https://wwd.com/footwear-news/shoe-industry-news/shoe-palace-melrose-avenue-nine-three-flagship-store-1238679406",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "b0c3e22d8fb4",
+      "title": "Reebok联手GLDN PNT，逐浪板式网球",
+      "summary": "运动品牌Reebok携手GLDN PNT推出高性能联名服装系列，此举反映了板式网球运动在全球范围内日益高涨的热度。Reebok正积极布局这一新兴运动市场，通过专业运动服饰，进一步巩固其在运动领域的地位，并吸引更多板式网球爱好者。",
+      "key_points": [
+        "Reebok联名GLDN PNT",
+        "高性能运动服装",
+        "板式网球运动"
+      ],
+      "tags": [
+        "Reebok",
+        "GLDN PNT",
+        "联名系列",
+        "运动服装",
+        "板式网球"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/8d81/7b04/02b1/1ff1/0d5b/5a20/9659/0c80/08c1/de75/208x208/de75.jpg",
+      "published": "2026-03-16T17:17:32+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Reebok x GLDN PNT reflects increasing padel popularity",
+          "link": "https://ww.fashionnetwork.com/news/Reebok-x-gldn-pnt-reflects-increasing-padel-popularity,1816071.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "8c5b31cd5548",
+      "title": "红军再现辉煌：利物浦复古球衣系列",
+      "summary": "利物浦足球俱乐部携手阿迪达斯，荣耀推出“Bringback Collection”复古球衣系列，旨在重温并致敬俱乐部在90年代的辉煌岁月。该系列由阿迪达斯倾力打造，将经典设计与现代工艺巧妙融合，唤醒球迷们对那个黄金时代的美好回忆。复古风潮席卷而来，利物浦球迷们准备好穿上经典，重温激情了吗？",
+      "key_points": [
+        "利物浦联手阿迪达斯",
+        "推出“Bringback Collection”复古系列",
+        "重现90年代经典设计"
+      ],
+      "tags": [
+        "利物浦",
+        "阿迪达斯",
+        "复古球衣",
+        "运动时尚",
+        "品牌合作"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/6efa/345c/3c66/1936/be87/cf5d/6154/39d1/3d03/3dd5/208x208/3dd5.jpg",
+      "published": "2026-03-16T17:15:54+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Liverpool FC returns to its 1990s heydas with retro Adidas kit release",
+          "link": "https://ww.fashionnetwork.com/news/Liverpool-fc-returns-to-its-1990s-heydas-with-retro-adidas-kit-release,1816181.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "11fec769ba58",
+      "title": "咒术回战持续升温：Subtitle联名系列再掀潮流风暴！",
+      "summary": "潮流品牌Subtitle与TOHO再度联手，推出备受瞩目的《咒术回战》18件联名服装系列。该系列深度挖掘动漫角色与咒术的内核，将标志性元素巧妙融入服装设计，摆脱传统动漫周边的设计局限。单品包括虎杖悠仁主题的红色连帽衫、极具视觉冲击力的黑闪T恤，以及真人变形外套等，充分展现《咒术回战》的独特魅力。该系列已于3月16日正式发售，价格区间为65美元至220美元，引发粉丝热烈追捧。",
+      "key_points": [
+        "Subtitle与TOHO合作推出《咒术回战》联名服装系列",
+        "系列设计灵感来源于动漫角色和咒术技能",
+        "单品包括虎杖悠仁主题连帽衫、黑闪T恤、真人变形夹克等",
+        "系列已于3月16日发售，价格区间为65美元至220美元"
+      ],
+      "tags": [
+        "咒术回战",
+        "Subtitle",
+        "联名",
+        "动漫",
+        "潮流",
+        "服装"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F16%2Fftsubtitle-jujutsu-kaisen-apparel-collection-release-info.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-16T17:12:56+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast Fashion",
+          "title": "Subtitle Launches an Exclusive ‘Jujutsu Kaisen’ Apparel Collection",
+          "link": "https://hypebeast.com/2026/3/subtitle-jujutsu-kaisen-apparel-collection-release-info",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "b255fb10c133",
+      "title": "法北名品汇：Geox与Aroma Zone入驻",
+      "summary": "位于法国瓦兹河谷省塞尔吉的Les 3 Fontaines购物中心迎来两大品牌入驻，进一步丰富其零售业态。意大利知名鞋履服装品牌Geox将为消费者带来舒适与时尚兼具的选择，而法国天然美妆品牌Aroma Zone则以其高品质的精油和护肤产品，满足消费者对健康美丽的需求。Les 3 Fontaines购物中心由Hammerson集团拥有并运营，此次品牌入驻有望提升其在法国北部地区的吸引力，巩固其作为区域性购物中心的地位。",
+      "key_points": [
+        "Geox入驻Les 3 Fontaines",
+        "Aroma Zone入驻Les 3 Fontaines",
+        "Les 3 Fontaines由Hammerson运营"
+      ],
+      "tags": [
+        "零售",
+        "购物中心",
+        "品牌入驻",
+        "Geox",
+        "Aroma Zone",
+        "法国"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/c0fd/3a4f/47ac/96a1/43ac/186a/da53/fcec/f0ce/021c/208x208/021c.png",
+      "published": "2026-03-16T17:10:47+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Hammerson's Les 3 Fontaines announces arrival of Geox, Aroma Zone",
+          "link": "https://ww.fashionnetwork.com/news/Hammerson-s-les-3-fontaines-announces-arrival-of-geox-aroma-zone,1816003.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "cbf013de7397",
+      "title": "宝格丽Eclettica系列与Serpenti Illusio项链闪耀奥斯卡",
+      "summary": "宝格丽抢先在奥斯卡颁奖典礼上曝光了其Eclettica高级珠宝系列，并由品牌大使Priyanka Chopra Jonas和Anne Hathaway佩戴惊艳亮相，为即将到来的米兰正式发布预热。Priyanka Chopra Jonas尤其佩戴了Eclettica系列中的Serpenti Illusio项链，该系列融合多种设计元素，展现宝格丽大胆创新的精神。WWD对此进行了报道。",
+      "key_points": [
+        "宝格丽Eclettica系列在奥斯卡颁奖典礼上提前曝光。",
+        "Priyanka Chopra Jonas和Anne Hathaway佩戴Eclettica系列珠宝亮相。",
+        "Priyanka Chopra Jonas佩戴了Serpenti Illusio项链，属于Eclettica系列。",
+        "Eclettica系列融合多种设计元素，体现宝格丽创新精神。",
+        "WWD报道了Priyanka Chopra Jonas在奥斯卡佩戴宝格丽Serpenti Illusio项链。"
+      ],
+      "tags": [
+        "宝格丽",
+        "Eclettica",
+        "Serpenti Illusio",
+        "Priyanka Chopra Jonas",
+        "Anne Hathaway",
+        "奥斯卡",
+        "高级珠宝",
+        "WWD"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/Anne-Hathaway.jpg?crop=0px%2C464px%2C3334px%2C1864px&resize=1000%2C563",
+      "published": "2026-03-16T17:07:24+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Bulgari Previews Eclettica High Jewelry Collection at Oscars With Priyanka Chopra Jonas, Anne Hathaway",
+          "link": "https://wwd.com/accessories-news/jewelry/bulgari-oscars-eclettica-high-jewelry-collection-priyanka-chopra-jonas-anne-hathaway-1238672004",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "Priyanka Chopra Jonas Debuts Bulgari Serpenti Illusio Necklace at the Oscars",
+          "link": "https://wwd.com/eye/people/priyanka-chopra-jonas-bulgari-serpenti-illusio-necklace-eclectica-high-jewelry-oscars-1238679333",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "c0b4ccb58819",
+      "title": "火星哥否认点赞争议帖，再挺霉霉引关注",
+      "summary": "针对社交媒体上流传的Bruno Mars（火星哥）点赞批评Taylor Swift（霉霉）“没有才华”帖子的传言，火星哥亲自发声辟谣，明确表示自己从未点赞此类帖子，并公开表达了对霉霉的喜爱和支持。虽然有报道指出火星哥的回应并未直接否认点赞行为，但此事引发了关于名人社交媒体互动以及公众形象的讨论。火星哥此举旨在平息争议，并传递社交媒体正能量。",
+      "key_points": [
+        "火星哥否认点赞批评霉霉的帖子",
+        "火星哥公开表达对霉霉的喜爱和支持",
+        "事件引发关于名人社交媒体行为的讨论",
+        "火星哥呼吁传递社交媒体正能量"
+      ],
+      "tags": [
+        "Bruno Mars",
+        "Taylor Swift",
+        "社交媒体",
+        "明星互动",
+        "谣言",
+        "辟谣"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/16/d36d3725/sidebyside_template001.jpeg?w=1200&fit=max",
+      "published": "2026-03-16T17:07:07+00:00",
+      "sources": [
+        {
+          "name": "Bustle",
+          "title": "Bruno Mars Addresses Claim He Liked A Post Slamming Taylor Swift",
+          "link": "https://www.bustle.com/entertainment/bruno-mars-denies-claim-liked-post-taylor-swift-talentless",
+          "lang": "en"
+        },
+        {
+          "name": "Elite Daily",
+          "title": "Bruno Mars Responds To Allegations He Shaded Taylor Swift",
+          "link": "https://www.elitedaily.com/entertainment/bruno-mars-taylor-swift-shade-response",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "ee4b4836fb62",
+      "title": "聚焦！Hudson Williams女友Katelyn Larson时尚揭秘",
+      "summary": "知名演员Hudson Williams的女友Katelyn Larson近日备受瞩目。虽然具体报道内容因技术问题未能完全加载，但预计将深入探讨这位时尚新星的穿搭风格、生活方式以及与Hudson Williams的甜蜜恋情。作为公众人物，Katelyn Larson的时尚品味和生活态度无疑将引发新一轮的潮流风向。",
+      "key_points": [
+        "Katelyn Larson的时尚风格",
+        "Katelyn Larson的生活方式",
+        "Katelyn Larson与Hudson Williams的恋情"
+      ],
+      "tags": [
+        "名人时尚",
+        "明星女友",
+        "生活方式",
+        "Katelyn Larson",
+        "Hudson Williams"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/9fa2f6e7-788e-4da3-bfbb-c5c911055975.jpeg",
+      "published": "2026-03-16T17:03:01+00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "All About Katelyn Larson, Hudson Williams’s Girlfriend",
+          "link": "https://www.elle.com/culture/celebrities/a70757281/who-is-katelyn-larson-hudson-williams-girlfriend",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1d600e791be3",
+      "title": "Chase Infiniti奥斯卡首秀：LV定制礼服璀璨夺目",
+      "summary": "新生代演员Chase Infiniti在2026年奥斯卡颁奖典礼上完成了她的红毯首秀。她身着一袭由Louis Vuitton为其量身定制的薰衣草色丝绸礼服，搭配总重达57克拉的钻石，整体造型由著名造型师Wayman和Micah操刀。这款礼服采用不对称的多层褶皱设计，尽显优雅气质，制作耗时超过750小时。Infiniti表示，这如同梦想成真，并对造型师Coree Moreno和Amber Dreadon表达了感谢。",
+      "key_points": [
+        "Chase Infiniti奥斯卡红毯首秀",
+        "Louis Vuitton定制薰衣草色礼服",
+        "57克拉钻石加持"
+      ],
+      "tags": [
+        "奥斯卡",
+        "红毯造型",
+        "明星穿搭",
+        "Louis Vuitton",
+        "定制礼服"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://assets.vogue.com/photos/69b81953a660907d70b8e99e/master/pass/_DSF0175_%5BLV_OSCARS26%5D_%5BCHASE%5D_%5BV1%5D_20260315_virgileguinard-1.jpg",
+      "published": "2026-03-16T17:00:26+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "Chase Infiniti’s 2026 Oscars Came With a Custom Dress and 57 Carats of Diamonds",
+          "link": "https://www.vogue.com/article/chase-infiniti-2026-oscars-louis-vuitton-de-beers-london",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "ac05e666f252",
+      "title": "Athleta夏季运动装备限时特惠！",
+      "summary": "Athleta官网正进行夏季促销，多款畅销运动装备和休闲服饰大幅降价。消费者可关注品牌最新动态，抓住机会，以更优惠的价格购入高品质的运动和休闲单品，为夏季运动衣橱焕新。",
+      "key_points": [
+        "Athleta夏季促销",
+        "运动装备降价",
+        "休闲服饰优惠"
+      ],
+      "tags": [
+        "Athleta",
+        "促销活动",
+        "运动装备",
+        "夏季",
+        "折扣"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/98ec0c61-2005-4ac0-9ea2-7cac80f06992.jpg",
+      "published": "2026-03-16T17:00:00+00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "Athleta Just Slashed Prices on Bestselling Workout Gear and Summer Staples",
+          "link": "https://www.elle.com/fashion/shopping/a70757411/athleta-friends-family-sale-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "677ef2acafd1",
+      "title": "「先享后付」Alma剑指欧洲",
+      "summary": "法国金融科技公司Alma凭借“先享后付”(BNPL)模式在法国取得成功，预计2025年增长率将达32%。面对欧洲市场日趋严格的监管环境，Alma计划将其经验复制到整个欧洲，力求在竞争激烈的市场中占据领先地位。BNPL模式的兴起正在重塑时尚零售行业的消费格局，为消费者提供更灵活的支付选择。",
+      "key_points": [
+        "Alma公司专注BNPL服务",
+        "计划扩张欧洲市场",
+        "BNPL影响时尚零售消费"
+      ],
+      "tags": [
+        "先享后付",
+        "金融科技",
+        "零售",
+        "欧洲市场"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/7fe6/4c8a/1b06/45ce/a0c4/c901/ba57/6b43/4927/d07b/208x208/d07b.jpg",
+      "published": "2026-03-16T16:57:35+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Deferred payment: French company Alma, posting 32% growth in 2025, aims to assert itself in Europe",
+          "link": "https://ww.fashionnetwork.com/news/Deferred-payment-french-company-alma-posting-32-growth-in-2025-aims-to-assert-itself-in-europe,1816159.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "2761ce206e77",
+      "title": "Hugo燃情出击：Red Means Go!",
+      "summary": "Hugo推出全新青年主题营销活动“Red Means Go”，以鲜明大胆的宣言为核心，旨在与年轻一代建立更深层次的连接。该活动将通过广告牌、社交媒体及数字平台等全方位渠道进行推广，预计将引发广泛关注，进一步巩固Hugo在青年文化领域的影响力。",
+      "key_points": [
+        "Hugo全新营销活动",
+        "聚焦青年文化",
+        "大胆宣言式传播"
+      ],
+      "tags": [
+        "Hugo",
+        "营销活动",
+        "青年文化",
+        "潮流趋势"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/0540/f52d/7d25/942c/74c9/5139/0108/b355/f0aa/7331/208x208/7331.png",
+      "published": "2026-03-16T16:57:24+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Hugo launches 'raw and human' Red Means Go campaign",
+          "link": "https://ww.fashionnetwork.com/news/Hugo-launches-raw-and-human-red-means-go-campaign,1816090.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "cb61f086524f",
+      "title": "Air Force 1 黑曜漆光：经典再塑，2026夏季耀目登场",
+      "summary": "Nike 计划于2026年夏季推出 Air Force 1 Low “Black Patent”版本。该鞋款在经典轮廓基础上大胆创新，采用黑色高光漆皮鞋面，灵感源自sneakerhead将漆皮运动鞋与燕尾服搭配的潮流，将运动鞋与正装风格巧妙融合，为 Air Force 1 注入一丝奢华和正式感，势必成为潮流爱好者的又一必备单品。",
+      "key_points": [
+        "Nike Air Force 1 Low 全新“Black Patent”版本将于2026夏季发布。",
+        "鞋面采用黑色高光漆皮材质，打造奢华质感。",
+        "设计灵感来源于正装搭配，将运动鞋与正式风格结合。"
+      ],
+      "tags": [
+        "Nike",
+        "Air Force 1",
+        "Black Patent",
+        "漆皮",
+        "运动鞋",
+        "2026夏季",
+        "潮流"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F16%2FNike-Air-Force-1-Low-Black-Patent-IV2857-010-Official-Images-0.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-16T16:56:07+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "Nike Delivers a Glossy Update to the Black Air Force 1 Low",
+          "link": "https://hypebeast.com/2026/3/nike-air-force-1-low-black-patent-iv2857-010-official-images",
+          "lang": "en"
+        },
+        {
+          "name": "WWD",
+          "title": "The Classic Triple-black Nike Air Force 1 Takes a Page From Black-tie Shoes’ Patent Leather",
+          "link": "https://wwd.com/footwear-news/sneaker-news/nike-air-force-1-low-black-patent-release-date-iv2857-010-1238679215",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "b94dac51b692",
+      "title": "零售地产风向标：新帅掌舵巴黎商业地产交易会",
+      "summary": "Comexposium近日宣布，Cyril Szczerbakow将担任巴黎商业地产交易会（Siec）活动总监。在全球零售业经历深刻变革的关键时期，Szczerbakow的任命备受瞩目。预计他的战略决策将对未来零售空间的设计理念和发展趋势产生重要影响，为商业地产领域带来新的视角和活力。行业专家将密切关注他在新岗位的表现，以及Siec在塑造未来零售格局中所扮演的角色。",
+      "key_points": [
+        "Cyril Szczerbakow担任Siec活动总监",
+        "零售业转型关键时期",
+        "影响未来零售空间设计趋势"
+      ],
+      "tags": [
+        "零售",
+        "商业地产",
+        "行业动态",
+        "Comexposium",
+        "巴黎商业地产交易会"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/3ac2/ce36/8339/01e0/cdfd/de50/a089/c0ee/f003/793f/208x208/793f.jpg",
+      "published": "2026-03-16T16:56:06+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Comexposium appoints Cyril Szczerbakow as head of the Siec",
+          "link": "https://ww.fashionnetwork.com/news/Comexposium-appoints-cyril-szczerbakow-as-head-of-the-siec,1816155.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "5a98af83d45d",
       "title": "JINS携手beautiful people，双线太阳镜玩转时尚",
       "summary": "轻奢眼镜品牌JINS再度联手时装品牌beautiful people，推出全新合作款太阳镜。本次设计亮点在于独特的双重线条，正面佩戴个性十足，侧面则展现优雅轮廓，一副眼镜呈现双重时尚魅力。这是两个品牌在时尚领域的又一次大胆尝试，将眼镜设计与时装美学巧妙融合，为消费者带来更具风格化的选择。",
@@ -5032,6 +6524,47 @@
       "article_count": 1
     },
     {
+      "id": "b63cdfde3166",
+      "title": "羊毛创新巨头 Woolmark 迎来新掌门：Bryan Fry 上任",
+      "summary": "全球羊毛标志品牌 Woolmark（隶属于澳大利亚羊毛创新公司 AWI）正式任命 Bryan Fry 为新任首席执行官，即时生效。Fry 先生此前曾担任保乐力加董事长兼全球首席执行官，拥有丰富的领导经验。此次任命正值美利奴羊毛全球吸引力持续增长之际，预示着 Woolmark 将在 Fry 先生的带领下，于羊毛产业的创新和发展上迈出新的步伐，进一步巩固其在全球市场的领先地位，或将影响羊毛产业的未来发展方向。",
+      "key_points": [
+        "Woolmark 任命 Bryan Fry 为新任 CEO，即时生效",
+        "Bryan Fry 曾任保乐力加董事长兼全球 CEO，拥有丰富经验",
+        "美利奴羊毛全球吸引力持续增长",
+        "预计 Woolmark 将在 Fry 先生的带领下，进一步巩固其在全球市场的领先地位",
+        "此次任命或将影响羊毛产业的未来发展方向"
+      ],
+      "tags": [
+        "Woolmark",
+        "Bryan Fry",
+        "羊毛",
+        "美利奴羊毛",
+        "CEO",
+        "人事变动",
+        "AWI",
+        "澳大利亚羊毛创新公司"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/Bryan-Fry_Woolmark-CEO-c-Antoine-Doyen-1.jpeg?crop=0px%2C782px%2C3898px%2C2182px&resize=1000%2C563",
+      "published": "2026-03-16T16:53:51+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Woolmark’s Australian Wool Innovation Taps Bryan Fry as Chief Executive Officer",
+          "link": "https://wwd.com/fashion-news/fashion-scoops/woolmarks-australian-wool-innovation-ryan-fry-chief-executive-officer-1238678666",
+          "lang": "en"
+        },
+        {
+          "name": "Fashion Network",
+          "title": "Woolmark appoints Bryan Fry as its new CEO",
+          "link": "https://ww.fashionnetwork.com/news/Woolmark-appoints-bryan-fry-as-its-new-ceo,1816151.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
       "id": "15c5207f6c1e",
       "title": "Susan Fang x Melissa：梦幻鞋履新境",
       "summary": "中国设计师Susan Fang携手巴西环保鞋履品牌Melissa，以超现实主义笔触重塑三款经典鞋型。Fang与她的工业设计师丈夫深入探索设计边界，将可持续理念与创新美学巧妙融合，打造出充满诗意与未来感的鞋履系列。本次合作不仅是对经典款的全新演绎，更是对可持续时尚的一次大胆尝试。",
@@ -5056,6 +6589,36 @@
           "name": "WWD",
           "title": "EXCLUSIVE: Designer Susan Fang Brings a Surreal Update to Three Melissa Shoe Styles",
           "link": "https://wwd.com/footwear-news/shoe-industry-news/melissa-susan-fang-shoe-collaboration-release-info-1238679267",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "a8bcf3a77ce2",
+      "title": "泰雅娜·泰勒：奥斯卡后台风波后惊艳亮相",
+      "summary": "2026年奥斯卡颁奖典礼后台，泰雅娜·泰勒（Teyana Taylor）因不满保安人员的态度，与其发生言语冲突。随后，她迅速调整状态，更换一袭香奈儿（Chanel）礼服，优雅现身《Vanity Fair》奥斯卡派对，庆祝电影之夜，尽显巨星风采。此次事件并未影响她的心情，反而让她在派对上更加光彩照人。",
+      "key_points": [
+        "泰雅娜·泰勒与保安冲突",
+        "更换香奈儿礼服",
+        "出席Vanity Fair派对"
+      ],
+      "tags": [
+        "泰雅娜·泰勒",
+        "奥斯卡",
+        "Vanity Fair",
+        "香奈儿",
+        "名人"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vanityfair.com/photos/69b8324349d0654ae176bbdf/master/pass/2266774594",
+      "published": "2026-03-16T16:52:27+00:00",
+      "sources": [
+        {
+          "name": "Vanity Fair",
+          "title": "Teyana Taylor Reacts to Security Guard’s “Disrespect” In Post-Oscars 2026 Confrontation",
+          "link": "https://www.vanityfair.com/hollywood/story/teyana-taylor-oscars-2026-security-guard-shove",
           "lang": "en"
         }
       ],
@@ -5257,6 +6820,36 @@
       "article_count": 1
     },
     {
+      "id": "e3626dd25f56",
+      "title": "Garage旗舰店即将登陆牛津街",
+      "summary": "加拿大轻奢品牌Garage宣布将于3月27日在伦敦牛津街开设其首家旗舰店，为品牌在英国市场的扩张揭开序幕。此举标志着Garage正式进军伦敦市中心核心商圈，预计将吸引大量年轻消费者。新店将呈现品牌最新系列，并提供独特的购物体验。",
+      "key_points": [
+        "Garage伦敦旗舰店开业",
+        "品牌英国市场扩张",
+        "选址牛津街"
+      ],
+      "tags": [
+        "Garage",
+        "旗舰店",
+        "牛津街",
+        "零售扩张",
+        "轻奢品牌"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/ea58/24b8/f8cf/49cc/288c/5a3f/6759/58fc/34ed/eeb5/208x208/eeb5.png",
+      "published": "2026-03-16T16:45:24+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Eleven days and counting: Garage preps for fanfare Oxford Street opening",
+          "link": "https://ww.fashionnetwork.com/news/Eleven-days-and-counting-garage-preps-for-fanfare-oxford-street-opening,1816146.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "90c0e5ee6a5b",
       "title": "美国男足世界杯新战袍亮相",
       "summary": "2026年美国男足世界杯队服正式发布，由Nike合作设计，包含两款配色方案，设计过程充分考虑了球员的意见。新款队服以美国星条旗为设计灵感，象征着整个球队的团结。深色款球衣饰有提花星星图案，而浅色款则采用渐变条纹设计。Esquire杂志回顾了美国男足队服的历史，并深入解读了新款队服的设计理念。美国足协表示，新队服代表着美国足球的传承与创新，期待在世界杯赛场上展现美国足球的全新面貌。",
@@ -5293,34 +6886,50 @@
       "article_count": 2
     },
     {
-      "id": "d11a587a820b",
-      "title": "开云集团重磅布局，剑指高级珠宝市场",
-      "summary": "奢侈品巨头开云集团近日宣布成立独立的珠宝部门，并任命Jean-Marc Duplaix担任首席执行官。此举标志着开云集团将进一步发力高级珠宝领域，旨在通过更专注的战略和运营，挖掘珠宝市场的巨大增长潜力。业内人士分析，开云集团的这一重要举措或将重塑奢侈品珠宝市场的竞争格局，加速行业洗牌。",
+      "id": "38a3eaf898a4",
+      "title": "瑞恩·库格勒奥斯卡“罪人”主题发型解析",
+      "summary": "在奥斯卡颁奖典礼上，导演瑞恩·库格勒凭借电影《罪人》荣获最佳原创剧本奖，其精心设计的发型也成为焦点。由发型师Tyzanna B打造的辫子造型，巧妙地融入了吉他和高音谱号的形状，呼应了电影中蓝调音乐的主题。《罪人》获得16项奥斯卡提名并最终斩获四项大奖。这一造型不仅展现了库格勒对电影主题的深刻理解和个人风格的巧妙运用，也引发了时尚评论家对其发型细节、文化内涵和时尚表达的深入解读。",
       "key_points": [
-        "开云集团成立独立珠宝部门",
-        "Jean-Marc Duplaix担任首席执行官",
-        "集团战略重心转向珠宝市场"
+        "瑞恩·库格勒奥斯卡发型以音乐元素为主题",
+        "发型师Tyzanna B打造辫子造型，融入吉他和高音谱号",
+        "《罪人》获得16项奥斯卡提名并最终斩获四项大奖",
+        "发型体现了库格勒对电影主题的深刻理解和个人风格"
       ],
       "tags": [
-        "开云集团",
-        "高级珠宝",
-        "奢侈品市场",
-        "市场战略",
-        "人事变动"
+        "瑞恩·库格勒",
+        "奥斯卡",
+        "罪人",
+        "发型",
+        "辫子",
+        "Tyzanna B",
+        "音乐元素",
+        "红毯造型"
       ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://wwd.com/wp-content/uploads/2026/02/BOUCHERON_XINTIANDI-2.jpg?crop=0px%2C172px%2C1984px%2C1111px&resize=1000%2C563",
-      "published": "2026-03-16T16:43:56+00:00",
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/8500fa41-e085-4db4-9456-1abe925fcb33.jpeg",
+      "published": "2026-03-16T16:44:53+00:00",
       "sources": [
         {
-          "name": "WWD",
-          "title": "Kering Creates Dedicated Jewelry Division to Power Growth",
-          "link": "https://wwd.com/business-news/human-resources/kering-jewelry-division-ceo-jean-marc-duplaix-1238679299",
+          "name": "Elle",
+          "title": "Ryan Coogler’s 2026 Oscars Braids Had a Detail You May Not Have Noticed",
+          "link": "https://www.elle.com/beauty/hair/a70749428/ryan-coogler-braids-photos-oscars-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Essence",
+          "title": "Ryan Coogler Won First Oscar In ‘Sinners’ Inspired Braids",
+          "link": "https://www.essence.com/awards-events/ryan-coogler-guitar-sinners-inspired-oscar-braids",
+          "lang": "en"
+        },
+        {
+          "name": "The Cut",
+          "title": "Ryan Coogler Had the Coolest Hair at the Oscars",
+          "link": "http://www.thecut.com/article/ryan-coogler-had-the-coolest-hair-at-the-oscars.html",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 3
     },
     {
       "id": "fcef031dafc7",
@@ -5384,6 +6993,35 @@
       "article_count": 1
     },
     {
+      "id": "576978c70504",
+      "title": "亚马逊春季大促来袭！",
+      "summary": "《The Cut》杂志报道，亚马逊春季大型促销活动已拉开帷幕。本次活动涵盖时尚服饰、美容护肤、家居用品以及科技产品等多个领域，旨在为消费者提供全方位的购物选择和优惠力度。消费者可在活动期间尽情选购心仪商品，享受折扣福利。",
+      "key_points": [
+        "亚马逊春季大促",
+        "涵盖时尚、美妆、家居、科技",
+        "提供购物指南"
+      ],
+      "tags": [
+        "亚马逊",
+        "促销活动",
+        "电商",
+        "购物"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://pyxis.nymag.com/v1/imgs/255/8ad/4159bf01321a522fca1ff9207266ea24a9-amazon-spring-sale-2026-lede.1x.rsocial.w1200.jpg",
+      "published": "2026-03-16T16:31:15+00:00",
+      "sources": [
+        {
+          "name": "The Cut",
+          "title": "The Amazon Big Spring Sale Has Sprung",
+          "link": "http://www.thecut.com/article/amazon-big-spring-sale-early-deals-2026.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "83d71bd54c9c",
       "title": "香氛密语：荷尔蒙与嗅觉的奇妙关联",
       "summary": "你是否曾觉得挚爱的香水突然变得陌生？《Allure》杂志揭示，女性在怀孕、月经周期甚至更年期等不同生理阶段，荷尔蒙的微妙变化会显著影响嗅觉，进而改变对香水的偏好。专家指出，这源于进化和内分泌学的复杂机制，荷尔蒙波动直接作用于嗅觉系统，导致我们对气味的感知发生改变。了解这些，或许能帮助你更好地选择适合当下状态的香氛。",
@@ -5412,6 +7050,43 @@
         }
       ],
       "article_count": 1
+    },
+    {
+      "id": "3c3ac76fc71a",
+      "title": "甜茶奥斯卡争议：失利背后是粉丝心疼与“傲慢”指控？",
+      "summary": "2026年奥斯卡颁奖典礼上，蒂莫西·柴勒梅德（Timothée Chalamet）意外失利引发热议。《The Cut》聚焦粉丝反应，展现了“Chalamet俱乐部”的复杂情绪，惋惜之余也表达了对偶像的支持和对迈克尔·B·乔丹的认可。同时，StyleCaster报道指出，柴勒梅德的“傲慢”行为可能影响了他在业内的评价，导致其失利。文章探讨了名人形象、奖项、品牌合作之间的关联性。",
+      "key_points": [
+        "蒂莫西·柴勒梅德奥斯卡失利引发粉丝心疼",
+        "粉丝群体“Chalamet俱乐部”表达了对偶像的支持",
+        "StyleCaster报道称柴勒梅德因“傲慢”行为影响业内评价",
+        "文章探讨了名人形象与奖项、品牌合作的关系"
+      ],
+      "tags": [
+        "蒂莫西·柴勒梅德",
+        "奥斯卡",
+        "粉丝文化",
+        "名人形象",
+        "迈克尔·B·乔丹"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://pyxis.nymag.com/v1/imgs/b0e/159/0705238646e6544448204020684fb22d1a-club-chalamet-timothee.1x.rsocial.w1200.jpg",
+      "published": "2026-03-16T16:29:39+00:00",
+      "sources": [
+        {
+          "name": "The Cut",
+          "title": "And Now for a Check-in With Club Chalamet",
+          "link": "http://www.thecut.com/article/what-does-club-chalamet-think-about-timothee-chalamets-oscars-loss.html",
+          "lang": "en"
+        },
+        {
+          "name": "StyleCaster",
+          "title": "Timothée Chalamet Accused of ‘Arrogant’ Behavior as Sources Reveal the Real Reason He Lost the Oscar to Michael B. Jordan—’The Less They Liked Him’",
+          "link": "https://stylecaster.com/entertainment/celebrity-news/1234881984/timothee-chalamet-oscars-michael-b-jordan",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
     },
     {
       "id": "ef394559180d",
@@ -5632,36 +7307,6 @@
           "name": "GQ",
           "title": "Breaking Fast with Mayor Zohran Mamdani and Knicks Star Mo Diawara",
           "link": "https://www.gq.com/story/nyc-mayor-zohran-mamdani-knicks-mo-diawara-ramadan",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "c0b4ccb58819",
-      "title": "火星哥力挺霉霉，否认点赞争议帖",
-      "summary": "近日，关于Bruno Mars（火星哥）点赞一条批评Taylor Swift（霉霉）“没有才华”帖子的传言甚嚣尘上。对此，火星哥亲自在社交媒体上发声辟谣，明确表示自己从未点赞过此类帖子，并公开表达了对霉霉的喜爱和支持。他还回忆起霉霉在他获奖时给予的鼓励，呼吁大家在社交媒体上多传递爱与正能量，而非散布谣言和恶意揣测。这一举动赢得了众多粉丝的赞赏，也平息了这场突如其来的争议。",
-      "key_points": [
-        "Bruno Mars否认点赞批评Taylor Swift的帖子",
-        "Bruno Mars公开表达对Taylor Swift的支持和喜爱",
-        "Bruno Mars呼吁在社交媒体上传播爱"
-      ],
-      "tags": [
-        "Bruno Mars",
-        "Taylor Swift",
-        "社交媒体",
-        "明星",
-        "辟谣"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgix.bustle.com/uploads/image/2026/3/16/d36d3725/sidebyside_template001.jpeg?w=1200&fit=max",
-      "published": "2026-03-16T16:09:20+00:00",
-      "sources": [
-        {
-          "name": "Bustle",
-          "title": "Bruno Mars Addresses Claim He Liked A Post Slamming Taylor Swift",
-          "link": "https://www.bustle.com/entertainment/bruno-mars-denies-claim-liked-post-taylor-swift-talentless",
           "lang": "en"
         }
       ],
@@ -5960,6 +7605,43 @@
       "article_count": 1
     },
     {
+      "id": "aca426aeeccb",
+      "title": "明星也爱“悄悄变美”？医美公开化趋势",
+      "summary": "好莱坞女星温迪·麦克伦登-考威（Wendi McLendon-Covey）因颈部拉皮手术，遗憾缺席2026年奥斯卡《伴娘》剧组重聚。她大方在社交媒体分享术后恢复自拍，坦诚表示不想看起来像融化的蜡烛，赢得网友一片赞赏。近年来，越来越多名人选择公开自己的医美经历，例如凯莉·詹娜（Kylie Jenner）和西蒙·拜尔斯（Simone Biles），医美话题在公众视野中变得更加透明。《伴娘》主演克里斯汀·韦格（Kristen Wiig）已多次表示不会拍摄续集，其他演员也表示没有她不会参与。",
+      "key_points": [
+        "温迪·麦克伦登-考威公开颈部拉皮手术，引发关注。",
+        "名人医美公开化成为趋势。",
+        "《伴娘》续集拍摄可能性较低。"
+      ],
+      "tags": [
+        "医美",
+        "明星",
+        "温迪·麦克伦登-考威",
+        "颈部拉皮",
+        "伴娘",
+        "克里斯汀·韦格"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.glamour.com/photos/69b8251557fcbff003bf786c/master/pass/2246867519",
+      "published": "2026-03-16T15:53:57+00:00",
+      "sources": [
+        {
+          "name": "Glamour",
+          "title": "Wendi McLendon-Covey Missed the 2026 Oscars Due to This Plastic Surgery Procedure",
+          "link": "https://www.glamour.com/story/wendi-mclendon-covey-shared-why-she-skipped-the-oscars-bridesmaids-reunion",
+          "lang": "en"
+        },
+        {
+          "name": "Elite Daily",
+          "title": "Wendi McLendon-Covey Explains Her 'Bridesmaids' Oscars Reunion Absence",
+          "link": "https://www.elitedaily.com/entertainment/wendi-mclendon-covey-bridesmaids-oscars-reunion-absence",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
       "id": "63ed8e2f862e",
       "title": "美妆公关新机遇：Paul Wilmot招贤纳士",
       "summary": "知名公关公司Paul Wilmot Communications正在纽约招聘一位资深客户主管，加入其蓬勃发展的美妆与健康团队。该职位将负责主导媒体策略，涵盖新品发布、深度专题、产品植入、高管形象打造以及战略品牌合作。同时，该职位也肩负着管理和指导初级团队成员的重任。Paul Wilmot Communications在纽约和纳什维尔均设有办公室，客户涵盖时尚、美妆、零售、电商、酒店、烈酒以及奢侈生活方式等多个领域。",
@@ -6044,35 +7726,6 @@
           "name": "Bustle",
           "title": "Jamie Lee Curtis On Motherhood, Being A Sex Symbol, & Life At 28",
           "link": "https://www.bustle.com/entertainment/jamie-lee-curtis-motherhood-sex-symbol-life-at-28",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "aca426aeeccb",
-      "title": "明星也爱“悄悄变美”？",
-      "summary": "好莱坞女星温迪·麦克伦登-考威（Wendi McLendon-Covey）因颈部拉皮手术，遗憾缺席2026年奥斯卡《伴娘》剧组重聚。她大方在社交媒体分享术后恢复自拍，坦诚态度赢得网友一片赞赏。近年来，越来越多名人选择公开自己的医美经历，例如凯莉·詹娜（Kylie Jenner）和西蒙·拜尔斯（Simone Biles），医美话题在公众视野中变得更加透明。",
-      "key_points": [
-        "温迪·麦克伦登-考威术后自拍",
-        "颈部拉皮手术",
-        "名人公开医美经历"
-      ],
-      "tags": [
-        "温迪·麦克伦登-考威",
-        "医美",
-        "名人",
-        "奥斯卡"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.glamour.com/photos/69b8251557fcbff003bf786c/master/pass/2246867519",
-      "published": "2026-03-16T15:45:38+00:00",
-      "sources": [
-        {
-          "name": "Glamour",
-          "title": "Wendi McLendon-Covey Missed the 2026 Oscars Due to This Plastic Surgery Procedure",
-          "link": "https://www.glamour.com/story/wendi-mclendon-covey-shared-why-she-skipped-the-oscars-bridesmaids-reunion",
           "lang": "en"
         }
       ],
@@ -6216,46 +7869,6 @@
       "article_count": 1
     },
     {
-      "id": "bd3970a48763",
-      "title": "小李子奥斯卡“腕”美瞬间：劳力士与影帝的双重光芒",
-      "summary": "莱昂纳多·迪卡普里奥在2026年奥斯卡颁奖礼上佩戴铂金劳力士1908腕表（型号52506‑0003）亮相，冰蓝色玑镂米粒纹表盘搭配黑色鳄鱼皮表带，尽显低调奢华的绅士品格。GQ报道了此次奥斯卡颁奖典礼上的明星腕表选择，迪卡普里奥的劳力士与迈克尔·B·乔丹的古董伯爵等一同成为焦点。当晚，迪卡普里奥主演的《一场接一场的战斗》荣获奥斯卡最佳影片奖，可谓双喜临门。",
-      "key_points": [
-        "莱昂纳多·迪卡普里奥佩戴铂金劳力士1908腕表亮相2026年奥斯卡。",
-        "腕表型号为52506‑0003，采用冰蓝色玑镂米粒纹表盘和黑色鳄鱼皮表带。",
-        "GQ报道了2026年奥斯卡颁奖典礼上的明星腕表选择，包括劳力士、伯爵等。",
-        "迪卡普里奥主演的电影《一场接一场的战斗》荣获奥斯卡最佳影片奖。"
-      ],
-      "tags": [
-        "莱昂纳多·迪卡普里奥",
-        "劳力士",
-        "奥斯卡",
-        "腕表",
-        "红毯",
-        "明星腕表",
-        "1908",
-        "GQ"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F16%2Fwrist-check-leonardo-dicaprio-rolex-1908-ref-52506-platinum-ice-blue-guilloche-rice-grain-dial-2026-oscars-000.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-16T15:32:44+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Wrist Check: Leonardo DiCaprio Flexes a Platinum Rolex 1908 at the 2026 Oscars",
-          "link": "https://hypebeast.com/2026/3/wrist-check-leonardo-dicaprio-rolex-1908-ref-52506-platinum-ice-blue-guilloche-rice-grain-dial-2026-oscars",
-          "lang": "en"
-        },
-        {
-          "name": "GQ",
-          "title": "All the Best Watches From the 2026 Oscars",
-          "link": "https://www.gq.com/gallery/2026-oscars-best-watches",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
       "id": "85168a2d52b4",
       "title": "夏日晒后急救：Skinfood胡萝卜棉片舒缓奇迹",
       "summary": "Allure杂志力荐Skinfood胡萝卜素舒缓水凝棉片，为夏日晒后肌肤带来福音。这款棉片富含胡萝卜根提取物和甘油，能有效舒缓镇定肌肤，深层补水。体验者表示，在晒伤后使用，肌肤即刻感到舒适，后续护肤品的吸收也得到显著提升。建议清洁面部后，将棉片敷于干燥或受损区域5-10分钟，轻拍至精华完全吸收，重焕肌肤活力。",
@@ -6316,35 +7929,6 @@
       "article_count": 1
     },
     {
-      "id": "3c3ac76fc71a",
-      "title": "甜茶奥斯卡折戟，粉丝心疼！",
-      "summary": "《The Cut》聚焦2026年奥斯卡颁奖典礼，报道了蒂莫西·柴勒梅德（Timothée Chalamet）意外失利后的粉丝反应。文章深入“Chalamet俱乐部”，引用主要粉丝账号的观点，展现了粉丝们对这一结果的复杂情绪，以及对迈克尔·B·乔丹获奖的看法。粉丝们虽感惋惜，但也表达了对偶像未来发展的坚定支持，并对乔丹的实力表示认可。这场颁奖典礼不仅是明星的舞台，也折射出独特的粉丝文化。",
-      "key_points": [
-        "甜茶奥斯卡失利",
-        "粉丝群体“Chalamet俱乐部”反应",
-        "对迈克尔·B·乔丹获奖的看法"
-      ],
-      "tags": [
-        "蒂莫西·柴勒梅德",
-        "奥斯卡",
-        "粉丝文化",
-        "名人动态"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://pyxis.nymag.com/v1/imgs/b0e/159/0705238646e6544448204020684fb22d1a-club-chalamet-timothee.1x.rsocial.w1200.jpg",
-      "published": "2026-03-16T15:20:17+00:00",
-      "sources": [
-        {
-          "name": "The Cut",
-          "title": "And Now for a Check-in With Club Chalamet",
-          "link": "http://www.thecut.com/article/what-does-club-chalamet-think-about-timothee-chalamets-oscars-loss.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "544ed4998084",
       "title": "2026早春包包潮流趋势：Nordstrom精选与色彩风向标",
       "summary": "2026早春，哪些包包将成为时尚焦点？本指南结合Nordstrom的购物推荐和Who What Wear的色彩预测，为你揭示下一季的包包潮流趋势！不仅有值得投资的设计师品牌包款，还有即将流行的色彩选择，助你避开雷区，打造专属时尚造型。棕色和黑色可能要让位了！",
@@ -6383,36 +7967,6 @@
         }
       ],
       "article_count": 2
-    },
-    {
-      "id": "ffc2e7392a17",
-      "title": "奥斯卡派对：大胆着装在哪里？",
-      "summary": "2026年奥斯卡afterparty红毯星光熠熠，但不少造型略显保守，缺乏惊喜。时尚评论指出，相较于中规中矩的选择，Julia Fox、Odessa A’zion、Sarah Paulson和Audrey Nuna等明星的着装更具个性与时尚前卫感。她们大胆的尝试为红毯注入了活力，展现了独特的时尚态度，成为当晚的亮点。",
-      "key_points": [
-        "奥斯卡afterparty红毯着装趋势偏保守",
-        "Julia Fox等明星大胆着装引人注目",
-        "个性化时尚是红毯新风向"
-      ],
-      "tags": [
-        "奥斯卡",
-        "afterparty",
-        "红毯造型",
-        "名人时尚",
-        "时尚趋势"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://imgix.bustle.com/uploads/getty/2026/3/16/338f7f5e/los-angeles-california-march.jpg?w=1200&fit=max",
-      "published": "2026-03-16T15:13:08+00:00",
-      "sources": [
-        {
-          "name": "NYLON",
-          "title": "Whatever Happened To Fun Party Dresses?",
-          "link": "https://www.nylon.com/fashion/oscars-afterparty-dresses-personality-fun-trend",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
     },
     {
       "id": "8ff43efce415",
@@ -7138,108 +8692,6 @@
       "article_count": 1
     },
     {
-      "id": "afcc0d592202",
-      "title": "哈德森·威廉姆斯与康纳·斯托里奥斯卡派对透视装引热议：恋情公开，时尚新宠",
-      "summary": "哈德森·威廉姆斯在2026年奥斯卡颁奖典礼上以“心动光”妆容引发关注，并携女友Katelyn Larson首次公开亮相红毯，恋情正式公开。在《Vanity Fair》奥斯卡派对上，威廉姆斯身着Balenciaga透视装亮相，同剧组演员康纳·斯托里也以Saint Laurent透视装出席，两人默契的透视造型成为焦点。两人因出演《Heated Rivalry》迅速走红，成为红毯常客和时尚界的宠儿，并传闻将客串《周六夜现场》。",
-      "key_points": [
-        "哈德森·威廉姆斯奥斯卡“心动光”妆容",
-        "哈德森·威廉姆斯携女友Katelyn Larson首次公开亮相红毯，恋情公开",
-        "哈德森·威廉姆斯Balenciaga透视装，康纳·斯托里Saint Laurent透视装，两人奥斯卡派对造型引热议",
-        "两人因《Heated Rivalry》走红，成为时尚新宠",
-        "传闻两人将客串《周六夜现场》"
-      ],
-      "tags": [
-        "哈德森·威廉姆斯",
-        "康纳·斯托里",
-        "奥斯卡",
-        "透视装",
-        "Balenciaga",
-        "Saint Laurent",
-        "红毯",
-        "恋情公开",
-        "Heated Rivalry"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://stylecaster.com/wp-content/uploads/2026/01/hudson-williams-beauty-routine.png",
-      "published": "2026-03-16T13:54:19+00:00",
-      "sources": [
-        {
-          "name": "StyleCaster",
-          "title": "Hudson Williams’ Beauty Routine Is Working Overtime—Here Are 50 Products Uses, Including the 2026 Oscars",
-          "link": "https://stylecaster.com/beauty/skin-care/1234876452/hudson-williams-beauty-routine",
-          "lang": "en"
-        },
-        {
-          "name": "Glamour",
-          "title": "How Hudson Williams Achieved His ‘Heartthrob Glow’ for the 2026 Oscars",
-          "link": "https://www.glamour.com/story/how-hudson-williams-skincare-artist-achieved-his-heartthrob-glow-for-the-oscars",
-          "lang": "en"
-        },
-        {
-          "name": "Glamour",
-          "title": "Hudson Williams And His Girlfriend: A Complete Relationship Timeline",
-          "link": "https://www.glamour.com/story/hudson-williamss-girlfriend-what-we-know-about-the-actors-relationship",
-          "lang": "en"
-        },
-        {
-          "name": "Vanity Fair",
-          "title": "Hudson Williams and Girlfriend Katelyn Larson Make Their Red Carpet Debut at the Vanity Fair Oscar Party 2026",
-          "link": "https://www.vanityfair.com/hollywood/story/hudson-williams-girlfriend-katelyn-larson-vanity-fair-oscar-party-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "Hudson Williams and Girlfriend Katelyn Larson Make Their Red-Carpet Debut on Oscars Night",
-          "link": "https://www.harpersbazaar.com/celebrity/latest/a70756212/hudson-williams-girlfriend-katelyn-larson-2026-oscars-after-party-red-carpet-debut-photos",
-          "lang": "en"
-        },
-        {
-          "name": "Elle",
-          "title": "Why Connor Storrie Isn’t at the 2026 Oscars",
-          "link": "https://www.elle.com/culture/celebrities/a70748799/why-connor-storrie-missed-oscars-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "Hudson Williams and Connor Storrie Reunite at the Star-Studded CAA Pre-Oscars Party",
-          "link": "https://www.harpersbazaar.com/celebrity/latest/a70741928/hudson-williams-connor-storrie-reunite-caa-pre-oscars-party-photos",
-          "lang": "en"
-        },
-        {
-          "name": "StyleCaster",
-          "title": "The Real Reason Connor Storrie Isn’t at the Oscars with Hudson Williams Finally Revealed",
-          "link": "https://stylecaster.com/entertainment/celebrity-news/1234881933/why-connor-storrie-not-at-oscars",
-          "lang": "en"
-        },
-        {
-          "name": "Elle",
-          "title": "Connor Storrie and Hudson Williams Wear Matching Sheer Looks for Their <em>Vanity Fair </em>Oscar Party Debut",
-          "link": "https://www.elle.com/culture/celebrities/a70744433/connor-storrie-hudson-williams-photos-vanity-fair-oscar-party-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "Connor Storrie and Hudson Williams Coordinate in Kinky Sheer Tops at the Oscars After-Party",
-          "link": "https://www.harpersbazaar.com/celebrity/latest/a70755712/hudson-williams-connor-storrie-sheer-tops-red-carpet-photos-2026-oscars-after-party",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Connor Storrie And Hudson Williams Were Everyone’s Favorite Duo at the 2026 Oscars After-Party",
-          "link": "https://www.vogue.com/article/connor-storrie-hudson-williams-favorite-duo-2026-oscars-after-party",
-          "lang": "en"
-        },
-        {
-          "name": "Elite Daily",
-          "title": "Connor Storrie & Hudson Williams' Matching Oscars Looks Were See-Through",
-          "link": "https://www.elitedaily.com/entertainment/connor-storrie-hudson-williams-matching-oscars-looks-see-through",
-          "lang": "en"
-        }
-      ],
-      "article_count": 13
-    },
-    {
       "id": "f055462457c5",
       "title": "霉霉和凯尔斯缺席名利场派对之谜",
       "summary": "万众瞩目的泰勒·斯威夫特和特拉维斯·凯尔斯并未现身2026年《名利场》奥斯卡派对，引发时尚圈热议。虽然具体原因尚未公布，但外界猜测可能与两人繁忙的日程安排有关。作为时尚风向标，这对明星情侣的动向一直备受关注，他们的缺席无疑让这场星光熠熠的盛会略显遗憾。",
@@ -7268,44 +8720,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "38a3eaf898a4",
-      "title": "瑞恩·库格勒奥斯卡“罪人”主题发型解析",
-      "summary": "在奥斯卡颁奖典礼上，导演瑞恩·库格勒凭借电影《罪人》荣获最佳原创剧本奖，其精心设计的发型也成为焦点。由发型师Tyzanna B打造的辫子造型，巧妙地融入了吉他和高音谱号的形状，呼应了电影中蓝调音乐的主题。这一造型不仅展现了库格勒对电影主题的深刻理解和个人风格的巧妙运用，也引发了时尚评论家对其发型细节、文化内涵和时尚表达的深入解读。",
-      "key_points": [
-        "瑞恩·库格勒奥斯卡发型由Tyzanna B设计",
-        "发型以辫子形式呈现吉他和高音谱号，呼应电影《罪人》的蓝调音乐主题",
-        "发型展现了库格勒对电影主题的深刻理解和个人风格的巧妙运用"
-      ],
-      "tags": [
-        "瑞恩·库格勒",
-        "奥斯卡",
-        "发型",
-        "罪人",
-        "Tyzanna B",
-        "蓝调音乐",
-        "辫子造型"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/8500fa41-e085-4db4-9456-1abe925fcb33.jpeg",
-      "published": "2026-03-16T13:48:43+00:00",
-      "sources": [
-        {
-          "name": "Elle",
-          "title": "Ryan Coogler’s 2026 Oscars Braids Had a Detail You May Not Have Noticed",
-          "link": "https://www.elle.com/beauty/hair/a70749428/ryan-coogler-braids-photos-oscars-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Essence",
-          "title": "Ryan Coogler Won First Oscar In ‘Sinners’ Inspired Braids",
-          "link": "https://www.essence.com/awards-events/ryan-coogler-guitar-sinners-inspired-oscar-braids",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
     },
     {
       "id": "5df4725782a9",
@@ -8134,36 +9548,6 @@
       "article_count": 1
     },
     {
-      "id": "cbf013de7397",
-      "title": "宝格丽Eclettica系列闪耀奥斯卡",
-      "summary": "宝格丽抢先在奥斯卡颁奖典礼上曝光了其Eclettica高级珠宝系列。品牌大使Priyanka Chopra Jonas和Anne Hathaway佩戴该系列珠宝惊艳亮相，为即将到来的米兰正式发布预热。Eclettica系列融合多种设计元素，展现宝格丽大胆创新的精神。",
-      "key_points": [
-        "Eclettica高级珠宝系列",
-        "奥斯卡颁奖典礼首秀",
-        "Priyanka Chopra Jonas和Anne Hathaway演绎"
-      ],
-      "tags": [
-        "宝格丽",
-        "高级珠宝",
-        "奥斯卡",
-        "明星",
-        "Eclettica"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/Anne-Hathaway.jpg?crop=0px%2C464px%2C3334px%2C1864px&resize=1000%2C563",
-      "published": "2026-03-16T12:30:00+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "Bulgari Previews Eclettica High Jewelry Collection at Oscars With Priyanka Chopra Jonas, Anne Hathaway",
-          "link": "https://wwd.com/accessories-news/jewelry/bulgari-oscars-eclettica-high-jewelry-collection-priyanka-chopra-jonas-anne-hathaway-1238672004",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "d9f4414ac71a",
       "title": "奥运冠军的美丽秘诀：塔拉·戴维斯-伍德霍尔的爱用好物",
       "summary": "奥运跳远名将塔拉·戴维斯-伍德霍尔公开了她无限回购的美妆清单。从倩碧等经典品牌，到她个人钟爱的护肤单品，这些产品不仅帮助她在赛场上保持最佳状态，也让她在日常生活中绽放自信光彩。了解奥运冠军的美丽哲学，或许能为你找到专属的美丽灵感。",
@@ -8187,36 +9571,6 @@
           "name": "The Cut",
           "title": "The Beauty Products Olympian Tara Davis-Woodhall Uses to the Last Drop",
           "link": "http://www.thecut.com/article/tara-davis-woodhall-skin-care-routine-best-beauty-products.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b63cdfde3166",
-      "title": "羊毛创新巨头迎来新掌门",
-      "summary": "澳大利亚羊毛创新公司（AWI），隶属于著名羊毛标志机构Woolmark，近日宣布任命 Bryan Fry 为新任首席执行官。Fry 先生拥有卓越的领导经验，此前曾担任全球知名葡萄酒公司保乐力加的董事长兼全球首席执行官。此次任命预示着AWI将在Fry先生的带领下，于羊毛产业的创新和发展上迈出新的步伐，进一步巩固其在全球市场的领先地位。",
-      "key_points": [
-        "澳大利亚羊毛创新公司（AWI）任命新CEO",
-        "Bryan Fry曾任保乐力加董事长兼CEO",
-        "AWI隶属于Woolmark"
-      ],
-      "tags": [
-        "Woolmark",
-        "人事任命",
-        "羊毛产业",
-        "澳大利亚羊毛创新公司",
-        "首席执行官"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/Bryan-Fry_Woolmark-CEO-c-Antoine-Doyen-1.jpeg?crop=0px%2C782px%2C3898px%2C2182px&resize=1000%2C563",
-      "published": "2026-03-16T12:17:36+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "Woolmark’s Australian Wool Innovation Taps Bryan Fry as Chief Executive Officer",
-          "link": "https://wwd.com/fashion-news/fashion-scoops/woolmarks-australian-wool-innovation-ryan-fry-chief-executive-officer-1238678666",
           "lang": "en"
         }
       ],
@@ -8335,36 +9689,6 @@
           "name": "Hypebeast",
           "title": "ASICS Reveals C.P. Company-Colaborated  GEL-QUANTUM 360 I Sneakers",
           "link": "https://hypebeast.com/2026/3/asics-c-p-company-gel-quantum-360-i-pure-silver-caviar-1203a689-021-morrocan-blue-caviar1203a689-400-release-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "11fec769ba58",
-      "title": "咒术潮燃：Subtitle联名系列炸裂来袭！",
-      "summary": "潮流品牌Subtitle携手TOHO，重磅推出18件《咒术回战》联名服装系列。本次合作摆脱了传统动漫周边的设计局限，深度挖掘动漫角色与咒术的内核，将标志性元素巧妙融入服装设计之中。系列单品包括虎杖悠仁主题的红色连帽衫、极具视觉冲击力的黑闪T恤，以及真人变形外套等，充分展现了《咒术回战》的独特魅力。该系列已于3月16日正式发售，价格区间为65美元至220美元。",
-      "key_points": [
-        "Subtitle与TOHO合作推出《咒术回战》联名系列",
-        "设计灵感源于角色和咒术，非简单周边",
-        "包含虎杖悠仁连帽衫、黑闪T恤等特色单品"
-      ],
-      "tags": [
-        "品牌联名",
-        "动漫",
-        "潮流",
-        "咒术回战",
-        "Subtitle"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F16%2Fftsubtitle-jujutsu-kaisen-apparel-collection-release-info.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-16T12:09:15+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast Fashion",
-          "title": "Subtitle Debuts Launches an Exclusive ‘Jujutsu Kaisen’ Apparel Collection",
-          "link": "https://hypebeast.com/2026/3/subtitle-jujutsu-kaisen-apparel-collection-release-info",
           "lang": "en"
         }
       ],
@@ -9481,36 +10805,6 @@
       "article_count": 1
     },
     {
-      "id": "63b0f842fe10",
-      "title": "雷娜特·赖因斯夫大胆“裸”装惊艳奥斯卡派对",
-      "summary": "挪威女演员雷娜特·赖因斯夫在2026年奥斯卡颁奖礼后的派对上，以一袭Louis Vuitton的透视“裸装”大胆亮相，颠覆了其以往的极简主义风格，瞬间成为全场焦点。此前，她在奥斯卡颁奖典礼红毯上同样选择了Louis Vuitton，一袭红色礼服搭配简约配饰，优雅大气。回顾2026年英国电影学院奖，她也身着Louis Vuitton，展现出对该品牌的偏爱，并以大胆的造型突显其优美身姿。此次“裸装”造型无疑是她红毯风格的一次突破，引发时尚界的广泛关注与讨论。",
-      "key_points": [
-        "雷娜特·赖因斯夫",
-        "Louis Vuitton裸装",
-        "奥斯卡afterparty"
-      ],
-      "tags": [
-        "雷娜特·赖因斯夫",
-        "Louis Vuitton",
-        "奥斯卡",
-        "裸装",
-        "红毯造型"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://media.vogue.es/photos/69b7affb7f7252e11b247816/master/pass/2266756008",
-      "published": "2026-03-16T10:33:33+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "Renate Reinsve se atreve con un ‘naked dress’ en la afterparty de los Oscar 2026",
-          "link": "https://www.vogue.es/articulos/oscar-2026-renate-reinsve-vestido-negro-afterparty-vanity-fair",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "1159d1497008",
       "title": "Vogue编辑的亚马逊春季购物清单",
       "summary": "西班牙版《Vogue》聚焦亚马逊2026春季促销活动，一位《Vogue》编辑分享了她的购物清单，囊括23件精选的时尚、美妆和生活方式好物。从提升造型的美发梳，到经典百搭的Vans运动鞋和Levi's牛仔裤，再到呵护肌肤的洁面仪，这份清单展现了时尚编辑的独到品味和实用主义。",
@@ -9926,16 +11220,20 @@
     {
       "id": "01d12202e7e4",
       "title": "2026秋冬潮流前瞻：街头风向标",
-      "summary": "Vogue特约编辑Irene Kim为你解读2026秋冬时装周的12大街头潮流趋势。本季，极简主义风潮再度回归，灵感源自时尚偶像Carolyn Bessette-Kennedy。Celine风格的围巾搭配成为亮点，为整体造型增添优雅气息。此外，毛茸茸的材质和狂野的豹纹印花也将席卷街头。值得一提的是，巴黎时装周的秀场选址也别具匠心，令人期待。",
+      "summary": "Vogue特约编辑Irene Kim为你解读2026秋冬时装周的12大街头潮流趋势。本季，极简主义风潮再度回归，灵感源自时尚偶像Carolyn Bessette-Kennedy。Celine风格的围巾搭配成为亮点，为整体造型增添优雅气息。毛茸茸的材质和狂野的豹纹印花持续流行。此外，狗狗时尚达人的出现也为街头风格增添了趣味。",
       "key_points": [
-        "极简主义风格回潮",
-        "Celine风围巾搭配",
-        "毛茸茸材质流行"
+        "极简主义风潮回归，灵感源自Carolyn Bessette-Kennedy",
+        "Celine风格围巾搭配",
+        "毛茸茸材质和豹纹印花流行",
+        "狗狗时尚达人"
       ],
       "tags": [
-        "街拍",
-        "潮流趋势",
-        "时装周"
+        "2026秋冬",
+        "街头潮流",
+        "极简主义",
+        "Celine",
+        "豹纹",
+        "狗狗时尚"
       ],
       "category": "trend-summary",
       "category_name": "趋势总结",
@@ -9943,13 +11241,13 @@
       "published": "2026-03-16T10:00:00+00:00",
       "sources": [
         {
-          "name": "Vogue",
+          "name": "Vogue Fashion",
           "title": "The Real World: Fashion Week Edition—12 Top Street Style Trends of the Fall 2026 Season",
           "link": "https://www.vogue.com/article/the-real-world-fashion-week-edition-12-top-street-style-trends-of-the-fall-2026-season",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "afe31081e2fc",
@@ -10627,36 +11925,6 @@
       "article_count": 1
     },
     {
-      "id": "52bedd51db5d",
-      "title": "2026奥斯卡：“兔女郎”风潮席卷红毯",
-      "summary": "2026年奥斯卡颁奖典礼上，“Jessica Rabbit”（兔女郎杰西卡）风格礼服成为当晚最引人注目的潮流。包括Kylie Jenner在内的多位明星纷纷选择了类似设计的礼服，展现出性感妩媚的曲线。这一风潮不仅是对经典好莱坞女性魅力的致敬，也引发了关于女性形象和自我表达的讨论，成为红毯上极具话题性的焦点。",
-      "key_points": [
-        "“Jessica Rabbit”风格礼服大热",
-        "Kylie Jenner等明星引领风潮",
-        "致敬经典好莱坞女性魅力"
-      ],
-      "tags": [
-        "奥斯卡",
-        "红毯造型",
-        "明星礼服",
-        "Jessica Rabbit",
-        "性感风"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://assets.vogue.com/photos/69b7bde175c548ac76e062f7/master/pass/GettyImages-2266711291.jpg",
-      "published": "2026-03-16T08:48:37+00:00",
-      "sources": [
-        {
-          "name": "Vogue Fashion",
-          "title": "The ‘Jessica Rabbit’ Dress Was Everywhere at the 2026 Oscars",
-          "link": "https://www.vogue.com/article/jessica-rabbit-dress-trend-oscars-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "deef2310e184",
       "title": "杰西·巴克利：复古名伶闪耀奥斯卡",
       "summary": "在2026年奥斯卡红毯上，杰西·巴克利以一身香奈儿定制礼服惊艳亮相，其造型灵感巧妙地致敬了20世纪50年代的优雅icon格蕾丝·凯利。这袭粉色长裙搭配亮眼红色披肩，在经典与现代之间找到了完美平衡，既展现了女性的柔美，又不失活泼俏皮。巴克利的红毯造型获得了时尚界的一致好评，被誉为当晚的最佳着装之一，再次证明了复古风潮的持久魅力。",
@@ -11180,79 +12448,6 @@
           "title": "ビームスとナイトカルチャー　“遊びのプロ”設楽社長とK.Motoyoshi®︎が狙うギリギリのラインと文化的重要性",
           "link": "https://www.wwdjapan.com/articles/2349081",
           "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "83e7e8107f91",
-      "title": "Pidgeon奥斯卡致敬CBK：Vogue详述定制Calvin Klein礼服",
-      "summary": "莎拉·皮格奥（Sarah Pidgeon）在2026年奥斯卡颁奖典礼及Vanity Fair派对上，均选择了Calvin Klein礼服，向品牌本身以及已故时尚偶像卡罗琳·贝赛特-肯尼迪（Carolyn Bessette-Kennedy，简称CBK）致敬。Vogue杂志对此进行了详细报道，指出她在奥斯卡红毯上身穿的定制礼服，以铂金色水晶和亮片镶嵌，搭配CK One手包，发型简约，整体造型是对CBK经典风格的现代诠释。同时，她在Vanity Fair派对上所穿的Calvin Klein Collection礼服同样是定制款，设计灵感源自CBK，采用极细肩带和不对称领口，更显简约优雅。这一造型也与皮格奥在剧集《Love Story》中扮演的角色相呼应，更显其优雅气质。",
-      "key_points": [
-        "莎拉·皮格奥在2026年奥斯卡颁奖典礼及Vanity Fair派对上身着Calvin Klein礼服。",
-        "两套礼服均是对卡罗琳·贝赛特-肯尼迪（CBK）风格的致敬。",
-        "Vogue杂志详细报道了皮格奥的造型选择。",
-        "奥斯卡红毯礼服以铂金色水晶和亮片镶嵌，搭配CK One手包。",
-        "Vanity Fair派对礼服采用极细肩带和不对称领口，设计灵感源自CBK。",
-        "整体造型与皮格奥在《Love Story》中的角色相呼应。"
-      ],
-      "tags": [
-        "Sarah Pidgeon",
-        "Calvin Klein",
-        "Carolyn Bessette-Kennedy",
-        "奥斯卡",
-        "Vanity Fair",
-        "定制礼服",
-        "Vogue",
-        "CBK风格"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://assets.vogue.com/photos/69b7ba3f79f542d9b9bdfa75/master/pass/2266734248",
-      "published": "2026-03-16T08:13:09+00:00",
-      "sources": [
-        {
-          "name": "Vogue Fashion",
-          "title": "Sarah Pidgeon Minted Her First Oscars in CBK-Coded, Custom Calvin Klein Collection",
-          "link": "https://www.vogue.com/article/sarah-pidgeon-vanity-fair-2026-oscars-party-calvin-klein",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue España",
-          "title": "Sarah Pidgeon homenajea a Carolyn Bessette Kennedy en la fiesta de Vanity Fair de los Oscar 2026",
-          "link": "https://www.vogue.es/articulos/sarah-pidgeon-homenajea-a-carolyn-bessette-kennedy-en-la-fiesta-de-vanity-fair-de-los-oscar-2026",
-          "lang": "es"
-        }
-      ],
-      "article_count": 4
-    },
-    {
-      "id": "cb61f086524f",
-      "title": "Air Force 1 黑曜漆光，2026夏季耀目登场",
-      "summary": "Nike 计划于2026年夏季推出 Air Force 1 Low “Black Patent”版本。该鞋款在经典轮廓基础上大胆创新，采用黑色高光漆皮鞋面，为 Air Force 1 注入了一丝奢华和正式感，势必成为潮流爱好者的又一必备单品。",
-      "key_points": [
-        "Air Force 1 Low",
-        "Black Patent配色",
-        "2026夏季发售",
-        "高光漆皮鞋面"
-      ],
-      "tags": [
-        "Nike",
-        "Air Force 1",
-        "运动鞋",
-        "潮流",
-        "漆皮"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F16%2FNike-Air-Force-1-Low-Black-Patent-IV2857-010-Official-Images-0.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-16T08:10:22+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Nike Delivers a Glossy Update to the Black Air Force 1 Low",
-          "link": "https://hypebeast.com/2026/3/nike-air-force-1-low-black-patent-iv2857-010-official-images",
-          "lang": "en"
         }
       ],
       "article_count": 1
@@ -11939,18 +13134,22 @@
     },
     {
       "id": "dec60e429469",
-      "title": "2026巴黎风尚：裤装优雅突围",
-      "summary": "告别牛仔与裙装，2026年巴黎街头涌现裤装新潮流。巴黎女性巧妙运用各式裤型，无论是搭配精致高跟鞋，还是舒适平底鞋，皆能展现毫不费力的时髦感。本季裤装在巴黎时尚舞台上大放异彩，为日常穿搭带来更多灵感。",
+      "title": "2026巴黎风尚：裤装优雅突围，多元搭配引领潮流",
+      "summary": "告别单一选择，2026年巴黎街头裤装风潮愈演愈烈。巴黎女性巧妙驾驭各式裤型，无论是搭配精致高跟鞋、舒适平底鞋，亦或是经典牛仔，皆能展现毫不费力的时髦感。本季裤装在巴黎时尚舞台上大放异彩，提供丰富的穿搭灵感，引领多元化搭配趋势。",
       "key_points": [
-        "裤装取代传统牛仔裤和裙装",
-        "高跟鞋和平底鞋的多元搭配",
-        "展现巴黎女性的优雅风格"
+        "2026巴黎裤装趋势：告别牛仔与裙装的单一选择。",
+        "多元裤型搭配：高跟鞋、平底鞋、牛仔裤等多种组合。",
+        "巴黎女性的毫不费力时髦感：轻松驾驭各种裤装搭配。",
+        "穿搭灵感：为日常穿搭提供更多可能性。"
       ],
       "tags": [
-        "巴黎时尚",
-        "裤装潮流",
-        "鞋履搭配",
-        "2026趋势"
+        "2026巴黎时装",
+        "裤装趋势",
+        "高跟鞋搭配",
+        "平底鞋搭配",
+        "牛仔裤搭配",
+        "巴黎街拍",
+        "时尚灵感"
       ],
       "category": "trend-summary",
       "category_name": "趋势总结",
@@ -11959,12 +13158,12 @@
       "sources": [
         {
           "name": "Who What Wear",
-          "title": "If a Chic Parisian Woman Isn't Wearing Jeans or Skirts, It's This Pants Trend With Heels and Flats",
+          "title": "If a Chic Parisian Woman Isn't Wearing Jeans or Skirts, It's This Pant Trend With Heels and Flats",
           "link": "https://www.whowhatwear.com/fashion/trends/french-women-best-satin-pants",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "c25ea40dbe12",
@@ -13737,35 +14936,6 @@
           "name": "The Cut",
           "title": "Misty Copeland Is Recovering From Hip-Replacement Surgery",
           "link": "http://www.thecut.com/article/misty-copeland-recovering-from-hip-replacement-surgery.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "949f434f619a",
-      "title": "奥斯卡红毯“凸”袭夜：那些年我们追过的性感瞬间",
-      "summary": "回顾奥斯卡红毯历史，明星们大胆前卫的着装总能引发热议。从90年代克莱尔·丹尼斯的极简套装，到后来詹妮弗·洛佩兹和格温妮丝·帕特洛的性感透视礼服，再到近年佐伊·克拉维茨的锁链胸衣，这些造型无不展现了明星们突破时尚界限的勇气与尝试，也为奥斯卡红毯增添了更多话题性。",
-      "key_points": [
-        "奥斯卡红毯",
-        "明星前卫造型",
-        "透视礼服"
-      ],
-      "tags": [
-        "奥斯卡",
-        "红毯造型",
-        "明星时尚",
-        "性感"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://imgix.bustle.com/uploads/image/2026/3/16/caf96d6b/gettyimages-2266243655.jpg?w=1200&fit=max",
-      "published": "2026-03-16T02:55:07+00:00",
-      "sources": [
-        {
-          "name": "Bustle",
-          "title": "The 13 Nippliest Moments In Oscars History: From 1997 To 2026",
-          "link": "https://www.bustle.com/style/free-the-nipple-oscars-looks",
           "lang": "en"
         }
       ],
@@ -15921,41 +17091,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "fe432075c4ea",
-      "title": "香奈儿Pre-Oscar派对：《爱情故事》CP再撒糖，时尚造型引关注",
-      "summary": "在香奈儿Pre-Oscar派对上，热门剧集《爱情故事》主演Sarah Pidgeon和Paul Anthony Kelly再次甜蜜亮相，延续剧中的浪漫氛围，展现了浪漫喜剧的活力。Sarah Pidgeon身着Matthieu Blazy设计的Métiers d’art 2026系列礼服，搭配香奈儿鞋履和珠宝，尽显优雅。Paul Anthony Kelly则以经典黑色西装亮相，简洁干练。两人的造型与互动，再次成为时尚焦点。",
-      "key_points": [
-        "《爱情故事》主演Sarah Pidgeon和Paul Anthony Kelly出席香奈儿Pre-Oscar派对。",
-        "Sarah Pidgeon身着Matthieu Blazy设计的Métiers d’art 2026系列礼服，搭配香奈儿鞋履和珠宝。",
-        "Paul Anthony Kelly选择经典黑色西装。",
-        "两人造型展现浪漫喜剧氛围，备受关注。"
-      ],
-      "tags": [
-        "香奈儿",
-        "Pre-Oscar派对",
-        "爱情故事",
-        "Sarah Pidgeon",
-        "Paul Anthony Kelly",
-        "Métiers d’art 2026",
-        "Matthieu Blazy",
-        "明星造型",
-        "红毯"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://assets.vogue.com/photos/69b6ced1dd55e635fc4780ec/master/pass/CHANELxPRE-OSCARS_2026_POUPAYJUTHARAT_003.jpg",
-      "published": "2026-03-15T15:29:44+00:00",
-      "sources": [
-        {
-          "name": "Vogue Fashion",
-          "title": "Love Story’s Sarah Pidgeon and Paul Anthony Kelly Brought Rom-Com Energy to Chanel’s Pre-Oscars Party",
-          "link": "https://www.vogue.com/article/love-story-sarah-pidgeon-paul-anthony-kelly-chanel-charles-finch-oscars-party",
-          "lang": "en"
-        }
-      ],
-      "article_count": 3
     },
     {
       "id": "e64319ff06cb",
@@ -18959,35 +20094,6 @@
       "article_count": 1
     },
     {
-      "id": "754936920eec",
-      "title": "赛琳娜·戈麦斯：与爱人甜蜜日常曝光",
-      "summary": "流行天后赛琳娜·戈麦斯在社交媒体上分享了一系列与丈夫Benny Blanco的亲密生活照，记录了两人丰富多彩的日常生活。照片场景涵盖派对狂欢、阳光海滩的浪漫瞬间以及温馨的居家生活，向粉丝们展现了这对夫妇甜蜜恩爱的日常。",
-      "key_points": [
-        "赛琳娜分享与丈夫的亲密生活照",
-        "照片场景多样，展现甜蜜日常",
-        "引发粉丝对两人关系的关注"
-      ],
-      "tags": [
-        "赛琳娜·戈麦斯",
-        "Benny Blanco",
-        "名人生活",
-        "情侣日常"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/24465387-c992-4cb2-979b-b4f032905a87.jpg",
-      "published": "2026-03-14T16:58:23+00:00",
-      "sources": [
-        {
-          "name": "Elle",
-          "title": "Selena Gomez Shares Intimate New Pics from Life with Benny Blanco",
-          "link": "https://www.elle.com/culture/celebrities/a70741906/selena-gomez-benny-blanco-new-photos-march-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "9b80743585ea",
       "title": "艺术市场触底反弹？",
       "summary": "巴塞尔艺术展与瑞银集团联合发布的报告显示，全球艺术品市场在经历连续两年的萎缩后，于2025年迎来复苏，销售额预计增长4%至596亿美元。年轻藏家更倾向于通过社交媒体发现艺术品，数字化持续驱动市场发展。尽管线上销售额略有下降，但超高端艺术品销售额的显著增长，预示着艺术市场正在经历一场由新世代藏家主导的转型。",
@@ -19842,996 +20948,6 @@
         }
       ],
       "article_count": 2
-    },
-    {
-      "id": "fa73640dd208",
-      "title": "音乐巨匠昆西·琼斯冷门金曲揭秘",
-      "summary": "你或许熟知昆西·琼斯制作的众多热门歌曲，但这位音乐巨匠的才华远不止于此。本文精选八首由昆西·琼斯参与制作，但鲜为人知的佳作，横跨弗兰克·辛纳屈、乔治·本森等不同年代、不同风格的音乐人。从中可以窥见昆西·琼斯在音乐制作领域的广度和深度，以及他对流行文化的深远影响。他不仅是一位杰出的音乐制作人，更涉足电影配乐和电视主题曲创作，为我们留下了无数经典回忆。",
-      "key_points": [
-        "昆西·琼斯制作的冷门歌曲",
-        "音乐风格的多样性",
-        "对流行文化的深远影响"
-      ],
-      "tags": [
-        "昆西·琼斯",
-        "音乐制作",
-        "流行文化"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/GettyImages-663335919-scaled.jpg",
-      "published": "2026-03-14T12:20:26+00:00",
-      "sources": [
-        {
-          "name": "Essence",
-          "title": "8 Songs You May Not Know Quincy Jones Produced",
-          "link": "https://www.essence.com/entertainment/8-songs-you-may-not-know-quincy-jones-produced",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "683e37bbba6a",
-      "title": "碧梨银幕首秀：《钟形罩》挑战自我",
-      "summary": "流行天后比莉·艾利什（Billie Eilish）即将登上大银幕，正式演员出道！她将出演由莎拉·波莉执导的电影《钟形罩》。这部影片改编自著名作家西尔维娅·普拉斯的半自传体小说，深刻描绘了一位年轻女大学生在社会重压下逐渐崩溃的精神状态。此前，比莉曾在电视剧《Swarm》中贡献精彩表演，并因此获得独立精神奖提名，此次出演更令人期待她在演技上的突破。",
-      "key_points": [
-        "比莉·艾利什演员出道",
-        "出演《钟形罩》女主角",
-        "改编自西尔维娅·普拉斯小说"
-      ],
-      "tags": [
-        "比莉·艾利什",
-        "莎拉·波莉",
-        "钟形罩",
-        "电影",
-        "演员"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vogue.co.jp/photos/69b54f61f2c906961c3c0c66/master/pass/GettyImages-2244071759.jpg",
-      "published": "2026-03-14T12:20:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue Japan",
-          "title": "ビリー・アイリッシュ、サラ・ポーリー監督の『ベル・ジャー』で本格的に俳優デビュー",
-          "link": "https://www.vogue.co.jp/article/billie-eilish-in-talks-for-movie-acting-debut-sylvia-plaths-the-bell-jar",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "f52d0d9a7dae",
-      "title": "春日型走：运动裤的时髦逆袭",
-      "summary": "The Zoe Report 指出，兼具轻便、透气与百搭特性的运动裤已成为春季不容忽视的时尚单品。无论是搭配T恤与运动鞋，打造休闲活力；或是混搭开衫与芭蕾舞鞋，增添优雅气息；甚至搭配羊绒衫与高跟鞋，玩转高街风尚，运动裤都能轻松驾驭。Lacoste 和 Tory Burch 等品牌已在秀场上示范了运动裤的多种可能性。Alo Yoga 和 With Jean 等品牌也推出了值得关注的运动裤单品，为你的春日造型提供更多选择。",
-      "key_points": [
-        "运动裤成为春季时尚新宠",
-        "轻便透气，风格百搭",
-        "品牌秀场示范多种搭配"
-      ],
-      "tags": [
-        "运动裤",
-        "春季时尚",
-        "时尚趋势",
-        "单品推荐"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://imgix.bustle.com/uploads/getty/2026/3/3/b49a9bea/copenhagen-denmark-january-29.jpg?w=1200&fit=max",
-      "published": "2026-03-14T12:00:25+00:00",
-      "sources": [
-        {
-          "name": "The Zoe Report",
-          "title": "Track Pants Are The Spring Staple You Didn't Know You Needed",
-          "link": "https://www.thezoereport.com/shopping/track-pants-for-spring",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "94fdbaf203de",
-      "title": "紧身裤的时髦进阶：洛杉矶时尚达人示范告别运动鞋的春季鞋履搭配",
-      "summary": "2026年春季，紧身裤的搭配迎来新思路！告别休闲的运动鞋，借鉴洛杉矶时尚达人的穿搭灵感，尝试更具设计感的鞋款，打造精致时尚造型。本季潮流不再局限于单一风格，巧妙搭配不同鞋履，例如设计独特的踝靴或优雅的玛丽珍鞋，都能为你的紧身裤造型注入新鲜活力。此外，文章还提供了牛仔裤、铅笔裙等其他单品的搭配建议，并参考了不同城市时尚达人的鞋履偏好，为你提供全方位的穿搭灵感。",
-      "key_points": [
-        "2026春季紧身裤搭配新趋势：告别运动鞋。",
-        "洛杉矶时尚达人示范紧身裤与设计感鞋履的搭配。",
-        "推荐踝靴、玛丽珍鞋等鞋款，为紧身裤造型注入新活力。",
-        "提供牛仔裤、铅笔裙等其他单品的鞋履搭配建议。",
-        "参考不同城市时尚达人的鞋履偏好。"
-      ],
-      "tags": [
-        "紧身裤",
-        "鞋履搭配",
-        "2026春季潮流",
-        "洛杉矶时尚",
-        "时尚达人"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/5oYyZjNbARSyjZUYH5sqV3-1280-80.png",
-      "published": "2026-03-14T12:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Instead of Trainers and Ballet Flats—This Shoe Trend Actually Looks Chic With Leggings",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/leggings-high-vamp-heels-outfit-iris-law",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Not Sneakers: The Spring Shoe Trend L.A. It Girls at Forma Pilates Wear With Leggings",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/elevated-flip-flops-leggings-spring-outfit-kendall-jenner",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "0409ca8bc0ac",
-      "title": "2026奥斯卡舞台：庆典圣殿",
-      "summary": "《名利场》独家揭秘2026年奥斯卡颁奖典礼的舞台设计，由Misty Buckley和Alana Billingsley联袂打造。有别于以往的华丽风格，今年的舞台设计主题为“人类的触感”，旨在营造一个宁静祥和的“庆典圣殿”。舞台大量运用绿植和自然元素，旨在打造一个放松身心的氛围，与外界的喧嚣形成鲜明对比。手工制作的树木与精心设计的“黄金时段”灯光效果将是本次舞台设计的最大亮点，力求呈现一个充满生机与希望的奥斯卡之夜。",
-      "key_points": [
-        "奥斯卡舞台新设计",
-        "“人类的触感”主题",
-        "绿植与自然元素"
-      ],
-      "tags": [
-        "奥斯卡",
-        "舞台设计",
-        "自然",
-        "庆典"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.vanityfair.com/photos/69b49c9f2774dce9f66ebb44/master/pass/RH7_7086.jpg",
-      "published": "2026-03-14T12:00:00+00:00",
-      "sources": [
-        {
-          "name": "Vanity Fair",
-          "title": "Oscars 2026 First Look: This Year, the Stage Is a “Sanctuary of Celebration”",
-          "link": "https://www.vanityfair.com/hollywood/story/oscars-2026-first-look-stage-design",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "03582256c350",
-      "title": "《盲婚》Bri：真我定义“女孩的女孩”",
-      "summary": "Netflix热门节目《Love Is Blind》（盲婚试爱）嘉宾Bri McNees近日接受《Glamour》杂志专访，坦诚回应了节目播出后在网络上受到的负面评价。她同时也分享了自己对于“女孩的女孩”的独特见解，并表达了对与Connor共筑未来的美好憧憬，甚至期待步入婚姻殿堂。此外，Bri还谈及了未能参与迈阿密女孩之旅的感受。本次采访深入探讨了她在节目中的人际关系以及公众形象，展现了她真实而坦率的一面。",
-      "key_points": [
-        "回应网络负评",
-        "定义“女孩的女孩”",
-        "期待与Connor的未来"
-      ],
-      "tags": [
-        "真人秀",
-        "明星",
-        "恋爱",
-        "专访"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.glamour.com/photos/69b4950ce1d8aab137862873/master/pass/Love_Is_Blind__Season_10__Ohio__Reunion_(Episode_13)_n_00_31_35_12R.jpg",
-      "published": "2026-03-14T12:00:00+00:00",
-      "sources": [
-        {
-          "name": "Glamour",
-          "title": "Love Is Blind's Bri McNees Has Her Own Definition of a 'Girl's Girl'",
-          "link": "https://www.glamour.com/story/love-is-blinds-bri-mcnees-has-her-own-definition-of-a-girls-girl",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "73b5508b4812",
-      "title": "90年代风潮再起？一周时尚热点回顾",
-      "summary": "本周时尚圈精彩纷呈：90年代复古色系强势回归，引领新一轮潮流；设计师Harris Reed宣布卸任Nina Ricci创意总监；2026巴黎时装周七大趋势前瞻；纽约时装周品牌表现盘点；巴黎时装周街拍潮流速递；创意总监更迭对奢侈品转售市场的影响分析；以及Fashionista编辑精选的2026巴黎时装周最佳系列。",
-      "key_points": [
-        "90年代色彩回归",
-        "设计师人事变动",
-        "巴黎时装周趋势"
-      ],
-      "tags": [
-        "90年代时尚",
-        "设计师变动",
-        "时装周趋势",
-        "街拍",
-        "奢侈品转售"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://fashionista.com/.image/c_fit%2Ch_800%2Cw_1200/MjIxODgxNTE4Njk0MzQ0MTI5/90s-colors-promo.png",
-      "published": "2026-03-14T12:00:00+00:00",
-      "sources": [
-        {
-          "name": "Fashionista",
-          "title": "ICYMI: The '90s Color Palette Taking Over the Runways, Harris Reed Exits Nina Ricci & Paris Fashion Week Fall 2026 Trends",
-          "link": "https://fashionista.com/2026/03/fashion-news-you-need-to-know-march-14",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "dc131402e497",
-      "title": "海莉·比伯的香氛秘密",
-      "summary": "想知道时尚icon海莉·比伯的迷人香气从何而来吗？本文揭秘了她钟爱的几款香水，包括小众香氛品牌Ex Nihilo的Fleur Narcotique和Lust in Paradise。文章深入剖析了这些香水的独特香调，为追求个性香氛的你提供灵感，让你也能拥有明星般的迷人魅力。",
-      "key_points": [
-        "海莉·比伯爱用香水",
-        "Ex Nihilo香水推荐",
-        "小众香氛选择"
-      ],
-      "tags": [
-        "海莉·比伯",
-        "香水",
-        "名人同款",
-        "美妆",
-        "小众香氛"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.allure.com/photos/6995e4b8d8e953276237e329/master/pass/02.12_ALL_What%20Perfume%20Does%20Hailey%20Bieber%20wear_v3.jpg",
-      "published": "2026-03-14T12:00:00+00:00",
-      "sources": [
-        {
-          "name": "Allure",
-          "title": "What Perfume Does Hailey Bieber Wear?",
-          "link": "https://www.allure.com/story/hailey-bieber-favorite-perfumes",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "0b88fbbdf56a",
-      "title": "好莱坞黑珍珠的专属奢礼",
-      "summary": "一年一度的ESSENCE Black Women in Hollywood颁奖礼在洛杉矶璀璨落幕，为表彰好莱坞杰出黑人女性的贡献，主办方精心准备了奢华礼品袋。礼品袋内含Mugler和MCM的经典香氛，Brown Sugar Babe的滋养身体油，Camille Rose的专业护发产品，以及L’Oreal的明星精华，助力打造精致妆容。此外，还有WellWithAll的维生素补充能量，Bernard James珠宝礼卡点亮优雅，更有Christopher John Rodgers的潮流针织衫，尽显时尚品味。这份专属礼遇，尽显对黑人女性力量的致敬与宠爱。",
-      "key_points": [
-        "ESSENCE颁奖礼致敬黑人女性",
-        "礼品袋包含美妆护肤及时尚单品",
-        "品牌涵盖轻奢及小众设计师品牌"
-      ],
-      "tags": [
-        "颁奖礼",
-        "礼品袋",
-        "美妆",
-        "时尚",
-        "名人"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/HERCC_BWIH2026_-Cropped-2-1920x1080.jpg",
-      "published": "2026-03-14T12:00:00+00:00",
-      "sources": [
-        {
-          "name": "Essence",
-          "title": "Inside The 2026 ESSENCE Black Women In Hollywood Gift Bags",
-          "link": "https://www.essence.com/awards-events/inside-essence-black-women-in-hollywood-gift-bags-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "dd6ec7c1aa14",
-      "title": "2026奥斯卡：星光熠熠的幕后全揭秘与观影指南",
-      "summary": "《Vogue Japan》独家呈现2026年第98届奥斯卡金像奖的详尽报道与观影指南。颁奖盛典的各项细节已敲定，著名主持人柯南·奥布莱恩将担纲主持，为典礼注入幽默与活力。表演嘉宾阵容强大，包括EJAE、オードリー・ヌナ、レイ・アミ等实力派艺人将倾情献艺。颁奖嘉宾同样星光璀璨，汇集了往届获奖者及众多一线明星。备受瞩目的提名影片也已公布，其中《罪人たち》以16项提名领跑，《ワン・バトル・アフター・アナザー》等佳作将角逐各大奖项，共同见证电影艺术的辉煌。同时，日本电影《国宝》首次入围最佳化妆与发型设计奖，不容错过。文章还提供观影渠道以及明星红毯造型等时尚相关内容。",
-      "key_points": [
-        "柯南·奥布莱恩主持2026年奥斯卡颁奖典礼",
-        "EJAE、オードリー・ヌナ、レイ・アミ等艺人将表演",
-        "《罪人たち》以16项提名领跑",
-        "日本电影《国宝》首次入围最佳化妆与发型设计奖",
-        "《Vogue Japan》提供观影渠道和红毯造型等时尚信息"
-      ],
-      "tags": [
-        "奥斯卡",
-        "2026奥斯卡",
-        "柯南·奥布莱恩",
-        "罪人たち",
-        "国宝",
-        "Vogue Japan",
-        "颁奖典礼",
-        "电影",
-        "红毯造型"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vogue.co.jp/photos/69b0a69890e5dc4397a38c44/master/pass/GettyImages-2260965952.jpg",
-      "published": "2026-03-14T12:00:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue Japan",
-          "title": "第98回アカデミー賞（2026年）はどこで視聴できる？ ノミネート作品から受賞を期待される俳優、プレゼンターまで完全ガイド",
-          "link": "https://www.vogue.co.jp/article/oscars-2026-what-to-know",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "4db0959b2b4f",
-      "title": "Paul Smith：英伦新潮，玩转经典",
-      "summary": "《GQ Japan》抢先披露Paul Smith 2026春季新款包袋及钱包系列。该系列秉承“经典与创新”的设计理念，在传统皮革工艺中融入大胆的色彩碰撞与结构重塑。精选优质牛皮打造，涵盖旅行包、撞色托特包、迷你单肩包以及各式钱包，兼顾功能性与趣味性。报道深入解析了每款单品的设计巧思、材质选择及尺寸规格，充分展现品牌独树一帜的功能美学和玩味精神。",
-      "key_points": [
-        "2026春季新品",
-        "经典与创新主题",
-        "功能美学与玩味设计"
-      ],
-      "tags": [
-        "Paul Smith",
-        "2026 春季",
-        "包袋",
-        "钱包",
-        "男士时尚",
-        "英伦风"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.gqjapan.jp/photos/69b54a1e1a90a66f9b20385e/master/pass/paul-smith-bag-wallet-2026-spring-1.jpg",
-      "published": "2026-03-14T12:00:00+00:00",
-      "sources": [
-        {
-          "name": "GQ Japan",
-          "title": "英国流モダンベーシックが映えるポール・スミス──2026年春、バッグと財布の最新事情",
-          "link": "https://www.gqjapan.jp/article/20260314-paul-smith-bag-wallet-2026-spring",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "4f0bab78bce1",
-      "title": "2026春季：白色高领夹克优雅登场",
-      "summary": "Vogue西班牙版预测，2026年春季，白色高领夹克将成为时尚焦点。冬季高领设计的保暖功能在春季被轻盈的白色和亚麻材质所取代，完美融合了北欧极简主义的精髓。这种设计追求视觉上的纯净和光感，与当下流行的低调奢华风不谋而合，为春日造型注入一股清新脱俗的气息。",
-      "key_points": [
-        "白色高领夹克成2026春季趋势",
-        "轻盈材质取代冬季厚重感",
-        "北欧极简主义影响下的设计"
-      ],
-      "tags": [
-        "时尚趋势",
-        "白色夹克",
-        "高领",
-        "春季",
-        "极简主义"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.vogue.es/photos/69b536c823b14569a6018625/master/pass/GettyImages-2266380377.jpg",
-      "published": "2026-03-14T11:47:18+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "La chaqueta blanca de cuello alto, o la silueta que asciende esta primavera 2026",
-          "link": "https://www.vogue.es/articulos/chaqueta-blanca-cuello-alto-tendencias-primavera-verano-2026",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "e49bc8e0e634",
-      "title": "告别芦荟敏感：舒缓肌肤新方案",
-      "summary": "敏感肌肤人群常常对芦荟成分感到困扰。本文针对这一问题，提供了替代芦荟的舒缓护肤方案。作者分享了亲测有效的护肤品选择，以及针对敏感肌肤的日常护理心得，帮助读者找到更适合自己的温和舒缓产品，告别肌肤敏感烦恼。",
-      "key_points": [
-        "芦荟过敏的替代方案",
-        "敏感肌肤护肤品选择",
-        "舒缓肌肤护理心得"
-      ],
-      "tags": [
-        "敏感肌肤",
-        "舒缓护肤",
-        "替代品"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://cdn.mos.cms.futurecdn.net/Hd3YcaXspEEV4Myucp9zcQ-1280-80.jpg",
-      "published": "2026-03-14T11:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "I Have Sensitive Skin That Doesn't Love Aloe Vera—Here Are the Soothing Swaps I Use Instead",
-          "link": "https://www.whowhatwear.com/beauty/skin/aloe-vera-sensitivity-in-skincare",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "037a513e1dda",
-      "title": "告别繁琐！精选快系带运动鞋",
-      "summary": "《Esquire》杂志推荐了8款便捷的快系带运动鞋，为你的日常穿搭注入新意。这些运动鞋不仅易于穿脱，还能快速调整松紧，兼顾舒适与效率。无论是城市漫步还是户外探索，Salomon、Sorel等品牌的精选款式都能满足你的需求，让你的运动鞋系列更具活力。",
-      "key_points": [
-        "快系带设计，方便快捷",
-        "易于穿脱，节省时间",
-        "Salomon、Sorel等品牌推荐"
-      ],
-      "tags": [
-        "运动鞋",
-        "男士时尚",
-        "快系带",
-        "萨洛蒙",
-        "索雷尔"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/28ae9e6e-1fb6-40a8-af31-72b1b3184e1a.jpg",
-      "published": "2026-03-14T11:00:00+00:00",
-      "sources": [
-        {
-          "name": "Esquire",
-          "title": "The 8 Best Quick-Lace Sneakers to Throw a Curveball Into Your Sneaker Rotation",
-          "link": "https://www.esquire.com/style/mens-fashion/g70712636/quick-lace-sneakers",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "9edc7581a290",
-      "title": "奥斯卡红毯：黑星闪耀时刻",
-      "summary": "《Essence》杂志回顾了丹泽尔·华盛顿、迈克尔·B·乔丹等黑人明星在奥斯卡红毯上的首次亮相，解析了红毯造型对明星职业生涯的关键影响。时尚不仅是装扮，更是他们艺术表达和自我展现的舞台。文章同时关注了今年奥斯卡奖的黑人提名者，包括迈克尔·B·乔丹、Teyana Taylor和Ryan Coogler，期待他们在红毯上的精彩表现，续写黑人明星的时尚传奇。",
-      "key_points": [
-        "红毯造型对明星生涯至关重要",
-        "时尚是明星表达艺术和个性的方式",
-        "关注今年奥斯卡黑人提名者"
-      ],
-      "tags": [
-        "奥斯卡",
-        "红毯时尚",
-        "黑人明星"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/Untitled-16-x-9-cm-1-Cropped.jpg",
-      "published": "2026-03-14T11:00:00+00:00",
-      "sources": [
-        {
-          "name": "Essence",
-          "title": "Black Stars Brought Unforgettable Style To Their First Oscars",
-          "link": "https://www.essence.com/fashion/black-stars-first-oscars-unforgettable-style",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "a47a2c0894b6",
-      "title": "美人鱼肌养成术：2026春季焕肤潮流",
-      "summary": "2026年春季，受美人鱼灵感启发的护肤理念风靡全球。皮肤科医生推荐使用一系列高保湿精华和护肤品，打造如神话般梦幻的完美肌肤。本季妆容趋势强调水光感和自然光泽，众多品牌也纷纷推出相关新品。想要拥有晶莹剔透的肌肤，不妨尝试一下这股“美人鱼”潮流，发掘属于你的专属海洋之美。",
-      "key_points": [
-        "2026春季流行美人鱼灵感护肤",
-        "皮肤科医生推荐保湿护肤品",
-        "水光感妆容成为新趋势"
-      ],
-      "tags": [
-        "护肤",
-        "美妆",
-        "趋势",
-        "美人鱼",
-        "保湿"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/vfwHibxqzZxkVCrdgpdocc-1280-80.gif",
-      "published": "2026-03-14T11:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Derms Agree: A Mermaid-Inspired Skincare Routine Can Help You Achieve a Near Mythological Complexion",
-          "link": "https://www.whowhatwear.com/beauty/skin/best-marine-skincare-products",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "3bf9795da478",
-      "title": "Converse经典复燃：STFIRE AG复古跑鞋登场",
-      "summary": "Converse从其1977年推出的跑鞋“STARFIRE”汲取灵感，推出全新复刻版“STFIRE AG”。这款运动鞋采用尼龙和麂皮拼接鞋面，并经过独特的水洗工艺处理，营造出浓郁的复古氛围。轻量E.V.A.材质中底提供舒适脚感，配色方案则向经典设计致敬。该鞋款将于3月19日起在Converse官网及指定零售店发售，定价为13750日元。",
-      "key_points": [
-        "Converse复刻经典跑鞋STARFIRE",
-        "尼龙麂皮鞋面，水洗做旧质感",
-        "轻量E.V.A.中底，经典配色方案"
-      ],
-      "tags": [
-        "Converse",
-        "复古跑鞋",
-        "运动鞋",
-        "新品发布"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.gqjapan.jp/photos/69afb31c360d6c10c44bb9ec/master/pass/converse-stfire-ag-23.jpg",
-      "published": "2026-03-14T11:00:00+00:00",
-      "sources": [
-        {
-          "name": "GQ Japan",
-          "title": "コンバースからアーカイブシューズ「STAR FIRE」をモチーフにした「STFIRE AG」が登場──GQ新着スニーカー",
-          "link": "https://www.gqjapan.jp/article/20260311-converse-stfire-ag-news",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "26bed2155a4b",
-      "title": "西武狮潮酷变身，联手VARZAR掀棒球时尚",
-      "summary": "日本西武狮子棒球队跨界时尚圈，携手韩国潮流品牌VARZAR推出联名系列。该系列包含T恤、针织衫、帽子等单品，将运动元素与韩流时尚巧妙融合。为庆祝合作，西武狮队将于7月特别赛事中举办“VARZAR×LIONS”主题活动，届时部分入场观众将有机会获赠限量版联名球衣，一同感受棒球与时尚的激情碰撞。",
-      "key_points": [
-        "西武狮队与VARZAR联名",
-        "推出T恤、针织衫、帽子等单品",
-        "7月赛事赠送联名球衣"
-      ],
-      "tags": [
-        "品牌联名",
-        "棒球",
-        "韩国时尚",
-        "VARZAR",
-        "西武狮子"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/lions-varzar-20260313_007-0bf42a67-cd53-401d-a559-fa80ecaf187f.jpg",
-      "published": "2026-03-14T11:00:00+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "西武ライオンズがバザールとのコラボアイテム発売　7月のソフトバンク戦で限定ユニフォームを配付",
-          "link": "https://www.fashionsnap.com/article/2026-03-14/seibu-lioms-varzar",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "5f0d9f31abc2",
-      "title": "A24橙色运动风暴席卷而来！",
-      "summary": "独立电影公司A24推出全新“Marty Supreme”系列运动球，大胆采用标志性橙色，包含篮球、足球、橄榄球等多种选择。每款球体都印有鼓舞人心的“Dream Big”标语，将A24的电影活力注入日常运动。此举突破传统电影周边的界限，为影迷和运动爱好者带来耳目一新的体验，也展现了A24在周边产品设计上的创新精神。",
-      "key_points": [
-        "A24发布全新运动球系列",
-        "橙色设计，印有“Dream Big”标语",
-        "涵盖篮球、足球、橄榄球等多种运动"
-      ],
-      "tags": [
-        "A24",
-        "Marty Supreme",
-        "运动周边",
-        "橙色",
-        "联名"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F14%2Fa24-marty-supreme-orange-sports-balls-merch-release-info-000.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-14T10:29:48+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "A24 Drops a Full Roster of Orange 'Marty Supreme' Sports Balls",
-          "link": "https://hypebeast.com/2026/3/a24-marty-supreme-orange-sports-balls-merch-release-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "9eefffa0d132",
-      "title": "哆啦A梦变身！东京限定日系萌物来袭",
-      "summary": "备受期待的“100%哆啦A梦＆朋友 in 东京”展览将于2026年3月27日在东京盛大开幕。首波限定周边商品抢先曝光，一系列充满浓郁日本风情的哆啦A梦毛绒钥匙链萌翻众人。樱花、柴犬、相扑、饭团，哆啦A梦化身各种经典日式元素，可爱又别致，绝对是收藏的不二之选。",
-      "key_points": [
-        "“100%哆啦A梦＆朋友 in 东京”展览",
-        "2026年3月27日开幕",
-        "限定日式风情哆啦A梦钥匙链"
-      ],
-      "tags": [
-        "哆啦A梦",
-        "展览",
-        "限定周边",
-        "IP联名",
-        "日本文化"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144383/top.jpg?1773414782",
-      "published": "2026-03-14T10:18:34+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "展覧会「100％ドラえもん＆フレンズ in 東京」限定グッズ、柴犬や桜に扮したドラえもんキーチェーン",
-          "link": "https://www.fashion-press.net/news/144383",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "c48f47eca513",
-      "title": "勃肯UTTI LACE：鞋床上的时尚新篇",
-      "summary": "BIRKENSTOCK勃肯推出全新UTTI LACE系列，以创新视觉聚焦其在封闭式鞋履领域的领先地位。UTTI LACE的设计灵感源自莫卡辛鞋，秉承勃肯原创鞋床的功能性原则，打造柔软而富有雕塑感的鞋型。该鞋款采用优质麂皮，搭配标志性外露缝线和精致的无金属孔眼系带，轻质橡胶外底提升穿着的灵活性。UTTI LACE的核心在于多层结构的勃肯深蓝鞋床，预计将于2026年春夏推出全新配色，敬请期待。",
-      "key_points": [
-        "UTTI LACE系列全新发布",
-        "设计灵感源自莫卡辛鞋",
-        "深蓝鞋床，2026春夏新色"
-      ],
-      "tags": [
-        "BIRKENSTOCK",
-        "勃肯鞋",
-        "UTTI LACE"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.cosmopolitancn.com/static/cosmo/images/nav_menu.png",
-      "published": "2026-03-14T10:18:14+00:00",
-      "sources": [
-        {
-          "name": "Cosmopolitan China",
-          "title": "时尚COSMO-BIRKENSTOCK (勃肯) 呈现 UTTI LACE 全新视觉，诠释鞋床的普适卓越性能",
-          "link": "https://www.cosmopolitancn.com/cosmo/detail/47658",
-          "lang": "zh"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "1154f7f8372f",
-      "title": "2026春夏：低腰牛仔优雅回归",
-      "summary": "WWD Japan报道，2026春夏低腰牛仔裤摆脱街头感，以成熟姿态重回时尚舞台。Ann Demeulemeester、Stella McCartney、McQueen、Coach和DSQUARED2等品牌在秀场上示范了多种搭配方案：浪漫白衬衫凸显女性柔美，内衣风单品性感大胆，流苏上衣则增添波西米亚风情。巧妙调整上下身比例，更能打造令人眼前一亮的时尚造型。本季低腰牛仔不再是叛逆的象征，而是优雅与个性的完美融合。",
-      "key_points": [
-        "低腰牛仔风格转型",
-        "成熟优雅搭配是关键",
-        "比例调整塑造完美身形"
-      ],
-      "tags": [
-        "低腰牛仔裤",
-        "2026春夏趋势",
-        "时尚搭配"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/02/13173732/1-18.jpg",
-      "published": "2026-03-14T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "ローライズデニムが復活　今季は“大人顔”で着こなす【2026年春夏トレンド】",
-          "link": "https://www.wwdjapan.com/articles/2324305",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "d2d8ab2b9425",
-      "title": "Eddie Bauer门店陨落，品牌涅槃？",
-      "summary": "美国老牌户外品牌Eddie Bauer宣布因破产关闭北美所有约175家门店，引发业界关注。然而，这并不意味着品牌的终结。其品牌所有者Authentic Brands Group计划通过电商、批发和授权等多种渠道，延续Eddie Bauer的品牌生命力。这一事件凸显了美国零售业“品牌存续，门店消失”的新趋势，反映了传统零售模式面临的严峻挑战以及品牌积极寻求数字化转型的迫切需求。未来，Eddie Bauer能否成功转型，值得期待。",
-      "key_points": [
-        "Eddie Bauer关闭北美所有门店",
-        "品牌所有者计划通过电商等渠道延续品牌",
-        "反映美国零售业“品牌存续，门店消失”趋势"
-      ],
-      "tags": [
-        "零售",
-        "破产",
-        "品牌",
-        "市场趋势",
-        "户外品牌",
-        "数字化转型"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/imgi_4_7898b201-0f10758e-02ed-421d-8151-70ea5e5bdafe.jpg",
-      "published": "2026-03-14T09:59:00+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "エディー・バウアー、全店閉鎖でもブランドは存続　アメリカ小売の不思議な破綻",
-          "link": "https://www.fashionsnap.com/article/2026-03-14/walmart-eddie-bauer-all-stores-close",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "9fc0d0b01d8d",
-      "title": "告别明媚黄，拥抱大地棕！",
-      "summary": "凯特·哈德森的经典黄色缎面裙令人难忘，但她在2026年选择Max Mara棕色缎面裙亮相，预示着时尚风向的转变。棕色正逐渐取代黄色，成为新的潮流焦点。分析认为，棕色将在即将到来的春季继续引领时尚，成为衣橱里的必备色彩。",
-      "key_points": [
-        "凯特·哈德森的造型转变",
-        "缎面裙的色彩趋势变化",
-        "棕色系在时尚界的崛起"
-      ],
-      "tags": [
-        "凯特·哈德森",
-        "缎面裙",
-        "棕色",
-        "时尚趋势",
-        "色彩趋势"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.vogue.es/photos/69b51a72f2396cc069e716dd/master/pass/GettyImages-2266404855.jpg",
-      "published": "2026-03-14T09:55:41+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "Kate Hudson (o Andie Anderson) y por qué su icónico vestido satinado ya no será amarillo, sino marrón",
-          "link": "https://www.vogue.es/articulos/vestido-satinado-kate-hudson-look-primavera-2026",
-          "lang": "es"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "9f59483679e6",
-      "title": "70年代复古风潮与坡跟鞋回潮：2026春季鞋履趋势预测",
-      "summary": "Vogue西班牙版预测，70年代标志性的厚底鞋、木屐以及Isabel Marant的Bekett坡跟运动鞋将在2026年春季强势回归。受Cher和Diana Ross等时尚偶像的影响，70年代复古风潮融合了波西米亚的自由奔放和迪斯科的闪耀魅力。同时，编织芭蕾舞鞋也将成为搭配牛仔裤的理想选择，为春季穿搭提供更多选择。Bekett运动鞋的回归，预示着时尚界正从极简主义转向更具Y2K风格的潮流，宣告着大胆、个性的时代正在回归。",
-      "key_points": [
-        "70年代厚底鞋和木屐将在2026年春季回归",
-        "编织芭蕾舞鞋是搭配牛仔裤的理想选择",
-        "Isabel Marant Bekett坡跟运动鞋在洛杉矶街头复兴",
-        "时尚界从极简主义转向Y2K风格",
-        "复古风潮持续升温"
-      ],
-      "tags": [
-        "70年代",
-        "复古风",
-        "厚底鞋",
-        "木屐",
-        "芭蕾舞鞋",
-        "坡跟鞋",
-        "Bekett",
-        "Isabel Marant",
-        "2026春季",
-        "Y2K"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.vogue.es/photos/69b27b84dcba4de1e3c6f2cb/master/pass/zapatos-boho.png",
-      "published": "2026-03-14T09:34:20+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "Los zapatos de los 70 más fabulosos regresan a las tendencias de primavera 2026",
-          "link": "https://www.vogue.es/articulos/zapatos-anos-70-regresan-tendencia-primavera-2026",
-          "lang": "es"
-        },
-        {
-          "name": "Vogue España",
-          "title": "Y los zapatos clásicos de primavera 2026 que mejor quedan con pantalones vaqueros son…",
-          "link": "https://www.vogue.es/articulos/tendencias-zapatos-bailarinas-2026-trenzadas",
-          "lang": "es"
-        },
-        {
-          "name": "Vogue España",
-          "title": "Zapatillas Bekett de Isabel Marant: Acabo de volver de Los Ángeles y este zapato estaba por todas partes",
-          "link": "https://www.vogue.es/articulos/zapatillas-bekett-isabel-marant-tendencia-vuelven",
-          "lang": "es"
-        }
-      ],
-      "article_count": 3
-    },
-    {
-      "id": "f8a7b367751b",
-      "title": "复古回潮：90年代牛仔裤重塑春日时尚",
-      "summary": "靛蓝牛仔风潮依旧，但时尚达人们早已将目光锁定在更具复古韵味的90年代牛仔裤上。本季，宽松廓形、高腰设计和做旧质感的90年代牛仔裤强势回归，成为打造 effortless chic 春日造型的关键单品。无论是搭配简约T恤、精致衬衫，还是飘逸连衣裙，都能轻松提升时尚度，引领春季潮流。",
-      "key_points": [
-        "90年代牛仔裤回归",
-        "宽松高腰是关键",
-        "轻松打造时尚造型"
-      ],
-      "tags": [
-        "牛仔裤",
-        "90年代",
-        "春季时尚",
-        "复古风"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/WoE5xCDpr7jc3YvJZCNogj-1280-80.png",
-      "published": "2026-03-14T09:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Indigo Denim Is Chic, But Fashion People Know These '90s Jeans That Are the Key to Easy, Elevated Spring Outfits",
-          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/light-wash-jeans-outfits-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "d1a5f9a0232c",
-      "title": "复古牛仔回潮：50+时尚逆袭",
-      "summary": "Who What Wear杂志预测2026年牛仔裤穿搭趋势，聚焦50岁以上女性的经典牛仔裤造型。令人惊讶的是，这些成熟优雅的搭配也引发了Z世代编辑们的关注和讨论。报道深入分析了牛仔裤的颜色选择、版型剪裁，以及如何通过巧妙搭配打造永不过时的时尚造型，为不同年龄层的女性提供了实用的穿搭灵感。",
-      "key_points": [
-        "50+牛仔裤经典搭配成潮流",
-        "Z世代编辑关注成熟风尚",
-        "牛仔裤颜色与版型选择指南"
-      ],
-      "tags": [
-        "牛仔裤",
-        "穿搭技巧",
-        "潮流趋势",
-        "Z世代",
-        "50+女性"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/VV6CyNEJE98YFcTC9jQiXE-1280-80.jpg",
-      "published": "2026-03-14T09:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "This Timeless Over-50s Jeans Outfit Has Even Our Gen Z Editors Talking",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/cindy-crawford-boot-cut-jeans-heels-outfit",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "39c1da39f63d",
-      "title": "潮人必看：下周潮流新品抢先知！",
-      "summary": "《WWD Japan》精选下周（3月16日至22日）即将发售的16款潮流单品，涵盖运动休闲、文化IP等多个领域。备受瞩目的包括YOASOBI与ASICS运动休闲系列的跨界联名，成城石井与Anya Hindmarch合作的迷你托特包经典复刻，优衣库携手集英社推出的100周年纪念UT系列，Converse与设计师Daisuke Kondo的联名力作，Adidas全新跑鞋，以及FETICO的限定系列。潮流爱好者们敬请期待！",
-      "key_points": [
-        "YOASOBI x ASICS联名系列",
-        "成城石井 x Anya Hindmarch迷你托特包复刻",
-        "优衣库 x 集英社100周年纪念UT"
-      ],
-      "tags": [
-        "联名合作",
-        "新品发售",
-        "运动休闲",
-        "文化IP",
-        "限定系列"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2025/10/12133417/%E6%96%B0%E4%BD%9C_og.jpg",
-      "published": "2026-03-14T09:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "YOASOBI×「アシックス スポーツスタイル」や成城石井×「アニヤ」バッグなど！　来週発売のファッションアイテム16選【3/16〜3/22】",
-          "link": "https://www.wwdjapan.com/articles/2235557",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "23d1d7478904",
-      "title": "Freak's Store x A.P.C. 联名T恤系列：低调同色Logo与宽松廓形",
-      "summary": "轻奢品牌A.P.C.再度携手Freak's Store推出别注系列T恤，以经典款“A.P.C. BRODE T-SHIRTS”和“RUE MADAME T-SHIRTS”为蓝本进行焕新。本次联名延续了之前的设计理念，将A.P.C.标志性的品牌Logo低调处理为与衣身同色系，并采用更具潮流感的宽松廓形剪裁，打造简约而不失个性的时尚单品。该系列提供经典黑、白、灰三色可选，灰色款为部分店铺限定发售，售价均为16500日元。",
-      "key_points": [
-        "A.P.C.与Freak's Store再次合作推出联名T恤",
-        "基于A.P.C.经典款“A.P.C. BRODE T-SHIRTS”和“RUE MADAME T-SHIRTS”进行设计",
-        "采用同色系Logo设计，更显低调",
-        "宽松廓形剪裁，更具潮流感",
-        "提供黑、白、灰三色可选，灰色为限定款",
-        "售价均为16500日元"
-      ],
-      "tags": [
-        "A.P.C.",
-        "Freak's Store",
-        "联名",
-        "T恤",
-        "同色系Logo",
-        "宽松廓形",
-        "限定款"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/apc-freaks-20260310_001-2650f64c-f9a7-415c-b9c5-96fd6a942696.jpg",
-      "published": "2026-03-14T09:00:00+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "フリークスストアがアー・ペー・セーに別注　ボディと同系色のロゴを配したTシャツ発売",
-          "link": "https://www.fashionsnap.com/article/2026-03-14/apc-freaks-store",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "22149e13537c",
-      "title": "伦敦新势力：三大品牌闪耀秋冬",
-      "summary": "《Vogue Japan》聚焦2026-27秋冬伦敦时装周，发掘LUEDER、Pauline Dujancourt和PETRA FAGERSTROM三大新锐品牌。报道深入剖析设计师背景、独特设计理念及系列亮点，展现伦敦作为时尚摇篮的活力，以及这些品牌所带来的创新视角和前卫风格。它们的设计不仅是对传统时尚的颠覆，更是对未来潮流的探索，预示着伦敦时尚界的新篇章。",
-      "key_points": [
-        "LUEDER, Pauline Dujancourt, PETRA FAGERSTROM三大品牌备受瞩目",
-        "设计师背景与设计风格",
-        "伦敦时装周新锐力量"
-      ],
-      "tags": [
-        "伦敦时装周",
-        "新锐设计师",
-        "秋冬系列",
-        "品牌推荐"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://media.vogue.co.jp/photos/69b222ece24c68bd80146689/master/pass/Dujancourt%20F26%20037.jpg",
-      "published": "2026-03-14T08:30:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue Japan",
-          "title": "若手の宝庫ロンドン。2026-27年秋冬コレクションで注目を集めたブランド3選",
-          "link": "https://www.vogue.co.jp/article/london-fashion-week-emerging-designers-2026-27-aw",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "36729a8247f2",
-      "title": "Valentino 2026秋冬罗马大秀：Michele的多元隐喻、致敬与折衷主义的全新篇章",
-      "summary": "Alessandro Michele在罗马巴贝里尼宫发布了其主导的Valentino 2026/2027秋冬系列“Interferenze”，向品牌创始人Valentino Garavani致敬，并探索自身设计理念与Valentino先生的交汇。该系列灵感来源于Valentino先生对女性赋权的理解、罗马美学与巴黎时尚的融合，以及意大利文艺复兴时期的调色板。Michele将服装与配饰巧妙地转化为对生活多样性的隐喻，在优雅与性感之间游走，并强调服装作为一种赋权形式的重要性。该系列是Garavani去世后的首个成衣系列，以克制和平衡为主题，与Michele时期的Gucci风格形成对比，展现了品牌新的设计方向和审美理念，被认为是品牌的重要转折点。Colman Domingo、Clairo 和 Mariacarla Boscono 等品牌大使也出席了在历史悠久的Palazzo Barberini宫殿举办的这场秀。整个系列包含84件作品，采用非常规的垂坠设计和闪耀元素，并以一件标志性的红色V型露背长裙作为压轴，惊艳全场。Michele将自己视为品牌美学中的“干扰”，通过折衷主义的设计，在男装和女装中都展现了大胆与细腻并存的风格，探索了秩序与脆弱之间的关系。",
-      "key_points": [
-        "Alessandro Michele在Valentino的首个秋冬系列，致敬品牌创始人Valentino Garavani。",
-        "系列主题“Interferenze”体现了Michele的设计理念与Valentino风格的交融。",
-        "设计灵感多元，包括女性赋权、罗马美学、巴黎时尚和意大利文艺复兴。",
-        "服装设计在优雅与性感间游走，强调服装的赋权作用。",
-        "系列采用克制和平衡的设计，与Michele之前的Gucci风格形成对比。",
-        "折衷主义设计，大胆与细腻并存，探索秩序与脆弱的关系。"
-      ],
-      "tags": [
-        "Valentino",
-        "Alessandro Michele",
-        "2026秋冬",
-        "罗马",
-        "Interferenze",
-        "时装秀",
-        "Valentino Garavani",
-        "折衷主义"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://media.vogue.es/photos/69b3bc43db37e3f63f546b65/master/pass/ALE01105.jpg",
-      "published": "2026-03-14T08:02:03+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "En el desfile de Valentino en Roma, las prendas se convierten en metáforas de las interferencias que conforman la pluralidad de la vida",
-          "link": "https://www.vogue.es/articulos/valentino-desfile-roma-otono-invierno-2026-2027",
-          "lang": "es"
-        },
-        {
-          "name": "Dazed",
-          "title": "Rome is where the heart is at Valentino AW26",
-          "link": "https://www.dazeddigital.com/fashion/article/69903/1/valentino-aw26-fw26-rome-alessandro-michele-paris-fashion-week-pfw",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "Valentino Decamps From Paris to Rome for Its Latest Collection",
-          "link": "https://www.harpersbazaar.com/fashion/a70737721/valentino-fall-2026-collection-rome",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Valentino Shows First RTW Collection Since Garavani's Passing",
-          "link": "https://hypebeast.com/2026/3/valentino-shows-first-rtw-collection-since-garavanis-passing",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue Fashion",
-          "title": "Alessandro Goes to Rome—The Best Backstage Photos From the Valentino Fall 2026 Ready-to-Wear Show",
-          "link": "https://www.vogue.com/slideshow/alessandro-goes-to-rome-the-best-backstage-photos-from-the-valentino-fall-2026-ready-to-wear-show",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue Japan",
-          "title": "ヴァレンティノとアレッサンドロ・ミケーレ、ぶつかり合う感性が生む新たなる創造【2026-27年秋冬コレクション】",
-          "link": "https://www.vogue.co.jp/article/valentino-fall-2026",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 7
     }
   ]
 }
