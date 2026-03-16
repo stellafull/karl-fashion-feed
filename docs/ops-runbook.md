@@ -91,6 +91,9 @@
 
 当前约定的基础命令：
 
+- 启动前端开发环境：`pnpm --dir frontend dev`
+- 运行前端类型检查：`pnpm --dir frontend check`
+- 构建前端静态资源：`pnpm --dir frontend build`
 - 启动 API：`uvicorn backend.app.main:app --reload`
 - 运行后端测试：`python -m unittest discover -s backend/test`
 - 手动执行采集脚本：`python backend/scripts/fetch_feeds.py`

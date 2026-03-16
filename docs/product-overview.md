@@ -28,11 +28,13 @@ Fashion Feed 是面向企业内部团队的时尚情报产品。
 
 用户进入系统后，首先看到：
 
+- 默认收起的左侧导航 rail
 - 精选 story
 - 来源数量
 - 原文数量
 - 分类导航
 - 来源筛选与排序
+- 桌面右侧情报 rail
 
 首页仍然是产品最核心的主入口。
 
@@ -40,6 +42,7 @@ Fashion Feed 是面向企业内部团队的时尚情报产品。
 
 打开 story 后，用户可以看到：
 
+- 独立 story 阅读页
 - story 标题
 - 综合摘要
 - 核心要点
@@ -51,7 +54,9 @@ story 详情页是人类阅读视角下的聚合结果主界面。
 
 ### Story 内 AI
 
-在 story 详情底部，用户可以继续提问。
+在独立 story 页底部，用户可以通过浮动 follow-up dock 继续提问。
+
+当前前端分支已经提供底部浮动 follow-up 输入 dock；提交后会打开完整 Chat 画布，并带入当前 story 上下文。后续再接入正式 chat API、session 持久化与 citation 回溯。
 
 预期行为：
 
@@ -60,13 +65,17 @@ story 详情页是人类阅读视角下的聚合结果主界面。
 - 回答带 citation
 - 会话可以继续延续
 
-### 全局 AI Sidebar
+### 全局 Chat Workspace
 
-首页和 story 页面都可打开左侧 AI sidebar。
+全局 AI 不再局限为首页侧栏，而是通过左侧导航进入完整 Chat workspace。
+
+当前前端分支已经提供 `New chat` 与历史会话入口，点击后进入独立 Chat 主视图。
+
+当前交互上，Chat 输入框固定在主视图底部；左侧历史栏默认收起，只有进入 chat 或主动展开时才显示。
 
 预期行为：
 
-- 不离开首页也能开启 AI 对话
+- 从 Discover 一键进入新会话
 - 可以新建 session
 - 可以恢复历史 session
 - 可以跨全库提问与比较

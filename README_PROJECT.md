@@ -62,9 +62,8 @@
 ### 前端
 
 ```bash
-cd fashion-feed
 pnpm install
-pnpm dev
+pnpm --dir frontend dev
 ```
 
 ### 运行 RSS 聚合脚本

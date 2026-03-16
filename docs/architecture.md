@@ -27,9 +27,9 @@ FastAPI
 职责：
 
 - 首页信息流展示
-- story 详情展示
+- story 独立阅读页展示
 - 来源筛选与排序
-- AI sidebar
+- 左侧可收缩导航与 Chat workspace
 - story 底部上下文问答入口
 
 ### FastAPI
@@ -136,7 +136,7 @@ backend/
 
 ### 全局 AI 链路
 
-1. 用户打开左侧 AI sidebar
+1. 用户通过左侧导航进入 `New chat` 或历史 session
 2. 新建或恢复 session
 3. 后端执行全局检索与 memory 检索
 4. 生成带 citation 的回答
