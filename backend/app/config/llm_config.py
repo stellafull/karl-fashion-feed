@@ -22,9 +22,6 @@ class ModelConfig:
     api_key_env: str
     base_url_env: str
     timeout_seconds: int = 120
-    fallback_api_key_envs: tuple[str, ...] = ()
-    fallback_base_url_envs: tuple[str, ...] = ()
-    default_base_url: str | None = None
 
     @property
     def api_key(self) -> str | None:
@@ -44,30 +41,28 @@ class ModelConfig:
                 return value
         return self.default_base_url or DEFAULT_OPENAI_BASE_URL
 
-# minimax系列模型在文本理解和生成方面表现优异，适合文章解析和故事总结等任务
 # kimi系列模型在多模态理解方面表现更好，适合图像分析和RAG以图搜图等任务
 
 
 IMAGE_ANALYSIS_MODEL_CONFIG = ModelConfig(
     model_name=os.getenv("IMAGE_ANALYSIS_MODEL", "kimi/kimi-k2.5"),
-    temperature=0.1,
-    api_key_env="IMAGE_ANALYSIS_API_KEY",
-    base_url_env="IMAGE_ANALYSIS_BASE_URL",
+    temperature=0.6,
+    api_key_env=os.getenv("OPENAI_API_KEY"),
+    base_url_env=DEFAULT_OPENAI_BASE_URL,
 )
 
+
+# qwen3.5 flash 仅文字提取总结
 STORY_SUMMARIZATION_MODEL_CONFIG = ModelConfig(
-    model_name=os.getenv("STORY_SUMMARIZATION_MODEL", "google/gemini-2.5-flash"),
+    model_name=os.getenv("STORY_SUMMARIZATION_MODEL", "qwen3.5-flash"),
     temperature=0.3,
-    api_key_env="STORY_SUMMARIZATION_API_KEY",
-    base_url_env="STORY_SUMMARIZATION_BASE_URL",
-    fallback_api_key_envs=("OPENROUTER_API_KEY",),
-    fallback_base_url_envs=("OPENROUTER_BASE_URL",),
-    default_base_url="https://openrouter.ai/api/v1",
+    api_key_env=os.getenv("OPENAI_API_KEY"),
+    base_url_env=DEFAULT_OPENAI_BASE_URL,
 )
 
 RAG_CHAT_MODEL_CONFIG = ModelConfig(
     model_name=os.getenv("RAG_CHAT_MODEL", "kimi/kimi-k2.5"),
     temperature=0.2,
-    api_key_env="RAG_CHAT_API_KEY",
-    base_url_env="RAG_CHAT_BASE_URL",
+    api_key_env=os.getenv("OPENAI_API_KEY"),
+    base_url_env=DEFAULT_OPENAI_BASE_URL,
 )
