@@ -2,13 +2,13 @@
 
 - generate_article_summary_embedding: 生成文章摘要的向量表示
 - generate_dense_embedding: 生成多模态向量
-- generate_sparse_embedding: 生成多模态文本稀疏向量
+- generate_sparse_embedding: 生成文本稀疏向量
 """
 
 from __future__ import annotations
 
 from typing import Any, Iterable, List, Sequence
-
+SparseEmbedding = dict[int, float]
 from dashscope import MultiModalEmbedding, TextEmbedding
 from dashscope.embeddings.multimodal_embedding import (
     MultiModalEmbeddingItemImage,
@@ -25,11 +25,15 @@ from app.config.embedding_config import (
 
 def generate_article_summary_embedding(text: str) -> List[float]:
     """生成文章摘要的向量表示."""
-    response = TextEmbedding.call(
-        model=DENSE_SUMMARIZATION_EMBEDDING_CONFIG.model_name,
-        input=text,
-        api_key=DENSE_SUMMARIZATION_EMBEDDING_CONFIG.api_key,
-    )
+    request_kwargs: dict[str, Any] = {
+        "model": DENSE_SUMMARIZATION_EMBEDDING_CONFIG.model_name,
+        "input": text,
+        "api_key": DENSE_SUMMARIZATION_EMBEDDING_CONFIG.api_key,
+    }
+    if DENSE_SUMMARIZATION_EMBEDDING_CONFIG.vector_dimension is not None:
+        request_kwargs["dimension"] = DENSE_SUMMARIZATION_EMBEDDING_CONFIG.vector_dimension
+
+    response = TextEmbedding.call(**request_kwargs)
     embeddings = _extract_embeddings(response)
     if len(embeddings) != 1:
         raise ValueError("summary embedding result size does not match request size")
@@ -76,6 +80,7 @@ def generate_dense_embedding(
             model_name=DENSE_EMBEDDING_CONFIG.model_name,
             api_key=DENSE_EMBEDDING_CONFIG.api_key,
             batch_size=DENSE_EMBEDDING_CONFIG.batch_size,
+            vector_dimension=DENSE_EMBEDDING_CONFIG.vector_dimension,
         )
         for index, embedding in zip(text_only_indexes, text_only_embeddings, strict=True):
             embeddings[index] = embedding
@@ -89,6 +94,7 @@ def generate_dense_embedding(
             model_name=DENSE_EMBEDDING_CONFIG.model_name,
             api_key=DENSE_EMBEDDING_CONFIG.api_key,
             batch_size=DENSE_EMBEDDING_CONFIG.batch_size,
+            vector_dimension=DENSE_EMBEDDING_CONFIG.vector_dimension,
         )
         for index, embedding in zip(multimodal_indexes, multimodal_embeddings, strict=True):
             embeddings[index] = embedding
@@ -98,9 +104,9 @@ def generate_dense_embedding(
 
     return [embedding for embedding in embeddings if embedding is not None]
 
-def generate_sparse_embedding(texts: List[str]) -> List[List[float]]:
-    """生成多模态文本稀疏向量."""
-    return _embed_text_batches(
+def generate_sparse_embedding(texts: List[str]) -> List[SparseEmbedding]:
+    """生成文本稀疏向量."""
+    return _embed_sparse_text_batches(
         texts=texts,
         model_name=SPARSE_EMBEDDING_CONFIG.model_name,
         api_key=SPARSE_EMBEDDING_CONFIG.api_key,
@@ -132,21 +138,67 @@ def _extract_embeddings(response: Any) -> List[List[float]]:
     return vectors
 
 
+def _extract_sparse_embeddings(response: Any) -> List[SparseEmbedding]:
+    output = getattr(response, "output", None)
+    if not isinstance(output, dict):
+        raise ValueError("embedding response missing output")
+
+    items = output.get("embeddings")
+    if not isinstance(items, list):
+        raise ValueError("embedding response missing embeddings")
+
+    vectors: list[SparseEmbedding] = []
+    for item in items:
+        if not isinstance(item, dict):
+            raise ValueError("invalid embedding item")
+
+        raw_vector = item.get("sparse_embedding")
+        if raw_vector is None:
+            raw_vector = item.get("embedding")
+
+        vectors.append(_normalize_sparse_embedding(raw_vector))
+    return vectors
+
+
 def _embed_text_batches(
     *,
     texts: Sequence[str],
     model_name: str,
     api_key: str | None,
     batch_size: int,
+    vector_dimension: int | None = None,
 ) -> List[List[float]]:
     embeddings: list[list[float]] = []
+    for batch in _chunked(texts, batch_size):
+        request_kwargs: dict[str, Any] = {
+            "model": model_name,
+            "input": list(batch),
+            "api_key": api_key,
+        }
+        if vector_dimension is not None:
+            request_kwargs["dimension"] = vector_dimension
+
+        response = TextEmbedding.call(**request_kwargs)
+        embeddings.extend(_extract_embeddings(response))
+    return embeddings
+
+
+def _embed_sparse_text_batches(
+    *,
+    texts: Sequence[str],
+    model_name: str,
+    api_key: str | None,
+    batch_size: int,
+) -> List[SparseEmbedding]:
+    embeddings: list[SparseEmbedding] = []
     for batch in _chunked(texts, batch_size):
         response = TextEmbedding.call(
             model=model_name,
             input=list(batch),
             api_key=api_key,
+            output_type="sparse",
         )
-        embeddings.extend(_extract_embeddings(response))
+        embeddings.extend(_extract_sparse_embeddings(response))
     return embeddings
 
 
@@ -157,6 +209,7 @@ def _embed_multimodal_batches(
     model_name: str,
     api_key: str | None,
     batch_size: int,
+    vector_dimension: int | None = None,
 ) -> List[List[float]]:
     if len(texts) != len(image_urls):
         raise ValueError("multimodal texts and image_urls must have the same length")
@@ -168,15 +221,22 @@ def _embed_multimodal_batches(
         strict=True,
     ):
         response = MultiModalEmbedding.call(
-            model=model_name,
-            input=[
-                [
-                    MultiModalEmbeddingItemText(text=text, factor=1.0),
-                    MultiModalEmbeddingItemImage(image=image_url, factor=1.0),
-                ]
-                for text, image_url in zip(text_batch, image_url_batch, strict=True)
-            ],
-            api_key=api_key,
+            **{
+                "model": model_name,
+                "input": [
+                    [
+                        MultiModalEmbeddingItemText(text=text, factor=1.0),
+                        MultiModalEmbeddingItemImage(image=image_url, factor=1.0),
+                    ]
+                    for text, image_url in zip(text_batch, image_url_batch, strict=True)
+                ],
+                "api_key": api_key,
+                **(
+                    {"dimension": vector_dimension}
+                    if vector_dimension is not None
+                    else {}
+                ),
+            }
         )
         embeddings.extend(_extract_embeddings(response))
     return embeddings
@@ -187,3 +247,25 @@ def _chunked(values: Sequence[str], size: int) -> Iterable[Sequence[str]]:
         raise ValueError("batch size must be positive")
     for index in range(0, len(values), size):
         yield values[index : index + size]
+
+
+def _normalize_sparse_embedding(raw_vector: Any) -> SparseEmbedding:
+    if isinstance(raw_vector, dict):
+        if "indices" in raw_vector and "values" in raw_vector:
+            indices = raw_vector["indices"]
+            values = raw_vector["values"]
+            if not isinstance(indices, list) or not isinstance(values, list):
+                raise ValueError("sparse embedding indices/values must be lists")
+            if len(indices) != len(values):
+                raise ValueError("sparse embedding indices/values length mismatch")
+            return {
+                int(index): float(value)
+                for index, value in zip(indices, values, strict=True)
+            }
+
+        return {int(index): float(value) for index, value in raw_vector.items()}
+
+    if isinstance(raw_vector, list):
+        return {index: float(value) for index, value in enumerate(raw_vector)}
+
+    raise ValueError("embedding item missing sparse vector")
