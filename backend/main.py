@@ -13,7 +13,8 @@ if str(ROOT_DIR) not in sys.path:
 
 from backend.app.config.source_config import load_source_configs
 from backend.app.core.database import Base, engine
-from backend.app.service.article_ingestion_service import ArticleIngestionService
+from backend.app.service.article_collection_service import ArticleCollectionService
+from backend.app.service.article_parse_service import ArticleParseService
 from backend.app.service.daily_pipeline_service import DailyPipelineService
 from backend.app.service.news_collection_service import NewsCollectionService
 from backend.app.models import ensure_article_storage_schema  # noqa: F401
@@ -26,41 +27,56 @@ def build_parser() -> argparse.ArgumentParser:
     validate_parser = subparsers.add_parser("validate-sources", help="Validate sources.yaml")
     validate_parser.set_defaults(func=run_validate_sources)
 
-    ingest_parser = subparsers.add_parser("ingest-articles", help="Collect and ingest articles")
-    ingest_parser.add_argument(
-        "--source",
-        action="append",
-        dest="sources",
-        help="Collect only the named source. Can be passed multiple times.",
-    )
-    ingest_parser.add_argument(
-        "--limit-sources",
+    def add_source_args(target: argparse.ArgumentParser) -> None:
+        target.add_argument(
+            "--source",
+            action="append",
+            dest="sources",
+            help="Collect only the named source. Can be passed multiple times.",
+        )
+        target.add_argument(
+            "--limit-sources",
+            type=int,
+            default=None,
+            help="Limit how many configured sources are processed.",
+        )
+        target.add_argument(
+            "--source-concurrency",
+            type=int,
+            default=4,
+            help="How many sources to collect concurrently.",
+        )
+        target.add_argument(
+            "--http-concurrency",
+            type=int,
+            default=16,
+            help="Global concurrent HTTP request limit.",
+        )
+
+    collect_parser = subparsers.add_parser("collect-articles", help="Collect article seeds only")
+    add_source_args(collect_parser)
+    collect_parser.set_defaults(func=run_collect_articles)
+
+    parse_parser = subparsers.add_parser("parse-articles", help="Parse pending article seeds")
+    parse_parser.add_argument(
+        "--limit",
         type=int,
         default=None,
-        help="Limit how many configured sources are processed.",
+        help="Limit how many pending/failed articles are parsed.",
     )
-    ingest_parser.add_argument(
-        "--source-concurrency",
-        type=int,
-        default=4,
-        help="How many sources to collect concurrently.",
-    )
-    ingest_parser.add_argument(
-        "--http-concurrency",
-        type=int,
-        default=16,
-        help="Global concurrent HTTP request limit.",
-    )
-    ingest_parser.set_defaults(func=run_ingest_articles)
+    parse_parser.set_defaults(func=run_parse_articles)
 
+    ingest_parser = subparsers.add_parser("ingest-articles", help="Collect article seeds and parse them")
+    add_source_args(ingest_parser)
+    ingest_parser.set_defaults(func=run_ingest_articles)
     pipeline_parser = subparsers.add_parser(
         "run-daily-pipeline",
-        help="Collect, enrich, cluster, and generate immutable stories",
+        help="Collect, parse, enrich, cluster, and generate immutable stories",
     )
     pipeline_parser.add_argument(
         "--skip-ingest",
         action="store_true",
-        help="Skip article ingestion and only process already ingested articles.",
+        help="Skip article collection and only parse/process already stored articles.",
     )
     pipeline_parser.add_argument(
         "--source",
@@ -91,26 +107,69 @@ def run_validate_sources(_: argparse.Namespace) -> int:
     return 0
 
 
-def run_ingest_articles(args: argparse.Namespace) -> int:
-    ensure_article_storage_schema(engine)
-    Base.metadata.create_all(bind=engine)
-    collector = NewsCollectionService(
+def _build_collector(args: argparse.Namespace) -> NewsCollectionService:
+    return NewsCollectionService(
         source_concurrency=args.source_concurrency,
         global_http_concurrency=args.http_concurrency,
     )
+
+
+def run_collect_articles(args: argparse.Namespace) -> int:
+    ensure_article_storage_schema(engine)
+    Base.metadata.create_all(bind=engine)
+    collector = _build_collector(args)
     result = asyncio.run(
-        ArticleIngestionService(collector=collector).collect_and_ingest(
+        ArticleCollectionService(collector=collector).collect_articles(
             source_names=args.sources,
             limit_sources=args.limit_sources,
         )
     )
     print(
-        "ingestion completed: "
+        "collection completed: "
         f"collected={result.total_collected} "
         f"unique_candidates={result.unique_candidates} "
         f"inserted={result.inserted} "
         f"skipped_existing={result.skipped_existing} "
         f"skipped_in_batch={result.skipped_in_batch}"
+    )
+    return 0
+
+
+def run_parse_articles(args: argparse.Namespace) -> int:
+    ensure_article_storage_schema(engine)
+    Base.metadata.create_all(bind=engine)
+    result = asyncio.run(ArticleParseService().parse_articles(limit=args.limit))
+    print(
+        "parse completed: "
+        f"candidates={result.candidates} "
+        f"parsed={result.parsed} "
+        f"failed={result.failed}"
+    )
+    return 0
+
+
+def run_ingest_articles(args: argparse.Namespace) -> int:
+    ensure_article_storage_schema(engine)
+    Base.metadata.create_all(bind=engine)
+    collector = _build_collector(args)
+    collection_result = asyncio.run(
+        ArticleCollectionService(collector=collector).collect_articles(
+            source_names=args.sources,
+            limit_sources=args.limit_sources,
+        )
+    )
+    parse_result = asyncio.run(
+        ArticleParseService(collector=collector).parse_articles()
+    )
+    print(
+        "ingestion completed: "
+        f"collected={collection_result.total_collected} "
+        f"unique_candidates={collection_result.unique_candidates} "
+        f"inserted={collection_result.inserted} "
+        f"skipped_existing={collection_result.skipped_existing} "
+        f"skipped_in_batch={collection_result.skipped_in_batch} "
+        f"parsed={parse_result.parsed} "
+        f"parse_failed={parse_result.failed}"
     )
     return 0
 

@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 from typing import Any, Iterable, List, Sequence
+
 SparseEmbedding = dict[int, float]
 from dashscope import MultiModalEmbedding, TextEmbedding
 from dashscope.embeddings.multimodal_embedding import (
@@ -15,7 +16,7 @@ from dashscope.embeddings.multimodal_embedding import (
     MultiModalEmbeddingItemText,
 )
 
-from app.config.embedding_config import (
+from backend.app.config.embedding_config import (
     DENSE_EMBEDDING_CONFIG,
     DENSE_SUMMARIZATION_EMBEDDING_CONFIG,
     SPARSE_EMBEDDING_CONFIG,
@@ -112,7 +113,6 @@ def generate_sparse_embedding(texts: List[str]) -> List[SparseEmbedding]:
         api_key=SPARSE_EMBEDDING_CONFIG.api_key,
         batch_size=SPARSE_EMBEDDING_CONFIG.batch_size,
     )
-
 
 def _has_image_url(image_url: str | None) -> bool:
     return image_url is not None and bool(image_url.strip())

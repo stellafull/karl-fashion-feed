@@ -29,7 +29,7 @@
   - 是文本内容、来源信息、读者可引用事实的根记录。
 - canonical Markdown
   - 是 article 正文的 canonical 表示。
-  - 图片仅以 `[image:<image_id>]` 占位，不把视觉分析结果回写到 Markdown。
+  - 只保存纯文本正文，不保存图片占位和视觉分析结果。
 - `article_image`
   - 保存图片 URL、位置、caption、OCR、视觉分析结果。
   - `article_image.article_id` 是图片归属到文章的唯一真相关系。
@@ -108,7 +108,7 @@ shared collection 不保留以下字段：
 
 - shared collection 只收录 `should_publish=true` 的可检索叶子单元。
 - `story`、未发布 article、Milvus 回写结果都不进入 shared collection。
-- `[image:<image_id>]` 占位不是独立 text 检索单元，只作为正文边界。
+- 图片不进入 canonical Markdown；image lane 只从 `article_image` 派生。
 
 ### 3.2 Text 单元规则
 

@@ -1,4 +1,4 @@
-"""Shared collection and storage contracts for article ingestion."""
+"""Shared contracts for article collection, parsing, and storage."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, Literal
 
 
-MarkdownBlockKind = Literal["heading", "paragraph", "list_item", "blockquote", "image"]
+MarkdownBlockKind = Literal["heading", "paragraph", "list_item", "blockquote"]
 ImageRole = Literal["hero", "inline", "gallery", "og", "twitter"]
 
 
@@ -15,7 +15,6 @@ ImageRole = Literal["hero", "inline", "gallery", "og", "twitter"]
 class MarkdownBlock:
     kind: MarkdownBlockKind
     text: str = ""
-    image_index: int | None = None
 
 
 @dataclass
@@ -35,12 +34,24 @@ class CollectedImage:
 
 @dataclass
 class CollectedArticle:
+    """Lightweight article seed discovered during collection."""
+
     source_name: str
     source_type: str
     lang: str
     category: str
     url: str
     canonical_url: str
+    title: str
+    summary: str
+    published_at: datetime | None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ParsedArticle:
+    """Fully parsed article detail used by the parser stage."""
+
     title: str
     summary: str
     markdown_blocks: tuple[MarkdownBlock, ...]

@@ -4,12 +4,12 @@ import unittest
 from dataclasses import replace
 from unittest.mock import patch
 
-from app.config.embedding_config import (
+from backend.app.config.embedding_config import (
     DENSE_EMBEDDING_CONFIG,
     DENSE_SUMMARIZATION_EMBEDDING_CONFIG,
     SPARSE_EMBEDDING_CONFIG,
 )
-from app.service.RAG.embedding_service import (
+from backend.app.service.RAG.embedding_service import (
     generate_article_summary_embedding,
     generate_dense_embedding,
     generate_sparse_embedding,
@@ -37,7 +37,7 @@ class EmbeddingServiceTest(unittest.TestCase):
                     },
                 )()
 
-        with patch("app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding):
+        with patch("backend.app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding):
             embeddings = generate_dense_embedding(["foo", "bar"], [])
 
         self.assertEqual(embeddings, [[0.0], [1.0]])
@@ -91,8 +91,8 @@ class EmbeddingServiceTest(unittest.TestCase):
                     },
                 )()
 
-        with patch("app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding), patch(
-            "app.service.RAG.embedding_service.MultiModalEmbedding",
+        with patch("backend.app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding), patch(
+            "backend.app.service.RAG.embedding_service.MultiModalEmbedding",
             FakeMultiModalEmbedding,
         ):
             embeddings = generate_dense_embedding(
@@ -126,8 +126,8 @@ class EmbeddingServiceTest(unittest.TestCase):
                     },
                 )()
 
-        with patch("app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding), patch(
-            "app.service.RAG.embedding_service.DENSE_EMBEDDING_CONFIG",
+        with patch("backend.app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding), patch(
+            "backend.app.service.RAG.embedding_service.DENSE_EMBEDDING_CONFIG",
             replace(DENSE_EMBEDDING_CONFIG, batch_size=2),
         ):
             embeddings = generate_dense_embedding(["a", "b", "c", "d", "e"], None)
@@ -154,8 +154,8 @@ class EmbeddingServiceTest(unittest.TestCase):
                     },
                 )()
 
-        with patch("app.service.RAG.embedding_service.MultiModalEmbedding", FakeMultiModalEmbedding), patch(
-            "app.service.RAG.embedding_service.DENSE_EMBEDDING_CONFIG",
+        with patch("backend.app.service.RAG.embedding_service.MultiModalEmbedding", FakeMultiModalEmbedding), patch(
+            "backend.app.service.RAG.embedding_service.DENSE_EMBEDDING_CONFIG",
             replace(DENSE_EMBEDDING_CONFIG, batch_size=2),
         ):
             embeddings = generate_dense_embedding(
@@ -186,7 +186,7 @@ class EmbeddingServiceTest(unittest.TestCase):
                     {"output": {"embeddings": [{"embedding": [1.0, 2.0]}]}},
                 )()
 
-        with patch("app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding):
+        with patch("backend.app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding):
             embedding = generate_article_summary_embedding("summary")
 
         self.assertEqual(embedding, [1.0, 2.0])
@@ -218,8 +218,8 @@ class EmbeddingServiceTest(unittest.TestCase):
                     },
                 )()
 
-        with patch("app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding), patch(
-            "app.service.RAG.embedding_service.SPARSE_EMBEDDING_CONFIG",
+        with patch("backend.app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding), patch(
+            "backend.app.service.RAG.embedding_service.SPARSE_EMBEDDING_CONFIG",
             replace(SPARSE_EMBEDDING_CONFIG, batch_size=2),
         ):
             embeddings = generate_sparse_embedding(["a", "b", "c"])

@@ -17,7 +17,7 @@
 - 同一 `canonical_url` 再次出现时按重复处理，不做补写。
 - `article` 主表只保存 metadata、摘要预览、Markdown 相对路径和主图引用。
 - canonical Markdown 一篇 article 一个文件，按日期分层落到本地 `data/articles/`。
-- Markdown 正文里的图片使用 `[image:<image_id>]` 占位。
+- Markdown 只保存纯文本正文，不保存图片占位和图片 caption。
 - 图片资产单独写入 `article_image` 表，只保存 URL 和 metadata，不保存二进制。
 - visual LLM 结果写回 `article_image`，不回写 canonical Markdown。
 - `story` 是不可变读模型，`story_key` 使用 UUID。
@@ -30,26 +30,29 @@
 ## 每日 Pipeline
 
 1. `NewsCollectionService`
-   抓取来源文章，清洗字段，归一化 `canonical_url`，解析为 Markdown blocks 和图片资产候选。
+   抓取来源文章，访问详情页解析 `canonical_url`，只生成 article seed。
 
-2. `ArticleIngestionService`
-   对增量 article 执行去重入库，写入 `article`、canonical Markdown 和 `article_image`。
+2. `ArticleCollectionService`
+   对增量 article seed 执行去重入库，写入 `article` 并标记 `parse_status=pending`。
 
-3. `ArticleEnrichmentService`
+3. `ArticleParseService`
+   对 pending/failed `article` 抓详情页并解析，落纯文本 canonical Markdown 和 `article_image`。
+
+4. `ArticleEnrichmentService`
    对每篇 `article` 执行一次 LLM enrichment，产出：
    `should_publish`、`reject_reason`、中文标题、中文摘要、标签、品牌、分类建议、全文翻译
 
-4. `StoryEmbeddingService`
+5. Story embedding
    仅对 `should_publish=true` 的文章生成 story aggregation embedding。
-   embedding 输入建议使用中文标题、中文摘要、标签、品牌等结构化拼接文本。
+   embedding 复用 `service/RAG/embedding_service.py` 中的 embedding 逻辑，输入建议使用中文标题、中文摘要、标签、品牌等结构化拼接文本。
 
-5. `ArticleClusterService`
+6. `ArticleClusterService`
    基于 embedding 做语义聚类，输出 story 候选簇。
 
-6. `ArticleClusterService` + LLM 复核
+7. `ArticleClusterService` + LLM 复核
    对候选簇做复核，必要时拆分，再生成最终 `story` 标题、摘要、要点、标签和分类。
 
-7. `StoryGenerationService` + `DailyPipelineService`
+8. `StoryGenerationService` + `DailyPipelineService`
    生成最终 `story` 草稿，并写入 `story`、`story_article`、`pipeline_run`。
 
 ### 初始化与增量的 story 聚合规则
@@ -96,6 +99,10 @@
 - `lang`
 - `published_at`
 - `ingested_at`
+- `parse_status`
+- `parsed_at`
+- `parse_error`
+- `parse_attempts`
 - `metadata_json`
 - `should_publish`
 - `reject_reason`
@@ -155,10 +162,11 @@
 
 ## 服务职责边界
 
-- `NewsCollectionService`：采集、正文解析、canonical URL 归一化前的数据收集
-- `ArticleIngestionService`：增量去重、Markdown 落盘、`article` / `article_image` 入库
+- `NewsCollectionService`：发现文章 URL、获取 `canonical_url`、提供正文解析能力
+- `ArticleCollectionService`：增量去重、article seed 入库
+- `ArticleParseService`：正文解析、Markdown 落盘、`article_image` 入库
 - `ArticleEnrichmentService`：翻译、总结、过滤、标签抽取、分类建议
-- `StoryEmbeddingService`：story 聚合 embedding 生成
+- story embedding：复用 `service/RAG/embedding_service.py` 的 embedding 逻辑生成聚类向量
 - `ArticleClusterService`：初始语义聚类和 LLM 拆分复核
 - `StoryGenerationService`：cluster 到 story draft 的生成
 - `DailyPipelineService`：编排当前已实现的日更 story pipeline
@@ -169,9 +177,9 @@
 ### 已完成的 Daily Story Pipeline
 
 - `NewsCollectionService`
-- `ArticleIngestionService`
+- `ArticleCollectionService`
+- `ArticleParseService`
 - `ArticleEnrichmentService`
-- `StoryEmbeddingService`
 - `ArticleClusterService` 的初始聚类 + LLM split review
 - `StoryGenerationService`
 - `DailyPipelineService`

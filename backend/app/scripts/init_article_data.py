@@ -20,7 +20,8 @@ from backend.app.core.database import Base, SessionLocal, engine
 from backend.app.config.source_config import SourceConfig, load_source_configs
 from backend.app.models import Article, ensure_article_storage_schema  # noqa: F401
 from backend.app.service.article_contracts import CollectedArticle, SourceCollectionResult
-from backend.app.service.article_ingestion_service import ArticleIngestionService
+from backend.app.service.article_collection_service import ArticleCollectionService
+from backend.app.service.article_parse_service import ArticleParseService
 from backend.app.service.news_collection_service import NewsCollectionService
 
 
@@ -115,7 +116,7 @@ def main() -> int:
 
     _print_collection_results(source_results)
 
-    ingestion_service = ArticleIngestionService()
+    collection_service = ArticleCollectionService(collector=collector)
     all_articles: list[CollectedArticle] = []
     aggregate = Counter()
     source_counter = Counter()
@@ -129,7 +130,7 @@ def main() -> int:
         source_counter[result.source_name] += len(result.articles)
         all_articles.extend(result.articles)
         try:
-            ingestion_result = ingestion_service.ingest_articles(result.articles)
+            collection_result = collection_service.store_articles(result.articles)
         except OperationalError as exc:
             print(
                 "database write failed during bootstrap: "
@@ -138,13 +139,21 @@ def main() -> int:
             )
             return 1
 
-        aggregate["total_collected"] += ingestion_result.total_collected
-        aggregate["unique_candidates"] += ingestion_result.unique_candidates
-        aggregate["inserted"] += ingestion_result.inserted
-        aggregate["skipped_existing"] += ingestion_result.skipped_existing
-        aggregate["skipped_in_batch"] += ingestion_result.skipped_in_batch
+        aggregate["total_collected"] += collection_result.total_collected
+        aggregate["unique_candidates"] += collection_result.unique_candidates
+        aggregate["inserted"] += collection_result.inserted
+        aggregate["skipped_existing"] += collection_result.skipped_existing
+        aggregate["skipped_in_batch"] += collection_result.skipped_in_batch
+
+    parse_result = asyncio.run(ArticleParseService(collector=collector).parse_articles())
 
     _print_summary(args, cutoff, all_articles, aggregate, source_counter, failed_sources)
+    print(
+        "parse summary: "
+        f"candidates={parse_result.candidates} "
+        f"parsed={parse_result.parsed} "
+        f"failed={parse_result.failed}"
+    )
     return 0
 
 

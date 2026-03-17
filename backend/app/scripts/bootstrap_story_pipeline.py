@@ -16,7 +16,8 @@ if str(ROOT_DIR) not in sys.path:
 
 from backend.app.core.database import Base, SessionLocal, engine
 from backend.app.models import Article, PipelineRun, Story, StoryArticle, ensure_article_storage_schema
-from backend.app.service.article_ingestion_service import ArticleIngestionService
+from backend.app.service.article_collection_service import ArticleCollectionService
+from backend.app.service.article_parse_service import ArticleParseService
 from backend.app.service.story_pipeline_contracts import StoryDraft
 from backend.app.service.story_workflow_service import StoryWorkflowService
 
@@ -29,7 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--skip-ingest",
         action="store_true",
-        help="Skip article ingestion and only process already ingested articles.",
+        help="Skip article collection and only parse/process already stored articles.",
     )
     parser.add_argument(
         "--source",
@@ -57,22 +58,30 @@ def main() -> int:
     ensure_article_storage_schema(engine)
     Base.metadata.create_all(bind=engine)
 
-    ingestion_result = None
+    collection_result = None
+    parse_result = None
     if not args.skip_ingest:
-        ingestion_result = asyncio.run(
-            ArticleIngestionService().collect_and_ingest(
+        collection_result = asyncio.run(
+            ArticleCollectionService().collect_articles(
                 source_names=args.sources,
                 limit_sources=args.limit_sources,
             )
         )
         print(
-            "bootstrap ingestion completed: "
-            f"collected={ingestion_result.total_collected} "
-            f"unique_candidates={ingestion_result.unique_candidates} "
-            f"inserted={ingestion_result.inserted} "
-            f"skipped_existing={ingestion_result.skipped_existing} "
-            f"skipped_in_batch={ingestion_result.skipped_in_batch}"
+            "bootstrap collection completed: "
+            f"collected={collection_result.total_collected} "
+            f"unique_candidates={collection_result.unique_candidates} "
+            f"inserted={collection_result.inserted} "
+            f"skipped_existing={collection_result.skipped_existing} "
+            f"skipped_in_batch={collection_result.skipped_in_batch}"
         )
+    parse_result = asyncio.run(ArticleParseService().parse_articles())
+    print(
+        "bootstrap parse completed: "
+        f"candidates={parse_result.candidates} "
+        f"parsed={parse_result.parsed} "
+        f"failed={parse_result.failed}"
+    )
 
     story_dates = [args.story_date] if args.story_date else _list_story_dates()
     if not story_dates:
@@ -138,7 +147,8 @@ def main() -> int:
         f"enriched={aggregate['enriched']} "
         f"published={aggregate['published']} "
         f"stories_created={aggregate['stories_created']} "
-        f"ingested={0 if ingestion_result is None else ingestion_result.inserted}"
+        f"collected={0 if collection_result is None else collection_result.inserted} "
+        f"parsed={0 if parse_result is None else parse_result.parsed}"
     )
     return 0
 
@@ -147,7 +157,7 @@ def _list_story_dates() -> list[date]:
     with SessionLocal() as session:
         published_values = session.scalars(
             select(Article.published_at)
-            .where(Article.published_at.is_not(None))
+            .where(Article.published_at.is_not(None), Article.parse_status == "done")
             .order_by(Article.published_at.asc())
         ).all()
     return sorted({value.date() for value in published_values if value is not None})
@@ -162,6 +172,7 @@ def _load_story_date_article_ids(story_date: date) -> list[str]:
                 select(Article.article_id)
                 .where(
                     Article.published_at.is_not(None),
+                    Article.parse_status == "done",
                     Article.published_at >= start,
                     Article.published_at <= end,
                 )

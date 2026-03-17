@@ -1,21 +1,21 @@
-"""Offline daily pipeline entrypoint: ingestion bookkeeping plus story workflow persistence."""
+"""Offline daily pipeline entrypoint: collection/parse bookkeeping plus story workflow persistence."""
 
 from __future__ import annotations
 
 import asyncio
 import inspect
 from datetime import UTC, datetime
-from typing import Callable
+from typing import Any, Callable
 
 from sqlalchemy import Select, select
 from sqlalchemy.orm import Session
 
 from backend.app.core.database import SessionLocal
 from backend.app.models import Article, PipelineRun, Story, StoryArticle, ensure_article_storage_schema
+from backend.app.service.article_collection_service import ArticleCollectionService, CollectionResult
 from backend.app.service.article_cluster_service import ArticleClusterService
 from backend.app.service.article_enrichment_service import ArticleEnrichmentService
-from backend.app.service.article_ingestion_service import ArticleIngestionService, IngestionResult
-from backend.app.service.embedding_service import StoryEmbeddingService
+from backend.app.service.article_parse_service import ArticleParseService, ParseResult
 from backend.app.service.story_generation_service import StoryGenerationService
 from backend.app.service.story_workflow_service import (
     PROCESSING_STAGES,
@@ -28,9 +28,10 @@ from backend.app.service.story_pipeline_contracts import (
 
 RUN_TYPE_DAILY_STORY = "daily_story"
 STORY_GROUPING_INCREMENTAL = "incremental_ingested_at"
-STAGE_INGESTION = "ingestion"
+STAGE_COLLECTION = "collection"
+STAGE_PARSE = "parse"
 STAGE_STORY_PERSIST = "story_persist"
-ALL_PROCESSING_STAGES = PROCESSING_STAGES + (STAGE_STORY_PERSIST,)
+ALL_PROCESSING_STAGES = (STAGE_COLLECTION, STAGE_PARSE) + PROCESSING_STAGES + (STAGE_STORY_PERSIST,)
 
 
 class DailyPipelineService:
@@ -38,15 +39,21 @@ class DailyPipelineService:
         self,
         *,
         session_factory: Callable[[], Session] = SessionLocal,
-        ingestion_service: ArticleIngestionService | None = None,
+        collection_service: ArticleCollectionService | None = None,
+        parse_service: ArticleParseService | None = None,
         story_workflow_service: StoryWorkflowService | None = None,
         enrichment_service: ArticleEnrichmentService | None = None,
-        embedding_service: StoryEmbeddingService | None = None,
+        embedding_service: Any | None = None,
         cluster_service: ArticleClusterService | None = None,
         story_generation_service: StoryGenerationService | None = None,
     ) -> None:
         self._session_factory = session_factory
-        self._ingestion_service = ingestion_service or ArticleIngestionService()
+        self._collection_service = collection_service or ArticleCollectionService(
+            session_factory=session_factory,
+        )
+        self._parse_service = parse_service or ArticleParseService(
+            session_factory=session_factory,
+        )
         self._story_workflow_service = story_workflow_service or StoryWorkflowService(
             session_factory=session_factory,
             enrichment_service=enrichment_service,
@@ -69,34 +76,45 @@ class DailyPipelineService:
             limit_sources=limit_sources,
             story_grouping_mode=story_grouping_mode,
         )
-        ingestion_result: IngestionResult | None = None
+        collection_result: CollectionResult | None = None
+        parse_result: ParseResult | None = None
         stages_completed: list[str] = []
         stages_skipped: list[str] = []
 
         try:
             if skip_ingest:
-                stages_skipped.append(STAGE_INGESTION)
+                stages_skipped.append(STAGE_COLLECTION)
             else:
-                collected = self._ingestion_service.collect_and_ingest(
+                collected = self._collection_service.collect_articles(
                     source_names=source_names,
                     limit_sources=limit_sources,
                 )
                 if inspect.isawaitable(collected):
-                    ingestion_result = asyncio.run(collected)
+                    collection_result = asyncio.run(collected)
                 else:
-                    ingestion_result = collected
-                stages_completed.append(STAGE_INGESTION)
+                    collection_result = collected
+                stages_completed.append(STAGE_COLLECTION)
         except Exception as exc:
             self._mark_failed(run_id, exc)
             raise
 
         try:
+            parsed = self._parse_service.parse_articles()
+            if inspect.isawaitable(parsed):
+                parse_result = asyncio.run(parsed)
+            else:
+                parse_result = parsed
+            if parse_result.candidates > 0:
+                stages_completed.append(STAGE_PARSE)
+            else:
+                stages_skipped.append(STAGE_PARSE)
+
             with self._session_factory() as session:
                 last_success_watermark = self._get_last_success_watermark(session, run_id=run_id)
                 candidate_articles = session.scalars(self._candidate_query(last_success_watermark)).all()
 
             if not candidate_articles:
-                stages_skipped.extend(ALL_PROCESSING_STAGES)
+                stages_skipped.extend(PROCESSING_STAGES + (STAGE_STORY_PERSIST,))
                 self._mark_success(
                     run_id,
                     watermark_ingested_at=last_success_watermark,
@@ -105,7 +123,9 @@ class DailyPipelineService:
                         "enriched": 0,
                         "published": 0,
                         "stories_created": 0,
-                        "ingested": ingestion_result.inserted if ingestion_result else 0,
+                        "collected": collection_result.inserted if collection_result else 0,
+                        "parsed": parse_result.parsed if parse_result else 0,
+                        "parse_failed": parse_result.failed if parse_result else 0,
                         "story_date": None,
                         "story_grouping_mode": story_grouping_mode,
                         "stages_completed": stages_completed,
@@ -141,7 +161,9 @@ class DailyPipelineService:
                     "enriched": workflow_result.enriched_count,
                     "published": len(workflow_result.publishable_records),
                     "stories_created": len(workflow_result.story_drafts),
-                    "ingested": ingestion_result.inserted if ingestion_result else 0,
+                    "collected": collection_result.inserted if collection_result else 0,
+                    "parsed": parse_result.parsed if parse_result else 0,
+                    "parse_failed": parse_result.failed if parse_result else 0,
                     "story_date": None,
                     "story_grouping_mode": story_grouping_mode,
                     "stages_completed": stages_completed,
@@ -194,7 +216,11 @@ class DailyPipelineService:
         self,
         watermark_ingested_at: datetime | None,
     ) -> Select[tuple[Article]]:
-        query = select(Article).order_by(Article.ingested_at.asc(), Article.article_id.asc())
+        query = (
+            select(Article)
+            .where(Article.parse_status == "done")
+            .order_by(Article.ingested_at.asc(), Article.article_id.asc())
+        )
         if watermark_ingested_at is None:
             return query
         return query.where(Article.ingested_at > watermark_ingested_at)

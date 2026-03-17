@@ -1,4 +1,4 @@
-"""Collect fashion news into markdown blocks and image asset candidates."""
+"""Collect article seeds and parse article detail into text markdown + images."""
 
 from __future__ import annotations
 
@@ -24,6 +24,7 @@ from backend.app.service.article_contracts import (
     CollectedArticle,
     CollectedImage,
     MarkdownBlock,
+    ParsedArticle,
     SourceCollectionResult,
 )
 
@@ -155,6 +156,43 @@ class NewsCollectionService:
             sources = sources[:limit_sources]
         return sources
 
+    def source_config_for_name(self, source_name: str) -> SourceConfig:
+        normalized_name = source_name.strip().lower()
+        for source in self._source_configs or load_source_configs():
+            if source.name.lower() == normalized_name:
+                return source
+        raise ValueError(f"source config not found: {source_name}")
+
+    def parse_article_html(
+        self,
+        *,
+        source_name: str,
+        url: str,
+        html_text: str,
+    ) -> ParsedArticle:
+        source = self.source_config_for_name(source_name)
+        detail = self._extract_article_detail(
+            html_text=html_text,
+            url=url,
+            detail_config=source.detail,
+        )
+        blocks = detail["blocks"]
+        title = detail["title"]
+        if not blocks:
+            fallback_text = detail["summary"] or title or url
+            blocks = [MarkdownBlock(kind="paragraph", text=fallback_text)]
+        return ParsedArticle(
+            title=title or detail["summary"][:120] or url,
+            summary=detail["summary"] or _excerpt_from_blocks(blocks),
+            markdown_blocks=tuple(blocks),
+            images=tuple(detail["images"]),
+            published_at=detail["published_at"],
+            metadata={
+                "image_count": len(detail["images"]),
+                "block_count": len(blocks),
+            },
+        )
+
     async def _collect_source_results_with_fetch(
         self,
         *,
@@ -265,8 +303,8 @@ class NewsCollectionService:
             if not link:
                 return None
 
-            title = _clean_text(str(entry.get("title") or ""))
-            published_at = _parse_datetime(
+            feed_title = _clean_text(str(entry.get("title") or ""))
+            feed_published_at = _parse_datetime(
                 entry.get("published")
                 or entry.get("updated")
                 or entry.get("pubDate")
@@ -275,43 +313,30 @@ class NewsCollectionService:
 
             feed_summary_raw = str(entry.get("summary") or entry.get("description") or "")
             feed_summary = _clean_text(feed_summary_raw)
-            blocks, images, excerpt = _parse_html_fragment_to_document(
+            feed_blocks, excerpt = _parse_html_fragment_to_document(
                 html_fragment=_extract_feed_content_html(entry) or feed_summary_raw,
                 base_url=link,
                 source_selector="rss:entry",
             )
-            images = _merge_meta_images(
-                _extract_feed_image_candidates(entry, normalize_url=self.normalize_url),
-                images,
-            )
             summary = feed_summary or excerpt
-            markdown_text_length = len(_plain_text_from_blocks(blocks))
-            canonical_url = self.normalize_url(link)
+            if not summary:
+                summary = _excerpt_from_blocks(feed_blocks)
 
-            if markdown_text_length < 280:
-                async with detail_semaphore:
-                    try:
-                        detail_html = await fetch_text(link)
-                    except Exception:
-                        detail_html = ""
-                if detail_html:
-                    detail = self._extract_article_detail(
-                        html_text=detail_html,
-                        url=link,
-                        detail_config=source.detail,
-                    )
-                    title = detail["title"] or title
-                    summary = detail["summary"] or summary
-                    blocks = detail["blocks"] or blocks
-                    images = _merge_meta_images(detail["images"], images)
-                    canonical_url = self.normalize_url(detail["canonical_url"] or link)
+            async with detail_semaphore:
+                try:
+                    detail_html = await fetch_text(link)
+                except Exception:
+                    return None
 
-            if not blocks:
-                fallback_text = summary or title or link
-                blocks = [MarkdownBlock(kind="paragraph", text=fallback_text)]
-
-            blocks = _ensure_hero_placeholders(blocks, images)
-            images = _with_context_snippets(blocks, images)
+            detail = self._extract_seed_detail(
+                html_text=detail_html,
+                url=link,
+                detail_config=source.detail,
+            )
+            title = detail["title"] or feed_title
+            published_at = detail["published_at"] or feed_published_at
+            canonical_url = self.normalize_url(detail["canonical_url"] or link)
+            summary = detail["summary"] or summary
             article = CollectedArticle(
                 source_name=source.name,
                 source_type=source.type,
@@ -320,15 +345,11 @@ class NewsCollectionService:
                 url=link,
                 canonical_url=canonical_url,
                 title=title or summary[:120] or link,
-                summary=summary or _excerpt_from_blocks(blocks),
-                markdown_blocks=tuple(blocks),
-                images=tuple(images),
+                summary=summary or link,
                 published_at=published_at,
                 metadata={
                     "entry_id": str(entry.get("id") or ""),
                     "source_hash": _stable_hash(link, title),
-                    "image_count": len(images),
-                    "block_count": len(blocks),
                 },
             )
             if _passes_published_window(
@@ -370,17 +391,15 @@ class NewsCollectionService:
                 except Exception:
                     return None
 
-            detail = self._extract_article_detail(
+            detail = self._extract_seed_detail(
                 html_text=html_text,
                 url=url,
                 detail_config=source.detail,
             )
             title = detail["title"]
-            blocks = detail["blocks"]
-            if not title or not blocks:
+            if not title:
                 return None
 
-            images = _with_context_snippets(blocks, detail["images"])
             article = CollectedArticle(
                 source_name=source.name,
                 source_type=source.type,
@@ -389,14 +408,10 @@ class NewsCollectionService:
                 url=url,
                 canonical_url=self.normalize_url(detail["canonical_url"] or url),
                 title=title,
-                summary=detail["summary"] or _excerpt_from_blocks(blocks),
-                markdown_blocks=tuple(blocks),
-                images=tuple(images),
+                summary=detail["summary"] or title,
                 published_at=detail["published_at"],
                 metadata={
                     "source_hash": _stable_hash(url, title),
-                    "image_count": len(images),
-                    "block_count": len(blocks),
                 },
             )
             if _passes_published_window(
@@ -468,6 +483,51 @@ class NewsCollectionService:
 
         return discovered
 
+    def _extract_seed_detail(
+        self,
+        *,
+        html_text: str,
+        url: str,
+        detail_config: DetailConfig,
+    ) -> dict[str, Any]:
+        soup = BeautifulSoup(html_text, "html.parser")
+        for selector in detail_config.remove_selectors:
+            for node in soup.select(selector):
+                node.decompose()
+
+        canonical_url = _extract_canonical_url(soup=soup)
+        title = _extract_text_by_selectors(soup, detail_config.title_selectors)
+        if not title:
+            title_node = soup.select_one("meta[property='og:title']") or soup.select_one("title")
+            title = _extract_node_text(title_node)
+
+        summary = _extract_meta_content(soup, "meta[name='description']")
+        if not summary:
+            content_nodes = []
+            for selector in detail_config.content_selectors:
+                nodes = [node for node in soup.select(selector) if _node_has_content(node)]
+                if nodes:
+                    content_nodes = nodes
+                    break
+            if not content_nodes and soup.body is not None:
+                content_nodes = [soup.body]
+            if content_nodes:
+                blocks, _, _ = _build_blocks_and_images(
+                    nodes=content_nodes,
+                    base_url=url,
+                    source_selector="seed",
+                    normalize_url=self.normalize_url,
+                )
+                summary = _excerpt_from_blocks(blocks)
+        published_text = _extract_selector_value(soup, detail_config.published_selectors)
+        published_at = _parse_datetime(published_text)
+        return {
+            "canonical_url": canonical_url or self.normalize_url(url),
+            "title": title,
+            "summary": summary,
+            "published_at": published_at,
+        }
+
     def _extract_article_detail(
         self,
         *,
@@ -480,11 +540,7 @@ class NewsCollectionService:
             for node in soup.select(selector):
                 node.decompose()
 
-        canonical_node = soup.select_one("link[rel='canonical']")
-        canonical_url = canonical_node.get("href", "") if canonical_node else ""
-        if not canonical_url:
-            og_url = soup.select_one("meta[property='og:url']")
-            canonical_url = og_url.get("content", "") if og_url else ""
+        canonical_url = _extract_canonical_url(soup=soup)
 
         title = _extract_text_by_selectors(soup, detail_config.title_selectors)
         if not title:
@@ -504,7 +560,7 @@ class NewsCollectionService:
         if not content_nodes and soup.body is not None:
             content_nodes = [soup.body]
 
-        blocks, images = _build_blocks_and_images(
+        blocks, images, image_anchor_positions = _build_blocks_and_images(
             nodes=content_nodes,
             base_url=url,
             source_selector=matched_selector or "body",
@@ -525,7 +581,11 @@ class NewsCollectionService:
             normalize_url=self.normalize_url,
         )
         images = _merge_meta_images(hero_images, images)
-        blocks = _ensure_hero_placeholders(blocks, images)
+        images = _with_context_snippets(
+            blocks=blocks,
+            images=images,
+            image_anchor_positions=image_anchor_positions,
+        )
 
         return {
             "canonical_url": canonical_url,
@@ -563,10 +623,11 @@ def _build_blocks_and_images(
     base_url: str,
     source_selector: str,
     normalize_url: Callable[[str], str],
-) -> tuple[list[MarkdownBlock], list[CollectedImage]]:
+) -> tuple[list[MarkdownBlock], list[CollectedImage], dict[int, int]]:
     blocks: list[MarkdownBlock] = []
     images: list[CollectedImage] = []
     image_index_by_url: dict[str, int] = {}
+    image_anchor_positions: dict[int, int] = {}
 
     for node in nodes:
         _consume_node(
@@ -574,12 +635,13 @@ def _build_blocks_and_images(
             blocks=blocks,
             images=images,
             image_index_by_url=image_index_by_url,
+            image_anchor_positions=image_anchor_positions,
             base_url=base_url,
             source_selector=source_selector,
             normalize_url=normalize_url,
         )
 
-    return _normalize_blocks(blocks), images
+    return _normalize_blocks(blocks), images, image_anchor_positions
 
 
 def _consume_node(
@@ -588,6 +650,7 @@ def _consume_node(
     blocks: list[MarkdownBlock],
     images: list[CollectedImage],
     image_index_by_url: dict[str, int],
+    image_anchor_positions: dict[int, int],
     base_url: str,
     source_selector: str,
     normalize_url: Callable[[str], str],
@@ -609,6 +672,7 @@ def _consume_node(
             blocks=blocks,
             images=images,
             image_index_by_url=image_index_by_url,
+            image_anchor_positions=image_anchor_positions,
             base_url=base_url,
             source_selector=source_selector,
             normalize_url=normalize_url,
@@ -621,6 +685,7 @@ def _consume_node(
             blocks=blocks,
             images=images,
             image_index_by_url=image_index_by_url,
+            image_anchor_positions=image_anchor_positions,
             base_url=base_url,
             source_selector=source_selector,
             normalize_url=normalize_url,
@@ -634,6 +699,7 @@ def _consume_node(
                 blocks=blocks,
                 images=images,
                 image_index_by_url=image_index_by_url,
+                image_anchor_positions=image_anchor_positions,
                 base_url=base_url,
                 source_selector=source_selector,
                 normalize_url=normalize_url,
@@ -645,6 +711,7 @@ def _consume_node(
             blocks=blocks,
             images=images,
             image_index_by_url=image_index_by_url,
+            image_anchor_positions=image_anchor_positions,
             base_url=base_url,
             source_selector=source_selector,
             normalize_url=normalize_url,
@@ -655,9 +722,10 @@ def _consume_node(
             image_tag=node,
             role="inline",
             caption_raw="",
-            blocks=blocks,
             images=images,
             image_index_by_url=image_index_by_url,
+            image_anchor_positions=image_anchor_positions,
+            anchor_index=len(blocks),
             base_url=base_url,
             source_kind="inline",
             source_selector=source_selector,
@@ -677,6 +745,7 @@ def _consume_node(
                 blocks=blocks,
                 images=images,
                 image_index_by_url=image_index_by_url,
+                image_anchor_positions=image_anchor_positions,
                 base_url=base_url,
                 source_selector=source_selector,
                 normalize_url=normalize_url,
@@ -695,6 +764,7 @@ def _consume_mixed_container(
     blocks: list[MarkdownBlock],
     images: list[CollectedImage],
     image_index_by_url: dict[str, int],
+    image_anchor_positions: dict[int, int],
     base_url: str,
     source_selector: str,
     normalize_url: Callable[[str], str],
@@ -721,9 +791,10 @@ def _consume_mixed_container(
                 image_tag=child,
                 role="inline",
                 caption_raw="",
-                blocks=blocks,
                 images=images,
                 image_index_by_url=image_index_by_url,
+                image_anchor_positions=image_anchor_positions,
+                anchor_index=len(blocks),
                 base_url=base_url,
                 source_kind="inline",
                 source_selector=source_selector,
@@ -737,6 +808,7 @@ def _consume_mixed_container(
                 blocks=blocks,
                 images=images,
                 image_index_by_url=image_index_by_url,
+                image_anchor_positions=image_anchor_positions,
                 base_url=base_url,
                 source_selector=source_selector,
                 normalize_url=normalize_url,
@@ -755,6 +827,7 @@ def _consume_figure(
     blocks: list[MarkdownBlock],
     images: list[CollectedImage],
     image_index_by_url: dict[str, int],
+    image_anchor_positions: dict[int, int],
     base_url: str,
     source_selector: str,
     normalize_url: Callable[[str], str],
@@ -765,16 +838,15 @@ def _consume_figure(
             image_tag=image_tag,
             role="gallery" if len(node.find_all("img")) > 1 else "inline",
             caption_raw=caption,
-            blocks=blocks,
             images=images,
             image_index_by_url=image_index_by_url,
+            image_anchor_positions=image_anchor_positions,
+            anchor_index=len(blocks),
             base_url=base_url,
             source_kind="figure",
             source_selector=source_selector,
             normalize_url=normalize_url,
         )
-    if caption:
-        blocks.append(MarkdownBlock(kind="paragraph", text=caption))
 
 
 def _append_image_block(
@@ -782,9 +854,10 @@ def _append_image_block(
     image_tag: Tag,
     role: str,
     caption_raw: str,
-    blocks: list[MarkdownBlock],
     images: list[CollectedImage],
     image_index_by_url: dict[str, int],
+    image_anchor_positions: dict[int, int],
+    anchor_index: int,
     base_url: str,
     source_kind: str,
     source_selector: str,
@@ -807,7 +880,7 @@ def _append_image_block(
         image_index_by_url=image_index_by_url,
         candidate=candidate,
     )
-    blocks.append(MarkdownBlock(kind="image", image_index=image_index))
+    image_anchor_positions.setdefault(image_index, anchor_index)
 
 
 def _image_from_tag(
@@ -935,22 +1008,22 @@ def _parse_html_fragment_to_document(
     html_fragment: str,
     base_url: str,
     source_selector: str,
-) -> tuple[list[MarkdownBlock], list[CollectedImage], str]:
+) -> tuple[list[MarkdownBlock], str]:
     if not html_fragment.strip():
-        return [], [], ""
+        return [], ""
 
     fragment_soup = BeautifulSoup(f"<div>{html_fragment}</div>", "html.parser")
     root = fragment_soup.find("div")
     if root is None:
-        return [], [], ""
+        return [], ""
 
-    blocks, images = _build_blocks_and_images(
+    blocks, _, _ = _build_blocks_and_images(
         nodes=root.children,
         base_url=base_url,
         source_selector=source_selector,
         normalize_url=lambda value: NewsCollectionService.normalize_url(value),
     )
-    return blocks, images, _excerpt_from_blocks(blocks)
+    return blocks, _excerpt_from_blocks(blocks)
 
 
 def _upsert_image_candidate(
@@ -1008,39 +1081,14 @@ def _merge_meta_images(
     return merged
 
 
-def _ensure_hero_placeholders(
-    blocks: list[MarkdownBlock],
-    images: list[CollectedImage],
-) -> list[MarkdownBlock]:
-    referenced_indexes = {
-        block.image_index
-        for block in blocks
-        if block.kind == "image" and block.image_index is not None
-    }
-    hero_indexes = [
-        index for index, image in enumerate(images) if image.role == "hero" and index not in referenced_indexes
-    ]
-    if not hero_indexes:
-        return blocks
-
-    leading_blocks = [MarkdownBlock(kind="image", image_index=index) for index in hero_indexes]
-    return leading_blocks + blocks
-
-
 def _with_context_snippets(
+    *,
     blocks: list[MarkdownBlock],
     images: list[CollectedImage],
+    image_anchor_positions: dict[int, int],
 ) -> list[CollectedImage]:
     for image_index, image in enumerate(images):
-        block_positions = [
-            position
-            for position, block in enumerate(blocks)
-            if block.kind == "image" and block.image_index == image_index
-        ]
-        if not block_positions:
-            continue
-
-        block_position = block_positions[0]
+        block_position = image_anchor_positions.get(image_index, 0)
         previous_text = next(
             (
                 block.text
@@ -1052,7 +1100,7 @@ def _with_context_snippets(
         next_text = next(
             (
                 block.text
-                for block in blocks[block_position + 1 :]
+                for block in blocks[block_position:]
                 if block.kind in TEXT_BLOCK_KINDS and block.text.strip()
             ),
             "",
@@ -1065,18 +1113,12 @@ def _with_context_snippets(
 
 def _normalize_blocks(blocks: list[MarkdownBlock]) -> list[MarkdownBlock]:
     normalized: list[MarkdownBlock] = []
-    last_signature: tuple[str, str, int | None] | None = None
+    last_signature: tuple[str, str] | None = None
     for block in blocks:
         text = _clean_text(block.text)
-        if block.kind == "image":
-            signature = (block.kind, "", block.image_index)
-            if signature != last_signature:
-                normalized.append(block)
-            last_signature = signature
-            continue
         if not text:
             continue
-        signature = (block.kind, text, None)
+        signature = (block.kind, text)
         if signature != last_signature:
             normalized.append(MarkdownBlock(kind=block.kind, text=text))
         last_signature = signature
@@ -1128,6 +1170,18 @@ def _extract_meta_content(soup: BeautifulSoup, selector: str) -> str:
     node = soup.select_one(selector)
     if node:
         return _clean_text(node.get("content", ""))
+    return ""
+
+
+def _extract_canonical_url(*, soup: BeautifulSoup) -> str:
+    canonical_node = soup.select_one("link[rel='canonical']")
+    canonical_url = canonical_node.get("href", "") if canonical_node else ""
+    if canonical_url:
+        return canonical_url
+
+    og_url = soup.select_one("meta[property='og:url']")
+    if og_url:
+        return og_url.get("content", "")
     return ""
 
 

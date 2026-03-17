@@ -137,6 +137,7 @@ class DailyPipelineServiceTest(unittest.TestCase):
                         image_url="https://example.com/1.jpg",
                         published_at=datetime(2026, 3, 13, 8, 0, 0),
                         ingested_at=datetime(2026, 3, 13, 8, 5, 0),
+                        parse_status="done",
                     ),
                     Article(
                         article_id="article-2",
@@ -151,6 +152,7 @@ class DailyPipelineServiceTest(unittest.TestCase):
                         image_url="https://example.com/2.jpg",
                         published_at=datetime(2026, 3, 13, 7, 0, 0),
                         ingested_at=datetime(2026, 3, 13, 8, 6, 0),
+                        parse_status="done",
                     ),
                     Article(
                         article_id="article-3",
@@ -164,6 +166,7 @@ class DailyPipelineServiceTest(unittest.TestCase):
                         summary_raw="Summary 3",
                         published_at=datetime(2026, 3, 13, 6, 0, 0),
                         ingested_at=datetime(2026, 3, 13, 8, 7, 0),
+                        parse_status="done",
                     ),
                 ]
             )
@@ -199,7 +202,7 @@ class DailyPipelineServiceTest(unittest.TestCase):
                 "story_persist",
             ),
         )
-        self.assertEqual(result.stages_skipped, ("ingestion",))
+        self.assertEqual(result.stages_skipped, ("collection", "parse"))
 
         with self.session_factory() as session:
             stories = session.scalars(select(Story)).all()
@@ -221,7 +224,7 @@ class DailyPipelineServiceTest(unittest.TestCase):
             ],
         )
         self.assertEqual(runs[-1].metadata_json["story_grouping_mode"], "incremental_ingested_at")
-        self.assertEqual(runs[-1].metadata_json["stages_skipped"], ["ingestion"])
+        self.assertEqual(runs[-1].metadata_json["stages_skipped"], ["collection", "parse"])
 
         second_result = service.run(skip_ingest=True)
         self.assertEqual(second_result.candidates, 0)
@@ -230,7 +233,8 @@ class DailyPipelineServiceTest(unittest.TestCase):
         self.assertEqual(
             second_result.stages_skipped,
             (
-                "ingestion",
+                "collection",
+                "parse",
                 "enrichment",
                 "story_embedding",
                 "semantic_cluster",

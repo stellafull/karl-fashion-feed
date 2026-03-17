@@ -4,16 +4,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Callable
+from typing import Any, Callable
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from backend.app.core.database import SessionLocal
 from backend.app.models import Article
+from backend.app.service.RAG.embedding_service import generate_dense_embedding
 from backend.app.service.article_cluster_service import ArticleClusterService
 from backend.app.service.article_enrichment_service import ArticleEnrichmentService
-from backend.app.service.embedding_service import StoryEmbeddingService
 from backend.app.service.story_generation_service import StoryGenerationService
 from backend.app.service.story_pipeline_contracts import EmbeddedArticle, EnrichedArticleRecord, StoryDraft
 
@@ -50,13 +50,13 @@ class StoryWorkflowService:
         *,
         session_factory: Callable[[], Session] = SessionLocal,
         enrichment_service: ArticleEnrichmentService | None = None,
-        embedding_service: StoryEmbeddingService | None = None,
+        embedding_service: Any | None = None,
         cluster_service: ArticleClusterService | None = None,
         story_generation_service: StoryGenerationService | None = None,
     ) -> None:
         self._session_factory = session_factory
         self._enrichment_service = enrichment_service or ArticleEnrichmentService()
-        self._embedding_service = embedding_service or StoryEmbeddingService()
+        self._embedding_service = embedding_service
         self._cluster_service = cluster_service or ArticleClusterService()
         self._story_generation_service = story_generation_service or StoryGenerationService()
 
@@ -94,10 +94,27 @@ class StoryWorkflowService:
         records: list[EnrichedArticleRecord],
     ) -> list[StoryDraft]:
         drafts: list[StoryDraft] = []
-        embedded_articles = self._embedding_service.embed_articles(records)
+        embedded_articles = self._embed_articles(records)
         clusters = self._cluster_service.cluster_articles(embedded_articles)
         drafts.extend(self._generate_story_drafts(clusters))
         return drafts
+
+    def _embed_articles(
+        self,
+        records: list[EnrichedArticleRecord],
+    ) -> list[EmbeddedArticle]:
+        if self._embedding_service is not None:
+            return list(self._embedding_service.embed_articles(records))
+
+        if not records:
+            return []
+
+        texts = [_build_story_embedding_text(record) for record in records]
+        embeddings = generate_dense_embedding(texts)
+        return [
+            EmbeddedArticle(article=record, embedding=tuple(float(value) for value in embedding))
+            for record, embedding in zip(records, embeddings, strict=True)
+        ]
 
     def _generate_story_drafts(self, clusters: list[list[EmbeddedArticle]]) -> list[StoryDraft]:
         if not clusters:
@@ -197,3 +214,16 @@ class StoryWorkflowService:
         if callable(checker):
             return bool(checker(article))
         return article.enrichment_status == "done" and bool((article.cluster_text or "").strip())
+
+
+def _build_story_embedding_text(article: EnrichedArticleRecord) -> str:
+    parts = [
+        article.title_zh.strip(),
+        article.summary_zh.strip(),
+        " ".join(item.strip() for item in article.tags if item.strip()),
+        " ".join(item.strip() for item in article.brands if item.strip()),
+        " ".join(item.strip() for item in article.category_candidates if item.strip()),
+        article.cluster_text.strip(),
+        article.source_name.strip(),
+    ]
+    return "\n".join(part for part in parts if part)

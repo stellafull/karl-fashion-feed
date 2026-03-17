@@ -135,6 +135,28 @@ class Article(Base):
         nullable=True,
         comment="enrichment失败信息",
     )
+    parse_status: Mapped[str] = mapped_column(
+        String(32),
+        nullable=False,
+        default="pending",
+        comment="pending/done/failed",
+    )
+    parsed_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+        comment="正文解析完成时间",
+    )
+    parse_error: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+        comment="正文解析失败信息",
+    )
+    parse_attempts: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+        comment="正文解析尝试次数",
+    )
 
     # Legacy transitional fields retained for backfill compatibility.
     content_raw: Mapped[str] = mapped_column(
@@ -227,6 +249,18 @@ def ensure_article_storage_schema(bind: Engine) -> None:
         missing_statements.append("ALTER TABLE article ADD COLUMN enriched_at TIMESTAMP")
     if "enrichment_error" not in existing_columns:
         missing_statements.append("ALTER TABLE article ADD COLUMN enrichment_error TEXT")
+    if "parse_status" not in existing_columns:
+        missing_statements.append(
+            "ALTER TABLE article ADD COLUMN parse_status VARCHAR(32) DEFAULT 'pending' NOT NULL"
+        )
+    if "parsed_at" not in existing_columns:
+        missing_statements.append("ALTER TABLE article ADD COLUMN parsed_at TIMESTAMP")
+    if "parse_error" not in existing_columns:
+        missing_statements.append("ALTER TABLE article ADD COLUMN parse_error TEXT")
+    if "parse_attempts" not in existing_columns:
+        missing_statements.append(
+            "ALTER TABLE article ADD COLUMN parse_attempts INTEGER DEFAULT 0 NOT NULL"
+        )
 
     _apply_schema_statements(bind, missing_statements)
 
