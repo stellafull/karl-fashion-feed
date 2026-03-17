@@ -29,25 +29,38 @@
 
 ## 每日 Pipeline
 
-1. `article_collection_service`
-   抓取来源文章，清洗字段，归一化 `canonical_url`，解析为 Markdown blocks 和图片资产候选，完成去重入库。
+1. `NewsCollectionService`
+   抓取来源文章，清洗字段，归一化 `canonical_url`，解析为 Markdown blocks 和图片资产候选。
 
-2. `article_summarization_service`
+2. `ArticleIngestionService`
+   对增量 article 执行去重入库，写入 `article`、canonical Markdown 和 `article_image`。
+
+3. `ArticleEnrichmentService`
    对每篇 `article` 执行一次 LLM enrichment，产出：
    `should_publish`、`reject_reason`、中文标题、中文摘要、标签、品牌、分类建议、全文翻译
 
-3. `embedding_service`
-   仅对 `should_publish=true` 的文章生成 embedding。
+4. `StoryEmbeddingService`
+   仅对 `should_publish=true` 的文章生成 story aggregation embedding。
    embedding 输入建议使用中文标题、中文摘要、标签、品牌等结构化拼接文本。
 
-4. `article_cluster_service`
+5. `ArticleClusterService`
    基于 embedding 做语义聚类，输出 story 候选簇。
 
-5. `article_cluster_service` + LLM 复核
+6. `ArticleClusterService` + LLM 复核
    对候选簇做复核，必要时拆分，再生成最终 `story` 标题、摘要、要点、标签和分类。
 
-6. 持久化
-   写入 `article`、Markdown 文件、`article_image`，再写入 `story`、`story_article`、`retrieval_unit_ref`，记录本次 `pipeline_run`。
+7. `StoryGenerationService` + `DailyPipelineService`
+   生成最终 `story` 草稿，并写入 `story`、`story_article`、`pipeline_run`。
+
+### 初始化与增量的 story 聚合规则
+
+- 初始化 / bootstrap
+  - 通过 `backend/app/scripts/bootstrap_story_pipeline.py` 按 `published_at` 日期逐日执行。
+  - 每个自然日单独跑一次 pipeline run，而不是把历史全量 article 一次性落成同一轮 bootstrap run。
+  - 目的是避免历史全量 article 在第一次建 story 时跨天混聚。
+- 日常增量
+  - 继续按新增 `article` 处理。
+  - 判断新增范围以 `ingested_at` watermark 为准，而不是回看 `published_at`。
 
 ## `sources.yaml` 格式
 
@@ -150,20 +163,40 @@
 
 ## 服务职责边界
 
-- `article_collection_service`：采集、清洗、去重、入库
-- `article_summarization_service`：翻译、总结、过滤、标签抽取、分类建议
-- `embedding_service`：embedding 生成与向量副本同步
-- `article_cluster_service`：语义聚类与 story 候选拆分
-- `scheduler_service`：编排每日任务和失败恢复
-- `rag_agent`：消费 retrieval 结果，不反向改写 `article` / `story`
+- `NewsCollectionService`：采集、正文解析、canonical URL 归一化前的数据收集
+- `ArticleIngestionService`：增量去重、Markdown 落盘、`article` / `article_image` 入库
+- `ArticleEnrichmentService`：翻译、总结、过滤、标签抽取、分类建议
+- `StoryEmbeddingService`：story 聚合 embedding 生成
+- `ArticleClusterService`：初始语义聚类和 LLM 拆分复核
+- `StoryGenerationService`：cluster 到 story draft 的生成
+- `DailyPipelineService`：编排当前已实现的日更 story pipeline
+- `ImageAnalysisService`：图片分析能力，当前未接入日更 story pipeline
 
-## 当前实现优先级
+## 当前实现状态
 
-1. 打通 `article` 采集与入库
-2. 打通 LLM enrichment
-3. 打通 immutable `story` 生成
-4. 打通 retrieval chunk 与 Milvus 副本
-5. 最后接入 chat / RAG
+### 已完成的 Daily Story Pipeline
+
+- `NewsCollectionService`
+- `ArticleIngestionService`
+- `ArticleEnrichmentService`
+- `StoryEmbeddingService`
+- `ArticleClusterService` 的初始聚类 + LLM split review
+- `StoryGenerationService`
+- `DailyPipelineService`
+- `story`、`story_article`、`pipeline_run` 持久化
+
+### 已有基础但未接入主链
+
+- `RetrievalUnitRef` ORM / schema
+- `ImageAnalysisService`
+
+### 尚未完成
+
+- `retrieval_unit_ref` materialization
+- Milvus text / image 副本同步
+- query planner 与 intent-driven retrieval
+- RAG agent
+- 北京时间 8 点调度器
 
 ## Scripts
 

@@ -23,6 +23,36 @@ python backend/main.py validate-sources
 python backend/main.py ingest-articles
 ```
 
+执行完整日更 pipeline：
+
+```bash
+python backend/main.py run-daily-pipeline
+```
+
+只处理已入库 article，不重新采集：
+
+```bash
+python backend/main.py run-daily-pipeline --skip-ingest
+```
+
+执行一次初始化 story 聚合，按 `published_at` 的日期分组：
+
+```bash
+python backend/app/scripts/bootstrap_story_pipeline.py
+```
+
+如果 article 已经全量入库，只做 bootstrap story 聚合：
+
+```bash
+python backend/app/scripts/bootstrap_story_pipeline.py --skip-ingest
+```
+
+只跑某一天的 bootstrap story 聚合：
+
+```bash
+python backend/app/scripts/bootstrap_story_pipeline.py --skip-ingest --story-date 2026-03-16
+```
+
 只跑指定来源：
 
 ```bash
