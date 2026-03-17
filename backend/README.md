@@ -23,7 +23,7 @@
 - `story` 是不可变读模型，`story_key` 使用 UUID。
 - 每天北京时间 8 点只处理新增 `article`，生成新的 `story`。
 - 旧 `story` 不更新、不合并、不重写。
-- `article` / `retrieval_unit_ref` 是检索与引用真相源。
+- `article` / `article_image` 是检索与引用真相源。
 - Milvus 只是检索副本。
 - Redis 只负责缓存、锁、短期会话态。
 
@@ -143,14 +143,6 @@
 - `article_id`
 - `rank`
 
-### `retrieval_unit_ref`
-
-- `retrieval_unit_id`
-- `article_id`
-- `chunk_index`
-- `chunk_text`
-- `embedding_ref`
-
 ### `pipeline_run`
 
 - `run_id`
@@ -187,12 +179,10 @@
 
 ### 已有基础但未接入主链
 
-- `RetrievalUnitRef` ORM / schema
 - `ImageAnalysisService`
 
 ### 尚未完成
 
-- `retrieval_unit_ref` materialization
 - Milvus text / image 副本同步
 - query planner 与 intent-driven retrieval
 - RAG agent

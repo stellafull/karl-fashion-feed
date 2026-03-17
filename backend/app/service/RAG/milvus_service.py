@@ -4,6 +4,11 @@ from typing import Any, Dict
 from dotenv import find_dotenv, load_dotenv
 from pymilvus import Collection, CollectionSchema, DataType, FieldSchema, connections, utility
 
+
+MODALITY_TYPE = {
+    "text", "image",
+}
+
 class MilvusService:
     """Milvus vector database service."""
 
@@ -37,22 +42,37 @@ class MilvusService:
 
         """
         Field schema Args
-        - id 文档id
+        - retrieval_unit_id 检索主键，建议使用稳定命名规则，如 text:{article_id}:{chunk_index} / image:{article_image_id}
         - article_id 来源文章id
-        - vector 向量数据
+        - article_image_id 图片id 对齐 article_image.image_id，文本条目该字段可填 None
         - content 文本内容/图片文字描述
         - chunk_index 文本块索引
-        - type 数据类型 text/image 
+        - modality 数据类型 text/image 
+        - source_name 数据来源
+        - category 分类
+        - tags_json 标签列表，JSON字符串格式
+        - brands_json 品牌列表，JSON字符串格式
+        - ingested_at 时间，直接复用数据库 article.ingested_at 既用于显式时间过滤，也用于freshness decay排序
+        - dense_vector 多模态向量，维度与 embedding_config.py 中 DENSE_EMBEDDING_CONFIG.vector_dimension 保持一致
+        - sparse_vector 稀疏向量
         """
 
         # 定义字段
         fields = [
-            FieldSchema(name="id", dtype=DataType.VARCHAR, is_primary=True, max_length=64),
+            FieldSchema(name="retrieval_unit_id", dtype=DataType.VARCHAR, is_primary=True, max_length=128),
             FieldSchema(name="article_id", dtype=DataType.VARCHAR, max_length=64),
-            FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=self.vector_dim),
+            FieldSchema(name="article_image_id", dtype=DataType.VARCHAR, max_length=64, nullable=True),
+            FieldSchema(name="unit_kind", dtype=DataType.VARCHAR, max_length=32),
             FieldSchema(name="content", dtype=DataType.VARCHAR, max_length=65535),
-            FieldSchema(name="chunk_index", dtype=DataType.INT64),
-            FieldSchema(name="type", dtype=DataType.VARCHAR, max_length=32)
+            FieldSchema(name="chunk_index", dtype=DataType.INT64, nullable=True),
+            FieldSchema(name="modality", dtype=DataType.VARCHAR, max_length=16),
+            FieldSchema(name="source_name", dtype=DataType.VARCHAR, max_length=64),
+            FieldSchema(name="category", dtype=DataType.VARCHAR, max_length=64),
+            FieldSchema(name="tags_json", dtype=DataType.JSON, nullable=True),
+            FieldSchema(name="brands_json", dtype=DataType.JSON, nullable=True),
+            FieldSchema(name="ingested_at", dtype=DataType.DATETIME),
+            FieldSchema(name="dense_vector", dtype=DataType.FLOAT_VECTOR, dim=self.vector_dim),
+            FieldSchema(name="sparse_vector", dtype=DataType.SPARSE_FLOAT_VECTOR),
         ]
 
         schema = CollectionSchema(fields=fields, description="Collection for storing article chunks and their embeddings.")

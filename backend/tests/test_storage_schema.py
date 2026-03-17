@@ -8,37 +8,6 @@ from backend.app.models import ensure_article_storage_schema
 
 
 class StorageSchemaTest(unittest.TestCase):
-    def test_schema_creates_retrieval_unit_ref_table(self) -> None:
-        engine = create_engine("sqlite+pysqlite:///:memory:")
-
-        ensure_article_storage_schema(engine)
-
-        inspector = inspect(engine)
-        self.assertIn("retrieval_unit_ref", inspector.get_table_names())
-        columns = {column["name"] for column in inspector.get_columns("retrieval_unit_ref")}
-        self.assertTrue(
-            {
-                "retrieval_unit_id",
-                "modality",
-                "unit_kind",
-                "article_id",
-                "article_image_id",
-                "parent_unit_id",
-                "chunk_index",
-                "heading_path_json",
-                "content_locator_json",
-                "canonical_text",
-                "dense_embedding_ref",
-                "sparse_embedding_ref",
-                "milvus_collection",
-                "milvus_primary_key",
-                "index_version",
-                "created_run_id",
-                "is_searchable",
-                "metadata_json",
-            }.issubset(columns)
-        )
-
     def test_schema_creates_story_pipeline_columns(self) -> None:
         engine = create_engine("sqlite+pysqlite:///:memory:")
 

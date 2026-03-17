@@ -191,7 +191,6 @@ class ArticleImage(Base):
 def ensure_article_storage_schema(bind: Engine) -> None:
     """Create new tables and add storage columns needed by the redesign."""
 
-    from backend.app.models.retrieval import RetrievalUnitRef  # noqa: F401
     from backend.app.models.story import PipelineRun, Story, StoryArticle  # noqa: F401
 
     _recreate_story_read_model_tables(bind)

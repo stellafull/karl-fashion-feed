@@ -4,7 +4,7 @@
 
 - 本文档是 KARL FASHION FEED 的 RAG collection 规范文档。
 - 本文档描述目标最终态，不等同于当前代码完成度。
-- 本文档优先于 [backend/README.md](/root/karl-fashion-feed/backend/README.md) 中所有关于 `retrieval_unit_ref`、Milvus、RAG collection 的简写描述。
+- 本文档优先于 [backend/README.md](/root/karl-fashion-feed/backend/README.md) 中所有关于 article / image / Milvus / RAG collection 的简写描述。
 - 后续如果 collection 设计要变更，必须先改本文档，再改实现。
 
 ## 1. 核心不变量
@@ -12,17 +12,15 @@
 - `article` 和 canonical Markdown 是文本事实真相源。
 - `article_image` 是图片事实真相源与文章归属关系真相源。
 - `story` 只服务阅读，不进入 RAG collection 真相层。
-- `retrieval_unit_ref` 是检索桥接真相层，负责把文本或图片检索单元桥接到事实源和 Milvus 副本。
 - Milvus 永远只是检索副本，可以重建，不承载业务真相。
 - 只有 `should_publish=true` 的文章和其关联图片允许进入 shared collection。
-- 引用和回溯必须回到 `article` / Markdown / `article_image` / `retrieval_unit_ref`，不得直接把 Milvus 命中结果当作引用真相。
+- 引用和回溯必须回到 `article` / Markdown / `article_image`，不得直接把 Milvus 命中结果当作引用真相。
 - Milvus 物理上只保留一个 shared collection，通过 `modality` 区分 `text` / `image`。
 - 物理上是单 collection，但逻辑上仍保留 `text_only`、`image_only`、`fusion` 三种 query plan。
 - `fusion` 不做 text/image 统一候选池混排，而是按 `modality` 分 lane recall、各自 rerank、最后 merge。
-- 只有 `is_searchable=true` 的叶子检索单元进入 Milvus shared collection；`text_group` 仅存在于桥接层。
 - 默认 freshness decay 只允许发生在 final score layer，不允许进入 ANN recall 或 rerank 输入。
 
-## 2. 真相层与桥接层
+## 2. 真相层与检索主键
 
 ### 2.1 真相层职责
 
@@ -35,34 +33,25 @@
 - `article_image`
   - 保存图片 URL、位置、caption、OCR、视觉分析结果。
   - `article_image.article_id` 是图片归属到文章的唯一真相关系。
-- `retrieval_unit_ref`
-  - 保存“某个可检索单元”如何映射回 article 或 article_image。
-  - 保存该单元对应的索引版本、Milvus 副本位置、embedding 版本、content locator。
 
-### 2.2 `retrieval_unit_ref` 逻辑字段
+### 2.2 检索主键规则
 
-`retrieval_unit_ref` 统一覆盖 text 和 image 两类 retrieval unit，最小字段职责固定如下：
+系统不再维护独立的桥接表。
 
-| 字段 | 说明 |
-| --- | --- |
-| `retrieval_unit_id` | 检索单元主键。建议使用基于 `modality + logical_locator` 的稳定生成方式，同一逻辑单元重跑时不漂移。 |
-| `modality` | 固定枚举：`text` / `image`。 |
-| `unit_kind` | 固定枚举：`text_chunk` / `text_group` / `image_asset`。`text_group` 只用于桥接层父节点，不进入 Milvus shared collection。 |
-| `article_id` | 必填。所有检索单元都必须归属于某一篇 article。 |
-| `article_image_id` | 仅图片单元必填，文本单元为空。 |
-| `parent_unit_id` | 可空。仅当一个语义段被递归拆成多个子 chunk 时，用于指向 `text_group` 父节点。 |
-| `chunk_index` | 叶子 text 检索单元在 article 内的稳定顺序。图片单元为空。 |
-| `heading_path_json` | text 单元标题路径；图片单元为空数组。 |
-| `content_locator_json` | 精确回溯定位信息。文本至少包含 Markdown 或 block 范围；图片至少包含 `image_id`、`position`、`role`。 |
-| `canonical_text` | 检索单元的规范化文本投影。它是桥接层可解释文本，不要求与 shared collection 的 `content` 完全同形。 |
-| `dense_embedding_ref` | dense 编码器与产物版本引用，不直接等于向量本体。 |
-| `sparse_embedding_ref` | sparse 编码器与产物版本引用。 |
-| `milvus_collection` | 当前副本所在的 shared collection 名称。 |
-| `milvus_primary_key` | Milvus 行主键。默认与 `retrieval_unit_id` 一致。 |
-| `index_version` | 桥接层索引设计版本。collection schema 不保留此字段，但桥接层可以保留以支持重建与审计。 |
-| `created_run_id` | 生成该 retrieval unit 的 pipeline run。 |
-| `is_searchable` | 是否参与召回。`text_group=false`，叶子文本块与图片块为 `true`。 |
-| `metadata_json` | 其余检索期需要但不值得单列的元数据。 |
+Milvus 每条记录直接使用稳定命名规则生成检索主键：
+
+- text 单元
+  - `text:{article_id}:{chunk_index}`
+- image 单元
+  - `image:{article_image_id}`
+
+要求：
+
+- 同一逻辑单元重建时主键不漂移
+- text 与 image 命名空间明确分离
+- 回源不依赖额外桥接表
+- text 主键能直接定位到 `article` + `chunk_index`
+- image 主键能直接定位到 `article_image`
 
 ### 2.3 Shared Collection 最小字段
 
@@ -70,7 +59,7 @@ Milvus shared collection 最小字段固定如下：
 
 | 字段 | 说明 |
 | --- | --- |
-| `retrieval_unit_id` | shared collection 唯一主键；对齐 `retrieval_unit_ref.retrieval_unit_id`，用于回源、重建、引用。 |
+| `retrieval_unit_id` | shared collection 唯一主键，用于回源、重建、引用。 |
 | `modality` | 检索模态，固定枚举：`text` / `image`。 |
 | `unit_kind` | 检索单元类型，固定枚举：`text_chunk` / `image_asset`。 |
 | `article_id` | 所属 article 主键，所有记录必填。 |
@@ -82,6 +71,7 @@ Milvus shared collection 最小字段固定如下：
 | `content` | 统一检索文本字段，仅服务 sparse embedding、rerank、调试与检索内部处理；不要求中文可读，不承诺直接给用户展示。 |
 | `source_name` | 来源名称。 |
 | `source_lang` | 来源语言。 |
+| `source_type` | 数据来源类型，如用户上传、爬取、第三方接口。 |
 | `category` | 主分类。 |
 | `tags_json` | 标签列表。 |
 | `brands_json` | 品牌列表。 |
@@ -108,7 +98,7 @@ shared collection 不保留以下字段：
 - `last_fetched_at`
   - 保留在 `article_image` 真相层，不进入 shared collection。
 - `index_version`
-  - 只保留在桥接层或重建流程，不进入 shared collection schema。
+  - single live collection 通过直接重建处理 schema 变化，不在 schema 中持久化版本。
 - `is_active`
   - single live collection 不需要该字段。
 
@@ -117,7 +107,7 @@ shared collection 不保留以下字段：
 ### 3.1 索引对象
 
 - shared collection 只收录 `should_publish=true` 的可检索叶子单元。
-- `story`、未发布 article、`text_group` 父节点、Milvus 回写结果都不进入 shared collection。
+- `story`、未发布 article、Milvus 回写结果都不进入 shared collection。
 - `[image:<image_id>]` 占位不是独立 text 检索单元，只作为正文边界。
 
 ### 3.2 Text 单元规则
@@ -126,8 +116,8 @@ shared collection 不保留以下字段：
 - 切块策略固定为“标题层级感知 + recursive chunker + overlap”：
   1. 从 canonical Markdown 读取 article 正文。
   2. 按 heading 构建逻辑语义段。
-  3. 逻辑语义段超长时，在桥接层创建 `text_group` 父节点，再继续拆成多个 `text_chunk`。
-  4. 只有叶子 `text_chunk` 进入 shared collection。
+  3. 逻辑语义段超长时，继续拆成多个 `text_chunk`。
+  4. 只有最终 `text_chunk` 进入 shared collection。
 - `chunk_index` 必须在 article 内稳定递增，重跑同一逻辑单元不得漂移。
 - text 单元的 `content` 生成规则固定为：
   - `title_zh/title_raw + heading_path + chunk 正文 + summary_zh + tags + brands + source_name`
@@ -158,9 +148,8 @@ shared collection 不保留以下字段：
 写入顺序固定如下：
 
 1. article / canonical Markdown / article_image 落事实真相。
-2. enrichment、图片分析完成后，生成 `retrieval_unit_ref`。
+2. enrichment、图片分析完成后，直接生成检索主键与检索文本。
 3. 生成 dense/sparse 表示并写入 Milvus shared collection。
-4. 写回 `milvus_collection`、`milvus_primary_key`、embedding refs。
 
 ### 4.3 重建规则
 
@@ -324,14 +313,13 @@ RAG agent 必须再回源读取 article Markdown 或 `article_image`，不能直
 
 当前尚未落地、但本文已固定为目标规范的部分：
 
-- `retrieval_unit_ref` materialization service
 - shared collection 的 Milvus 副本同步
 - sparse embedding 生成链路
 - planner 驱动的 shared collection query service
 - lane 级 rerank、final scoring、merge / dedupe
 - image retrieval grounding logic
 
-当前 [milvus_service.py](/root/karl-fashion-feed/backend/app/service/milvus_service.py) 中的 schema 只是过渡实现，不代表本文定义的 shared collection 目标规范。
+当前 [milvus_service.py](/root/karl-fashion-feed/backend/app/service/RAG/milvus_service.py) 中的 schema 只是过渡实现，不代表本文定义的 shared collection 目标规范。
 
 ## 7. 非目标与可调参数
 
@@ -346,7 +334,7 @@ RAG agent 必须再回源读取 article Markdown 或 `article_image`，不能直
 本文只冻结下面这些边界：
 
 - truth source 在哪里
-- `retrieval_unit_ref` 承担什么职责
+- 稳定检索主键如何命名
 - shared collection 的最小字段与语义
 - planner 驱动的 retrieval 路由
 - `content` 的机器检索字段语义
