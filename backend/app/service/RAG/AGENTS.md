@@ -61,11 +61,9 @@ Milvus shared collection 最小字段固定如下：
 | --- | --- |
 | `retrieval_unit_id` | shared collection 唯一主键，用于回源、重建、引用。 |
 | `modality` | 检索模态，固定枚举：`text` / `image`。 |
-| `unit_kind` | 检索单元类型，固定枚举：`text_chunk` / `image_asset`。 |
 | `article_id` | 所属 article 主键，所有记录必填。 |
 | `article_image_id` | image 记录必填，text 记录为空。 |
 | `chunk_index` | text 记录在 article 内的稳定顺序，image 记录为空。 |
-| `position` | image 记录在 article 内的稳定顺序，text 记录为空。 |
 | `role` | image 记录角色，如 `hero` / `inline` / `gallery`，text 记录为空。 |
 | `heading_path` | text 记录标题路径扁平化表示，image 记录为空。 |
 | `content` | 统一检索文本字段，仅服务 sparse embedding、rerank、调试与检索内部处理；不要求中文可读，不承诺直接给用户展示。 |
@@ -88,19 +86,6 @@ shared collection 的 nullability 规则固定如下：
 - image 记录
   - `chunk_index = null`
   - `heading_path = null`
-
-shared collection 不保留以下字段：
-
-- `pk`
-  - 主键就是 `retrieval_unit_id`。
-- `published_at`
-  - 时间统一复用 `ingested_at`。
-- `last_fetched_at`
-  - 保留在 `article_image` 真相层，不进入 shared collection。
-- `index_version`
-  - single live collection 通过直接重建处理 schema 变化，不在 schema 中持久化版本。
-- `is_active`
-  - single live collection 不需要该字段。
 
 ## 3. Shared Collection 中的检索单元
 

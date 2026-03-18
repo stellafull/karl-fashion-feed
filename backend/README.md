@@ -19,7 +19,7 @@
 - canonical Markdown 一篇 article 一个文件，按日期分层落到本地 `data/articles/`。
 - Markdown 只保存纯文本正文，不保存图片占位和图片 caption。
 - 图片资产单独写入 `article_image` 表，只保存 URL 和 metadata，不保存二进制。
-- visual LLM 结果写回 `article_image`，不回写 canonical Markdown。
+- visual LLM 结果写回 `article_image`。
 - `story` 是不可变读模型，`story_key` 使用 UUID。
 - 每天北京时间 8 点只处理新增 `article`，生成新的 `story`。
 - 旧 `story` 不更新、不合并、不重写。
@@ -144,21 +144,6 @@
 - `source_article_count`
 - `created_at`
 
-### `story_article`
-
-- `story_key`
-- `article_id`
-- `rank`
-
-### `pipeline_run`
-
-- `run_id`
-- `run_type`
-- `status`
-- `started_at`
-- `finished_at`
-- `watermark_ingested_at`
-- `error_message`
 
 ## 服务职责边界
 
