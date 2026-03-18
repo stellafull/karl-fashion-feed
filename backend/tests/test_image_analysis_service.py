@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import unittest
 
 from sqlalchemy import create_engine, select
@@ -14,11 +15,48 @@ from backend.app.service.image_analysis_service import ImageAnalysisService
 class StubLLMClient:
     def __init__(self, result: ImageAnalysisSchema | Exception) -> None:
         self._result = result
+        self.last_messages: list[dict[str, object]] | None = None
+        self.beta = type(
+            "BetaAPI",
+            (),
+            {
+                "chat": type(
+                    "ChatAPI",
+                    (),
+                    {
+                        "completions": type(
+                            "CompletionsAPI",
+                            (),
+                            {"parse": self.parse},
+                        )()
+                    },
+                )()
+            },
+        )()
 
-    def complete_json(self, **_: object) -> ImageAnalysisSchema:
+    async def parse(self, **kwargs: object):
+        self.last_messages = kwargs.get("messages")  # type: ignore[assignment]
         if isinstance(self._result, Exception):
             raise self._result
-        return self._result
+        return type(
+            "ParsedResponse",
+            (),
+            {
+                "choices": [
+                    type(
+                        "Choice",
+                        (),
+                        {
+                            "message": type(
+                                "Message",
+                                (),
+                                {"parsed": self._result},
+                            )()
+                        },
+                    )()
+                ]
+            },
+        )()
 
 
 class ImageAnalysisServiceTest(unittest.TestCase):
@@ -27,7 +65,7 @@ class ImageAnalysisServiceTest(unittest.TestCase):
         Base.metadata.create_all(bind=self.engine)
         self.session_factory = sessionmaker(bind=self.engine, autocommit=False, autoflush=False)
 
-    def test_build_messages_include_image_url_content(self) -> None:
+    def test_analyze_image_sends_image_url_content(self) -> None:
         with self.session_factory() as session:
             article = Article(
                 article_id="article-1",
@@ -52,13 +90,25 @@ class ImageAnalysisServiceTest(unittest.TestCase):
             session.add(image)
             session.commit()
 
-            service = ImageAnalysisService()
-            payload = service.build_input(article=article, image=image)
-            messages = service.build_messages(payload=payload)
+            llm_client = StubLLMClient(
+                ImageAnalysisSchema(
+                    image_id="img-1",
+                    observed_description="A model in a structured coat.",
+                    ocr_text="PARIS",
+                    visible_entities=["model", "coat"],
+                    style_signals=["structured tailoring"],
+                    contextual_interpretation="Likely from a runway look.",
+                    context_used=["article_summary", "caption_raw"],
+                    confidence=0.93,
+                )
+            )
+            service = ImageAnalysisService(client=llm_client)
+            asyncio.run(service.analyze_image(session, article=article, image=image))
 
-            self.assertEqual(payload.image_id, "img-1")
-            self.assertEqual(payload.context_snippet, "Nearby runway text")
-            self.assertEqual(messages[1]["content"][1]["image_url"]["url"], "https://example.com/image.jpg")
+            assert llm_client.last_messages is not None
+            content = llm_client.last_messages[1]["content"]
+            self.assertEqual(content[1]["image_url"]["url"], "https://example.com/image.jpg")
+            self.assertIn("Nearby runway text", content[0]["text"])
 
     def test_analyze_image_runs_vlm_and_persists_result(self) -> None:
         with self.session_factory() as session:
@@ -86,7 +136,7 @@ class ImageAnalysisServiceTest(unittest.TestCase):
             session.commit()
 
             service = ImageAnalysisService(
-                llm_client=StubLLMClient(
+                client=StubLLMClient(
                     ImageAnalysisSchema(
                         image_id="img-1",
                         observed_description="A model in a structured coat.",
@@ -99,7 +149,7 @@ class ImageAnalysisServiceTest(unittest.TestCase):
                     )
                 )
             )
-            changed = service.analyze_image(session, article=article, image=image)
+            changed = asyncio.run(service.analyze_image(session, article=article, image=image))
             session.commit()
 
             self.assertTrue(changed)

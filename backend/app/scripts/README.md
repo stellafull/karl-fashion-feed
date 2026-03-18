@@ -2,47 +2,71 @@
 
 ## 入口
 
-- `backend/main.py`
-  日常校验和增量采集入口
+- `backend/app/scripts/validate_sources.py`
+  source 配置校验入口
+- `backend/app/scripts/collect_articles.py`
+  只采集 article seed
+- `backend/app/scripts/parse_articles.py`
+  只解析 pending/failed article
+- `backend/app/scripts/ingest_articles.py`
+  增量采集 + parse
+- `backend/app/scripts/run_daily_pipeline.py`
+  日更 story pipeline 入口
 - `backend/app/scripts/init_article_data.py`
   初始化或回填近一段时间的 `article`
+- `backend/app/scripts/dev_ingest_parse_today.py`
+  dev 专用增量脚本，只 parse 本次新插入 article，不跑 enrichment / cluster
+- `backend/app/scripts/dev_ingest_story_rag_today.py`
+  dev 专用全链路脚本，跑 enrichment、image analysis、story draft、RAG 导入
 
 ## 常用命令
 
 校验 `sources.yaml`：
 
 ```bash
-python backend/main.py validate-sources
+python backend/app/scripts/validate_sources.py
 ```
 
 只执行 seed 采集：
 
 ```bash
-python backend/main.py collect-articles
+python backend/app/scripts/collect_articles.py
 ```
 
 只解析 pending/failed article：
 
 ```bash
-python backend/main.py parse-articles
+python backend/app/scripts/parse_articles.py
 ```
 
 执行增量采集入库：
 
 ```bash
-python backend/main.py ingest-articles
+python backend/app/scripts/ingest_articles.py
+```
+
+dev 模式只做本次增量采集 + parse，不扫历史 pending backlog：
+
+```bash
+python backend/app/scripts/dev_ingest_parse_today.py
+```
+
+只跑指定来源：
+
+```bash
+python backend/app/scripts/dev_ingest_parse_today.py --source Vogue --source WWD
 ```
 
 执行完整日更 pipeline：
 
 ```bash
-python backend/main.py run-daily-pipeline
+python backend/app/scripts/run_daily_pipeline.py
 ```
 
 只处理已入库 article，不重新采集：
 
 ```bash
-python backend/main.py run-daily-pipeline --skip-ingest
+python backend/app/scripts/run_daily_pipeline.py --skip-ingest
 ```
 
 执行一次初始化 story 聚合，按 `published_at` 的日期分组：
@@ -66,13 +90,25 @@ python backend/app/scripts/bootstrap_story_pipeline.py --skip-ingest --story-dat
 只跑指定来源：
 
 ```bash
-python backend/main.py ingest-articles --source Vogue --source WWD
+python backend/app/scripts/ingest_articles.py --source Vogue --source WWD
 ```
 
 控制增量采集并发：
 
 ```bash
-python backend/main.py ingest-articles --source-concurrency 4 --http-concurrency 16
+python backend/app/scripts/ingest_articles.py --source-concurrency 4 --http-concurrency 16
+```
+
+执行 dev 全链路联调：
+
+```bash
+python backend/app/scripts/dev_ingest_story_rag_today.py
+```
+
+只跑指定来源的 dev 全链路联调：
+
+```bash
+python backend/app/scripts/dev_ingest_story_rag_today.py --source Vogue --source WWD
 ```
 
 ## 初始化回填

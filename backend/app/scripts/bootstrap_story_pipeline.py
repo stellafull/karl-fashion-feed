@@ -53,7 +53,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main() -> int:
+async def main() -> int:
     args = build_parser().parse_args()
     ensure_article_storage_schema(engine)
     Base.metadata.create_all(bind=engine)
@@ -61,11 +61,9 @@ def main() -> int:
     collection_result = None
     parse_result = None
     if not args.skip_ingest:
-        collection_result = asyncio.run(
-            ArticleCollectionService().collect_articles(
-                source_names=args.sources,
-                limit_sources=args.limit_sources,
-            )
+        collection_result = await ArticleCollectionService().collect_articles(
+            source_names=args.sources,
+            limit_sources=args.limit_sources,
         )
         print(
             "bootstrap collection completed: "
@@ -75,7 +73,7 @@ def main() -> int:
             f"skipped_existing={collection_result.skipped_existing} "
             f"skipped_in_batch={collection_result.skipped_in_batch}"
         )
-    parse_result = asyncio.run(ArticleParseService().parse_articles())
+    parse_result = await ArticleParseService().parse_articles()
     print(
         "bootstrap parse completed: "
         f"candidates={parse_result.candidates} "
@@ -99,7 +97,7 @@ def main() -> int:
             story_date=story_date,
         )
         try:
-            result = workflow_service.run(article_ids)
+            result = await workflow_service.run(article_ids)
             stages_completed = list(result.stages_completed)
             if STAGE_STORY_PERSIST not in stages_completed:
                 stages_completed.append(STAGE_STORY_PERSIST)
@@ -264,4 +262,4 @@ def _utcnow_naive() -> datetime:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(asyncio.run(main()))

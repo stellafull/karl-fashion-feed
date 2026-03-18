@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
-import inspect
 from datetime import UTC, datetime
 from typing import Any, Callable
 
@@ -62,7 +60,7 @@ class DailyPipelineService:
             story_generation_service=story_generation_service,
         )
 
-    def run(
+    async def run(
         self,
         *,
         skip_ingest: bool = False,
@@ -85,25 +83,17 @@ class DailyPipelineService:
             if skip_ingest:
                 stages_skipped.append(STAGE_COLLECTION)
             else:
-                collected = self._collection_service.collect_articles(
+                collection_result = await self._collection_service.collect_articles(
                     source_names=source_names,
                     limit_sources=limit_sources,
                 )
-                if inspect.isawaitable(collected):
-                    collection_result = asyncio.run(collected)
-                else:
-                    collection_result = collected
                 stages_completed.append(STAGE_COLLECTION)
         except Exception as exc:
             self._mark_failed(run_id, exc)
             raise
 
         try:
-            parsed = self._parse_service.parse_articles()
-            if inspect.isawaitable(parsed):
-                parse_result = asyncio.run(parsed)
-            else:
-                parse_result = parsed
+            parse_result = await self._parse_service.parse_articles()
             if parse_result.candidates > 0:
                 stages_completed.append(STAGE_PARSE)
             else:
@@ -146,7 +136,7 @@ class DailyPipelineService:
                 )
 
             candidate_ids = [article.article_id for article in candidate_articles]
-            workflow_result = self._story_workflow_service.run(candidate_ids)
+            workflow_result = await self._story_workflow_service.run(candidate_ids)
             stages_completed.extend(workflow_result.stages_completed)
             stages_skipped.extend(workflow_result.stages_skipped)
             if STAGE_STORY_PERSIST not in stages_completed:

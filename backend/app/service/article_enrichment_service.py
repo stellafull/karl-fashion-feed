@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from typing import Any
 
+from openai import AsyncOpenAI
 from sqlalchemy.orm import Session
 
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
@@ -14,11 +16,6 @@ from backend.app.models import Article
 from backend.app.prompts.article_enrichment_prompt import ARTICLE_ENRICHMENT_PROMPT
 from backend.app.schemas.llm.article_enrichment import ArticleEnrichmentSchema
 from backend.app.service.article_markdown_service import ArticleMarkdownService
-from backend.app.service.llm_client_service import (
-    BatchChatRequest,
-    BatchChatResult,
-    OpenAICompatibleClient,
-)
 from backend.app.service.story_pipeline_contracts import EnrichedArticleRecord
 
 
@@ -38,19 +35,26 @@ class ArticleEnrichmentService:
     def __init__(
         self,
         *,
-        llm_client: OpenAICompatibleClient | Any | None = None,
+        client: Any | None = None,
         markdown_service: ArticleMarkdownService | None = None,
     ) -> None:
-        self._llm_client = llm_client or OpenAICompatibleClient()
+        api_key = STORY_SUMMARIZATION_MODEL_CONFIG.api_key
+        if client is None and not api_key:
+            raise ValueError(f"missing API key for {STORY_SUMMARIZATION_MODEL_CONFIG.model_name}")
+        self._client = client or AsyncOpenAI(
+            api_key=api_key,
+            base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
+            timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
+        )
         self._markdown_service = markdown_service or ArticleMarkdownService()
 
-    def enrich_article(self, session: Session, article: Article) -> bool:
+    async def enrich_article(self, session: Session, article: Article) -> bool:
         if self.is_complete(article):
             return False
 
         payload = self.build_input(article)
         try:
-            result = self.infer_payload(payload)
+            result = await self.infer_payload(payload)
         except Exception as exc:
             self.apply_failure(article=article, error=exc)
             raise
@@ -81,77 +85,28 @@ class ArticleEnrichmentService:
             {"role": "user", "content": _render_json_payload(asdict(payload))},
         ]
 
-    def infer_payload(self, payload: ArticleEnrichmentInput) -> ArticleEnrichmentSchema:
-        return self._llm_client.complete_json(
-            model_config=STORY_SUMMARIZATION_MODEL_CONFIG,
+    async def infer_payload(self, payload: ArticleEnrichmentInput) -> ArticleEnrichmentSchema:
+        response = await self._client.beta.chat.completions.parse(
+            model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+            temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
+            response_format=ArticleEnrichmentSchema,
             messages=self.build_messages(payload),
-            schema=ArticleEnrichmentSchema,
         )
+        parsed = response.choices[0].message.parsed
+        if parsed is None:
+            raise ValueError("article enrichment response missing parsed payload")
+        return parsed
 
-    def infer_batch(
+    async def infer_many(
         self,
         payloads: list[ArticleEnrichmentInput],
-    ) -> dict[str, BatchChatResult]:
+    ) -> list[ArticleEnrichmentSchema | Exception]:
         if not payloads:
-            return {}
-
-        if not hasattr(self._llm_client, "complete_json_batch"):
-            results: dict[str, BatchChatResult] = {}
-            for payload in payloads:
-                try:
-                    results[payload.article_id] = BatchChatResult(
-                        custom_id=payload.article_id,
-                        value=self.infer_payload(payload),
-                    )
-                except Exception as exc:
-                    results[payload.article_id] = BatchChatResult(
-                        custom_id=payload.article_id,
-                        error=f"{exc.__class__.__name__}: {exc}",
-                    )
-            return results
-
-        requests = [
-            BatchChatRequest(
-                custom_id=f"article:{payload.article_id}",
-                messages=self.build_messages(payload),
-            )
-            for payload in payloads
-        ]
-        try:
-            raw_results = self._llm_client.complete_json_batch(
-                model_config=STORY_SUMMARIZATION_MODEL_CONFIG,
-                requests=requests,
-                schema=ArticleEnrichmentSchema,
-                metadata={"stage": "article_enrichment"},
-            )
-        except Exception:
-            return self._fallback_infer_batch(payloads)
-        return {
-            custom_id.split(":", 1)[1]: BatchChatResult(
-                custom_id=custom_id.split(":", 1)[1],
-                value=result.value,
-                error=result.error,
-            )
-            for custom_id, result in raw_results.items()
-        }
-
-    def _fallback_infer_batch(
-        self,
-        payloads: list[ArticleEnrichmentInput],
-    ) -> dict[str, BatchChatResult]:
-        results: dict[str, BatchChatResult] = {}
-        for payload in payloads:
-            try:
-                results[payload.article_id] = BatchChatResult(
-                    custom_id=payload.article_id,
-                    value=self.infer_payload(payload),
-                )
-            except Exception as exc:
-                results[payload.article_id] = BatchChatResult(
-                    custom_id=payload.article_id,
-                    error=f"{exc.__class__.__name__}: {exc}",
-                )
-        return results
+            return []
+        return await asyncio.gather(
+            *(self.infer_payload(payload) for payload in payloads),
+            return_exceptions=True,
+        )
 
     def apply_result(
         self,

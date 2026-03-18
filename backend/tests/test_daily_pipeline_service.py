@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import unittest
 from datetime import datetime
 
@@ -20,24 +21,26 @@ class StubEnrichmentService:
     def is_complete(article: Article) -> bool:
         return article.enrichment_status == "done" and bool(article.cluster_text)
 
-    def enrich_article(self, session, article: Article) -> bool:
-        if self.is_complete(article):
-            return False
-        self.calls.append(article.article_id)
-        self.apply_result(
-            article,
-            {
-                "should_publish": article.article_id != "article-3",
-                "title_zh": f"标题-{article.article_id}",
-                "summary_zh": f"摘要-{article.article_id}",
-                "tags": ["时尚"],
-                "brands": ["Karl"],
-                "category_candidates": [article.category],
-                "reject_reason": "" if article.article_id != "article-3" else "广告",
-            },
-        )
-        session.flush()
-        return True
+    @staticmethod
+    def build_input(article: Article) -> Article:
+        return article
+
+    async def infer_many(self, payloads: list[Article]) -> list[object]:
+        results: list[object] = []
+        for article in payloads:
+            self.calls.append(article.article_id)
+            results.append(
+                {
+                    "should_publish": article.article_id != "article-3",
+                    "title_zh": f"标题-{article.article_id}",
+                    "summary_zh": f"摘要-{article.article_id}",
+                    "tags": ["时尚"],
+                    "brands": ["Karl"],
+                    "category_candidates": [article.category],
+                    "reject_reason": "" if article.article_id != "article-3" else "广告",
+                }
+            )
+        return results
 
     @staticmethod
     def apply_result(article: Article, result: dict[str, object]) -> None:
@@ -90,7 +93,7 @@ class StubEmbeddingService:
 
 
 class StubClusterService:
-    def cluster_articles(self, articles: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
+    async def cluster_articles(self, articles: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
         return [articles] if articles else []
 
 
@@ -98,19 +101,22 @@ class StubStoryGenerationService:
     def __init__(self, *, raise_error: bool = False) -> None:
         self.raise_error = raise_error
 
-    def generate_story(self, cluster: list[EmbeddedArticle]) -> StoryDraft:
+    async def generate_stories(self, clusters: list[list[EmbeddedArticle]]) -> list[StoryDraft]:
         if self.raise_error:
             raise RuntimeError("story generation failed")
-        return StoryDraft(
-            title_zh="聚合话题",
-            summary_zh="两篇报道聚合成一个话题。",
-            key_points=("要点一", "要点二"),
-            tags=("时尚",),
-            category="高端时装",
-            article_ids=tuple(item.article.article_id for item in cluster),
-            hero_image_url=cluster[0].article.hero_image_url,
-            source_article_count=len(cluster),
-        )
+        return [
+            StoryDraft(
+                title_zh="聚合话题",
+                summary_zh="两篇报道聚合成一个话题。",
+                key_points=("要点一", "要点二"),
+                tags=("时尚",),
+                category="高端时装",
+                article_ids=tuple(item.article.article_id for item in cluster),
+                hero_image_url=cluster[0].article.hero_image_url,
+                source_article_count=len(cluster),
+            )
+            for cluster in clusters
+        ]
 
 
 class DailyPipelineServiceTest(unittest.TestCase):
@@ -182,7 +188,7 @@ class DailyPipelineServiceTest(unittest.TestCase):
             story_generation_service=StubStoryGenerationService(),
         )
 
-        result = service.run(skip_ingest=True)
+        result = asyncio.run(service.run(skip_ingest=True))
 
         self.assertEqual(result.candidates, 3)
         self.assertEqual(result.enriched, 3)
@@ -226,7 +232,7 @@ class DailyPipelineServiceTest(unittest.TestCase):
         self.assertEqual(runs[-1].metadata_json["story_grouping_mode"], "incremental_ingested_at")
         self.assertEqual(runs[-1].metadata_json["stages_skipped"], ["collection", "parse"])
 
-        second_result = service.run(skip_ingest=True)
+        second_result = asyncio.run(service.run(skip_ingest=True))
         self.assertEqual(second_result.candidates, 0)
         self.assertEqual(second_result.stories_created, 0)
         self.assertEqual(second_result.stages_completed, ())
@@ -255,7 +261,7 @@ class DailyPipelineServiceTest(unittest.TestCase):
         )
 
         with self.assertRaises(RuntimeError):
-            service.run(skip_ingest=True)
+            asyncio.run(service.run(skip_ingest=True))
 
         with self.session_factory() as session:
             stories = session.scalars(select(Story)).all()

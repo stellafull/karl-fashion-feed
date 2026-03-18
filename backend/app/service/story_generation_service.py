@@ -2,17 +2,15 @@
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import asdict, dataclass
 import json
 from typing import Any
 
+from openai import AsyncOpenAI
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
 from backend.app.prompts.story_generation_prompt import STORY_GENERATION_PROMPT
 from backend.app.schemas.llm.story_generation import StoryGenerationSchema
-from backend.app.service.llm_client_service import (
-    BatchChatRequest,
-    OpenAICompatibleClient,
-)
 from backend.app.service.story_pipeline_contracts import EmbeddedArticle, StoryDraft
 
 
@@ -31,51 +29,18 @@ class StoryGenerationService:
     def __init__(
         self,
         *,
-        llm_client: OpenAICompatibleClient | Any | None = None,
+        client: Any | None = None,
     ) -> None:
-        self._llm_client = llm_client or OpenAICompatibleClient()
+        api_key = STORY_SUMMARIZATION_MODEL_CONFIG.api_key
+        if client is None and not api_key:
+            raise ValueError(f"missing API key for {STORY_SUMMARIZATION_MODEL_CONFIG.model_name}")
+        self._client = client or AsyncOpenAI(
+            api_key=api_key,
+            base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
+            timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
+        )
 
-    def generate_story(self, cluster: list[EmbeddedArticle]) -> StoryDraft:
-        return self.build_story_draft(cluster, self._generate_result(cluster))
-
-    def generate_stories_batch(
-        self,
-        clusters: list[list[EmbeddedArticle]],
-    ) -> list[StoryDraft]:
-        if not clusters:
-            return []
-
-        if not hasattr(self._llm_client, "complete_json_batch"):
-            return [self.generate_story(cluster) for cluster in clusters]
-
-        requests = [
-            BatchChatRequest(
-                custom_id=f"story:{index}",
-                messages=self.build_messages(cluster),
-            )
-            for index, cluster in enumerate(clusters)
-        ]
-        try:
-            batch_results = self._llm_client.complete_json_batch(
-                model_config=STORY_SUMMARIZATION_MODEL_CONFIG,
-                requests=requests,
-                schema=StoryGenerationSchema,
-                metadata={"stage": "story_generation"},
-            )
-        except Exception:
-            return [self.generate_story(cluster) for cluster in clusters]
-
-        drafts: list[StoryDraft] = []
-        for index, cluster in enumerate(clusters):
-            custom_id = f"story:{index}"
-            outcome = batch_results.get(custom_id)
-            if outcome is None or outcome.error or not isinstance(outcome.value, StoryGenerationSchema):
-                drafts.append(self.generate_story(cluster))
-                continue
-            drafts.append(self.build_story_draft(cluster, outcome.value))
-        return drafts
-
-    def build_messages(self, cluster: list[EmbeddedArticle]) -> list[dict[str, str]]:
+    async def generate_story(self, cluster: list[EmbeddedArticle]) -> StoryDraft:
         payload = [
             StoryGenerationArticleInput(
                 article_id=item.article.article_id,
@@ -88,16 +53,18 @@ class StoryGenerationService:
             )
             for item in cluster
         ]
-        return [
-            {"role": "system", "content": STORY_GENERATION_PROMPT},
-            {"role": "user", "content": _render_json_payload([asdict(item) for item in payload])},
-        ]
-
-    def build_story_draft(
-        self,
-        cluster: list[EmbeddedArticle],
-        result: StoryGenerationSchema,
-    ) -> StoryDraft:
+        response = await self._client.beta.chat.completions.parse(
+            model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+            temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
+            response_format=StoryGenerationSchema,
+            messages=[
+                {"role": "system", "content": STORY_GENERATION_PROMPT},
+                {"role": "user", "content": _render_json_payload([asdict(item) for item in payload])},
+            ],
+        )
+        result = response.choices[0].message.parsed
+        if result is None:
+            raise ValueError("story generation response missing parsed payload")
         lead = cluster[0].article
         return StoryDraft(
             title_zh=result.title_zh.strip(),
@@ -110,12 +77,17 @@ class StoryGenerationService:
             source_article_count=len(cluster),
         )
 
-    def _generate_result(self, cluster: list[EmbeddedArticle]) -> StoryGenerationSchema:
-        return self._llm_client.complete_json(
-            model_config=STORY_SUMMARIZATION_MODEL_CONFIG,
-            messages=self.build_messages(cluster),
-            schema=StoryGenerationSchema,
+    async def generate_stories(
+        self,
+        clusters: list[list[EmbeddedArticle]],
+    ) -> list[StoryDraft]:
+        if not clusters:
+            return []
+        results = await asyncio.gather(
+            *(self.generate_story(cluster) for cluster in clusters),
+            return_exceptions=False,
         )
+        return list(results)
 
 
 def _render_json_payload(payload: list[dict[str, Any]]) -> str:

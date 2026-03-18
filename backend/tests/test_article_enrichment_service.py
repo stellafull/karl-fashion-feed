@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import tempfile
 import unittest
 from datetime import datetime
@@ -18,11 +19,46 @@ from backend.app.service.article_markdown_service import ArticleMarkdownService
 class StubLLMClient:
     def __init__(self, result: ArticleEnrichmentSchema | Exception) -> None:
         self._result = result
+        self.beta = type(
+            "BetaAPI",
+            (),
+            {
+                "chat": type(
+                    "ChatAPI",
+                    (),
+                    {
+                        "completions": type(
+                            "CompletionsAPI",
+                            (),
+                            {"parse": self.parse},
+                        )()
+                    },
+                )()
+            },
+        )()
 
-    def complete_json(self, **_: object) -> ArticleEnrichmentSchema:
+    async def parse(self, **_: object):
         if isinstance(self._result, Exception):
             raise self._result
-        return self._result
+        return type(
+            "ParsedResponse",
+            (),
+            {
+                "choices": [
+                    type(
+                        "Choice",
+                        (),
+                        {
+                            "message": type(
+                                "Message",
+                                (),
+                                {"parsed": self._result},
+                            )()
+                        },
+                    )()
+                ]
+            },
+        )()
 
 
 class ArticleEnrichmentServiceTest(unittest.TestCase):
@@ -39,7 +75,7 @@ class ArticleEnrichmentServiceTest(unittest.TestCase):
                 content="# Runway Story\n\nOriginal body\n",
             )
             service = ArticleEnrichmentService(
-                llm_client=StubLLMClient(
+                client=StubLLMClient(
                     ArticleEnrichmentSchema(
                         should_publish=True,
                         reject_reason="",
@@ -70,7 +106,7 @@ class ArticleEnrichmentServiceTest(unittest.TestCase):
                 session.add(article)
                 session.commit()
 
-                changed = service.enrich_article(session, article)
+                changed = asyncio.run(service.enrich_article(session, article))
                 session.commit()
 
                 self.assertTrue(changed)
@@ -81,7 +117,7 @@ class ArticleEnrichmentServiceTest(unittest.TestCase):
 
     def test_enrich_article_marks_failed_on_llm_error(self) -> None:
         service = ArticleEnrichmentService(
-            llm_client=StubLLMClient(RuntimeError("boom")),
+            client=StubLLMClient(RuntimeError("boom")),
             markdown_service=ArticleMarkdownService(Path(tempfile.gettempdir())),
         )
 
@@ -101,7 +137,7 @@ class ArticleEnrichmentServiceTest(unittest.TestCase):
             session.commit()
 
             with self.assertRaises(RuntimeError):
-                service.enrich_article(session, article)
+                asyncio.run(service.enrich_article(session, article))
 
             session.commit()
             self.assertEqual(article.enrichment_status, "failed")
@@ -109,7 +145,7 @@ class ArticleEnrichmentServiceTest(unittest.TestCase):
 
     def test_enrich_article_accepts_null_reject_reason_for_publishable_result(self) -> None:
         service = ArticleEnrichmentService(
-            llm_client=StubLLMClient(
+            client=StubLLMClient(
                 ArticleEnrichmentSchema(
                     should_publish=True,
                     reject_reason=None,
@@ -138,7 +174,7 @@ class ArticleEnrichmentServiceTest(unittest.TestCase):
             session.add(article)
             session.commit()
 
-            changed = service.enrich_article(session, article)
+            changed = asyncio.run(service.enrich_article(session, article))
             session.commit()
 
             self.assertTrue(changed)
@@ -149,7 +185,7 @@ class ArticleEnrichmentServiceTest(unittest.TestCase):
 
     def test_enrich_article_overrides_legacy_market_fit_rejection(self) -> None:
         service = ArticleEnrichmentService(
-            llm_client=StubLLMClient(
+            client=StubLLMClient(
                 ArticleEnrichmentSchema(
                     should_publish=False,
                     reject_reason="文章内容为购物推荐，不适合作为时尚资讯发布。",
@@ -178,7 +214,7 @@ class ArticleEnrichmentServiceTest(unittest.TestCase):
             session.add(article)
             session.commit()
 
-            changed = service.enrich_article(session, article)
+            changed = asyncio.run(service.enrich_article(session, article))
             session.commit()
 
             self.assertTrue(changed)

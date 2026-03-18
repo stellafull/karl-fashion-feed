@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Callable
@@ -11,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.core.database import SessionLocal
 from backend.app.models import Article
-from backend.app.service.RAG.embedding_service import generate_dense_embedding
+from backend.app.service.RAG.embedding_service import generate_article_summary_embedding
 from backend.app.service.article_cluster_service import ArticleClusterService
 from backend.app.service.article_enrichment_service import ArticleEnrichmentService
 from backend.app.service.story_generation_service import StoryGenerationService
@@ -60,44 +61,64 @@ class StoryWorkflowService:
         self._cluster_service = cluster_service or ArticleClusterService()
         self._story_generation_service = story_generation_service or StoryGenerationService()
 
-    def run(
+    async def run(
         self,
         article_ids: list[str],
     ) -> StoryWorkflowResult:
-        enriched_count, skipped_existing = self._enrich_candidates(article_ids)
-        publishable_records, watermark = self._load_publishable_records(article_ids)
-        if not publishable_records:
+        enriched_count, skipped_existing = await self.enrich_articles(article_ids)
+        build_result = await self.build_story_drafts(article_ids)
+        if not build_result.publishable_records:
             return StoryWorkflowResult(
                 enriched_count=enriched_count,
                 skipped_existing_enrichment=skipped_existing,
                 publishable_records=tuple(),
-                watermark_ingested_at=watermark,
+                watermark_ingested_at=build_result.watermark_ingested_at,
                 story_drafts=tuple(),
                 stages_completed=(STAGE_ENRICHMENT,),
                 stages_skipped=PROCESSING_STAGES[1:],
             )
 
-        story_drafts = self._build_story_drafts(records=publishable_records)
         return StoryWorkflowResult(
             enriched_count=enriched_count,
             skipped_existing_enrichment=skipped_existing,
+            publishable_records=build_result.publishable_records,
+            watermark_ingested_at=build_result.watermark_ingested_at,
+            story_drafts=build_result.story_drafts,
+            stages_completed=(STAGE_ENRICHMENT, *build_result.stages_completed),
+            stages_skipped=build_result.stages_skipped,
+        )
+
+    async def enrich_articles(self, article_ids: list[str]) -> tuple[int, int]:
+        """Run enrichment for the provided article ids and persist results."""
+        return await self._enrich_candidates(article_ids)
+
+    async def build_story_drafts(self, article_ids: list[str]) -> StoryWorkflowResult:
+        """Build story drafts from already-enriched publishable articles."""
+        publishable_records, watermark = self._load_publishable_records(article_ids)
+        if not publishable_records:
+            return StoryWorkflowResult(
+                enriched_count=0,
+                skipped_existing_enrichment=0,
+                publishable_records=tuple(),
+                watermark_ingested_at=watermark,
+                story_drafts=tuple(),
+                stages_completed=tuple(),
+                stages_skipped=PROCESSING_STAGES[1:],
+            )
+
+        embedded_articles = self._embed_articles(publishable_records)
+        clusters = await self._cluster_service.cluster_articles(embedded_articles)
+        story_drafts = await self._story_generation_service.generate_stories(clusters)
+
+        return StoryWorkflowResult(
+            enriched_count=0,
+            skipped_existing_enrichment=0,
             publishable_records=tuple(publishable_records),
             watermark_ingested_at=watermark,
             story_drafts=tuple(story_drafts),
-            stages_completed=PROCESSING_STAGES,
+            stages_completed=PROCESSING_STAGES[1:],
             stages_skipped=tuple(),
         )
-
-    def _build_story_drafts(
-        self,
-        *,
-        records: list[EnrichedArticleRecord],
-    ) -> list[StoryDraft]:
-        drafts: list[StoryDraft] = []
-        embedded_articles = self._embed_articles(records)
-        clusters = self._cluster_service.cluster_articles(embedded_articles)
-        drafts.extend(self._generate_story_drafts(clusters))
-        return drafts
 
     def _embed_articles(
         self,
@@ -109,49 +130,18 @@ class StoryWorkflowService:
         if not records:
             return []
 
-        texts = [_build_story_embedding_text(record) for record in records]
-        embeddings = generate_dense_embedding(texts)
+        embeddings = []
+        for record in records:
+            cluster_text = record.cluster_text.strip()
+            if not cluster_text:
+                raise ValueError(f"cluster_text is required for story embedding: {record.article_id}")
+            embeddings.append(generate_article_summary_embedding(cluster_text))
         return [
             EmbeddedArticle(article=record, embedding=tuple(float(value) for value in embedding))
             for record, embedding in zip(records, embeddings, strict=True)
         ]
 
-    def _generate_story_drafts(self, clusters: list[list[EmbeddedArticle]]) -> list[StoryDraft]:
-        if not clusters:
-            return []
-
-        if hasattr(self._story_generation_service, "generate_stories_batch"):
-            return list(self._story_generation_service.generate_stories_batch(clusters))
-
-        return [self._story_generation_service.generate_story(cluster) for cluster in clusters]
-
-    def _enrich_candidates(self, article_ids: list[str]) -> tuple[int, int]:
-        infer_batch = getattr(self._enrichment_service, "infer_batch", None)
-        if callable(infer_batch):
-            return self._enrich_candidates_batch(article_ids)
-
-        enriched_count = 0
-        skipped_existing = 0
-        for article_id in article_ids:
-            with self._session_factory() as session:
-                article = session.get(Article, article_id)
-                if article is None:
-                    continue
-
-                try:
-                    changed = self._enrichment_service.enrich_article(session, article)
-                    if changed:
-                        enriched_count += 1
-                    else:
-                        skipped_existing += 1
-                    session.commit()
-                except Exception:
-                    session.commit()
-                    raise
-
-        return enriched_count, skipped_existing
-
-    def _enrich_candidates_batch(self, article_ids: list[str]) -> tuple[int, int]:
+    async def _enrich_candidates(self, article_ids: list[str]) -> tuple[int, int]:
         with self._session_factory() as session:
             articles = session.scalars(
                 select(Article)
@@ -162,7 +152,12 @@ class StoryWorkflowService:
         pending_articles: list[Article] = []
         skipped_existing = 0
         for article in articles:
-            if self._article_enrichment_complete(article):
+            checker = getattr(self._enrichment_service, "is_complete", None)
+            if callable(checker):
+                if checker(article):
+                    skipped_existing += 1
+                    continue
+            elif article.enrichment_status == "done" and bool((article.cluster_text or "").strip()):
                 skipped_existing += 1
                 continue
             pending_articles.append(article)
@@ -171,20 +166,18 @@ class StoryWorkflowService:
             return 0, skipped_existing
 
         payloads = [self._enrichment_service.build_input(article) for article in pending_articles]
-        batch_results = self._enrichment_service.infer_batch(payloads)
+        batch_results = await self._enrichment_service.infer_many(payloads)
 
         enriched_count = 0
         with self._session_factory() as session:
-            for article in pending_articles:
+            for article, outcome in zip(pending_articles, batch_results, strict=True):
                 stored = session.get(Article, article.article_id)
                 if stored is None:
                     continue
-                outcome = batch_results.get(article.article_id)
-                if outcome is None or outcome.error or outcome.value is None:
-                    error = RuntimeError(outcome.error if outcome is not None else "missing batch result")
-                    self._enrichment_service.apply_failure(article=stored, error=error)
+                if isinstance(outcome, Exception):
+                    self._enrichment_service.apply_failure(article=stored, error=outcome)
                     continue
-                self._enrichment_service.apply_result(article=stored, result=outcome.value)
+                self._enrichment_service.apply_result(article=stored, result=outcome)
                 enriched_count += 1
             session.commit()
 
@@ -208,22 +201,3 @@ class StoryWorkflowService:
             if article.should_publish is True and article.enrichment_status == "done"
         ]
         return publishable, watermark
-
-    def _article_enrichment_complete(self, article: Article) -> bool:
-        checker = getattr(self._enrichment_service, "is_complete", None)
-        if callable(checker):
-            return bool(checker(article))
-        return article.enrichment_status == "done" and bool((article.cluster_text or "").strip())
-
-
-def _build_story_embedding_text(article: EnrichedArticleRecord) -> str:
-    parts = [
-        article.title_zh.strip(),
-        article.summary_zh.strip(),
-        " ".join(item.strip() for item in article.tags if item.strip()),
-        " ".join(item.strip() for item in article.brands if item.strip()),
-        " ".join(item.strip() for item in article.category_candidates if item.strip()),
-        article.cluster_text.strip(),
-        article.source_name.strip(),
-    ]
-    return "\n".join(part for part in parts if part)

@@ -6,13 +6,13 @@ from dataclasses import asdict, dataclass
 import json
 from typing import Any
 
+from openai import AsyncOpenAI
 from sqlalchemy.orm import Session
 
 from backend.app.config.llm_config import IMAGE_ANALYSIS_MODEL_CONFIG
 from backend.app.models import Article, ArticleImage
 from backend.app.prompts.image_analysis_prompt import IMAGE_ANALYSIS_PROMPT
 from backend.app.schemas.llm.image_analysis import ImageAnalysisSchema
-from backend.app.service.llm_client_service import OpenAICompatibleClient
 
 
 @dataclass(frozen=True)
@@ -31,11 +31,34 @@ class ImageAnalysisService:
     def __init__(
         self,
         *,
-        llm_client: OpenAICompatibleClient | Any | None = None,
+        client: Any | None = None,
     ) -> None:
-        self._llm_client = llm_client or OpenAICompatibleClient()
+        api_key = IMAGE_ANALYSIS_MODEL_CONFIG.api_key
+        if client is None and not api_key:
+            raise ValueError(f"missing API key for {IMAGE_ANALYSIS_MODEL_CONFIG.model_name}")
+        self._client = client or AsyncOpenAI(
+            api_key=api_key,
+            base_url=IMAGE_ANALYSIS_MODEL_CONFIG.base_url,
+            timeout=IMAGE_ANALYSIS_MODEL_CONFIG.timeout_seconds,
+        )
 
-    def build_input(self, *, article: Article, image: ArticleImage) -> ImageAnalysisInput:
+    async def analyze_image(self, session: Session, *, article: Article, image: ArticleImage) -> bool:
+        if self.is_complete(image):
+            return False
+
+        payload = self.build_input(article=article, image=image)
+        try:
+            result = await self.infer_payload(payload)
+        except Exception as exc:
+            self.apply_failure(image=image, error=exc)
+            raise
+
+        self.apply_result(image=image, result=result)
+        session.flush()
+        return True
+
+    @staticmethod
+    def build_input(*, article: Article, image: ArticleImage) -> ImageAnalysisInput:
         return ImageAnalysisInput(
             image_id=image.image_id,
             image_url=image.source_url,
@@ -47,7 +70,7 @@ class ImageAnalysisService:
             context_snippet=(image.context_snippet or "").strip(),
         )
 
-    def build_messages(self, *, payload: ImageAnalysisInput) -> list[dict[str, Any]]:
+    def build_messages(self, payload: ImageAnalysisInput) -> list[dict[str, object]]:
         context = json.dumps(asdict(payload), ensure_ascii=False, indent=2, sort_keys=True)
         return [
             {"role": "system", "content": IMAGE_ANALYSIS_PROMPT},
@@ -60,27 +83,17 @@ class ImageAnalysisService:
             },
         ]
 
-    def infer_payload(self, payload: ImageAnalysisInput) -> ImageAnalysisSchema:
-        return self._llm_client.complete_json(
-            model_config=IMAGE_ANALYSIS_MODEL_CONFIG,
-            messages=self.build_messages(payload=payload),
-            schema=ImageAnalysisSchema,
+    async def infer_payload(self, payload: ImageAnalysisInput) -> ImageAnalysisSchema:
+        response = await self._client.beta.chat.completions.parse(
+            model=IMAGE_ANALYSIS_MODEL_CONFIG.model_name,
+            temperature=IMAGE_ANALYSIS_MODEL_CONFIG.temperature,
+            response_format=ImageAnalysisSchema,
+            messages=self.build_messages(payload),
         )
-
-    def analyze_image(self, session: Session, *, article: Article, image: ArticleImage) -> bool:
-        if self.is_complete(image):
-            return False
-
-        payload = self.build_input(article=article, image=image)
-        try:
-            result = self.infer_payload(payload)
-        except Exception as exc:
-            self.apply_failure(image=image, error=exc)
-            raise
-
-        self.apply_result(image=image, result=result)
-        session.flush()
-        return True
+        result = response.choices[0].message.parsed
+        if result is None:
+            raise ValueError("image analysis response missing parsed payload")
+        return result
 
     @staticmethod
     def apply_result(*, image: ArticleImage, result: ImageAnalysisSchema) -> None:

@@ -17,144 +17,139 @@ from backend.app.service.RAG.embedding_service import (
 
 
 class EmbeddingServiceTest(unittest.TestCase):
-    def test_generate_dense_embedding_uses_text_only_when_images_missing(self) -> None:
+    def test_generate_dense_embedding_uses_multimodal_api_for_text_only_inputs(self) -> None:
         calls: list[dict[str, object]] = []
-
-        class FakeTextEmbedding:
-            @staticmethod
-            def call(**kwargs: object):
-                calls.append(kwargs)
-                texts = kwargs["input"]
-                return type(
-                    "Response",
-                    (),
-                    {
-                        "output": {
-                            "embeddings": [
-                                {"embedding": [float(index)]} for index, _ in enumerate(texts)
-                            ]
-                        }
-                    },
-                )()
-
-        with patch("backend.app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding):
-            embeddings = generate_dense_embedding(["foo", "bar"], [])
-
-        self.assertEqual(embeddings, [[0.0], [1.0]])
-        self.assertEqual(
-            calls,
-            [
-                {
-                    "model": unittest.mock.ANY,
-                    "input": ["foo", "bar"],
-                    "api_key": unittest.mock.ANY,
-                    "dimension": DENSE_EMBEDDING_CONFIG.vector_dimension,
-                }
-            ],
-        )
-
-    def test_generate_dense_embedding_splits_text_only_and_multimodal_batches(self) -> None:
-        text_calls: list[dict[str, object]] = []
-        multimodal_calls: list[dict[str, object]] = []
-
-        class FakeTextEmbedding:
-            @staticmethod
-            def call(**kwargs: object):
-                text_calls.append(kwargs)
-                texts = kwargs["input"]
-                return type(
-                    "Response",
-                    (),
-                    {
-                        "output": {
-                            "embeddings": [
-                                {"embedding": [float(index)]} for index, _ in enumerate(texts)
-                            ]
-                        }
-                    },
-                )()
+        next_value = 0.0
 
         class FakeMultiModalEmbedding:
             @staticmethod
             def call(**kwargs: object):
-                multimodal_calls.append(kwargs)
-                items = kwargs["input"]
+                nonlocal next_value
+                calls.append(kwargs)
                 return type(
                     "Response",
                     (),
                     {
                         "output": {
-                            "embeddings": [
-                                {"embedding": [100.0 + index]} for index, _ in enumerate(items)
-                            ]
+                            "embeddings": [{"embedding": [next_value]}]
                         }
                     },
                 )()
+                
+        def fake_call(**kwargs: object):
+            nonlocal next_value
+            response = FakeMultiModalEmbedding.call(**kwargs)
+            next_value += 1.0
+            return response
 
-        with patch("backend.app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding), patch(
-            "backend.app.service.RAG.embedding_service.MultiModalEmbedding",
-            FakeMultiModalEmbedding,
-        ):
+        with patch("backend.app.service.RAG.embedding_service.MultiModalEmbedding.call", side_effect=fake_call):
+            embeddings = generate_dense_embedding(["foo", "bar"], None)
+
+        self.assertEqual(embeddings, [[0.0], [1.0]])
+        self.assertEqual(len(calls), 2)
+        self.assertTrue(all(len(call["input"]) == 1 for call in calls))
+        self.assertTrue(all(call["dimension"] == DENSE_EMBEDDING_CONFIG.vector_dimension for call in calls))
+
+    def test_generate_dense_embedding_sends_text_and_image_together_for_image_lane(self) -> None:
+        calls: list[dict[str, object]] = []
+        next_value = 100.0
+
+        class FakeMultiModalEmbedding:
+            @staticmethod
+            def call(**kwargs: object):
+                nonlocal next_value
+                calls.append(kwargs)
+                return type(
+                    "Response",
+                    (),
+                    {
+                        "output": {
+                            "embeddings": [{"embedding": [next_value]}]
+                        }
+                    },
+                )()
+        
+        def fake_call(**kwargs: object):
+            nonlocal next_value
+            response = FakeMultiModalEmbedding.call(**kwargs)
+            next_value += 1.0
+            return response
+
+        with patch("backend.app.service.RAG.embedding_service.MultiModalEmbedding.call", side_effect=fake_call):
             embeddings = generate_dense_embedding(
                 ["text-only", "image+text", "empty-image"],
                 [None, "https://cdn.example.com/look.jpg", "   "],
             )
 
-        self.assertEqual(embeddings, [[0.0], [100.0], [1.0]])
-        self.assertEqual(len(text_calls), 1)
-        self.assertEqual(text_calls[0]["input"], ["text-only", "empty-image"])
-        self.assertEqual(text_calls[0]["dimension"], DENSE_EMBEDDING_CONFIG.vector_dimension)
-        self.assertEqual(len(multimodal_calls), 1)
-        self.assertEqual(len(multimodal_calls[0]["input"]), 1)
-        self.assertEqual(multimodal_calls[0]["dimension"], DENSE_EMBEDDING_CONFIG.vector_dimension)
+        self.assertEqual(embeddings, [[100.0], [101.0], [102.0]])
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(len(calls[0]["input"]), 1)
+        self.assertEqual(len(calls[1]["input"]), 2)
+        self.assertEqual(len(calls[2]["input"]), 1)
+        self.assertTrue(all(call["dimension"] == DENSE_EMBEDDING_CONFIG.vector_dimension for call in calls))
 
     def test_generate_dense_embedding_batches_text_only_requests(self) -> None:
         calls: list[dict[str, object]] = []
+        next_value = 0.0
 
-        class FakeTextEmbedding:
+        class FakeMultiModalEmbedding:
             @staticmethod
             def call(**kwargs: object):
+                nonlocal next_value
                 calls.append(kwargs)
-                texts = kwargs["input"]
                 return type(
                     "Response",
                     (),
                     {
                         "output": {
-                            "embeddings": [{"embedding": [float(index)]} for index, _ in enumerate(texts)]
+                            "embeddings": [{"embedding": [next_value]}]
                         }
                     },
                 )()
+        
+        def fake_call(**kwargs: object):
+            nonlocal next_value
+            response = FakeMultiModalEmbedding.call(**kwargs)
+            next_value += 1.0
+            return response
 
-        with patch("backend.app.service.RAG.embedding_service.TextEmbedding", FakeTextEmbedding), patch(
+        with patch("backend.app.service.RAG.embedding_service.MultiModalEmbedding.call", side_effect=fake_call), patch(
             "backend.app.service.RAG.embedding_service.DENSE_EMBEDDING_CONFIG",
             replace(DENSE_EMBEDDING_CONFIG, batch_size=2),
         ):
             embeddings = generate_dense_embedding(["a", "b", "c", "d", "e"], None)
 
         self.assertEqual(len(embeddings), 5)
-        self.assertEqual([call["input"] for call in calls], [["a", "b"], ["c", "d"], ["e"]])
+        self.assertEqual(len(calls), 5)
+        self.assertTrue(all(len(call["input"]) == 1 for call in calls))
         self.assertTrue(all(call["dimension"] == DENSE_EMBEDDING_CONFIG.vector_dimension for call in calls))
 
     def test_generate_dense_embedding_batches_multimodal_requests(self) -> None:
         calls: list[dict[str, object]] = []
+        next_value = 100.0
 
         class FakeMultiModalEmbedding:
             @staticmethod
             def call(**kwargs: object):
+                nonlocal next_value
                 calls.append(kwargs)
-                items = kwargs["input"]
                 return type(
                     "Response",
                     (),
                     {
                         "output": {
-                            "embeddings": [{"embedding": [100.0 + index]} for index, _ in enumerate(items)]
+                            "embeddings": [{"embedding": [next_value]}]
                         }
                     },
                 )()
+        
+        def fake_call(**kwargs: object):
+            nonlocal next_value
+            response = FakeMultiModalEmbedding.call(**kwargs)
+            next_value += 1.0
+            return response
 
-        with patch("backend.app.service.RAG.embedding_service.MultiModalEmbedding", FakeMultiModalEmbedding), patch(
+        with patch("backend.app.service.RAG.embedding_service.MultiModalEmbedding.call", side_effect=fake_call), patch(
             "backend.app.service.RAG.embedding_service.DENSE_EMBEDDING_CONFIG",
             replace(DENSE_EMBEDDING_CONFIG, batch_size=2),
         ):
@@ -170,7 +165,8 @@ class EmbeddingServiceTest(unittest.TestCase):
             )
 
         self.assertEqual(len(embeddings), 5)
-        self.assertEqual([len(call["input"]) for call in calls], [2, 2, 1])
+        self.assertEqual(len(calls), 5)
+        self.assertTrue(all(len(call["input"]) == 2 for call in calls))
         self.assertTrue(all(call["dimension"] == DENSE_EMBEDDING_CONFIG.vector_dimension for call in calls))
 
     def test_generate_article_summary_embedding_passes_dimension(self) -> None:

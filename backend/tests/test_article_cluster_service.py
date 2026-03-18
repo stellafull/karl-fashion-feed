@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import unittest
 from datetime import datetime
 
@@ -14,11 +15,46 @@ from backend.app.service.story_pipeline_contracts import EmbeddedArticle, Enrich
 class StubReviewClient:
     def __init__(self, result: StoryClusterReviewSchema | Exception) -> None:
         self._result = result
+        self.beta = type(
+            "BetaAPI",
+            (),
+            {
+                "chat": type(
+                    "ChatAPI",
+                    (),
+                    {
+                        "completions": type(
+                            "CompletionsAPI",
+                            (),
+                            {"parse": self.parse},
+                        )()
+                    },
+                )()
+            },
+        )()
 
-    def complete_json(self, **_: object) -> StoryClusterReviewSchema:
+    async def parse(self, **_: object):
         if isinstance(self._result, Exception):
             raise self._result
-        return self._result
+        return type(
+            "ParsedResponse",
+            (),
+            {
+                "choices": [
+                    type(
+                        "Choice",
+                        (),
+                        {
+                            "message": type(
+                                "Message",
+                                (),
+                                {"parsed": self._result},
+                            )()
+                        },
+                    )()
+                ]
+            },
+        )()
 
 
 def build_embedded(article_id: str, vector: tuple[float, ...], *, published_at: datetime) -> EmbeddedArticle:
@@ -43,7 +79,7 @@ def build_embedded(article_id: str, vector: tuple[float, ...], *, published_at: 
 class ArticleClusterServiceTest(unittest.TestCase):
     def test_cluster_articles_groups_similar_vectors(self) -> None:
         service = ArticleClusterService(
-            llm_client=StubReviewClient(
+            client=StubReviewClient(
                 StoryClusterReviewSchema(
                     groups=[
                         StoryClusterGroupSchema(article_ids=["a-1", "a-2"]),
@@ -57,7 +93,7 @@ class ArticleClusterServiceTest(unittest.TestCase):
             build_embedded("a-3", (-1.0, 0.0), published_at=datetime(2026, 3, 12, 8, 0, 0)),
         ]
 
-        clusters = service.cluster_articles(articles)
+        clusters = asyncio.run(service.cluster_articles(articles))
 
         self.assertEqual(len(clusters), 2)
         self.assertEqual([item.article.article_id for item in clusters[0]], ["a-1", "a-2"])
@@ -65,7 +101,7 @@ class ArticleClusterServiceTest(unittest.TestCase):
 
     def test_review_can_split_initial_cluster(self) -> None:
         service = ArticleClusterService(
-            llm_client=StubReviewClient(
+            client=StubReviewClient(
                 StoryClusterReviewSchema(
                     groups=[
                         StoryClusterGroupSchema(article_ids=["a-1"]),
@@ -80,7 +116,7 @@ class ArticleClusterServiceTest(unittest.TestCase):
             build_embedded("a-2", (0.99, 0.01), published_at=datetime(2026, 3, 13, 7, 0, 0)),
         ]
 
-        clusters = service.cluster_articles(articles)
+        clusters = asyncio.run(service.cluster_articles(articles))
 
         self.assertEqual(len(clusters), 2)
         self.assertEqual([item.article.article_id for item in clusters[0]], ["a-1"])

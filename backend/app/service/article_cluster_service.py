@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from collections import defaultdict
 from dataclasses import asdict, dataclass
 from datetime import datetime
@@ -9,15 +10,12 @@ import json
 from typing import Any
 
 import numpy as np
+from openai import AsyncOpenAI
 from sklearn.cluster import AgglomerativeClustering
 
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
 from backend.app.prompts.story_cluster_review_prompt import STORY_CLUSTER_REVIEW_PROMPT
 from backend.app.schemas.llm.story_cluster_review import StoryClusterReviewSchema
-from backend.app.service.llm_client_service import (
-    BatchChatRequest,
-    OpenAICompatibleClient,
-)
 from backend.app.service.story_pipeline_contracts import EmbeddedArticle
 
 
@@ -36,15 +34,22 @@ class ArticleClusterService:
     def __init__(
         self,
         *,
-        llm_client: OpenAICompatibleClient | Any | None = None,
+        client: Any | None = None,
         distance_threshold: float = 0.18,
     ) -> None:
-        self._llm_client = llm_client or OpenAICompatibleClient()
+        api_key = STORY_SUMMARIZATION_MODEL_CONFIG.api_key
+        if client is None and not api_key:
+            raise ValueError(f"missing API key for {STORY_SUMMARIZATION_MODEL_CONFIG.model_name}")
+        self._client = client or AsyncOpenAI(
+            api_key=api_key,
+            base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
+            timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
+        )
         self._distance_threshold = distance_threshold
 
-    def cluster_articles(self, articles: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
+    async def cluster_articles(self, articles: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
         semantic_clusters = self.build_semantic_clusters(articles)
-        return self.review_clusters(semantic_clusters)
+        return await self.review_clusters(semantic_clusters)
 
     def build_semantic_clusters(self, articles: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
         if not articles:
@@ -68,50 +73,30 @@ class ArticleClusterService:
         semantic_clusters.sort(key=_cluster_sort_key, reverse=True)
         return semantic_clusters
 
-    def review_clusters(
+    async def review_clusters(
         self,
         clusters: list[list[EmbeddedArticle]],
     ) -> list[list[EmbeddedArticle]]:
         if not clusters:
             return []
-
-        if not hasattr(self._llm_client, "complete_json_batch"):
-            return self._review_clusters_sequentially(clusters)
-
-        requests: list[BatchChatRequest] = []
-        cluster_by_custom_id: dict[str, list[EmbeddedArticle]] = {}
         reviewed_clusters: list[list[EmbeddedArticle]] = []
-
-        for index, cluster in enumerate(clusters):
+        review_targets: list[list[EmbeddedArticle]] = []
+        for cluster in clusters:
             if len(cluster) <= 1:
                 reviewed_clusters.append(cluster)
                 continue
-            custom_id = f"cluster:{index}"
-            requests.append(
-                BatchChatRequest(
-                    custom_id=custom_id,
-                    messages=self.build_review_messages(cluster),
-                )
+            review_targets.append(cluster)
+
+        if review_targets:
+            results = await asyncio.gather(
+                *(self._review_cluster(cluster) for cluster in review_targets),
+                return_exceptions=True,
             )
-            cluster_by_custom_id[custom_id] = cluster
-
-        if not requests:
-            return reviewed_clusters
-
-        try:
-            batch_results = self._review_clusters_with_batch(requests)
-        except Exception:
-            return self._review_clusters_sequentially(clusters)
-
-        for index, cluster in enumerate(clusters):
-            if len(cluster) <= 1:
-                continue
-            custom_id = f"cluster:{index}"
-            outcome = batch_results.get(custom_id)
-            if outcome is None or outcome.error or not isinstance(outcome.value, StoryClusterReviewSchema):
-                reviewed_clusters.append(cluster)
-                continue
-            reviewed_clusters.extend(self.apply_review_result(cluster, outcome.value))
+            for cluster, result in zip(review_targets, results, strict=True):
+                if isinstance(result, Exception):
+                    reviewed_clusters.append(cluster)
+                    continue
+                reviewed_clusters.extend(result)
 
         reviewed_clusters.sort(key=_cluster_sort_key, reverse=True)
         return reviewed_clusters
@@ -155,40 +140,20 @@ class ArticleClusterService:
         reviewed.sort(key=_cluster_sort_key, reverse=True)
         return reviewed
 
-    def _review_cluster(self, cluster: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
+    async def _review_cluster(self, cluster: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
         if len(cluster) <= 1:
             return [cluster]
 
-        try:
-            result = self._llm_client.complete_json(
-                model_config=STORY_SUMMARIZATION_MODEL_CONFIG,
-                messages=self.build_review_messages(cluster),
-                schema=StoryClusterReviewSchema,
-            )
-        except Exception:
-            return [cluster]
-        return self.apply_review_result(cluster, result)
-
-    def _review_clusters_with_batch(
-        self,
-        requests: list[BatchChatRequest],
-    ) -> dict[str, Any]:
-        return self._llm_client.complete_json_batch(
-            model_config=STORY_SUMMARIZATION_MODEL_CONFIG,
-            requests=requests,
-            schema=StoryClusterReviewSchema,
-            metadata={"stage": "cluster_review"},
+        response = await self._client.beta.chat.completions.parse(
+            model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+            temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
+            messages=self.build_review_messages(cluster),
+            response_format=StoryClusterReviewSchema,
         )
-
-    def _review_clusters_sequentially(
-        self,
-        clusters: list[list[EmbeddedArticle]],
-    ) -> list[list[EmbeddedArticle]]:
-        reviewed_clusters: list[list[EmbeddedArticle]] = []
-        for cluster in clusters:
-            reviewed_clusters.extend(self._review_cluster(cluster))
-        reviewed_clusters.sort(key=_cluster_sort_key, reverse=True)
-        return reviewed_clusters
+        result = response.choices[0].message.parsed
+        if result is None:
+            raise ValueError("story cluster review response missing parsed payload")
+        return self.apply_review_result(cluster, result)
 
 
 def _sort_articles(cluster: list[EmbeddedArticle]) -> list[EmbeddedArticle]:

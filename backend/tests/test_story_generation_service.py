@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import unittest
 from datetime import datetime
 
@@ -8,35 +9,64 @@ from backend.app.service.story_generation_service import StoryGenerationService
 from backend.app.service.story_pipeline_contracts import EmbeddedArticle, EnrichedArticleRecord
 
 
-class StubStoryBatchResult:
-    def __init__(self, *, value: StoryGenerationSchema | None = None, error: str | None = None) -> None:
-        self.value = value
-        self.error = error
-
-
 class StubStoryClient:
-    def complete_json_batch(self, **_: object):
-        return {
-            "story:0": StubStoryBatchResult(
-                value=StoryGenerationSchema(
-                    title_zh="批量成功",
-                    summary_zh="第一组使用批量结果。",
-                    key_points=["point-1"],
-                    tags=["时尚"],
-                    category="高端时装",
-                )
-            ),
-            "story:1": StubStoryBatchResult(error="missing result"),
-        }
+    def __init__(self) -> None:
+        self.calls = 0
+        self.beta = type(
+            "BetaAPI",
+            (),
+            {
+                "chat": type(
+                    "ChatAPI",
+                    (),
+                    {
+                        "completions": type(
+                            "CompletionsAPI",
+                            (),
+                            {"parse": self.parse},
+                        )()
+                    },
+                )()
+            },
+        )()
 
-    def complete_json(self, **_: object) -> StoryGenerationSchema:
-        return StoryGenerationSchema(
-            title_zh="单条回退",
-            summary_zh="第二组走单条回退。",
-            key_points=["point-2"],
-            tags=["零售"],
-            category="行业动态",
-        )
+    async def parse(self, **_: object):
+        self.calls += 1
+        if self.calls == 1:
+            parsed = StoryGenerationSchema(
+                title_zh="第一组",
+                summary_zh="第一组结果",
+                key_points=["point-1"],
+                tags=["时尚"],
+                category="高端时装",
+            )
+        else:
+            parsed = StoryGenerationSchema(
+                title_zh="第二组",
+                summary_zh="第二组结果",
+                key_points=["point-2"],
+                tags=["零售"],
+                category="行业动态",
+            )
+        return type(
+            "ParsedResponse",
+            (),
+            {
+                "choices": [
+                    type(
+                        "Choice",
+                        (),
+                        {
+                            "message": type(
+                                "Message",
+                                (),
+                                {"parsed": parsed},
+                            )()
+                        },
+                    )()
+                ]
+            },
+        )()
 
 
 def build_cluster(article_id: str) -> list[EmbeddedArticle]:
@@ -62,12 +92,12 @@ def build_cluster(article_id: str) -> list[EmbeddedArticle]:
 
 
 class StoryGenerationServiceTest(unittest.TestCase):
-    def test_generate_stories_batch_falls_back_per_failed_cluster(self) -> None:
-        service = StoryGenerationService(llm_client=StubStoryClient())
+    def test_generate_stories_returns_drafts(self) -> None:
+        service = StoryGenerationService(client=StubStoryClient())
 
-        drafts = service.generate_stories_batch([build_cluster("a-1"), build_cluster("a-2")])
+        drafts = asyncio.run(service.generate_stories([build_cluster("a-1"), build_cluster("a-2")]))
 
-        self.assertEqual([draft.title_zh for draft in drafts], ["批量成功", "单条回退"])
+        self.assertEqual([draft.title_zh for draft in drafts], ["第一组", "第二组"])
         self.assertEqual([draft.category for draft in drafts], ["高端时装", "行业动态"])
 
 
