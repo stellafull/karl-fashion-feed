@@ -8,8 +8,7 @@ from unittest.mock import patch
 
 os.environ["QDRANT_URL"] = "http://localhost:6333"
 
-from backend.app.scripts.dev_ingest_story_rag_today import ImageAnalysisRunResult, run
-from backend.app.service.RAG.article_rag_service import RagInsertResult
+from backend.app.scripts.dev_ingest_story_rag_today import ArticleRagRunResult, run
 from backend.app.service.article_collection_service import CollectionResult
 from backend.app.service.article_parse_service import ParseResult
 from backend.app.service.story_pipeline_contracts import StoryDraft
@@ -94,21 +93,26 @@ class DevIngestStoryRagTodayTest(unittest.TestCase):
         class StubArticleRagService:
             pass
 
-        async def fake_analyze_new_images(article_ids: list[str]) -> ImageAnalysisRunResult:
-            self.assertEqual(article_ids, ["article-1"])
-            events.append("image")
-            return ImageAnalysisRunResult(candidates=1, analyzed=1)
-
-        async def fake_insert_rag_after_image_analysis(article_ids, image_analysis_task, rag_service):
+        async def fake_process_articles_for_rag(
+            article_ids: list[str],
+            *,
+            rag_service: object,
+            worker_count: int,
+            retry_delay_seconds: int,
+        ) -> ArticleRagRunResult:
             del rag_service
             self.assertEqual(article_ids, ["article-1"])
-            await image_analysis_task
+            self.assertEqual(worker_count, 2)
+            self.assertEqual(retry_delay_seconds, 15)
+            events.append("image")
             events.append("rag")
-            return RagInsertResult(
+            return ArticleRagRunResult(
+                image_candidates=1,
+                analyzed_images=1,
                 publishable_articles=1,
                 text_units=1,
                 image_units=1,
-                inserted_units=2,
+                upserted_units=2,
             )
 
         args = Namespace(
@@ -119,6 +123,8 @@ class DevIngestStoryRagTodayTest(unittest.TestCase):
             request_timeout_seconds=12,
             source_concurrency=4,
             http_concurrency=16,
+            image_analysis_concurrency=2,
+            image_analysis_retry_delay_seconds=15,
         )
 
         with patch("backend.app.scripts.dev_ingest_story_rag_today.ensure_article_storage_schema"), patch(
@@ -139,11 +145,8 @@ class DevIngestStoryRagTodayTest(unittest.TestCase):
             "backend.app.scripts.dev_ingest_story_rag_today.ArticleRagService",
             StubArticleRagService,
         ), patch(
-            "backend.app.scripts.dev_ingest_story_rag_today._analyze_new_images",
-            fake_analyze_new_images,
-        ), patch(
-            "backend.app.scripts.dev_ingest_story_rag_today._insert_rag_after_image_analysis",
-            fake_insert_rag_after_image_analysis,
+            "backend.app.scripts.dev_ingest_story_rag_today._process_articles_for_rag",
+            fake_process_articles_for_rag,
         ):
             result = asyncio.run(run(args))
 

@@ -22,7 +22,7 @@ class FakeQdrantService:
     def __init__(self) -> None:
         self.calls: list[tuple[str, list[dict[str, object]]]] = []
 
-    def insert_data(self, collection_name: str, records: list[dict[str, object]]) -> int:
+    def upsert_data(self, collection_name: str, records: list[dict[str, object]]) -> int:
         self.calls.append((collection_name, records))
         return len(records)
 
@@ -38,7 +38,7 @@ class ArticleRagServiceTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
 
-    def test_insert_articles_builds_text_and_image_records(self) -> None:
+    def test_upsert_articles_builds_text_and_image_records(self) -> None:
         relative_path = "2026-03-18/article-1.md"
         self.markdown_service.write_markdown(
             relative_path=relative_path,
@@ -109,12 +109,12 @@ class ArticleRagServiceTest(unittest.TestCase):
             "backend.app.service.RAG.article_rag_service.generate_sparse_embedding",
             return_value=[{1: 0.5}, {2: 0.7}],
         ) as sparse_mock:
-            result = service.insert_articles([article])
+            result = service.upsert_articles([article])
 
         self.assertEqual(result.publishable_articles, 1)
         self.assertEqual(result.text_units, 1)
         self.assertEqual(result.image_units, 1)
-        self.assertEqual(result.inserted_units, 2)
+        self.assertEqual(result.upserted_units, 2)
         self.assertEqual(dense_mock.call_count, 1)
         self.assertEqual(sparse_mock.call_count, 1)
         self.assertEqual(len(fake_qdrant.calls), 1)
@@ -127,8 +127,7 @@ class ArticleRagServiceTest(unittest.TestCase):
         self.assertEqual(records[1]["retrieval_unit_id"], "image:image-1")
         self.assertEqual(records[1]["article_image_id"], "image-1")
         self.assertEqual(records[1]["ingested_at"], datetime(2026, 3, 18, 8, 0, 0))
-        self.assertIn("图片说明", str(records[1]["content"]))
-        self.assertIn("模特穿着廓形外套", str(records[1]["content"]))
+        self.assertEqual(records[1]["content"], "模特穿着廓形外套")
         self.assertEqual(records[1]["dense_vector"], [0.3, 0.4])
         self.assertEqual(records[1]["sparse_vector"], {2: 0.7})
 

@@ -8,6 +8,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from openai import APIStatusError, APITimeoutError, RateLimitError
 from sqlalchemy import select
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
@@ -25,9 +26,13 @@ from backend.app.service.story_workflow_service import StoryWorkflowService
 
 
 @dataclass(frozen=True)
-class ImageAnalysisRunResult:
-    candidates: int
-    analyzed: int
+class ArticleRagRunResult:
+    image_candidates: int
+    analyzed_images: int
+    publishable_articles: int
+    text_units: int
+    image_units: int
+    upserted_units: int
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -75,6 +80,18 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=16,
         help="Global concurrent HTTP request limit.",
+    )
+    parser.add_argument(
+        "--image-analysis-concurrency",
+        type=int,
+        default=2,
+        help="How many image-analysis workers run concurrently.",
+    )
+    parser.add_argument(
+        "--image-analysis-retry-delay-seconds",
+        type=int,
+        default=15,
+        help="Delay before requeueing rate-limited image-analysis tasks.",
     )
     return parser
 
@@ -134,17 +151,19 @@ async def run(args: argparse.Namespace) -> int:
         return 0
 
     parsed_article_ids = list(parse_result.parsed_article_ids)
-    image_analysis_task = asyncio.create_task(_analyze_new_images(parsed_article_ids))
+    rag_task = asyncio.create_task(
+        _process_articles_for_rag(
+            parsed_article_ids,
+            rag_service=rag_service,
+            worker_count=args.image_analysis_concurrency,
+            retry_delay_seconds=args.image_analysis_retry_delay_seconds,
+        )
+    )
     enrichment_task = asyncio.create_task(story_workflow_service.enrich_articles(parsed_article_ids))
     enriched_count, skipped_existing_enrichment = await enrichment_task
 
     story_task = asyncio.create_task(story_workflow_service.build_story_drafts(parsed_article_ids))
-    rag_task = asyncio.create_task(
-        _insert_rag_after_image_analysis(parsed_article_ids, image_analysis_task, rag_service)
-    )
-
     story_result, rag_result = await asyncio.gather(story_task, rag_task)
-    image_analysis_result = await image_analysis_task
 
     print(
         "dev full pipeline completed: "
@@ -153,13 +172,13 @@ async def run(args: argparse.Namespace) -> int:
         f"parse_failed={parse_result.failed} "
         f"enriched={enriched_count} "
         f"skipped_existing_enrichment={skipped_existing_enrichment} "
-        f"publishable_articles={len(story_result.publishable_records)} "
-        f"analyzed_images={image_analysis_result.analyzed} "
-        f"image_candidates={image_analysis_result.candidates} "
+        f"publishable_articles={rag_result.publishable_articles} "
+        f"analyzed_images={rag_result.analyzed_images} "
+        f"image_candidates={rag_result.image_candidates} "
         f"stories_created={len(story_result.story_drafts)} "
         f"text_units={rag_result.text_units} "
         f"image_units={rag_result.image_units} "
-        f"rag_units={rag_result.inserted_units}"
+        f"rag_units={rag_result.upserted_units}"
     )
     return 0
 
@@ -169,61 +188,111 @@ async def main() -> int:
     return await run(args)
 
 
-async def _analyze_new_images(article_ids: list[str]) -> ImageAnalysisRunResult:
-    image_analysis_service = ImageAnalysisService()
-    with SessionLocal() as session:
-        rows = session.execute(
-            select(Article, ArticleImage)
-            .join(ArticleImage, ArticleImage.article_id == Article.article_id)
-            .where(
-                Article.article_id.in_(article_ids),
-                ArticleImage.visual_status != "done",
-            )
-            .order_by(
-                Article.ingested_at.asc(),
-                Article.article_id.asc(),
-                ArticleImage.position.asc(),
-                ArticleImage.image_id.asc(),
-            )
-        ).all()
-
-    if not rows:
-        return ImageAnalysisRunResult(candidates=0, analyzed=0)
-
-    payloads = [
-        (article.article_id, image.image_id, image_analysis_service.build_input(article=article, image=image))
-        for article, image in rows
-    ]
-    results = await asyncio.gather(
-        *(image_analysis_service.infer_payload(payload) for _, _, payload in payloads),
-        return_exceptions=True,
-    )
-
-    analyzed = 0
-    with SessionLocal() as session:
-        for (article_id, image_id, _), result in zip(payloads, results, strict=True):
-            del article_id
-            stored_image = session.get(ArticleImage, image_id)
-            if stored_image is None:
-                continue
-            if isinstance(result, Exception):
-                image_analysis_service.apply_failure(image=stored_image, error=result)
-            else:
-                image_analysis_service.apply_result(image=stored_image, result=result)
-                analyzed += 1
-        session.commit()
-
-    return ImageAnalysisRunResult(candidates=len(rows), analyzed=analyzed)
-
-
-async def _insert_rag_after_image_analysis(
+async def _process_articles_for_rag(
     article_ids: list[str],
-    image_analysis_task: asyncio.Task[ImageAnalysisRunResult],
+    *,
     rag_service: ArticleRagService,
-) -> RagInsertResult:
-    await image_analysis_task
-    articles = _load_publishable_articles(article_ids)
-    return await asyncio.to_thread(rag_service.insert_articles, articles)
+    worker_count: int = 2,
+    retry_delay_seconds: int = 15,
+) -> ArticleRagRunResult:
+    if worker_count <= 0:
+        raise ValueError("image_analysis_concurrency must be greater than 0")
+    if retry_delay_seconds <= 0:
+        raise ValueError("image_analysis_retry_delay_seconds must be greater than 0")
+
+    ordered_article_ids = _load_ordered_article_ids(article_ids)
+    if not ordered_article_ids:
+        return ArticleRagRunResult(
+            image_candidates=0,
+            analyzed_images=0,
+            publishable_articles=0,
+            text_units=0,
+            image_units=0,
+            upserted_units=0,
+        )
+
+    queue: asyncio.Queue[str] = asyncio.Queue()
+    for article_id in ordered_article_ids:
+        await queue.put(article_id)
+
+    image_analysis_service = ImageAnalysisService()
+    result_lock = asyncio.Lock()
+    image_candidates = 0
+    analyzed_images = 0
+    publishable_articles = 0
+    text_units = 0
+    image_units = 0
+    upserted_units = 0
+
+    async def worker() -> None:
+        nonlocal image_candidates
+        nonlocal analyzed_images
+        nonlocal publishable_articles
+        nonlocal text_units
+        nonlocal image_units
+        nonlocal upserted_units
+        while True:
+            article_id = await queue.get()
+            try:
+                article, images = _load_article_with_images(article_id)
+                if article is None:
+                    continue
+
+                local_image_candidates = 0
+                local_analyzed_images = 0
+                for image in images:
+                    if image.visual_status == "done":
+                        continue
+                    local_image_candidates += 1
+                    success = await _analyze_image_with_retry(
+                        article=article,
+                        image=image,
+                        service=image_analysis_service,
+                        retry_delay_seconds=retry_delay_seconds,
+                    )
+                    if success:
+                        local_analyzed_images += 1
+
+                rag_result = RagInsertResult(
+                    publishable_articles=0,
+                    text_units=0,
+                    image_units=0,
+                    upserted_units=0,
+                )
+                publishable = _load_publishable_articles([article_id])
+                if publishable:
+                    rag_result = await asyncio.to_thread(rag_service.upsert_articles, publishable)
+                    print(
+                        "rag upsert done: "
+                        f"article_id={article_id} "
+                        f"upserted_units={rag_result.upserted_units}",
+                        flush=True,
+                    )
+
+                async with result_lock:
+                    image_candidates += local_image_candidates
+                    analyzed_images += local_analyzed_images
+                    publishable_articles += rag_result.publishable_articles
+                    text_units += rag_result.text_units
+                    image_units += rag_result.image_units
+                    upserted_units += rag_result.upserted_units
+            finally:
+                queue.task_done()
+
+    workers = [asyncio.create_task(worker()) for _ in range(worker_count)]
+    await queue.join()
+    for task in workers:
+        task.cancel()
+    await asyncio.gather(*workers, return_exceptions=True)
+
+    return ArticleRagRunResult(
+        image_candidates=image_candidates,
+        analyzed_images=analyzed_images,
+        publishable_articles=publishable_articles,
+        text_units=text_units,
+        image_units=image_units,
+        upserted_units=upserted_units,
+    )
 
 
 def _load_publishable_articles(article_ids: list[str]) -> list[Article]:
@@ -237,6 +306,102 @@ def _load_publishable_articles(article_ids: list[str]) -> list[Article]:
             )
             .order_by(Article.ingested_at.asc(), Article.article_id.asc())
         ).all()
+
+
+def _load_ordered_article_ids(article_ids: list[str]) -> list[str]:
+    with SessionLocal() as session:
+        return list(
+            session.scalars(
+                select(Article.article_id)
+                .where(Article.article_id.in_(article_ids))
+                .order_by(Article.ingested_at.asc(), Article.article_id.asc())
+            ).all()
+        )
+
+
+def _load_article_with_images(article_id: str) -> tuple[Article | None, list[ArticleImage]]:
+    with SessionLocal() as session:
+        article = session.get(Article, article_id)
+        if article is None:
+            return None, []
+        images = list(
+            session.scalars(
+                select(ArticleImage)
+                .where(ArticleImage.article_id == article_id)
+                .order_by(ArticleImage.position.asc(), ArticleImage.image_id.asc())
+            ).all()
+        )
+    return article, images
+
+
+async def _analyze_image_with_retry(
+    *,
+    article: Article,
+    image: ArticleImage,
+    service: ImageAnalysisService,
+    retry_delay_seconds: int,
+) -> bool:
+    attempt = 0
+    payload = service.build_input(article=article, image=image)
+    while True:
+        try:
+            result = await service.infer_payload(payload)
+        except Exception as exc:
+            if _should_retry_image_analysis(exc):
+                attempt += 1
+                print(
+                    "image analysis retry queued: "
+                    f"article_id={article.article_id} "
+                    f"image_id={image.image_id} "
+                    f"attempt={attempt} "
+                    f"error={exc.__class__.__name__}",
+                    flush=True,
+                )
+                await asyncio.sleep(retry_delay_seconds)
+                continue
+
+            _apply_image_failure(image.image_id, exc, service)
+            print(
+                "image analysis failed: "
+                f"article_id={article.article_id} "
+                f"image_id={image.image_id} "
+                f"error={exc.__class__.__name__}",
+                flush=True,
+            )
+            return False
+
+        _apply_image_result(image.image_id, result, service)
+        print(
+            "image analysis done: "
+            f"article_id={article.article_id} "
+            f"image_id={image.image_id}",
+            flush=True,
+        )
+        return True
+
+
+def _should_retry_image_analysis(error: Exception) -> bool:
+    if isinstance(error, (RateLimitError, APITimeoutError)):
+        return True
+    return isinstance(error, APIStatusError) and error.status_code in {429, 500, 502, 503, 504}
+
+
+def _apply_image_result(image_id: str, result: object, service: ImageAnalysisService) -> None:
+    with SessionLocal() as session:
+        stored_image = session.get(ArticleImage, image_id)
+        if stored_image is None:
+            return
+        service.apply_result(image=stored_image, result=result)
+        session.commit()
+
+
+def _apply_image_failure(image_id: str, error: Exception, service: ImageAnalysisService) -> None:
+    with SessionLocal() as session:
+        stored_image = session.get(ArticleImage, image_id)
+        if stored_image is None:
+            return
+        service.apply_failure(image=stored_image, error=error)
+        session.commit()
 
 
 if __name__ == "__main__":

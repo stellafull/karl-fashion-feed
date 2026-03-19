@@ -42,7 +42,7 @@ Beta paragraph.
         markdown = """# Main Title
 
 ## Japanese Section
-これは最初の文です。これは二番目の文です。これは三番目の文です。これは四番目の文です。これは五番目の文です。
+「これは最初の文です。」これは二番目の文です。これは三番目の文です。これは四番目の文です。これは五番目の文です。
 """
 
         chunks = split_markdown_into_text_chunks(
@@ -54,9 +54,11 @@ Beta paragraph.
 
         self.assertGreater(len(chunks), 1)
         self.assertEqual(chunks[0]["metadata"]["heading_path"], ["Japanese Section"])
-        self.assertTrue(all(chunk["page_content"].endswith("。") for chunk in chunks[:-1]))
+        self.assertEqual(chunks[0]["page_content"], "「これは最初の文です。」")
+        self.assertTrue(all(chunk["page_content"].endswith(("。", "。」")) for chunk in chunks))
         self.assertTrue(all(chunk["metadata"]["text_start"] >= 0 for chunk in chunks))
         self.assertTrue(all(chunk["metadata"]["text_end"] > chunk["metadata"]["text_start"] for chunk in chunks))
+        self.assertTrue(any("「" in chunk["page_content"] for chunk in chunks))
 
 
 if __name__ == "__main__":

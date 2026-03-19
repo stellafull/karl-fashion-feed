@@ -26,7 +26,7 @@ class RagInsertResult:
     publishable_articles: int
     text_units: int
     image_units: int
-    inserted_units: int
+    upserted_units: int
 
 
 class ArticleRagService:
@@ -45,8 +45,8 @@ class ArticleRagService:
         self._qdrant_service = qdrant_service or QdrantService()
         self._collection_name = collection_name
 
-    def insert_articles(self, articles: list[Article]) -> RagInsertResult:
-        """Insert retrieval units for publishable articles into Qdrant."""
+    def upsert_articles(self, articles: list[Article]) -> RagInsertResult:
+        """Upsert retrieval units for publishable articles into Qdrant."""
         publishable_articles = sorted(
             [
                 article
@@ -60,7 +60,7 @@ class ArticleRagService:
                 publishable_articles=0,
                 text_units=0,
                 image_units=0,
-                inserted_units=0,
+                upserted_units=0,
             )
 
         text_records = self._build_text_records(publishable_articles)
@@ -71,7 +71,7 @@ class ArticleRagService:
                 publishable_articles=len(publishable_articles),
                 text_units=0,
                 image_units=0,
-                inserted_units=0,
+                upserted_units=0,
             )
 
         texts = [str(record["content"]) for record in records]
@@ -88,12 +88,12 @@ class ArticleRagService:
             record["dense_vector"] = dense_vector
             record["sparse_vector"] = sparse_vector
 
-        inserted_units = self._qdrant_service.insert_data(self._collection_name, records)
+        upserted_units = self._qdrant_service.upsert_data(self._collection_name, records)
         return RagInsertResult(
             publishable_articles=len(publishable_articles),
             text_units=len(text_records),
             image_units=len(image_records),
-            inserted_units=inserted_units,
+            upserted_units=upserted_units,
         )
 
     def _build_text_records(self, articles: list[Article]) -> list[dict[str, object]]:
@@ -174,16 +174,5 @@ class ArticleRagService:
         return records
 
     def _build_image_content(self, article: Article, image: ArticleImage) -> str:
-        parts = [
-            (image.caption_raw or "").strip(),
-            (image.alt_text or "").strip(),
-            (image.ocr_text or "").strip(),
-            (image.observed_description or "").strip(),
-            (image.contextual_interpretation or "").strip(),
-            (image.context_snippet or "").strip(),
-            (article.title_zh or "").strip(),
-            (article.summary_zh or "").strip(),
-            " ".join(str(tag).strip() for tag in (article.tags_json or []) if str(tag).strip()),
-            " ".join(str(brand).strip() for brand in (article.brands_json or []) if str(brand).strip()),
-        ]
-        return "\n".join(part for part in parts if part)
+        del article
+        return (image.observed_description or "").strip()

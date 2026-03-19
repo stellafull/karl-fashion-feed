@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import tiktoken
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
 HEADERS_TO_SPLIT_ON: list[tuple[str, str]] = [
@@ -18,6 +19,12 @@ HEADERS_TO_SPLIT_ON: list[tuple[str, str]] = [
 MULTILINGUAL_SEPARATORS: list[str] = [
     "\n\n",
     "\n",
+    "」\n",
+    "』\n",
+    "」",
+    "』",
+    "「",
+    "『",
     "。\n",
     "！\n",
     "？\n",
@@ -42,8 +49,7 @@ MULTILINGUAL_SEPARATORS: list[str] = [
     " ",
     "",
 ]
-
-
+TOKEN_ENCODING = tiktoken.get_encoding("cl100k_base")
 def normalize_markdown(markdown_text: str) -> str:
     return "\n".join(
         line.rstrip()
@@ -74,6 +80,7 @@ def split_markdown_into_text_chunks(
         chunk_overlap=chunk_overlap,
         separators=MULTILINGUAL_SEPARATORS,
         keep_separator="end",
+        length_function=_count_tokens,
     )
 
     chunks: list[dict[str, Any]] = []
@@ -131,3 +138,7 @@ def _build_heading_path(metadata: dict[str, Any]) -> list[str]:
         if isinstance(value, str) and value.strip():
             heading_path.append(value.strip())
     return heading_path
+
+
+def _count_tokens(text: str) -> int:
+    return len(TOKEN_ENCODING.encode(text))
