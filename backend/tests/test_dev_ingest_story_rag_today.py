@@ -6,7 +6,7 @@ import os
 import unittest
 from unittest.mock import patch
 
-os.environ["MILVUS_URI"] = "http://localhost:19530"
+os.environ["QDRANT_URL"] = "http://localhost:6333"
 
 from backend.app.scripts.dev_ingest_story_rag_today import ImageAnalysisRunResult, run
 from backend.app.service.RAG.article_rag_service import RagInsertResult

@@ -2,13 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterable, List, Sequence
+from typing import Any, List, Sequence
 
 from dashscope import MultiModalEmbedding, TextEmbedding
-from dashscope.embeddings.multimodal_embedding import (
-    MultiModalEmbeddingItemImage,
-    MultiModalEmbeddingItemText,
-)
 
 from backend.app.config.embedding_config import (
     DENSE_EMBEDDING_CONFIG,
@@ -30,138 +26,72 @@ def generate_article_summary_embedding(text: str) -> List[float]:
         request_kwargs["dimension"] = DENSE_SUMMARIZATION_EMBEDDING_CONFIG.vector_dimension
 
     response = TextEmbedding.call(**request_kwargs)
-    embeddings = _extract_embeddings(response)
-    if len(embeddings) != 1:
-        raise ValueError("summary embedding result size does not match request size")
-    return embeddings[0]
+    [item] = response.output["embeddings"]
+    return [float(value) for value in item["embedding"]]
 
 
 def generate_dense_embedding(
     texts: List[str],
     image_urls: Sequence[str | None] | None = None,
 ) -> List[List[float]]:
-    """Generate dense embeddings with a single multimodal path."""
+    """Generate one dense vector per retrieval unit."""
     if not texts:
         return []
 
-    if image_urls is None:
-        normalized_image_urls = [None] * len(texts)
-    else:
-        normalized_image_urls = list(image_urls)
-        if len(normalized_image_urls) != len(texts):
-            raise ValueError("texts and image_urls must have the same length")
+    normalized_image_urls = [None] * len(texts) if image_urls is None else list(image_urls)
 
     embeddings: list[list[float]] = []
     for text, image_url in zip(texts, normalized_image_urls, strict=True):
-        items = [MultiModalEmbeddingItemText(text=text, factor=1.0)]
+        input_item: dict[str, str] = {"text": text}
         if image_url is not None and image_url.strip():
-            items.append(MultiModalEmbeddingItemImage(image=image_url.strip(), factor=1.0))
+            input_item["image"] = image_url.strip()
+
         request_kwargs: dict[str, Any] = {
             "model": DENSE_EMBEDDING_CONFIG.model_name,
-            "input": items,
+            "input": [input_item],
             "api_key": DENSE_EMBEDDING_CONFIG.api_key,
         }
         if DENSE_EMBEDDING_CONFIG.vector_dimension is not None:
-            request_kwargs["dimension"] = DENSE_EMBEDDING_CONFIG.vector_dimension
+            request_kwargs["parameters"] = {"dimension": DENSE_EMBEDDING_CONFIG.vector_dimension}
 
         response = MultiModalEmbedding.call(**request_kwargs)
-        embeddings.extend(_extract_embeddings(response))
+        [item] = response.output["embeddings"]
+        embeddings.append([float(value) for value in item["embedding"]])
 
-    if len(embeddings) != len(texts):
-        raise ValueError("dense embedding result size does not match request size")
     return embeddings
 
 
 def generate_sparse_embedding(texts: List[str]) -> List[SparseEmbedding]:
     """Generate sparse text embeddings."""
     embeddings: list[SparseEmbedding] = []
-    for batch in _chunked(texts, SPARSE_EMBEDDING_CONFIG.batch_size):
+    batch_size = SPARSE_EMBEDDING_CONFIG.batch_size
+    for index in range(0, len(texts), batch_size):
+        batch = texts[index : index + batch_size]
         response = TextEmbedding.call(
             model=SPARSE_EMBEDDING_CONFIG.model_name,
-            input=list(batch),
+            input=batch,
             api_key=SPARSE_EMBEDDING_CONFIG.api_key,
             output_type="sparse",
         )
-        embeddings.extend(_extract_sparse_embeddings(response))
+        for item in response.output["embeddings"]:
+            raw_vector = item["sparse_embedding"] if "sparse_embedding" in item else item["embedding"]
+            if isinstance(raw_vector, list) and raw_vector and isinstance(raw_vector[0], dict):
+                embeddings.append(
+                    {
+                        int(vector_item["index"]): float(vector_item["value"])
+                        for vector_item in raw_vector
+                    }
+                )
+                continue
+            if isinstance(raw_vector, dict):
+                embeddings.append(
+                    {int(vector_index): float(vector_value) for vector_index, vector_value in raw_vector.items()}
+                )
+                continue
+            embeddings.append(
+                {
+                    vector_index: float(vector_value)
+                    for vector_index, vector_value in enumerate(raw_vector)
+                }
+            )
     return embeddings
-
-
-def _extract_embeddings(response: Any) -> List[List[float]]:
-    output = getattr(response, "output", None)
-    if not isinstance(output, dict):
-        raise ValueError(
-            "embedding request failed: "
-            f"status_code={getattr(response, 'status_code', None)} "
-            f"code={getattr(response, 'code', None)} "
-            f"message={getattr(response, 'message', None)}"
-        )
-
-    items = output.get("embeddings")
-    if not isinstance(items, list):
-        raise ValueError("embedding response missing embeddings")
-
-    vectors: list[list[float]] = []
-    for item in items:
-        if not isinstance(item, dict):
-            raise ValueError("invalid embedding item")
-        vector = item.get("embedding")
-        if not isinstance(vector, list):
-            raise ValueError("embedding item missing vector")
-        vectors.append([float(value) for value in vector])
-    return vectors
-
-
-def _extract_sparse_embeddings(response: Any) -> List[SparseEmbedding]:
-    output = getattr(response, "output", None)
-    if not isinstance(output, dict):
-        raise ValueError(
-            "sparse embedding request failed: "
-            f"status_code={getattr(response, 'status_code', None)} "
-            f"code={getattr(response, 'code', None)} "
-            f"message={getattr(response, 'message', None)}"
-        )
-
-    items = output.get("embeddings")
-    if not isinstance(items, list):
-        raise ValueError("embedding response missing embeddings")
-
-    vectors: list[SparseEmbedding] = []
-    for item in items:
-        if not isinstance(item, dict):
-            raise ValueError("invalid embedding item")
-
-        raw_vector = item.get("sparse_embedding")
-        if raw_vector is None:
-            raw_vector = item.get("embedding")
-
-        vectors.append(_normalize_sparse_embedding(raw_vector))
-    return vectors
-
-
-def _chunked(values: Sequence[Any], size: int) -> Iterable[Sequence[Any]]:
-    if size <= 0:
-        raise ValueError("batch size must be positive")
-    for index in range(0, len(values), size):
-        yield values[index : index + size]
-
-
-def _normalize_sparse_embedding(raw_vector: Any) -> SparseEmbedding:
-    if isinstance(raw_vector, dict):
-        if "indices" in raw_vector and "values" in raw_vector:
-            indices = raw_vector["indices"]
-            values = raw_vector["values"]
-            if not isinstance(indices, list) or not isinstance(values, list):
-                raise ValueError("sparse embedding indices/values must be lists")
-            if len(indices) != len(values):
-                raise ValueError("sparse embedding indices/values length mismatch")
-            return {
-                int(index): float(value)
-                for index, value in zip(indices, values, strict=True)
-            }
-
-        return {int(index): float(value) for index, value in raw_vector.items()}
-
-    if isinstance(raw_vector, list):
-        return {index: float(value) for index, value in enumerate(raw_vector)}
-
-    raise ValueError("embedding item missing sparse vector")

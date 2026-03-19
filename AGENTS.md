@@ -4,8 +4,7 @@
 
 ## 代码规范
 
-当你编写任何TypeScript代码时，强制使用
-当你编写任何Python代码时, 强制使用
+当你编写任何Python代码时, 强制使用 Skill python-code-style
 
 
 ## 方案规范
@@ -46,7 +45,7 @@
 - `article` 全量入库，再由 LLM 判断是否适合展示给读者。
 - LLM enrichment 一次完成翻译、总结、过滤、标签抽取、分类建议。
 - 仅 `should_publish=true` 的文章参与 embedding 和 story 聚类。
-- 检索与引用以 `article` / `article_image`为准，Milvus 只是检索副本。
+- 检索与引用以 `article` / `article_image`为准，Qdrant 只是检索副本。
 - Redis 仅用于缓存、锁和短期会话态，不保存核心业务真相。
 
 ## 建议目录

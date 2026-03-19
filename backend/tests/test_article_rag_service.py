@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
 
-os.environ["MILVUS_URI"] = "http://localhost:19530"
+os.environ["QDRANT_URL"] = "http://localhost:6333"
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -18,7 +18,7 @@ from backend.app.service.RAG.article_rag_service import ArticleRagService
 from backend.app.service.article_markdown_service import ArticleMarkdownService
 
 
-class FakeMilvusService:
+class FakeQdrantService:
     def __init__(self) -> None:
         self.calls: list[tuple[str, list[dict[str, object]]]] = []
 
@@ -95,11 +95,11 @@ class ArticleRagServiceTest(unittest.TestCase):
             article = session.get(Article, "article-1")
             assert article is not None
 
-        fake_milvus = FakeMilvusService()
+        fake_qdrant = FakeQdrantService()
         service = ArticleRagService(
             session_factory=self.session_factory,
             markdown_service=self.markdown_service,
-            milvus_service=fake_milvus,
+            qdrant_service=fake_qdrant,
         )
 
         with patch(
@@ -117,16 +117,16 @@ class ArticleRagServiceTest(unittest.TestCase):
         self.assertEqual(result.inserted_units, 2)
         self.assertEqual(dense_mock.call_count, 1)
         self.assertEqual(sparse_mock.call_count, 1)
-        self.assertEqual(len(fake_milvus.calls), 1)
-        collection_name, records = fake_milvus.calls[0]
+        self.assertEqual(len(fake_qdrant.calls), 1)
+        collection_name, records = fake_qdrant.calls[0]
         self.assertEqual(collection_name, "kff_retrieval")
         self.assertEqual(records[0]["retrieval_unit_id"], "text:article-1:0")
         self.assertEqual(records[0]["content"], "Paragraph body.")
         self.assertIsNone(records[0]["article_image_id"])
-        self.assertEqual(records[0]["ingested_at"], 1773820800000)
+        self.assertEqual(records[0]["ingested_at"], datetime(2026, 3, 18, 8, 0, 0))
         self.assertEqual(records[1]["retrieval_unit_id"], "image:image-1")
         self.assertEqual(records[1]["article_image_id"], "image-1")
-        self.assertEqual(records[1]["ingested_at"], 1773820800000)
+        self.assertEqual(records[1]["ingested_at"], datetime(2026, 3, 18, 8, 0, 0))
         self.assertIn("图片说明", str(records[1]["content"]))
         self.assertIn("模特穿着廓形外套", str(records[1]["content"]))
         self.assertEqual(records[1]["dense_vector"], [0.3, 0.4])

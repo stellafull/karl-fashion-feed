@@ -1,9 +1,9 @@
-"""Insert publishable article text and image units into Milvus."""
+"""Insert publishable article text and image units into Qdrant."""
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -14,7 +14,7 @@ from backend.app.service.RAG.embedding_service import (
     generate_dense_embedding,
     generate_sparse_embedding,
 )
-from backend.app.service.RAG.milvus_service import MilvusService
+from backend.app.service.RAG.qdrant_service import QdrantService
 from backend.app.service.article_chunk_service import split_markdown_into_text_chunks
 from backend.app.service.article_markdown_service import ArticleMarkdownService
 
@@ -30,23 +30,23 @@ class RagInsertResult:
 
 
 class ArticleRagService:
-    """Build retrieval units from articles and insert them into Milvus."""
+    """Build retrieval units from articles and insert them into Qdrant."""
 
     def __init__(
         self,
         *,
         session_factory: Callable[[], Session] = SessionLocal,
         markdown_service: ArticleMarkdownService | None = None,
-        milvus_service: MilvusService | None = None,
+        qdrant_service: QdrantService | None = None,
         collection_name: str = RAG_COLLECTION_NAME,
     ) -> None:
         self._session_factory = session_factory
         self._markdown_service = markdown_service or ArticleMarkdownService()
-        self._milvus_service = milvus_service or MilvusService()
+        self._qdrant_service = qdrant_service or QdrantService()
         self._collection_name = collection_name
 
     def insert_articles(self, articles: list[Article]) -> RagInsertResult:
-        """Insert retrieval units for publishable articles into Milvus."""
+        """Insert retrieval units for publishable articles into Qdrant."""
         publishable_articles = sorted(
             [
                 article
@@ -88,7 +88,7 @@ class ArticleRagService:
             record["dense_vector"] = dense_vector
             record["sparse_vector"] = sparse_vector
 
-        inserted_units = self._milvus_service.insert_data(self._collection_name, records)
+        inserted_units = self._qdrant_service.insert_data(self._collection_name, records)
         return RagInsertResult(
             publishable_articles=len(publishable_articles),
             text_units=len(text_records),
@@ -121,7 +121,7 @@ class ArticleRagService:
                         "category": article.category,
                         "tags_json": list(article.tags_json or []),
                         "brands_json": list(article.brands_json or []),
-                        "ingested_at": int(article.ingested_at.timestamp() * 1000),
+                        "ingested_at": article.ingested_at,
                         "dense_vector": [],
                         "sparse_vector": {},
                         "image_url": None,
@@ -165,7 +165,7 @@ class ArticleRagService:
                     "category": article.category,
                     "tags_json": list(article.tags_json or []),
                     "brands_json": list(article.brands_json or []),
-                    "ingested_at": int(article.ingested_at.timestamp() * 1000),
+                    "ingested_at": article.ingested_at,
                     "dense_vector": [],
                     "sparse_vector": {},
                     "image_url": image.source_url,

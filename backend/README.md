@@ -24,7 +24,7 @@
 - 每天北京时间 8 点只处理新增 `article`，生成新的 `story`。
 - 旧 `story` 不更新、不合并、不重写。
 - `article` / `article_image` 是检索与引用真相源。
-- Milvus 只是检索副本。
+- Qdrant 只是检索副本。
 - Redis 只负责缓存、锁、短期会话态。
 
 ## 每日 Pipeline
@@ -176,7 +176,7 @@
 
 ### 尚未完成
 
-- Milvus text / image 副本同步
+- Qdrant text / image 副本同步
 - query planner 与 intent-driven retrieval
 - RAG agent
 - 北京时间 8 点调度器

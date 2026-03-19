@@ -1,10 +1,29 @@
+## 第一性原理
+
+请使用第一性原理思考 你不能总是假设我非常清楚自己想要什么和该怎么得到。请保持审慎，从原始需求和问题出发，如果动机和目标不清晰，停下来和我讨论
+
+## 代码规范
+
+当你编写任何Python代码时, 强制使用 Skill python-code-style
+
+
+## 方案规范
+
+当你给出修改或重构方案时必须符合以下规范:
+
+- 不允许给出兼容性或补丁性方案
+- 不允许过度设计, 保持最短路径实现且不能违反第一条要求
+- 不允许自行给出我提供的需求意外的方案，例如一些helper和fallback方案，这可能导致业务逻辑偏移问题
+- 必须确保方案的逻辑正确，必须经过全链路的逻辑验证
+- failfast, let it crash, let bug exposure eariler
+
 # RAG Collection Design
 
 ## 文档状态
 
 - 本文档是 KARL FASHION FEED 的 RAG collection 规范文档。
 - 本文档描述目标最终态，不等同于当前代码完成度。
-- 本文档优先于 [backend/README.md](/root/karl-fashion-feed/backend/README.md) 中所有关于 article / image / Milvus / RAG collection 的简写描述。
+- 本文档优先于 [backend/README.md](/root/karl-fashion-feed/backend/README.md) 中所有关于 article / image / Qdrant / RAG collection 的简写描述。
 - 后续如果 collection 设计要变更，必须先改本文档，再改实现。
 
 ## 1. 核心不变量
@@ -12,10 +31,10 @@
 - `article` 和 canonical Markdown 是文本事实真相源。
 - `article_image` 是图片事实真相源与文章归属关系真相源。
 - `story` 只服务阅读，不进入 RAG collection 真相层。
-- Milvus 永远只是检索副本，可以重建，不承载业务真相。
+- Qdrant 永远只是检索副本，可以重建，不承载业务真相。
 - 只有 `should_publish=true` 的文章和其关联图片允许进入 shared collection。
-- 引用和回溯必须回到 `article` / Markdown / `article_image`，不得直接把 Milvus 命中结果当作引用真相。
-- Milvus 物理上只保留一个 shared collection，通过 `modality` 区分 `text` / `image`。
+- 引用和回溯必须回到 `article` / Markdown / `article_image`，不得直接把 Qdrant 命中结果当作引用真相。
+- Qdrant 物理上只保留一个 shared collection，通过 `modality` 区分 `text` / `image`。
 - 物理上是单 collection，但逻辑上仍保留 `text_only`、`image_only`、`fusion` 三种 query plan。
 - `fusion` 不做 text/image 统一候选池混排，而是按 `modality` 分 lane recall、各自 rerank、最后 merge。
 - 默认 freshness decay 只允许发生在 final score layer，不允许进入 ANN recall 或 rerank 输入。
@@ -38,7 +57,7 @@
 
 系统不再维护独立的桥接表。
 
-Milvus 每条记录直接使用稳定命名规则生成检索主键：
+Qdrant 每条记录直接使用稳定命名规则生成检索主键：
 
 - text 单元
   - `text:{article_id}:{chunk_index}`
@@ -55,7 +74,7 @@ Milvus 每条记录直接使用稳定命名规则生成检索主键：
 
 ### 2.3 Shared Collection 最小字段
 
-Milvus shared collection 最小字段固定如下：
+Qdrant shared collection 最小字段固定如下：
 
 | 字段 | 说明 |
 | --- | --- |
@@ -64,12 +83,8 @@ Milvus shared collection 最小字段固定如下：
 | `article_id` | 所属 article 主键，所有记录必填。 |
 | `article_image_id` | image 记录必填，text 记录为空。 |
 | `chunk_index` | text 记录在 article 内的稳定顺序，image 记录为空。 |
-| `role` | image 记录角色，如 `hero` / `inline` / `gallery`，text 记录为空。 |
-| `heading_path` | text 记录标题路径扁平化表示，image 记录为空。 |
-| `content` | 统一检索文本字段，仅服务 sparse embedding、rerank、调试与检索内部处理；不要求中文可读，不承诺直接给用户展示。 |
+| `content` | 统一检索文本字段 |
 | `source_name` | 来源名称。 |
-| `source_lang` | 来源语言。 |
-| `source_type` | 数据来源类型，如用户上传、爬取、第三方接口。 |
 | `category` | 主分类。 |
 | `tags_json` | 标签列表。 |
 | `brands_json` | 品牌列表。 |
@@ -81,18 +96,15 @@ shared collection 的 nullability 规则固定如下：
 
 - text 记录
   - `article_image_id = null`
-  - `position = null`
-  - `role = null`
 - image 记录
   - `chunk_index = null`
-  - `heading_path = null`
 
 ## 3. Shared Collection 中的检索单元
 
 ### 3.1 索引对象
 
 - shared collection 只收录 `should_publish=true` 的可检索叶子单元。
-- `story`、未发布 article、Milvus 回写结果都不进入 shared collection。
+- `story`、未发布 article、Qdrant 回写结果都不进入 shared collection。
 - 图片不进入 canonical Markdown；image lane 只从 `article_image` 派生。
 
 ### 3.2 Text 单元规则
@@ -105,7 +117,7 @@ shared collection 的 nullability 规则固定如下：
   4. 只有最终 `text_chunk` 进入 shared collection。
 - `chunk_index` 必须在 article 内稳定递增，重跑同一逻辑单元不得漂移。
 - text 单元的 `content` 生成规则固定为：
-  - `title_zh/title_raw + heading_path + chunk 正文 + summary_zh + tags + brands + source_name`
+  - `chunk 正文`
 - text 单元命中时，返回的是 text evidence，可直接使用 `content`。
 
 ### 3.3 Image 单元规则
@@ -117,14 +129,13 @@ shared collection 的 nullability 规则固定如下：
   - 图片存在至少一类文本投影信号：`alt_text`、`caption_raw`、`credit_raw`、`context_snippet`、`ocr_text`、`observed_description`、`contextual_interpretation` 之一
 - image 单元的 `content` 生成规则固定为：
   - `caption_raw + alt_text + ocr_text + observed_description + contextual_interpretation + context_snippet + 父 article 标题/摘要/标签/品牌`
-- image 单元的 `content` 只服务 sparse embedding、rerank 与内部检索，不作为最终返回本体。
-- image 单元命中时，返回的是 image evidence，本体是图片和其 locator，而不是 image2text 文本。
+- image 单元命中时，返回的是 image evidence，本体是图片和 `content`，而不是 image2text 文本。
 
-## 4. Milvus 副本与重建策略
+## 4. Qdrant 副本与重建策略
 
 ### 4.1 Collection 命名
 
-- Milvus 只保留一个在线 shared collection：
+- Qdrant 只保留一个在线 shared collection：
   - `kff_retrieval`
 - 查询永远直接走该 collection，不做 alias 切换。
 
@@ -134,12 +145,12 @@ shared collection 的 nullability 规则固定如下：
 
 1. article / canonical Markdown / article_image 落事实真相。
 2. enrichment、图片分析完成后，直接生成检索主键与检索文本。
-3. 生成 dense/sparse 表示并写入 Milvus shared collection。
+3. 生成 dense/sparse 表示并写入 Qdrant shared collection。
 
 ### 4.3 重建规则
 
-- Milvus 副本损坏时，必须从数据库真相层和 Markdown 全量重建。
-- 重建不得依赖旧 Milvus 行内容。
+- Qdrant 副本损坏时，必须从数据库真相层和 Markdown 全量重建。
+- 重建不得依赖旧 Qdrant 行内容。
 - schema、文本模板、embedding 模型发生变化时，直接重建当前唯一在线 collection。
 - 重建完成后至少校验：
   - unit 总数
@@ -283,7 +294,7 @@ retrieval 层不尝试把多个 article 再聚成 story/topic 级 bundle。
 - text 命中时，`content` 可作为 text evidence 返回。
 - image 命中时，`content` 只作为内部检索文本投影保留，不作为最终图片结果本体返回。
 
-RAG agent 必须再回源读取 article Markdown 或 `article_image`，不能直接把 Milvus 命中行当最终引用内容。
+RAG agent 必须再回源读取 article Markdown 或 `article_image`，不能直接把 Qdrant 命中行当最终引用内容。
 
 ## 6. 当前代码现状与差距
 
@@ -298,13 +309,13 @@ RAG agent 必须再回源读取 article Markdown 或 `article_image`，不能直
 
 当前尚未落地、但本文已固定为目标规范的部分：
 
-- shared collection 的 Milvus 副本同步
+- shared collection 的 Qdrant 副本同步
 - sparse embedding 生成链路
 - planner 驱动的 shared collection query service
 - lane 级 rerank、final scoring、merge / dedupe
 - image retrieval grounding logic
 
-当前 [milvus_service.py](/root/karl-fashion-feed/backend/app/service/RAG/milvus_service.py) 中的 schema 只是过渡实现，不代表本文定义的 shared collection 目标规范。
+当前 [qdrant_service.py](/root/karl-fashion-feed/backend/app/service/RAG/qdrant_service.py) 中的 schema 只是过渡实现，不代表本文定义的 shared collection 目标规范。
 
 ## 7. 非目标与可调参数
 

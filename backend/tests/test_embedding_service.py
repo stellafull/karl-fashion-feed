@@ -29,13 +29,9 @@ class EmbeddingServiceTest(unittest.TestCase):
                 return type(
                     "Response",
                     (),
-                    {
-                        "output": {
-                            "embeddings": [{"embedding": [next_value]}]
-                        }
-                    },
+                    {"output": {"embeddings": [{"embedding": [next_value]}]}},
                 )()
-                
+
         def fake_call(**kwargs: object):
             nonlocal next_value
             response = FakeMultiModalEmbedding.call(**kwargs)
@@ -48,9 +44,16 @@ class EmbeddingServiceTest(unittest.TestCase):
         self.assertEqual(embeddings, [[0.0], [1.0]])
         self.assertEqual(len(calls), 2)
         self.assertTrue(all(len(call["input"]) == 1 for call in calls))
-        self.assertTrue(all(call["dimension"] == DENSE_EMBEDDING_CONFIG.vector_dimension for call in calls))
+        self.assertEqual(calls[0]["input"], [{"text": "foo"}])
+        self.assertEqual(calls[1]["input"], [{"text": "bar"}])
+        self.assertTrue(
+            all(
+                call["parameters"] == {"dimension": DENSE_EMBEDDING_CONFIG.vector_dimension}
+                for call in calls
+            )
+        )
 
-    def test_generate_dense_embedding_sends_text_and_image_together_for_image_lane(self) -> None:
+    def test_generate_dense_embedding_uses_text_and_image_for_image_lane(self) -> None:
         calls: list[dict[str, object]] = []
         next_value = 100.0
 
@@ -62,13 +65,9 @@ class EmbeddingServiceTest(unittest.TestCase):
                 return type(
                     "Response",
                     (),
-                    {
-                        "output": {
-                            "embeddings": [{"embedding": [next_value]}]
-                        }
-                    },
+                    {"output": {"embeddings": [{"embedding": [next_value]}]}},
                 )()
-        
+
         def fake_call(**kwargs: object):
             nonlocal next_value
             response = FakeMultiModalEmbedding.call(**kwargs)
@@ -83,10 +82,18 @@ class EmbeddingServiceTest(unittest.TestCase):
 
         self.assertEqual(embeddings, [[100.0], [101.0], [102.0]])
         self.assertEqual(len(calls), 3)
-        self.assertEqual(len(calls[0]["input"]), 1)
-        self.assertEqual(len(calls[1]["input"]), 2)
-        self.assertEqual(len(calls[2]["input"]), 1)
-        self.assertTrue(all(call["dimension"] == DENSE_EMBEDDING_CONFIG.vector_dimension for call in calls))
+        self.assertEqual(calls[0]["input"], [{"text": "text-only"}])
+        self.assertEqual(
+            calls[1]["input"],
+            [{"text": "image+text", "image": "https://cdn.example.com/look.jpg"}],
+        )
+        self.assertEqual(calls[2]["input"], [{"text": "empty-image"}])
+        self.assertTrue(
+            all(
+                call["parameters"] == {"dimension": DENSE_EMBEDDING_CONFIG.vector_dimension}
+                for call in calls
+            )
+        )
 
     def test_generate_dense_embedding_batches_text_only_requests(self) -> None:
         calls: list[dict[str, object]] = []
@@ -100,13 +107,9 @@ class EmbeddingServiceTest(unittest.TestCase):
                 return type(
                     "Response",
                     (),
-                    {
-                        "output": {
-                            "embeddings": [{"embedding": [next_value]}]
-                        }
-                    },
+                    {"output": {"embeddings": [{"embedding": [next_value]}]}},
                 )()
-        
+
         def fake_call(**kwargs: object):
             nonlocal next_value
             response = FakeMultiModalEmbedding.call(**kwargs)
@@ -122,9 +125,14 @@ class EmbeddingServiceTest(unittest.TestCase):
         self.assertEqual(len(embeddings), 5)
         self.assertEqual(len(calls), 5)
         self.assertTrue(all(len(call["input"]) == 1 for call in calls))
-        self.assertTrue(all(call["dimension"] == DENSE_EMBEDDING_CONFIG.vector_dimension for call in calls))
+        self.assertTrue(
+            all(
+                call["parameters"] == {"dimension": DENSE_EMBEDDING_CONFIG.vector_dimension}
+                for call in calls
+            )
+        )
 
-    def test_generate_dense_embedding_batches_multimodal_requests(self) -> None:
+    def test_generate_dense_embedding_batches_image_requests(self) -> None:
         calls: list[dict[str, object]] = []
         next_value = 100.0
 
@@ -136,13 +144,9 @@ class EmbeddingServiceTest(unittest.TestCase):
                 return type(
                     "Response",
                     (),
-                    {
-                        "output": {
-                            "embeddings": [{"embedding": [next_value]}]
-                        }
-                    },
+                    {"output": {"embeddings": [{"embedding": [next_value]}]}},
                 )()
-        
+
         def fake_call(**kwargs: object):
             nonlocal next_value
             response = FakeMultiModalEmbedding.call(**kwargs)
@@ -166,8 +170,56 @@ class EmbeddingServiceTest(unittest.TestCase):
 
         self.assertEqual(len(embeddings), 5)
         self.assertEqual(len(calls), 5)
-        self.assertTrue(all(len(call["input"]) == 2 for call in calls))
-        self.assertTrue(all(call["dimension"] == DENSE_EMBEDDING_CONFIG.vector_dimension for call in calls))
+        self.assertTrue(all(len(call["input"]) == 1 for call in calls))
+        self.assertTrue(
+            all(
+                call["input"][0]
+                == {
+                    "text": text,
+                    "image": image_url,
+                }
+                for call, text, image_url in zip(
+                    calls,
+                    ["a", "b", "c", "d", "e"],
+                    [
+                        "https://cdn.example.com/1.jpg",
+                        "https://cdn.example.com/2.jpg",
+                        "https://cdn.example.com/3.jpg",
+                        "https://cdn.example.com/4.jpg",
+                        "https://cdn.example.com/5.jpg",
+                    ],
+                    strict=True,
+                )
+            )
+        )
+        self.assertTrue(
+            all(
+                call["parameters"] == {"dimension": DENSE_EMBEDDING_CONFIG.vector_dimension}
+                for call in calls
+            )
+        )
+
+    def test_generate_dense_embedding_rejects_multi_vector_response(self) -> None:
+        class FakeMultiModalEmbedding:
+            @staticmethod
+            def call(**kwargs: object):
+                del kwargs
+                return type(
+                    "Response",
+                    (),
+                    {
+                        "output": {
+                            "embeddings": [
+                                {"embedding": [1.0]},
+                                {"embedding": [2.0]},
+                            ]
+                        }
+                    },
+                )()
+
+        with patch("backend.app.service.RAG.embedding_service.MultiModalEmbedding.call", FakeMultiModalEmbedding.call):
+            with self.assertRaises(ValueError):
+                generate_dense_embedding(["image+text"], ["https://cdn.example.com/look.jpg"])
 
     def test_generate_article_summary_embedding_passes_dimension(self) -> None:
         calls: list[dict[str, object]] = []
@@ -207,8 +259,16 @@ class EmbeddingServiceTest(unittest.TestCase):
                     {
                         "output": {
                             "embeddings": [
-                                {"sparse_embedding": {"indices": [index], "values": [float(index + 1)]}}
-                                for index, _ in enumerate(texts)
+                                {
+                                    "sparse_embedding": [
+                                        {
+                                            "index": index,
+                                            "token": value,
+                                            "value": float(index + 1),
+                                        }
+                                    ]
+                                }
+                                for index, value in enumerate(texts)
                             ]
                         }
                     },
