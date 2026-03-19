@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-03-19T10:38:45+00:00",
+    "generated_at": "2026-03-19T12:46:55+00:00",
     "total_topics": 500,
-    "total_articles": 1193,
+    "total_articles": 1182,
     "sources_count": 49,
     "sources": [
       "Allure",
@@ -58,21 +58,21 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 75,
-      "blocked_by_tombstones": 372,
-      "evicted_topics": 46,
+      "new_articles_in_2h": 50,
+      "blocked_by_tombstones": 366,
+      "evicted_topics": 39,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 19,
-        "incremental_new_topics_created": 54,
-        "cross_merge_candidates": 15,
-        "cross_merge_low_reviews": 9,
-        "cross_merge_high_reviews": 1,
-        "cross_merge_merged_topics": 8
+        "incremental_assigned_to_existing": 9,
+        "incremental_new_topics_created": 40,
+        "cross_merge_candidates": 3,
+        "cross_merge_low_reviews": 3,
+        "cross_merge_high_reviews": 0,
+        "cross_merge_merged_topics": 1
       }
     },
     "quality": {
-      "merge_rate": 0.5809,
-      "avg_sources_per_topic": 1.3,
+      "merge_rate": 0.577,
+      "avg_sources_per_topic": 1.278,
       "high_confidence_topic_ratio": 0.954,
       "rebuild_mode": "incremental"
     }
@@ -3402,6 +3402,64 @@
       "article_count": 1
     },
     {
+      "id": "61b2bf3c3bfa",
+      "title": "高允貞演绎法式风情，解锁夏日轻奢单品",
+      "summary": "韩国演员高允貞倾情演绎Marithé+François Girbaud夏季广告，完美诠释清新浪漫的法式格调。广告大片中，高允貞身着多款新品，包括亮眼红色蝴蝶结平底鞋、别致织带平底鞋、简约经典小Logo圆领衫、慵懒麻花编织套装以及时髦单肩水桶包，尽显优雅气质。想要打造夏日轻奢风，不妨从高允貞同款单品入手。",
+      "key_points": [
+        "高允貞代言Marithé+François Girbaud夏季新品",
+        "法式风格单品：蝴蝶结平底鞋、织带鞋、Logo圆领衫、编织套装、水桶包",
+        "高允貞广告画报展示穿搭灵感"
+      ],
+      "tags": [
+        "高允貞",
+        "Marithé François Girbaud",
+        "夏季新品",
+        "法式风",
+        "轻奢"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://ia.marieclaire.com.tw/assets/mc/202603/69BBD6FF4ACB91773917951.jpeg",
+      "published": "2026-03-19T18:59:03",
+      "sources": [
+        {
+          "name": "Marie Claire Taiwan",
+          "title": "高允貞新廣告拍太美！5個同款Marithé+François Girbaud新品想變漂亮請跟上",
+          "link": "https://www.marieclaire.com.tw/fashion/news/92427",
+          "lang": "zh"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "ebad284fdbcb",
+      "title": "卡地亚：平衡之美 珠宝臻品耀台北",
+      "summary": "卡地亚于台北盛大举行EN ÉQUILIBRE顶级珠宝系列展览，汇聚超过350件臻品，囊括全新高级珠宝系列、珠宝腕表、高级制表以及珍贵的古董典藏。本次展览以“平衡”为灵感，深入探索比例、色彩与结构的和谐艺术，通过“色彩交融”与“光影构型”两大主题篇章，淋漓尽致地展现了卡地亚在风格、精湛工艺与无限创意上的卓越掌控力。焦点展品包括PANTHERE ALGARROBO项链、PARCAE项链、CIEL IPOMÉE戒指、CANESIA项链、SPLENDAE项链以及VITRIS链表等。",
+      "key_points": [
+        "卡地亚EN ÉQUILIBRE顶级珠宝系列展",
+        "350余件作品，涵盖多个系列",
+        "探索平衡之美，展现品牌精湛工艺"
+      ],
+      "tags": [
+        "卡地亚",
+        "顶级珠宝",
+        "展览"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://ia.marieclaire.com.tw/assets/mc/202603/69BBBA8FD7AF11773910671.jpeg",
+      "published": "2026-03-19T18:00:00",
+      "sources": [
+        {
+          "name": "Marie Claire Taiwan",
+          "title": "卡地亞EN ÉQUILIBRE頂級珠寶系列演繹極致平衡的嶄新篇章",
+          "link": "https://www.marieclaire.com.tw/fashion/try-on/92422",
+          "lang": "zh"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "c2c910adfce0",
       "title": "Miu Miu工装风大包回归！",
       "summary": "Miu Miu 2026春夏系列大胆革新，挥别小废包风潮，以全新Utilitaire包款宣告大包时代的回归。该系列巧妙融合工装风格与复古麂皮材质，打造出兼具实用性与时尚感的单品。Utilitaire手袋拥有手提包和斜挎包两种款式，采用温暖的大地色系，百搭且不分性别，已吸引MoMo、Minnie、曾敬骅等众多明星率先演绎，成为时尚达人的新宠。",
@@ -3495,6 +3553,1182 @@
         }
       ],
       "article_count": 2
+    },
+    {
+      "id": "95e4e323bdac",
+      "title": "ZARA联手Galliano：解构重塑经典",
+      "summary": "快时尚巨头ZARA宣布与鬼才设计师John Galliano达成一项为期两年的创意合作。双方计划自2026年9月起，每季度推出联名系列。Galliano将运用其高级定制的深厚功底，对ZARA过往季度的服装进行大胆解构与重塑，赋予经典单品全新的生命力，为消费者带来耳目一新的设计。",
+      "key_points": [
+        "ZARA与John Galliano达成合作",
+        "合作系列将于2026年9月推出",
+        "Galliano将重塑ZARA经典设计"
+      ],
+      "tags": [
+        "ZARA",
+        "John Galliano",
+        "品牌合作",
+        "设计师联名",
+        "重塑设计"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://www.fashion-press.net/img/news/144572/top.jpg?1773923734",
+      "published": "2026-03-19T12:39:25+00:00",
+      "sources": [
+        {
+          "name": "Fashion Press",
+          "title": "ZARAとジョン・ガリアーノが2年間のクリエイティブ・パートナーシップを発表、アーカイブを再構築",
+          "link": "https://www.fashion-press.net/news/144572",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "04e886a01630",
+      "title": "Comme des Garçons：森系香氛新境",
+      "summary": "Comme des Garçons Parfums携手艺术家Meg Webster及Dia Art Foundation，将于2026年春季推出全新香水“[ ] Dia × Meg Webster”。这款香水以“感受自然”为灵感，巧妙融合月桂油、天竺葵的清新前调，胡萝卜籽油与独特蘑菇香调的中调，以及广藿香、矿物木与檀香木的深沉后调，营造出宛如漫步森林般的感官体验。该香水将于3月20日起在阪急梅田本店等指定店铺率先发售，敬请期待。",
+      "key_points": [
+        "Comme des Garçons全新香水",
+        "联名艺术家Meg Webster",
+        "灵感源于自然森林"
+      ],
+      "tags": [
+        "Comme des Garçons",
+        "香水",
+        "联名合作",
+        "美妆新品",
+        "自然香调"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://www.fashion-press.net/img/news/144523/top.jpg?1773829823",
+      "published": "2026-03-19T12:39:24+00:00",
+      "sources": [
+        {
+          "name": "Fashion Press",
+          "title": "コム デ ギャルソン・パルファム「自然を感じる」新作香水、“森”を思わせるウッドやパチョリの香り",
+          "link": "https://www.fashion-press.net/news/144523",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "015e18ce41bb",
+      "title": "Dior奢宠新境：名古屋尊享护理",
+      "summary": "Dior于名古屋松坂屋开设日本国内最大规模的护理沙龙「Dior La Suite」，首度进驻东海地区。名模滝沢眞規子率先体验其奢华护理，该沙龙提供全套Dior产品加持的面部及身体护理，并根据个人需求量身定制专属方案，打造极致尊宠体验。",
+      "key_points": [
+        "Dior日本最大护理沙龙开幕",
+        "首家Dior La Suite落户东海地区",
+        "提供定制化Dior奢华护理体验"
+      ],
+      "tags": [
+        "Dior",
+        "奢华护理",
+        "美容",
+        "名古屋",
+        "滝沢眞規子"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://www.fashion-press.net/img/news/144178/top.jpg?1773895258",
+      "published": "2026-03-19T12:39:23+00:00",
+      "sources": [
+        {
+          "name": "Fashion Press",
+          "title": "ディオール“国内最大級”のトリートメント「ディオール ラ スイート 松坂屋名古屋店」滝沢眞規子が体験",
+          "link": "https://www.fashion-press.net/news/144178",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "cfb20d89c637",
+      "title": "未来解构：Yohei Ohno & Viviano Tokyo 2026秋冬",
+      "summary": "日本设计师品牌Yohei Ohno和Viviano Tokyo分别于东京时装周发布了其2026-27年秋冬系列。Yohei Ohno延续了品牌一贯的未来主义和解构主义设计理念，在经典风格中探索新的可能性。Viviano Tokyo的秋季系列也已在Vogue网站上展示。Vogue和WWD Japan均对Yohei Ohno的系列进行了报道，并提供了完整的系列图片，展示了每一套look的细节，方便读者深入了解设计师的创意表达。这两个系列均是对未来时尚的独特诠释。",
+      "key_points": [
+        "Yohei Ohno和Viviano Tokyo发布2026秋冬系列",
+        "Yohei Ohno延续未来主义和解构主义风格",
+        "Vogue和WWD Japan报道Yohei Ohno系列并提供完整图片",
+        "Viviano Tokyo秋季系列在Vogue网站展示"
+      ],
+      "tags": [
+        "Yohei Ohno",
+        "Viviano Tokyo",
+        "2026秋冬",
+        "东京时装周",
+        "未来主义",
+        "解构主义"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://assets.vogue.com/photos/69bbc471c176d82920a12513/master/pass/00001-yohei-ohno-fall-2026-ready-to-wear-tokyo-credit-gorunway.jpg",
+      "published": "2026-03-19T12:38:32+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "Yohei Ohno Tokyo Fall 2026",
+          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/yohei-ohno",
+          "lang": "en"
+        },
+        {
+          "name": "WWD Japan",
+          "title": "「ヨウヘイ オオノ」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2359453",
+          "lang": "ja"
+        },
+        {
+          "name": "Vogue",
+          "title": "Viviano Tokyo Fall 2026",
+          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/viviano",
+          "lang": "en"
+        }
+      ],
+      "article_count": 3
+    },
+    {
+      "id": "b113e5ed7aa4",
+      "title": "告别溜肩！3招练出性感僧帽肌",
+      "summary": "《GQ Japan》分享了打造迷人身材的关键——僧帽肌训练。除了美观，强健的僧帽肌还能改善姿势，提升整体运动表现。专业教练推荐三个高效训练动作，助你告别溜肩，塑造挺拔身姿，提升自信。",
+      "key_points": [
+        "僧帽肌训练的重要性：美观与健康兼顾",
+        "改善姿势：告别含胸驼背",
+        "提升运动表现：增强身体稳定性"
+      ],
+      "tags": [
+        "僧帽肌",
+        "健身",
+        "肌肉训练",
+        "体态矫正",
+        "GQ Japan"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.gqjapan.jp/photos/69ba57afa20c1a215622da7e/master/pass/GettyImages-147206881.jpg",
+      "published": "2026-03-19T12:30:00+00:00",
+      "sources": [
+        {
+          "name": "GQ Japan",
+          "title": "僧帽筋の筋トレ3選──鍛えるべき理由と正しい鍛え方・注意点をトレーナーが伝授",
+          "link": "https://www.gqjapan.jp/article/20260319-best-trap-exercises-2",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "26e989f4b514",
+      "title": "Caleres财报亮眼，股价飙升！",
+      "summary": "鞋履巨头Caleres最新发布的第四季度财报远超市场预期，净销售额高达6.951亿美元，同比增长8.7%，受此利好消息提振，公司股票在盘前交易中应声上涨近18%。分析师认为，Caleres的强劲表现得益于其多元化的品牌组合和有效的市场策略。",
+      "key_points": [
+        "Caleres第四季度业绩超预期",
+        "净销售额达6.951亿美元，增长8.7%",
+        "股票盘前交易上涨近18%"
+      ],
+      "tags": [
+        "Caleres",
+        "鞋履",
+        "财务报告",
+        "股票"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2025/05/Famous-Storefront.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-19T12:28:18+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Caleres Stock Soars After Company Exceeds Q4 Expectations",
+          "link": "https://wwd.com/footwear-news/shoe-industry-news/caleres-cal-q4-2025-earnings-famous-footwear-1238682557",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e36f2c12520f",
+      "title": "重磅！Tomorrow Group易主",
+      "summary": "据WWD报道，电商平台The Level Group的控股公司Progetto 11宣布收购位于伦敦的品牌所有者及开发者Tomorrow Group。此次收购标志着时尚商业领域又一重要并购事件发生，预示着行业格局或将迎来新的变化。Tomorrow Group作为品牌孵化和发展的重要力量，其未来走向备受关注。",
+      "key_points": [
+        "Progetto 11收购Tomorrow Group",
+        "时尚商业领域并购事件",
+        "行业格局或将变化"
+      ],
+      "tags": [
+        "收购",
+        "电商平台",
+        "品牌所有者",
+        "时尚商业",
+        "Tomorrow Group"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2025/10/coperni-spring-rtw-2026-r-ctsy-0032.jpeg?crop=0px%2C131px%2C1332px%2C746px&resize=1000%2C563",
+      "published": "2026-03-19T12:27:46+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "EXCLUSIVE: Tomorrow Group Changes Hands",
+          "link": "https://wwd.com/business-news/mergers-acquisitions/progetto-11-the-level-group-buys-tomorrow-group-1238682509",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "eb1a4671ef95",
+      "title": "Allure编辑挚爱：韩妆精选，唇部产品再升级",
+      "summary": "《Allure》杂志编辑倾情推荐多款韩国美妆单品，涵盖护肤和彩妆。护肤品包括Beauty of Joseon眼部精华、Medicube面膜、Cosrx蜗牛精华等；彩妆品有Tirtir定妆喷雾、Amuse和Rom&nd唇釉等，Rom&nd唇釉打造水润嘟嘟唇，Hera唇彩增添迷人光泽，Unleashia眼影盘玩转色彩，Jung Saem Mool和Clio气垫粉底打造无瑕底妆，AOU腮红提升气色。特别推荐多款韩国唇釉，包括Rom&nd, Dinto, Peripera, Amuse, Etude等品牌，满足不同质地和妆效的需求。韩妆秉承“护肤为先”的理念，质地轻薄水润，可层层叠加，轻松打造自然通透的妆效。",
+      "key_points": [
+        "《Allure》杂志编辑推荐多款韩妆产品",
+        "推荐产品涵盖护肤和彩妆",
+        "重点推荐Rom&nd, Dinto, Peripera, Amuse, Etude等品牌的唇釉",
+        "韩妆特点：护肤为先，轻薄水润，可叠加"
+      ],
+      "tags": [
+        "韩妆",
+        "Allure",
+        "美妆",
+        "唇釉",
+        "护肤",
+        "彩妆"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.allure.com/photos/69a51f23ac60088717d56c75/master/pass/Allure-k-beauty-Anairam-social-crop_10.jpg",
+      "published": "2026-03-19T12:25:17+00:00",
+      "sources": [
+        {
+          "name": "Allure",
+          "title": "12 Best Korean Makeup Products Our Editors Can't Get Enough Of",
+          "link": "https://www.allure.com/story/best-korean-makeup",
+          "lang": "en"
+        },
+        {
+          "name": "Allure",
+          "title": "Allure's Definitive Guide to the Best Korean Beauty Products",
+          "link": "https://www.allure.com/starship-seoul",
+          "lang": "en"
+        },
+        {
+          "name": "Allure",
+          "title": "I Wear Korean Lip Tints Almost Exclusively—And These Are My Favorites",
+          "link": "https://www.allure.com/story/best-korean-lip-tints",
+          "lang": "en"
+        }
+      ],
+      "article_count": 3
+    },
+    {
+      "id": "9c5f5b787595",
+      "title": "PUMA x _J.L‑A.L_: 焕彩Cell Geo 1",
+      "summary": "PUMA携手_J.L‑A.L_推出全新Cell Geo 1鞋款，带来“Umbre”和“Midnight”两种配色选择。这款联名鞋履的最大亮点在于其独特的“可进化”设计。鞋面采用特殊专利皮革，随着穿着时间的推移，表层颜色会逐渐褪去，露出隐藏的渐变色彩，赋予每一双鞋独一无二的视觉效果。每一次穿着都是一次色彩的探索，让你的鞋履随着时间推移，展现专属的个性魅力。",
+      "key_points": [
+        "PUMA与_J.L‑A.L_联名",
+        "Cell Geo 1鞋款",
+        "可进化褪色鞋面"
+      ],
+      "tags": [
+        "PUMA",
+        "_J.L‑A.L_",
+        "联名",
+        "鞋履",
+        "Cell Geo 1",
+        "渐变",
+        "个性化"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F19%2Fftj-l-a-l-puma-cell-geo-1-pack-408755-01-umbre-406426-01-midnight-official-campaign-release-info.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-19T12:12:16+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "_J.L‑A.L_ and PUMA’s Cell Geo 1 Shoe Evolves With Wear",
+          "link": "https://hypebeast.com/2026/3/j-l-a-l-puma-cell-geo-1-pack-408755-01-umbre-406426-01-midnight-official-campaign-release-info",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "59cc4743dec7",
+      "title": "OMHU斑马纹沙发：野性家居宣言",
+      "summary": "丹麦家具品牌OMHU推出限量版TEDDY沙发，以大胆的斑马纹面料打破了当下流行的中性色家居风格。为配合新品发布，OMHU携手AI视觉艺术家Sally Trier打造了一部宣传片，巧妙地将家居装饰与网络上流行的宠物改造风潮联系起来，突显了“焕新”这一概念的重要性，为家居空间注入更多个性与活力。",
+      "key_points": [
+        "OMHU推出限量版斑马纹TEDDY沙发",
+        "挑战中性色调内饰潮流",
+        "AI宣传片对比家居与宠物改造"
+      ],
+      "tags": [
+        "家具",
+        "沙发",
+        "斑马纹",
+        "设计",
+        "家居"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F19%2Fomhu-teddy-zebra-sofa-launch-release-info.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-19T12:12:12+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "OMHU’s TEDDY Sofa Goes Wild With Zebra Print",
+          "link": "https://hypebeast.com/2026/3/omhu-teddy-zebra-sofa-launch-release-info",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "54f3382ec01d",
+      "title": "John Summit：从会计到舞曲巨星的时尚之路",
+      "summary": "从会计师到炙手可热的舞曲明星，John Summit的转型之路引人瞩目。本文深入探讨了他的音乐生涯，以及他对当下DJ行业现状的独特见解。同时，文章也聚焦于他的个人品牌Experts Only，解析其品牌理念，并描绘了围绕在他周围的粉丝群体所引领的时尚潮流。",
+      "key_points": [
+        "John Summit的职业转型",
+        "Experts Only品牌理念",
+        "DJ行业现状分析"
+      ],
+      "tags": [
+        "DJ",
+        "John Summit",
+        "Experts Only",
+        "音乐",
+        "时尚潮流"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/9/9874755b/20260205_john_summit_nylon_shot_2_027.jpg?w=1200&fit=max",
+      "published": "2026-03-19T12:00:25+00:00",
+      "sources": [
+        {
+          "name": "NYLON",
+          "title": "John Summit On New Album, His Experts Only Brand & The State Of DJing",
+          "link": "https://www.nylon.com/nylon-nights/john-summit-experts-only-ctrl-escape-interview-nylon-house-dance-100-cover-story",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "ce6620aee672",
+      "title": "舞池风暴：NYLON百大DJ榜单揭晓",
+      "summary": "权威时尚杂志NYLON重磅发布首届“House Dance 100”榜单，聚焦当下电子舞曲文化的核心人物。这份榜单由60位业内专家评审团严格甄选，囊括了House、Drum 'n' Bass等多元电子音乐领域的领军人物、潮流偶像以及冉冉升起的新星力量。榜单重点突出了John Summit和Skrillex等代表性人物，展现了他们的标志性音乐作品和独具魅力的个人风格，为乐迷们呈现了一份极具参考价值的舞曲风向标。",
+      "key_points": [
+        "NYLON发布首届House Dance 100榜单",
+        "榜单由60位业内人士评选",
+        "涵盖多种电子音乐风格的DJ和制作人"
+      ],
+      "tags": [
+        "DJ",
+        "电子音乐",
+        "夜生活",
+        "潮流文化",
+        "音乐榜单"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/17/c674e2cf/social-share2.png?w=1200&fit=max",
+      "published": "2026-03-19T12:00:25+00:00",
+      "sources": [
+        {
+          "name": "NYLON",
+          "title": "The NYLON House Dance 100: The Top DJs & Producers Ruling Right Now",
+          "link": "https://www.nylon.com/nylon-nights/nylon-house-dance-100-list-best-djs-producers-electronic-music",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "dc31627a188e",
+      "title": "Uniqlo U 春季上新：平价穿出高级感",
+      "summary": "《The Cut》编辑倾情推荐优衣库U系列春季新品，本季由Christophe Lemaire和Sarah-Linh Tran领衔设计，延续品牌一贯的简约高级风格。该系列涵盖丰富单品，从20美元的精致配饰到130美元的质感外套，无性别设计理念让搭配更具自由度，轻松打造兼具时尚感与舒适度的春日造型。",
+      "key_points": [
+        "Uniqlo U 春季系列",
+        "Christophe Lemaire 设计",
+        "无性别设计"
+      ],
+      "tags": [
+        "Uniqlo U",
+        "春季新品",
+        "平价时尚",
+        "无性别穿搭"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://pyxis.nymag.com/v1/imgs/19b/e90/60943f2c795b576c7b6bd47e7f08b7247e-uniqlo-lede-2.1x.rsocial.w1200.jpg",
+      "published": "2026-03-19T12:00:24+00:00",
+      "sources": [
+        {
+          "name": "The Cut",
+          "title": "We’re Welcoming Spring in These Uniqlo U Pieces",
+          "link": "http://www.thecut.com/article/we-tried-uniqlo-lemaire-collection-2026.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "246f8d438044",
+      "title": "金·戈登：永不落幕的酷女孩",
+      "summary": "《Elle》杂志聚焦传奇音乐人金·戈登，盛赞其为“房间里最酷的女孩”。文章深入剖析了金·戈登独树一帜的时尚风格和个人魅力，揭示她如何定义酷，并成为一代人的时尚偶像。她的穿搭不仅是潮流的风向标，更是一种独立精神的象征。",
+      "key_points": [
+        "金·戈登的时尚风格",
+        "《Elle》杂志的报道",
+        "个人魅力与穿搭解析"
+      ],
+      "tags": [
+        "金·戈登",
+        "名人时尚",
+        "时尚偶像",
+        "Elle杂志"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/2acddb10-92ff-4f45-97a4-1b2b2a48e860.jpg",
+      "published": "2026-03-19T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "Kim Gordon Is Still the Coolest Girl in the Room",
+          "link": "https://www.elle.com/culture/music/a70713971/kim-gordon-play-me-album-sofia-coppola-interview-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "118010b68b46",
+      "title": "奈尔·霍兰：三十而立的爱情与时尚",
+      "summary": "《GQ》独家专访歌手奈尔·霍兰，深入探讨他步入30岁后对于爱情、失去和成长的深刻感悟，并分享了新专辑《Dinner Party》的创作灵感。访谈中，奈尔·霍兰也展现了他的时尚品味，身着Phipps Gold Label的复古外套、Zimmerli的舒适背心以及Brioni的精致毛衣，尽显成熟魅力。",
+      "key_points": [
+        "奈尔·霍兰三十岁感悟",
+        "新专辑《Dinner Party》",
+        "复古时尚穿搭"
+      ],
+      "tags": [
+        "奈尔·霍兰",
+        "名人访谈",
+        "时尚穿搭",
+        "专辑",
+        "生活方式"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://media.gq.com/photos/69b83c84d25f23c18daf09f1/master/pass/Niall_GQ7.jpg",
+      "published": "2026-03-19T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "GQ",
+          "title": "Niall Horan Makes Sense of Love, Loss, and Growing Up",
+          "link": "https://www.gq.com/story/niall-horan-gq-hype",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c25fac535cd1",
+      "title": "Monse x Sperry：果冻船鞋玩转潮流",
+      "summary": "Monse与Sperry联袂打造的联名系列，已在Nordstrom独家发售。该系列主打Authentic Original 2-Eye Jelly Boat Shoe（果冻船鞋）和Authentic Original 2-Eye Lug Boat Shoe，设计大胆前卫，将Monse的解构主义美学与Sperry的经典航海风格巧妙融合。此系列鞋款最早亮相于Monse 2026春夏纽约时装周，一经发布便备受瞩目，是时尚爱好者不容错过的潮流单品。",
+      "key_points": [
+        "Monse与Sperry联名系列正式发售",
+        "主打果冻船鞋和厚底船鞋",
+        "设计融合解构主义与航海风格"
+      ],
+      "tags": [
+        "Monse",
+        "Sperry",
+        "联名系列",
+        "船鞋",
+        "Nordstrom"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/Sperry.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-19T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Monse’s Platform and Jelly Boat Shoes With Sperry Make Debut at Nordstrom",
+          "link": "https://wwd.com/footwear-news/shoe-industry-news/sperry-monse-platform-jelly-boat-shoes-nordstrom-1238682472",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "54243469bf54",
+      "title": "时尚产业“水”危机：人权与责任",
+      "summary": "非政府组织Drip by Drip发布最新报告《The Drip》，揭示了时尚产业中水资源问题不仅关乎环境，更深刻地影响着人权。报告强调，水资源短缺和污染是结构性问题，整个时尚供应链都应为此承担责任，共同寻求可持续解决方案。",
+      "key_points": [
+        "水资源是人权议题",
+        "供应链共同承担责任",
+        "时尚产业结构性问题"
+      ],
+      "tags": [
+        "可持续时尚",
+        "水资源",
+        "供应链",
+        "社会责任",
+        "环保"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/b1fd/f7da/7ae9/a89f/8373/191c/7c5f/19d5/376f/811f/208x208/811f.jpg",
+      "published": "2026-03-19T11:59:05+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Water is both a human and a structural issue in the fashion industry according to new report 'The Drip'",
+          "link": "https://ww.fashionnetwork.com/news/Water-is-both-a-human-and-a-structural-issue-in-the-fashion-industry-according-to-new-report-the-drip-,1816759.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "0518509e7dad",
+      "title": "荧幕呼唤：拒绝完美，拥抱真实",
+      "summary": "当下的影视作品似乎陷入了“完美”的怪圈，过度美化的荧幕形象与真实生活渐行渐远。《Dazed》杂志发文呼吁，影视行业应重新审视美的标准，打破单一审美，拥抱更多具有真实纹理和不完美特质的“普通人”。文章以选角为例，指出部分角色与原著形象差异过大，过度追求外貌的完美，反而失去了角色的灵魂。我们需要在荧幕上看到更多元、更真实的形象，反映社会的多样性，引发观众的共鸣。",
+      "key_points": [
+        "荧幕形象过度美化",
+        "选角应贴合原著形象",
+        "呼吁拥抱真实多样性"
+      ],
+      "tags": [
+        "美学标准",
+        "选角",
+        "真实性",
+        "多样性",
+        "影视文化"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/1/1441753.jpeg",
+      "published": "2026-03-19T11:58:00+00:00",
+      "sources": [
+        {
+          "name": "Dazed",
+          "title": "We need more ‘normal’ people on TV",
+          "link": "https://www.dazeddigital.com/beauty/article/69917/1/we-need-more-normal-looking-people-on-tv-botox-tweakments",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "1d4129570ffc",
+      "title": "夏日轻盈之选：棕色亚麻裤的时尚穿搭指南",
+      "summary": "预测显示，棕色亚麻裤将在2026年夏季引领时尚潮流。亚麻材质以其卓越的透气性和吸湿性，成为应对炎热夏季的理想选择。本季，轻奢品牌纷纷推出不同款式的棕色亚麻裤，从休闲到正式，满足多样化的穿搭需求。搭配建议包括：搭配白色T恤或丝绸衬衫，打造简约高级感；选择亮色配饰点缀，增添活力；搭配草编鞋或凉鞋，营造度假风情。轻松驾驭棕色亚麻裤，尽显夏日清爽格调。",
+      "key_points": [
+        "棕色亚麻裤预计在2026年夏季流行",
+        "亚麻材质透气吸湿，适合夏季",
+        "提供多种棕色亚麻裤的搭配建议"
+      ],
+      "tags": [
+        "亚麻",
+        "棕色",
+        "裤装",
+        "夏季",
+        "时尚趋势"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.glamourmagazine.co.uk/photos/69bacb49c08200d96387b1c9/16:9/w_1280,c_limit/LINEN%20TROUSERS%20180326%20GettyImages-2202583701.jpg",
+      "published": "2026-03-19T11:57:09+00:00",
+      "sources": [
+        {
+          "name": "Glamour UK",
+          "title": "Brown linen trousers will be everywhere this summer – here's how to style them",
+          "link": "https://www.glamourmagazine.co.uk/article/how-to-style-brown-linen-trousers",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "53cac5195613",
+      "title": "当“分身”成为潮流？",
+      "summary": "《GQ》观察到，2026年名人模仿大赛蔚然成风。在娱乐选择爆炸的时代，人们对模仿特定名人，如蒂莫西·柴勒梅德、保罗·麦斯卡尔、杰瑞米·艾伦·怀特等表现出极大的热情。这种现象背后折射出怎样的文化心理，值得我们深入思考。是渴望成为焦点，还是对自身价值的迷茫？",
+      "key_points": [
+        "2026年名人模仿大赛兴起",
+        "模仿对象集中于特定名人",
+        "反映了某种社会文化现象"
+      ],
+      "tags": [
+        "名人文化",
+        "模仿大赛",
+        "时尚潮流",
+        "蒂莫西·柴勒梅德",
+        "保罗·麦斯卡尔",
+        "杰瑞米·艾伦·怀特"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.gq.com/photos/69bb943e85fba5e97ce5b306/master/pass/Pulling-Weeds%20(56).jpg",
+      "published": "2026-03-19T11:55:00+00:00",
+      "sources": [
+        {
+          "name": "GQ",
+          "title": "At Celebrity Look-alike Contests, There are No Winners",
+          "link": "https://www.gq.com/story/at-celebrity-look-alike-contests-there-are-no-winners",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "5100ee136209",
+      "title": "堀米雄斗 x Nike SB：滑板传奇新篇章",
+      "summary": "滑板界明星堀米雄斗携手Nike SB，推出首款以滑板运动员命名的Air Force 1 Low联名鞋款。这款“White/Iron Grey”配色AF1，以经典白色皮革为基底，搭配质感灰色麂皮覆层，将篮球鞋的经典轮廓与滑板运动的性能需求巧妙融合。此次合作不仅是堀米雄斗职业生涯的重要里程碑，也象征着Nike SB在滑板领域不断突破创新的精神。",
+      "key_points": [
+        "堀米雄斗联名款",
+        "Air Force 1 Low",
+        "白色/灰色配色方案"
+      ],
+      "tags": [
+        "Nike SB",
+        "Air Force 1",
+        "堀米雄斗",
+        "联名款",
+        "滑板鞋"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F19%2Fftyuto-horigome-nike-sb-air-force-1-low-white-iron-grey-first-look.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-19T11:51:37+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "First Look at Yuto Horigome’s Nike SB Air Force 1 Low",
+          "link": "https://hypebeast.com/2026/3/yuto-horigome-nike-sb-air-force-1-low-white-iron-grey-first-look",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "9717ddf4be50",
+      "title": "凯特王妃新年首秀：王冠闪耀",
+      "summary": "凯特王妃于2026新年伊始，在温莎城堡举行的尼日利亚国宴上，以一顶玛丽王后的情人结王冠惊艳亮相，完成了她本年度的首次王冠造型。这顶王冠不仅是凯特王妃的心头好，更与已故戴安娜王妃有着深厚的渊源，曾是戴安娜王妃生前最钟爱的王冠之一。此次佩戴，无疑是对经典与优雅的完美致敬，再次展现了王室时尚的独特魅力。",
+      "key_points": [
+        "凯特王妃2026年首次佩戴王冠",
+        "选择玛丽王后的情人结王冠",
+        "王冠与戴安娜王妃有关联"
+      ],
+      "tags": [
+        "凯特王妃",
+        "王冠",
+        "皇室时尚"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://assets.vogue.com/photos/69bb13eb9e9b577426db0db2/master/pass/2266705968",
+      "published": "2026-03-19T11:30:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "New Year, Vintage Tiara: Kate Middleton Debuts Her First Tiara Look of 2026",
+          "link": "https://www.vogue.com/article/new-year-vintage-tiara-kate-middleton-debuts-her-first-tiara-look-of-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue Japan",
+          "title": "キャサリン妃、2026年初の晩さん会でお気に入りのティアラを着用",
+          "link": "https://www.vogue.co.jp/article/princess-of-wales-lovers-knot-tiara-nigerian-state-banquet",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "efe486771e8d",
+      "title": "UA总部变身“茨城境町”特产展",
+      "summary": "知名Select Shop United Arrows（UA）近日在其总部举办茨城县境町特产展销会，琳琅满目的当地特色商品吸引众多目光。展销会不仅有新鲜蔬菜、特色干货、人气面包和精选葡萄酒，更有UA与境町联合开发的限定服装。自2024年合作以来，双方已在食品、纪念品等领域展开深度合作，甚至携手设计了当地中小学的新款体操服。境町町长表示，希望借助与UA的合作，全方位展现境町的独特魅力，实现地域振兴。",
+      "key_points": [
+        "United Arrows举办境町特产展销会",
+        "展销会包含食品、服装等多种商品",
+        "双方合作旨在推广境町魅力"
+      ],
+      "tags": [
+        "United Arrows",
+        "品牌合作",
+        "地域振兴",
+        "生活方式"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/19201214/IMG_2985.jpeg",
+      "published": "2026-03-19T11:30:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "1日300個売れるメロンパンも販売　ユナイテッドアローズ本社で境町フェア",
+          "link": "https://www.wwdjapan.com/articles/2359602",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "6e3d2b17fc01",
+      "title": "复刻CBK一周：极简风永不过时？",
+      "summary": "Vogue西班牙版近日刊登了一篇文章，作者亲身体验了一周模仿时尚偶像Carolyn Bessette-Kennedy穿搭的挑战。文章深入剖析了CBK的经典风格，着重强调了她对Calvin Klein极简主义的偏爱，以及对Prada和Hermès等低调奢华品牌的巧妙运用。作者探讨了CBK的穿搭风格为何在今天依然备受追捧，并分享了如何通过简单的基础款单品，搭配出永不过时的时尚造型，引发读者对90年代极简风的重新思考。",
+      "key_points": [
+        "CBK经典极简风格",
+        "基础款穿搭技巧",
+        "90年代时尚回潮"
+      ],
+      "tags": [
+        "Carolyn Bessette-Kennedy",
+        "时尚偶像",
+        "极简主义",
+        "90年代风格",
+        "穿搭灵感"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://media.vogue.es/photos/69bbd0af64761f75196bf7e8/master/pass/Disen%CC%83o%20sin%20ti%CC%81tulo%20(2).png",
+      "published": "2026-03-19T11:22:42+00:00",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "Me vestí como Carolyn Bessette-Kennedy durante una semana (y nunca había recibido tantos cumplidos)",
+          "link": "https://www.vogue.es/articulos/me-vesti-como-carolyn-bessette-kennedy-durante-una-semana",
+          "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "f5e36c0a0b9b",
+      "title": "thisisneverthat x PEANUTS：复古童趣来袭",
+      "summary": "韩国街头品牌 thisisneverthat 携手经典漫画 PEANUTS 推出全新联名系列。该系列以复古风格为主，将史努比、伍德斯托克等标志性卡通人物巧妙融入宽松廓形的T恤、卫衣和帽衫设计中。旨在打造舒适且充满玩味的日常穿搭选择，让穿着者重温童年回忆，尽显街头潮流个性。",
+      "key_points": [
+        "thisisneverthat 联名 PEANUTS",
+        "复古卡通形象设计",
+        "宽松舒适的街头风格"
+      ],
+      "tags": [
+        "thisisneverthat",
+        "PEANUTS",
+        "联名系列",
+        "街头潮流",
+        "复古风"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F19%2Fftthisisneverthat-peanuts-collection-release-info.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-19T11:18:40+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "thisisneverthat Goes Nostalgic With ‘PEANUTS’ Collection",
+          "link": "https://hypebeast.com/2026/3/thisisneverthat-peanuts-collection-release-info",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "06883b2557eb",
+      "title": "十年私语：Leaha的亲密影像诗",
+      "summary": "摄影师 Domino Leaha 发布新作《Unfulfilled》，以镜头记录过去十年间穿梭于伦敦、洛杉矶、米兰、纽约等城市的生活片段。作品聚焦与朋友、爱人及灵感缪斯间的亲密关系，坦诚捕捉失落、心碎与沉迷，细腻呈现渴望、虚荣、反抗、喜悦与臣服等复杂情感交织，构成一首视觉化的私密诗篇。",
+      "key_points": [
+        "摄影集《Unfulfilled》发布",
+        "记录十年亲密关系",
+        "捕捉复杂情感"
+      ],
+      "tags": [
+        "摄影",
+        "艺术",
+        "生活方式",
+        "情感"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/1/1441657.JPG",
+      "published": "2026-03-19T11:18:00+00:00",
+      "sources": [
+        {
+          "name": "Dazed",
+          "title": "Domino Leaha’s photos document a decade of intimacy",
+          "link": "https://www.dazeddigital.com/art-photography/article/69929/1/domino-leaha-photos-unfulfilled-decade-of-intimacy-lovers-book-interview",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "00f6f96c70a6",
+      "title": "Shein法国突围：监管风波与实体扩张",
+      "summary": "快时尚巨头Shein在法国市场面临严峻挑战，其电商平台因非法产品问题引发争议，并遭遇法国政府的监管压力。巴黎上诉法院近期驳回了法国暂停Shein电商平台的请求，维持了去年12月巴黎法院的判决，这标志着Shein在与法国监管机构的博弈中取得阶段性胜利。尽管如此，这一事件凸显了快时尚品牌在欧洲市场面临的日益严格的监管环境。与此同时，Shein并未放缓在法国市场的扩张步伐，正积极筹备开设实体店，试图通过线上线下结合的方式进一步渗透市场。Shein在法国的遭遇，反映了快时尚行业在追求增长的同时，必须更加重视合规经营和可持续发展。",
+      "key_points": [
+        "Shein赢得法国市场诉讼",
+        "法国监管机构的持续施压",
+        "Shein积极拓展法国实体零售"
+      ],
+      "tags": [
+        "Shein",
+        "快时尚",
+        "法国",
+        "电商监管",
+        "实体零售"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2025/11/GettyImages-2245097995.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-19T11:11:40+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Shein Wins Appeal as French Court Blocks Attempt to Shut Down Marketplace",
+          "link": "https://wwd.com/business-news/legal/shein-marketplace-french-court-ruling-illicit-products-legal-battle-1238682536",
+          "lang": "en"
+        },
+        {
+          "name": "Fashion Network",
+          "title": "Paris appeals court rejects France's attempt to suspend Shein's marketplace",
+          "link": "https://ww.fashionnetwork.com/news/Paris-appeals-court-rejects-france-s-attempt-to-suspend-shein-s-marketplace,1817222.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "a584e62c45bd",
+      "title": "巴黎风尚：2026春季极简发色潮流",
+      "summary": "2026年春季，巴黎时尚圈将迎来一股极简主义发色风潮。告别夸张的色彩，精致内敛成为关键词。其中，焦糖棕色预计将成为最受欢迎的选择，它温暖柔和，能完美衬托亚洲女性的肤色。此外，文章还预测了其他潜在的流行发色趋势，并汇集了来自纽约和巴黎的顶级造型师对2026年整体发型趋势的独到见解，为追求时尚的你提供全方位参考。",
+      "key_points": [
+        "巴黎时尚圈引领极简发色潮流",
+        "焦糖棕色预计成为大热",
+        "顶级造型师预测2026发型趋势"
+      ],
+      "tags": [
+        "发色",
+        "巴黎时尚",
+        "极简主义",
+        "美妆趋势",
+        "焦糖棕色"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/tQYZriw7HqRcDugjMwyERJ-1280-80.jpg",
+      "published": "2026-03-19T11:09:13+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "The Most Stylish People in Paris Are Choosing This Minimalist Hair Colour for Spring",
+          "link": "https://www.whowhatwear.com/beauty/hair/honey-balayage-hair-trend",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e1a0a5b534c4",
+      "title": "Signet集团Q4：平稳销售，盈利提升",
+      "summary": "轻奢珠宝集团Signet在第四季度实现了销售额持平情况下的盈利能力提升。集团CEO强调，未来发展重心将放在强化品牌差异化，扩大客户群体覆盖，以及打造无缝衔接的线上线下购物体验。此举旨在提升品牌竞争力，适应不断变化的零售市场。",
+      "key_points": [
+        "销售额持平但盈利能力提升",
+        "聚焦品牌差异化战略",
+        "拓展客户覆盖范围",
+        "优化线上线下体验"
+      ],
+      "tags": [
+        "Signet集团",
+        "珠宝零售",
+        "盈利增长",
+        "品牌战略"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2025/11/jared-tennis-bracelet.png?crop=0px%2C220px%2C1000px%2C560px&resize=1000%2C563",
+      "published": "2026-03-19T11:04:58+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Signet Increases Profitability on Flat Sales in Q4",
+          "link": "https://wwd.com/business-news/retail/signet-improves-profitability-on-flat-sales-in-q4-1238682535",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "12b323b6831b",
+      "title": "职场制胜：打造你的精致通勤衣橱",
+      "summary": "还在为每天的通勤穿搭烦恼？本季职场风向标为你指路！告别沉闷，拥抱精致实用的办公室时尚。我们为你精选关键流行趋势和穿搭方案，助你轻松打造令人眼前一亮的工作衣橱。更有购物指南和穿搭技巧，让你的职场造型更上一层楼，自信迎接每一天。",
+      "key_points": [
+        "掌握职场时尚潮流",
+        "打造精致实用通勤装",
+        "提升职场穿搭技巧"
+      ],
+      "tags": [
+        "工作装",
+        "办公室穿搭",
+        "职场时尚",
+        "通勤穿搭",
+        "时尚趋势"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/whowhatwear/posts/302288/casual-work-outfits-302288-1663813736271-square-1280-80.jpg",
+      "published": "2026-03-19T11:03:51+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "Your Guide to Chic Workwear and Office Style",
+          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/office",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c567aa2672b9",
+      "title": "开放式婚姻：减轻精神负担的新选择？",
+      "summary": "一位名叫Olivia的女性，在多年育儿和亲密育儿后，性欲降低，婚姻关系也面临挑战。与前任的一次咖啡聚会让她开始思考开放式婚姻的可能性。这种选择或许能帮助夫妻减轻精神负担，探索新的亲密关系模式，但同时也需要双方坦诚沟通和明确界限。",
+      "key_points": [
+        "育儿压力影响性生活",
+        "开放式婚姻作为一种选择",
+        "坦诚沟通至关重要"
+      ],
+      "tags": [
+        "开放式婚姻",
+        "性生活",
+        "育儿",
+        "婚姻关系"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://pyxis.nymag.com/v1/imgs/0ac/ef3/24b0b1b20070c5b1761372bcc35e800629-NY-Mag-Fin-16-03-26.1x.rsocial.w1200.jpg",
+      "published": "2026-03-19T11:00:47+00:00",
+      "sources": [
+        {
+          "name": "The Cut",
+          "title": "Could Opening Your Marriage Lighten Your Mental Load?",
+          "link": "http://www.thecut.com/article/non-monogamy-equal-parenting.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "4eed639765d8",
+      "title": "Zimmermann迎来新舵手：Roberto Eggs掌舵",
+      "summary": "澳大利亚轻奢品牌Zimmermann宣布任命Roberto Eggs为新任首席执行官。Eggs先生此前在Moncler集团担任执行董事会成员兼首席业务和全球市场官，拥有丰富的国际市场运营经验。此次人事变动标志着Zimmermann品牌发展进入新阶段，预示着品牌将在全球市场迎来更积极的扩张和战略调整。Eggs的加入无疑将为Zimmermann注入新的活力，引领品牌走向更辉煌的未来。",
+      "key_points": [
+        "Zimmermann任命Roberto Eggs为CEO",
+        "Eggs曾任Moncler高管",
+        "品牌管理层重要变动"
+      ],
+      "tags": [
+        "Zimmermann",
+        "人事变动",
+        "首席执行官",
+        "Roberto Eggs",
+        "Moncler",
+        "轻奢品牌"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/PHOTO-2026-03-15-07-13-15571518.jpg?crop=0px%2C50px%2C1600px%2C895px&resize=1000%2C563",
+      "published": "2026-03-19T11:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Zimmermann Taps Roberto Eggs as Chief Executive Officer",
+          "link": "https://wwd.com/business-news/markets/zimmermann-roberto-eggs-chief-executive-officer-1238681045",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "5f6f3b0442cc",
+      "title": "乔丹·奇iles的“平和时代”",
+      "summary": "奥运金牌得主乔丹·奇iles正处于她的“平和时代”，她积极维护个人空间，并将心理健康放在首位。同时，她与Uber合作，推广其专为女性设计的服务，旨在提升女性出行的安全感。奇iles参与了Uber的Gamechangers系列活动，强调了安全与心理健康的重要性。",
+      "key_points": [
+        "重视心理健康",
+        "维护个人空间",
+        "推广女性安全出行"
+      ],
+      "tags": [
+        "名人合作",
+        "生活方式",
+        "心理健康",
+        "Uber",
+        "女性权益"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/GettyImages-2265361355-1920x1080.jpg?width=1920",
+      "published": "2026-03-19T11:00:00+00:00",
+      "sources": [
+        {
+          "name": "Essence",
+          "title": "Jordan Chiles Is In Her “Peace Era” And She’s Not Letting Anyone Disrupt It",
+          "link": "https://www.essence.com/entertainment/sports/jordan-chiles-protecting-her-peace",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e6136c93f625",
+      "title": "2026春日发色潮流预警！",
+      "summary": "权威时尚媒体Who What Wear预测，随着气温攀升，2026年春季发色趋势也将迎来一波新高潮。多位美发专家预测，一系列令人心动的发色即将成为潮流焦点。其中，由时尚icon Sofia Richie引领的焦糖棕色预计将成为最受欢迎的选择，为你的春日造型增添一抹温暖亮色。准备好迎接你的专属春日发色了吗？",
+      "key_points": [
+        "2026春季发色趋势预测",
+        "Sofia Richie同款焦糖棕色大热",
+        "多款流行发色值得尝试"
+      ],
+      "tags": [
+        "发色",
+        "美妆趋势",
+        "2026春季"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/4WVRAVgdoFLr2dCCMBJsNT-1280-80.jpg",
+      "published": "2026-03-19T11:00:00+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "Temps Are Finally Warming Up, and According to Experts, so Are Hair Colors—8 Worth Trying This Spring",
+          "link": "https://www.whowhatwear.com/beauty/hair/spring-hair-color-trends-2026",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e62998b6813a",
+      "title": "基里安·墨菲：无声的决断",
+      "summary": "基里安·墨菲被克莱尔·吉根的畅销小说《小小的事情》深深吸引，并将其改编为电影《决断之时》。影片以静谧而有力的笔触，描绘了爱尔兰真实存在的“抹大拉洗衣店”中触目惊心的人权问题。墨菲以精湛的演技，在沉默中完美诠释了人物内心的挣扎与矛盾，令人动容。",
+      "key_points": [
+        "基里安·墨菲主演并制作",
+        "改编自畅销小说",
+        "聚焦爱尔兰人权问题"
+      ],
+      "tags": [
+        "基里安·墨菲",
+        "电影",
+        "人权",
+        "爱尔兰",
+        "改编"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.gqjapan.jp/photos/69ba135981638d473d8ab104/master/pass/ketsudan-10.jpg",
+      "published": "2026-03-19T11:00:00+00:00",
+      "sources": [
+        {
+          "name": "GQ Japan",
+          "title": "映画『決断するとき』──語らずとも魅せるキリアン・マーフィーの白眉、そしてあなたはどう決断するか",
+          "link": "https://www.gqjapan.jp/article/20260319-ketsudan-surutoki-review",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "367354026a10",
+      "title": "ZARA奢华线焕新：浪漫主义的现代演绎",
+      "summary": "ZARA携手创意总监Karl Templer，推出备受瞩目的STUDIO COLLECTION 2026春夏系列。该系列是对浪漫主义风格的现代再诠释，将经典元素与创新设计巧妙融合，打造出兼具优雅与个性的时尚单品。目前，该系列已在ZARA线上商店以及部分线下门店发售，包括ZARA銀座店、ZARA心斎橋店和ZARA新宿店等。",
+      "key_points": [
+        "ZARA推出STUDIO COLLECTION 2026春夏系列",
+        "Karl Templer担任创意总监",
+        "浪漫主义风格的现代演绎"
+      ],
+      "tags": [
+        "ZARA",
+        "STUDIO COLLECTION",
+        "春夏系列",
+        "Karl Templer",
+        "浪漫主义",
+        "奢华"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/zara-ss26-20251210-032-c4ab56eb-a8a6-4935-b538-589c85204438.jpg",
+      "published": "2026-03-19T11:00:00+00:00",
+      "sources": [
+        {
+          "name": "Fashionsnap",
+          "title": "ザラがラグジュアリーラインの新作を発売　ロマンティックスタイルを現代的に再解釈",
+          "link": "https://www.fashionsnap.com/article/2026-03-19/zara-studio-ss26",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "6d37a5ca6625",
+      "title": "阿莫多瓦新作《苦涩圣诞》揭秘",
+      "summary": "西班牙Vogue抢先报道了西班牙国宝级导演佩德罗·阿莫多瓦的最新力作《苦涩圣诞》。影片以独特的女性视角，集结了Bárbara Lennie、Aitana Sánchez-Gijón、Victoria Luengo和Milena Smit等多位实力女星，男演员Leonardo Sbaraglia也倾情加盟。Vogue不仅曝光了影片的演员阵容、剧情梗概和幕后花絮，还回顾了阿莫多瓦导演与Vogue的深度合作，探讨了自传式虚构的艺术边界。这部备受期待的电影，无疑将再次引发时尚界和电影界的广泛关注。",
+      "key_points": [
+        "阿莫多瓦新作聚焦女性视角",
+        "实力派演员阵容强大",
+        "Vogue独家揭秘幕后花絮"
+      ],
+      "tags": [
+        "电影",
+        "佩德罗·阿莫多瓦",
+        "Vogue",
+        "西班牙",
+        "女性视角"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.vogue.es/photos/69bbd45655f96e1970d80105/master/pass/Amarga%20Navidad%20-%20Escena%20(1)%20-%20%C2%A9El%20Deseo,%20fotos%20de%20Iglesias%20Mas.jpg",
+      "published": "2026-03-19T10:51:14+00:00",
+      "sources": [
+        {
+          "name": "Vogue España",
+          "title": "‘Amarga Navidad’: tráiler, estreno, reparto, sinopsis, reacciones y todo sobre la nueva película de Pedro Almodóvar",
+          "link": "https://www.vogue.es/articulos/amarga-navidad-pelicula-pedro-almodovar-protagonistas-sinopsis-trailer-estreno",
+          "lang": "es"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "89fc6a8db917",
+      "title": "快时尚“避税术”：小包裹的欧洲迂回战",
+      "summary": "为规避法国针对小包裹征收的新税，Shein等快时尚巨头正巧妙调整其欧洲物流策略。这些公司不再直接向法国运送商品，而是将包裹转运至比利时和荷兰的机场，并计划利用波兰作为欧盟地区的配送中心。这一策略调整反映了快时尚品牌在面对税务政策变化时，快速适应并寻求最优解的灵活性，同时也引发了关于跨境电商税务监管的讨论。",
+      "key_points": [
+        "快时尚品牌应对法国小包裹税",
+        "转运至比利时、荷兰机场",
+        "波兰或成欧盟配送中心"
+      ],
+      "tags": [
+        "Shein",
+        "快时尚",
+        "税务",
+        "欧洲市场",
+        "物流",
+        "跨境电商"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.fashionnetwork.com/m/981e/43e1/702e/7924/c323/2b54/46c6/8567/0600/832d/208x208/832d.jpg",
+      "published": "2026-03-19T10:50:27+00:00",
+      "sources": [
+        {
+          "name": "Fashion Network",
+          "title": "Small parcels: ultra-fast fashion sidesteps taxes via Belgium, the Netherlands, and Poland",
+          "link": "https://ww.fashionnetwork.com/news/Small-parcels-ultra-fast-fashion-sidesteps-taxes-via-belgium-the-netherlands-and-poland,1817251.html",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
     },
     {
       "id": "fa82735db550",
@@ -3859,6 +5093,66 @@
       "article_count": 1
     },
     {
+      "id": "cfa7490d1ae1",
+      "title": "天然纤维≠环保？时尚认知或被颠覆",
+      "summary": "最新研究挑战了时尚界长期以来对天然纤维环保优势的认知。研究人员在英国湖泊沉积物中发现，天然纤维是主要残留物，其中棉花占比高达70%。这一发现直接挑战了将棉花等天然材料视为微塑料替代品的观点，并呼吁时尚行业以科学为基础，重新审视可持续时尚的叙事。",
+      "key_points": [
+        "研究表明天然纤维在环境中大量残留",
+        "棉花是湖泊沉积物中的主要纤维类型",
+        "挑战了天然纤维优于合成纤维的传统认知"
+      ],
+      "tags": [
+        "可持续性",
+        "天然纤维",
+        "环境污染",
+        "时尚产业",
+        "科学研究"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://assets.vogue.com/photos/69bae30a4fef8c4a93bae291/master/pass/naturalfibres-biodegrade-vogueb-17326-story.jpg",
+      "published": "2026-03-19T10:30:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "What If Natural Fibers Don’t Biodegrade?",
+          "link": "https://www.vogue.com/article/what-if-natural-fibers-dont-biodegrade",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "eb20776e8fd4",
+      "title": "Puig集团迎来新掌门人",
+      "summary": "西班牙美妆时尚巨头Puig集团宣布重要人事变动：原副CEO何塞·曼努埃尔·阿尔贝萨荣升为CEO，接替马克·普伊格的职位。马克·普伊格将专注于担任董事长一职，继续引领集团发展。此次管理层调整旨在巩固Puig在高端美妆市场的领导地位，并传承其家族企业的核心价值观与创新精神。Puig集团旗下汇聚了众多知名品牌，包括Carolina Herrera、Jean Paul Gaultier、Charlotte Tilbury以及Byredo等。",
+      "key_points": [
+        "Puig集团CEO更迭",
+        "何塞·曼努埃尔·阿尔贝萨接任",
+        "马克·普伊格转任董事长"
+      ],
+      "tags": [
+        "Puig",
+        "CEO任命",
+        "人事变动",
+        "美妆",
+        "时尚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/19184352/top_PUIG_JOSE-MANUEL-ALBESA_-CEO_MARCH-2026_LR.jpg",
+      "published": "2026-03-19T10:30:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "プーチ、新CEOにホセ・マヌエル・アルベサ副CEOが就任　マーク・プーチ氏は会長専任に",
+          "link": "https://www.wwdjapan.com/articles/2359534",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "f33e7f944219",
       "title": "OMA蘑菇亭：建筑与自然的诗意共生",
       "summary": "OMA建筑事务所合伙人重松象平在墨西哥Casa Wabi打造了一座独特的蘑菇亭。这座椭球形混凝土建筑不仅是OMA在墨西哥的首个建成项目，更巧妙地融合了建筑设计与可持续种植理念。亭内阶梯式结构陈列着手工盆栽，顶部天窗引入自然光，为蘑菇生长创造理想环境，同时也为社区居民提供了一个聚集交流的空间，在瓦哈卡海岸与山脉间的自然景观中，谱写了一曲建筑与自然的和谐乐章。",
@@ -3887,42 +5181,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "cfb20d89c637",
-      "title": "未来解构：Yohei Ohno 2026秋冬",
-      "summary": "日本设计师品牌Yohei Ohno于东京时装周发布了其2026-27年秋冬系列。该系列延续了品牌一贯的未来主义和解构主义设计理念，在经典风格中探索新的可能性。Vogue和WWD Japan均对该系列进行了报道，并提供了完整的系列图片，展示了每一套look的细节，方便读者深入了解设计师的创意表达。该系列是Yohei Ohno对未来时尚的独特诠释。",
-      "key_points": [
-        "Yohei Ohno发布2026秋冬系列",
-        "延续未来主义和解构主义风格",
-        "东京时装周发布，提供完整系列图片"
-      ],
-      "tags": [
-        "Yohei Ohno",
-        "2026秋冬系列",
-        "东京时装周",
-        "未来主义",
-        "解构主义"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://assets.vogue.com/photos/69bbc471c176d82920a12513/master/pass/00001-yohei-ohno-fall-2026-ready-to-wear-tokyo-credit-gorunway.jpg",
-      "published": "2026-03-19T10:27:30+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "Yohei Ohno Tokyo Fall 2026",
-          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/yohei-ohno",
-          "lang": "en"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「ヨウヘイ オオノ」2026-27年秋冬コレクション",
-          "link": "https://www.wwdjapan.com/articles/2359453",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 2
     },
     {
       "id": "0ec6f097d3db",
@@ -4046,24 +5304,30 @@
     },
     {
       "id": "4249539e697a",
-      "title": "2026时尚趋势前瞻：紧身裤平底鞋搭配、法式褶皱上衣、设计师首秀与春季潮流单品",
-      "summary": "2026年春季，时尚界呈现多元化趋势。紧身裤搭配平底鞋依旧流行，法式优雅风潮持续，褶皱上衣成为巴黎新宠。设计师首秀作品预示品牌未来风格走向，Gucci Jackie 1961手袋、Bottega Veneta真丝衬衫、Miu Miu丝巾等单品值得关注。复古运动鞋回归，白色裙迎来新搭配，Nordstrom等品牌平底鞋引领早春潮流。",
+      "title": "2026春季时尚趋势：紧身裤、牛仔裤回归与法式优雅",
+      "summary": "2026年春季，时尚界呈现多元化趋势。紧身裤搭配平底鞋依旧流行，法式优雅风潮持续，褶皱上衣成为焦点。牛仔裤以直筒、低腰、深色水洗等全新姿态回归。设计师首秀作品预示品牌未来风格走向，Gucci Jackie 1961手袋、Bottega Veneta真丝衬衫、Miu Miu丝巾等单品值得关注。复古运动鞋回归，白色裙迎来新搭配，Nordstrom等品牌平底鞋引领早春潮流。个性化裤装潮流如阔腿裤和科技面料长裤也持续流行。",
       "key_points": [
-        "紧身裤与平底鞋的搭配是2026年的关键趋势，乐福鞋、芭蕾舞鞋和运动鞋各有风格。",
-        "法式褶皱上衣在巴黎持续走红，提升造型精致度。",
-        "设计师在Gucci、Chanel、Dior的首秀预示着品牌未来的风格走向。",
-        "Gucci Jackie 1961手袋、Bottega Veneta真丝衬衫、Miu Miu丝巾等单品值得关注。",
-        "复古运动鞋经典回归，V口平底鞋、玛丽珍鞋等平底鞋款引领早春潮流。"
+        "紧身裤搭配平底鞋持续流行",
+        "法式优雅风潮与褶皱上衣",
+        "牛仔裤以全新姿态回归（直筒、低腰、深色水洗）",
+        "设计师首秀作品与品牌风格走向",
+        "Gucci Jackie 1961手袋、Bottega Veneta真丝衬衫、Miu Miu丝巾等单品",
+        "复古运动鞋回归与白色裙搭配",
+        "阔腿裤和科技面料长裤等个性化裤装潮流"
       ],
       "tags": [
-        "2026趋势",
+        "2026春季",
+        "时尚趋势",
         "紧身裤",
         "平底鞋",
-        "法式风",
-        "褶皱上衣",
-        "设计师首秀",
-        "春季潮流",
-        "运动鞋"
+        "法式风格",
+        "牛仔裤",
+        "设计师",
+        "手袋",
+        "衬衫",
+        "丝巾",
+        "运动鞋",
+        "裤装"
       ],
       "category": "trend-summary",
       "category_name": "趋势总结",
@@ -4165,9 +5429,21 @@
           "title": "The One Sneaker Style Every Fashion Person Will Wear in 2026",
           "link": "https://www.whowhatwear.com/fashion/shoes/derby-sneakers",
           "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "No, Not Jeans—Chic Women Are Wearing This Divisive Trouser Trend Instead This Spring",
+          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/outfits-with-culottes",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Don't Buy Any More Blue Denim Until You've Seen the New Jeans Trend That Might Change Your Mind",
+          "link": "https://www.whowhatwear.com/fashion/denim/khaki-denim-colour-trend-2026",
+          "lang": "en"
         }
       ],
-      "article_count": 18
+      "article_count": 20
     },
     {
       "id": "03a9e472e475",
@@ -4284,34 +5560,6 @@
       "article_count": 1
     },
     {
-      "id": "eb1a4671ef95",
-      "title": "Allure编辑挚爱：12款韩妆精选",
-      "summary": "《Allure》杂志编辑倾情推荐12款必备韩国美妆单品，涵盖唇部、眼部、底妆和定妆等多个方面。 Rom&nd唇釉打造水润嘟嘟唇，Hera唇彩增添迷人光泽，Unleashia眼影盘玩转色彩，Jung Saem Mool和Clio气垫粉底打造无瑕底妆，AOU腮红提升气色，TirTir定妆喷雾持久定格精致妆容。韩妆秉承“护肤为先”的理念，质地轻薄水润，可层层叠加，轻松打造自然通透的妆效。",
-      "key_points": [
-        "编辑推荐韩妆",
-        "水润轻薄可叠加",
-        "护肤为先的理念"
-      ],
-      "tags": [
-        "韩国美妆",
-        "美妆推荐",
-        "编辑推荐"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.allure.com/photos/69a51f23ac60088717d56c75/master/pass/Allure-k-beauty-Anairam-social-crop_10.jpg",
-      "published": "2026-03-19T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "Allure",
-          "title": "12 Best Korean Makeup Products Our Editors Can't Get Enough Of",
-          "link": "https://www.allure.com/story/best-korean-makeup",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "68b0b88403fb",
       "title": "神龟再临：杨谨伦的潮流新篇章？",
       "summary": "《Esquire》杂志近日聚焦华裔漫画家杨谨伦（Gene Luen Yang）创作的《忍者神龟》系列，引发新一轮关注。具体内容虽因网站原因未能完全加载，但推测可能涉及潮流文化、跨界联名等时尚热点。忍者神龟这一经典IP的再度翻红，或许预示着其在时尚领域的更多可能性，值得期待。",
@@ -4404,24 +5652,22 @@
     {
       "id": "6cf84e37e24c",
       "title": "Dr. Martens x Kiko Kostadinov 联袂新作系列发售",
-      "summary": "Dr. Martens 携手 Kiko Kostadinov 推出全新“英国制造”鞋履系列，包含专为女性设计的“TOE BOX Shoe”和男士“STRAP Shoe”两款，均采用再生皮革和 Dr. Martens 的经典元素。“TOE BOX Shoe”巧妙融合了经典牛津鞋的优雅与玛丽珍鞋的甜美，采用黄绿色绒面革与双色调绿色皮革拼接，并饰有精致的立体压纹，尽显独特风格。男款 STRAP Shoe 以全黑皮革为基础，搭配铆钉和交叉 Velcro 搭带。该系列已在线发售，并将于3月20日在指定店铺发售。同时还发售摄影师 E-WAX 记录 Kiko Kostadinov “Dante” 系列的摄影集。",
+      "summary": "Dr. Martens 携手 Kiko Kostadinov 推出全新“英国制造”鞋履系列，包含专为女性设计的“TOE BOX Shoe”和男士“STRAP Shoe”两款。两款鞋均采用再生皮革和 Dr. Martens 的经典元素。“TOE BOX Shoe”巧妙融合了经典牛津鞋的优雅与玛丽珍鞋的甜美，采用夏特勒色调的压花绒面革与双色调绿色皮革拼接，并饰有精致的立体压纹，尽显独特风格。男款 STRAP Shoe 以全黑皮革为基础，搭配铆钉和交叉 Velcro 搭带。该系列已在线发售，并将于3月20日在指定店铺发售。同时还发售摄影师 E-WAX 记录 Kiko Kostadinov “Dante” 系列的摄影集。",
       "key_points": [
-        "Dr. Martens 与 Kiko Kostadinov 再次合作推出“Made in England”系列",
-        "系列包含女士 TOE BOX 鞋款和男士 STRAP 鞋款，均采用再生皮革制成",
-        "男款 STRAP Shoe 以全黑皮革为基础，搭配铆钉和交叉 Velcro 搭带",
-        "女款 TOE BOX Shoe 采用黄绿色绒面革与双色调绿色皮革拼接",
-        "系列已在线发售，并将于3月20日在指定店铺发售",
-        "同时发售摄影师 E-WAX 记录 Kiko Kostadinov “Dante” 系列的摄影集"
+        "Dr. Martens 与 Kiko Kostadinov 再次合作，推出全新鞋履系列。",
+        "系列包含男款 STRAP Shoe 和女款 TOE BOX Shoe 两款。",
+        "STRAP Shoe 以全黑皮革为基础，配有铆钉和交叉 Velcro 搭扣。",
+        "TOE BOX Shoe 采用夏特勒色调的压花绒面革与双色调绿色皮革拼接。",
+        "该系列已在线发售，并将于3月20日在指定店铺发售。",
+        "同步发售摄影师 E-WAX 拍摄的 Kiko Kostadinov “Dante” 系列摄影集。"
       ],
       "tags": [
         "Dr. Martens",
         "Kiko Kostadinov",
         "联名",
         "鞋履",
-        "再生皮革",
         "英国制造",
-        "TOE BOX Shoe",
-        "STRAP Shoe",
+        "再生皮革",
         "E-WAX",
         "Dante"
       ],
@@ -4450,12 +5696,12 @@
         },
         {
           "name": "Fashionsnap",
-          "title": "キコ・コスタディノフがドクターマーチンとコラボ　グリーンレザーを用いたシューズ発売",
+          "title": "キコ・コスタディノフがドクターマーチンとのコラボアイテムを発売　シューズ2型を用意",
           "link": "https://www.fashionsnap.com/article/2026-03-19/kiko-drmartens-20260319",
           "lang": "ja"
         }
       ],
-      "article_count": 4
+      "article_count": 5
     },
     {
       "id": "3837c3da906e",
@@ -4851,18 +6097,26 @@
     },
     {
       "id": "ffb21239cd23",
-      "title": "阪急男士大阪焕新启幕",
-      "summary": "阪急男士大阪店一层华丽变身“男士配饰世界”！鞋履、包袋、配饰区域经过精心重塑，品牌阵容扩充至40个，新增20个精选品牌。全新概念空间“Per Fumum”隆重登场，由资深买手和销售团队倾力打造，汇集木工匠人、设计师的创意之作，带来独一无二的购物体验。Salomon、CAMILLEFOURNET等6大品牌强势入驻，敬请期待。",
+      "title": "阪急男士大阪“男士配饰世界”焕新启幕，品牌阵容扩充",
+      "summary": "阪急男士大阪店一层华丽变身“男士配饰世界”！汇集40个品牌，包括ASICS、Hender Scheme和J.M. WESTON等，鞋履、包袋、配饰区域经过精心重塑，新增Salomon、CAMILLEFOURNET等6个品牌专卖店。全新概念空间“Per Fumum”隆重登场，由资深买手精选WAN WAN WONDERLAND和WALLET SUN/kakke等品牌商品，带来独一无二的购物体验。",
       "key_points": [
-        "阪急男士大阪店一层翻新",
-        "打造“男士配饰世界”概念",
-        "新增概念空间“Per Fumum”"
+        "阪急男士大阪店一层重塑为“男士配饰世界”",
+        "品牌阵容扩充至40个，包括ASICS、Hender Scheme和J.M. WESTON等",
+        "新增Salomon、CAMILLEFOURNET等6个品牌专卖店",
+        "概念空间“Per Fumum”由买手精选品牌商品，首期包括WAN WAN WONDERLAND和WALLET SUN/kakke"
       ],
       "tags": [
         "阪急男士大阪",
-        "店铺翻新",
         "男士配饰",
-        "零售"
+        "品牌焕新",
+        "Salomon",
+        "CAMILLEFOURNET",
+        "ASICS",
+        "Hender Scheme",
+        "J.M. WESTON",
+        "Per Fumum",
+        "WAN WAN WONDERLAND",
+        "WALLET SUN/kakke"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -4871,12 +6125,12 @@
       "sources": [
         {
           "name": "Fashionsnap",
-          "title": "阪急メンズ大阪1階がリニューアル　新たにコンセプトスペースを設置",
+          "title": "阪急メンズ大阪1階が「メンズアクセサリーワールド」としてリニューアル",
           "link": "https://www.fashionsnap.com/article/2026-03-19/hankyu-mens-renewal-1st-floor",
           "lang": "ja"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "d32373df53b9",
@@ -9546,34 +10800,6 @@
       "article_count": 2
     },
     {
-      "id": "9717ddf4be50",
-      "title": "凯特王妃新年首秀：王冠闪耀",
-      "summary": "凯特王妃于2026新年伊始，在温莎城堡举行的尼日利亚国宴上，以一顶玛丽王后的情人结王冠惊艳亮相，完成了她本年度的首次王冠造型。这顶王冠不仅是凯特王妃的心头好，更与已故戴安娜王妃有着深厚的渊源，曾是戴安娜王妃生前最钟爱的王冠之一。此次佩戴，无疑是对经典与优雅的完美致敬，再次展现了王室时尚的独特魅力。",
-      "key_points": [
-        "凯特王妃2026年首次佩戴王冠",
-        "选择玛丽王后的情人结王冠",
-        "王冠与戴安娜王妃有关联"
-      ],
-      "tags": [
-        "凯特王妃",
-        "王冠",
-        "皇室时尚"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://assets.vogue.com/photos/69bb13eb9e9b577426db0db2/master/pass/2266705968",
-      "published": "2026-03-18T22:23:46+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "New Year, Vintage Tiara: Kate Middleton Debuts Her First Tiara Look of 2026",
-          "link": "https://www.vogue.com/article/new-year-vintage-tiara-kate-middleton-debuts-her-first-tiara-look-of-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
       "id": "e6362d4e125d",
       "title": "Johanna Ortiz 2026秋冬系列：马德里时装周的西班牙灵感与欧洲市场扩张",
       "summary": "哥伦比亚设计师Johanna Ortiz在马德里时装周发布2026秋冬系列Alma，标志着品牌欧洲扩张战略的进一步推进。该系列从Ortiz童年记忆中的西班牙元素汲取灵感，融入斗牛士服装的戏剧性和细节，如刺绣、肩部设计和荷叶边。系列包含高乔风格裤子、斗牛士夹克和绒球腰带，材质选用皮革、天鹅绒和剪羊毛，色彩更加柔和。Ortiz还与珠宝商Omar Hurtado和皮具品牌Moi & Sass合作，提升系列工艺感和品牌价值。此前，Ortiz已在美国市场取得成功，并计划通过在西班牙马贝拉开设快闪店等方式，进一步了解欧洲客户，打造独特的购物体验。",
@@ -10190,19 +11416,22 @@
     },
     {
       "id": "1417b7265e5b",
-      "title": "利率风向标：鞋履价格要涨？",
-      "summary": "WWD报道，美国通胀压力持续，市场预计美联储或将于9月降息。DeVere Group CEO认为当前通胀降速未达预期，此举可能导致美国鞋类零售价格进一步攀升。宏观经济政策走向对时尚产业，尤其是鞋类市场的影响不容忽视，零售商或将面临新一轮挑战。",
+      "title": "利率与鞋履：美联储降息预期下的价格风向",
+      "summary": "美国通胀压力持续，市场预计美联储或将于9月降息。DeVere Group CEO认为当前通胀降速未达预期，此举可能导致美国鞋类零售价格进一步攀升。Footwear News分析了利率变动与鞋类价格之间的潜在联系。宏观经济政策走向对时尚产业，尤其是鞋类市场的影响不容忽视，零售商或将面临新一轮挑战。",
       "key_points": [
-        "美联储或降息",
-        "通胀压力持续",
-        "鞋类价格或上涨"
+        "美国通胀压力持续，美联储或将于9月降息。",
+        "DeVere Group CEO认为通胀下降速度不够快，可能导致鞋类零售价格上涨。",
+        "Footwear News分析了利率变动与鞋类价格之间的潜在联系。",
+        "宏观经济政策对鞋类市场影响显著，零售商面临挑战。"
       ],
       "tags": [
-        "鞋履",
-        "零售",
-        "通货膨胀",
         "利率",
-        "市场分析"
+        "美联储",
+        "通货膨胀",
+        "鞋履",
+        "价格",
+        "零售",
+        "宏观经济"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -10210,13 +11439,13 @@
       "published": "2026-03-18T21:09:26+00:00",
       "sources": [
         {
-          "name": "WWD",
+          "name": "Footwear News",
           "title": "Could Timing of Fed Rates Moves Indicate Where Shoe Prices Are Headed?",
           "link": "https://wwd.com/footwear-news/shoe-industry-news/federal-reserve-interest-rates-inflation-shoes-prices-1238682264",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "0c06dd3eda8a",
@@ -10590,19 +11819,19 @@
     },
     {
       "id": "7f8981e884d8",
-      "title": "UO的鞋履突围战",
-      "summary": "WWD深度解析Urban Outfitters (UO) 的鞋履增长策略。男装和鞋履总经理Bijon Javadzadeh分享了UO在鞋类领域的投资重点和未来方向。品牌正积极寻求在鞋履市场的突破，其中与Vans的合作是重要一环。UO希望通过精准的市场营销和差异化策略，在竞争激烈的鞋履市场中占据一席之地，吸引更多年轻消费者的目光。",
+      "title": "UO鞋履增长策略深度解析：携手Vans，突围鞋履市场",
+      "summary": "WWD和Footwear News等多家媒体深度解析Urban Outfitters (UO) 的鞋履增长策略。男装和鞋履总经理Bijon Javadzadeh分享了UO在鞋类领域的投资重点和未来方向，强调了与Vans等品牌的合作是其重要战略。UO正积极寻求在竞争激烈的鞋履市场中突破，通过精准的市场营销和差异化策略，吸引更多年轻消费者的目光，提升市场份额。",
       "key_points": [
-        "UO鞋履增长策略",
-        "男装鞋履总经理观点",
-        "Vans合作的重要性"
+        "UO男装和鞋履总经理Bijon Javadzadeh分享鞋履增长策略。",
+        "与Vans等品牌的合作是UO鞋履战略的重要组成部分。",
+        "UO致力于通过差异化和精准营销在鞋履市场突围。"
       ],
       "tags": [
         "Urban Outfitters",
         "鞋履",
-        "零售策略",
         "Vans",
-        "市场营销"
+        "市场策略",
+        "Bijon Javadzadeh"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -10610,13 +11839,13 @@
       "published": "2026-03-18T20:25:28+00:00",
       "sources": [
         {
-          "name": "WWD",
+          "name": "Footwear News",
           "title": "Inside Urban Outfitters’ Footwear Growth Strategy",
           "link": "https://wwd.com/footwear-news/shoe-features/urban-outfitters-footwear-growth-strategy-interview-vans-1238682329",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "8d95cfaf51f7",
@@ -15672,45 +16901,6 @@
       "article_count": 1
     },
     {
-      "id": "54740b173e74",
-      "title": "告别牛仔？2026春季裤装新风尚：牛仔裤的回归与革新",
-      "summary": "2026年春季，时尚界对裤装的关注点不再局限于告别牛仔。虽然个性化的裤装潮流依旧盛行，如剪裁独特的阔腿裤和未来感科技面料长裤，但牛仔裤也以全新姿态回归。本季，直筒、低腰、深色水洗等牛仔裤款式将成为焦点，为搭配提供更多可能性。时尚达人们巧妙运用不同材质的上衣和配饰，在拥抱多元裤装选择的同时，也能通过经典牛仔单品展现独特的时尚品味。2026春季，裤装潮流在创新与经典之间碰撞，带来无限惊喜。",
-      "key_points": [
-        "牛仔裤不再是唯一选择，多元化裤装潮流兴起",
-        "阔腿裤、科技面料长裤等个性裤装成为潮流单品",
-        "牛仔裤以直筒、低腰、深色水洗等新形式回归",
-        "巧妙搭配不同材质上衣和配饰，打造个性造型",
-        "2026春季裤装潮流在创新与经典中融合"
-      ],
-      "tags": [
-        "2026春季",
-        "裤装潮流",
-        "牛仔裤",
-        "阔腿裤",
-        "科技面料",
-        "时尚趋势"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/7hcJ2N7frjsinZFgKyDdVD-1280-80.png",
-      "published": "2026-03-18T11:48:57+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "No, Not Jeans—Chic Women Are Wearing This Divisive Trouser Trend Instead This Spring",
-          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/outfits-with-culottes",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Don't Buy Any More Blue Denim Until You've Seen the New Jeans Trend That Might Change Your Mind",
-          "link": "https://www.whowhatwear.com/fashion/denim/khaki-denim-colour-trend-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
       "id": "411b72b4067a",
       "title": "Zeeman换帅：平价零售的新挑战？",
       "summary": "欧洲平价服装巨头Zeeman宣布，Boudewijn van Nieuwenhuijzen将于今年夏季接任CEO，取代Erik-Jan Mares。面对来自中国零售商日益激烈的竞争，拥有1335家门店、遍布欧洲八个市场的Zeeman正寻求新的增长点。此次领导层更迭，或将预示着Zeeman在市场策略上进行重大调整，以应对不断变化的市场格局。",
@@ -17750,18 +18940,23 @@
     },
     {
       "id": "e9b0dc16bd65",
-      "title": "戳爷的香氛哲学：气味、巡演与亲密",
-      "summary": "流行歌手Troye Sivan（戳爷）分享了他的香氛家居品牌Tsu Lange Yor背后的灵感，品牌着重强调生活中的仪式感和私密氛围的营造。在访谈中，他还透露了近期巡演的感受和音乐创作动态，并分享了如何通过Substack平台与粉丝建立更紧密的联系，分享生活点滴。",
+      "title": "戳爷的香氛世界：Tsu Lange Yor品牌、气味哲学与SWEAT巡演",
+      "summary": "流行歌手Troye Sivan（戳爷）在伦敦宣传其香氛家居品牌Tsu Lange Yor，分享了他对气味的独特见解和品牌背后的灵感，强调生活中的仪式感和私密氛围的营造。他还分享了SWEAT巡演的感受和音乐创作动态，以及如何通过Substack平台与粉丝建立更紧密的联系，分享生活点滴。",
       "key_points": [
-        "Troye Sivan香氛品牌理念",
-        "强调生活仪式感和亲密感",
-        "Substack与粉丝互动"
+        "Troye Sivan的香氛家居品牌Tsu Lange Yor及其灵感来源",
+        "戳爷对气味的独特见解和香氛哲学",
+        "SWEAT巡演的感受和相关气味联想",
+        "通过Substack与粉丝建立联系的方式"
       ],
       "tags": [
         "Troye Sivan",
-        "香氛品牌",
-        "家居生活",
-        "名人生活方式"
+        "戳爷",
+        "Tsu Lange Yor",
+        "香氛",
+        "气味",
+        "SWEAT巡演",
+        "Substack",
+        "Space NK"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -17769,13 +18964,13 @@
       "published": "2026-03-18T07:41:00+00:00",
       "sources": [
         {
-          "name": "Dazed",
+          "name": "Dazed Beauty",
           "title": "We asked Troye Sivan what the SWEAT tour smelt like",
           "link": "https://www.dazeddigital.com/beauty/article/69891/1/troye-sivan-sweat-tour-smelt-like-tsu-lange-yor-sweat-poppers",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "19e59f9d2d13",
@@ -17925,1276 +19120,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "64d4bf11a0d9",
-      "title": "Birkenstock x BEAMS 骨骼凉鞋系列再添新作，黑色波士顿迎接50周年",
-      "summary": "Birkenstock 携手 BEAMS 延续“骨骼图案”系列，推出限定版黑色 Boston 凉鞋，庆祝经典鞋款诞生 50 周年。该联名凉鞋采用黑色光滑皮革鞋面，并压印标志性的“骨骼图案”，鞋垫印有双品牌 Logo。该系列将于 3 月 20 日起在 BEAMS 原宿等指定店铺和线上商店发售，随后于 3 月 22 日登陆全国 BEAMS 门店。",
-      "key_points": [
-        "Birkenstock 与 BEAMS 再次合作推出骨骼图案 Boston 凉鞋",
-        "本次合作款为双方“骨骼图案”系列的第四弹",
-        "凉鞋采用黑色光滑皮革鞋面，并压印标志性的“骨骼图案”",
-        "为庆祝 Boston 鞋款诞生 50 周年",
-        "将于 3 月 20 日和 22 日在 BEAMS 指定店铺发售"
-      ],
-      "tags": [
-        "Birkenstock",
-        "BEAMS",
-        "Boston",
-        "联名",
-        "骨骼图案",
-        "凉鞋",
-        "50周年"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144451/top.jpg?1773717575",
-      "published": "2026-03-18T07:12:29+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "ビルケンシュトックのビームス限定サンダル「ボストン」ブラックレザーに”ボーンパターン”",
-          "link": "https://www.fashion-press.net/news/144451",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「ビームス」が「ビルケンシュトック」に別注　アイコニックな“ボーンパターン”の「ボストン」発売",
-          "link": "https://www.wwdjapan.com/articles/2356892",
-          "lang": "ja"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "BEAMS and Birkenstock Unveil the Boston “Bone Pattern” in Smooth Black",
-          "link": "https://hypebeast.com/2026/3/beams-birkenstock-boston-bone-pattern-smooth-black-release-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 3
-    },
-    {
-      "id": "316ff74a7ff8",
-      "title": "Nike Gato N7：撞色复古新潮",
-      "summary": "Nike经典室内足球鞋Gato N7迎来全新“椰奶/桃粉色”配色。设计大胆采用多种材质拼接，带来丰富的视觉层次。鞋头以紧密编织的橙红色材质呈现，搭配勃艮第红麂皮，侧面则选用奶油色麂皮和透气网眼，后跟则以深绿色皮革点缀。整体风格复古又充满活力，预计6月18日发售，售价125美元。",
-      "key_points": [
-        "Gato N7全新配色",
-        "多材质拼接设计",
-        "复古潮流风格"
-      ],
-      "tags": [
-        "Nike",
-        "运动鞋",
-        "Gato N7",
-        "复古",
-        "潮流"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F18%2FNike-Gato-N7-Coconut-Milk-Dusty-Peach-IQ1660-113-Release-Info-0.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-18T07:04:00+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "The Nike Gato N7 Arrives in a Vibrant Multi-Material Makeover",
-          "link": "https://hypebeast.com/2026/3/nike-gato-n7-coconut-milk-dusty-peach-iq1660-113-release-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "c8be19064775",
-      "title": "Summer Fridays Sunlit Vanilla香水引领夏日香氛潮流",
-      "summary": "备受瞩目的美妆品牌Summer Fridays推出了首款香水Sunlit Vanilla，预计将在今夏掀起一股香氛热潮。这款香水延续了品牌标志性的简约风格，以其独特的香调和精心设计的包装，吸引了众多关注。市场预测该香水将成为本季度的潮流单品，进一步巩固Summer Fridays在美妆界的时尚地位。",
-      "key_points": [
-        "Summer Fridays推出首款香水Sunlit Vanilla",
-        "香水延续品牌简约风格，注重香调和包装设计",
-        "市场预测Sunlit Vanilla将成为本季度潮流单品"
-      ],
-      "tags": [
-        "Summer Fridays",
-        "香水",
-        "Sunlit Vanilla",
-        "美妆",
-        "潮流",
-        "香氛"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/0227-sunlitvanilla-69a46e37d6bda.gif",
-      "published": "2026-03-18T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "Harper's Bazaar",
-          "title": "You're About to Smell the New Summer Fridays Perfume Everywhere",
-          "link": "https://www.harpersbazaar.com/beauty/a70561851/summer-fridays-sunlit-vanilla-perfume-interview",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Mark My Words: The Coolest Women You Know Will All Be Wearing This Perfume Next Month",
-          "link": "https://www.whowhatwear.com/beauty/fragrance/summer-fridays-sunlit-vanilla-perfume",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "19965946e4b2",
-      "title": "睫毛弯弯：Ilia睫毛膏一支搞定",
-      "summary": "《Who What Wear》美妆编辑Eleanor Vousden盛赞Ilia Limitless睫毛膏，称其拥有媲美睫毛提拉和嫁接的效果，能显著纤长并卷翘睫毛，是她个人最爱单品之一。无需额外步骤，轻松打造迷人电眼。",
-      "key_points": [
-        "Ilia Limitless睫毛膏",
-        "纤长卷翘效果显著",
-        "替代睫毛提拉和嫁接"
-      ],
-      "tags": [
-        "美妆",
-        "睫毛膏",
-        "Ilia",
-        "产品评测",
-        "睫毛"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://cdn.mos.cms.futurecdn.net/Lge6V9zHHfcusmosU9h22S-1280-80.jpg",
-      "published": "2026-03-18T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "This Mascara Is Like a Lash Lift and Lash Extensions Rolled Into One",
-          "link": "https://www.whowhatwear.com/beauty/makeup/ilia-limitless-mascara-review",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "4ce5eb183a63",
-      "title": "极简护肤哲学：Rescue Spa创始人专访",
-      "summary": "知名美容师Danuta Mieloch创立的Rescue Spa护肤品牌，以其高效和简约的护肤理念备受推崇。作为美妆编辑，我深知选择护肤品的重要性，过度繁琐的步骤并非必要。Rescue Spa的产品线针对敏感肌和痘痘肌的需求，提供温和而有效的解决方案，帮助肌肤恢复健康平衡。极简护肤，也能成就美丽。",
-      "key_points": [
-        "Rescue Spa品牌理念",
-        "极简护肤的重要性",
-        "敏感肌和痘痘肌护理"
-      ],
-      "tags": [
-        "护肤",
-        "美容",
-        "Rescue Spa",
-        "敏感肌",
-        "痘痘肌",
-        "极简护肤"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://cdn.mos.cms.futurecdn.net/V4bZ4XkjXnTbBZKo99Xnk4-1280-80.jpg",
-      "published": "2026-03-18T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Danuta Mieloch Is a Master Aesthetician and the Founder of Rescue Spa—Her Skincare Line Is OMG Good",
-          "link": "https://www.whowhatwear.com/beauty/skin/danucera-review",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "34ac36f25536",
-      "title": "时装周环游记：我的潮流穿搭日志",
-      "summary": "2026时装月，我穿梭于纽约、伦敦、米兰和巴黎之间，记录下每个城市的时尚瞬间。从纽约的率性街头风，到伦敦的前卫设计，再到米兰的优雅奢华和巴黎的浪漫 chic，我精选单品，巧妙搭配，打造专属造型。这不仅是一场时尚盛宴，更是一次个人风格的探索之旅。同时，我也总结了实用的旅行穿搭技巧，助你轻松应对各种场合，随时随地展现时尚魅力。此外，本文还参考了Who What Wear的时尚编辑的时装周穿搭记录，为你提供更多元的造型灵感和单品选择。",
-      "key_points": [
-        "记录时装周期间在纽约、伦敦、米兰和巴黎的每日穿搭。",
-        "分享时尚造型和单品选择。",
-        "提供实用旅行穿搭技巧，应对各种场合。"
-      ],
-      "tags": [
-        "时装周",
-        "穿搭",
-        "街拍",
-        "造型",
-        "纽约",
-        "伦敦",
-        "米兰",
-        "巴黎",
-        "旅行穿搭"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://cdn.mos.cms.futurecdn.net/FELBa9pCMzzibmh8C6JpWU-1280-80.jpg",
-      "published": "2026-03-18T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "I Traveled to New York, London, Milan, and Paris for Fashion Month—Here Are the Chicest Outfits I Wore",
-          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/fashion-month-outfits-sara-walker",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "27060e39d6e1",
-      "title": "Z世代运动风：告别套装，拥抱混搭",
-      "summary": "Z世代正在颠覆传统运动穿搭理念，抛弃千篇一律的完美配色运动套装，转而拥抱更具个性化和复古风的混搭风格。他们追求舒适与时尚并存，将运动服饰穿出个人特色，反映了年轻一代对自我表达和舒适体验的重视。这种趋势预示着运动时尚将迎来更多元化的发展。",
-      "key_points": [
-        "Z世代引领运动风潮",
-        "告别套装，拥抱混搭",
-        "个性化与舒适度至上"
-      ],
-      "tags": [
-        "Z世代",
-        "运动穿搭",
-        "潮流趋势",
-        "复古风",
-        "个性化"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/yhGSpGhrBAk2nt6zDmPe5e-1280-80.jpg",
-      "published": "2026-03-18T07:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Goodbye, Matching Sets—Gen Z Is Making Workout Style Personal (and Chaotic) Again",
-          "link": "https://www.whowhatwear.com/wellness/fitness/gen-z-mismatched-workout-set-trend",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "48d26fbec134",
-      "title": "倍耐力发布2026日本站限定领奖台帽",
-      "summary": "倍耐力为纪念2026年F1日本大奖赛三月赛事，特别推出官方领奖台帽子。这款限量版帽子巧妙融合了日本文化元素，采用独家定制的樱花印花设计，并饰有特殊的赛事日期刺绣，极具收藏意义。该帽子在形状和结构上与铃鹿赛道颁奖仪式上获胜车手所佩戴的帽子完全一致。倍耐力此举旨在向日本站赛事致敬，同时也为F1车迷们提供了一款别具一格的纪念品。",
-      "key_points": [
-        "倍耐力发布2026年F1日本大奖赛官方领奖台帽",
-        "限量版设计，纪念三月赛事",
-        "融合日本文化元素，定制樱花印花和赛事日期刺绣",
-        "帽子形状和结构与颁奖仪式上获胜车手所佩戴的帽子一致"
-      ],
-      "tags": [
-        "倍耐力",
-        "F1",
-        "日本大奖赛",
-        "领奖台帽",
-        "限量版",
-        "樱花",
-        "铃鹿赛道"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F18%2FPirelli-Podium-2026-Japan-Grand-Prix-Cap-Release-Info-0.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-18T06:59:11+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Pirelli’s Official 2026 Japan Podium Cap Arrives With a Bespoke Sakura Blossom Print",
-          "link": "https://hypebeast.com/2026/3/pirelli-podium-2026-japan-grand-prix-cap-release-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "e0b858747d22",
-      "title": "SZA双钻加冕，乐坛新传奇!",
-      "summary": "R&B天后SZA凭借其热门单曲《Kill Bill》和《Snooze》荣获美国唱片工业协会（RIAA）钻石认证，标志着她音乐生涯的巅峰时刻。这两首歌曲在美国销量均突破1000万张，彰显了SZA在全球范围内的巨大影响力和持续的音乐魅力。此外，SZA及其专辑《SOS》和豪华版，以及其他作品也获得了27项金、白金RIAA认证，进一步巩固了她在乐坛的地位。",
-      "key_points": [
-        "SZA荣获首个RIAA钻石认证",
-        "《Kill Bill》和《Snooze》销量破千万",
-        "《SOS》专辑及其他作品获多项金、白金认证"
-      ],
-      "tags": [
-        "SZA",
-        "RIAA认证",
-        "钻石唱片",
-        "欧美音乐"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F18%2FSZA-Earns-First-Diamond-RIAA-Plaques-Kill-Bill-Snooze.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-18T06:58:41+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "SZA Earns Her First RIAA Diamond Certifications for “Kill Bill” and “Snooze”",
-          "link": "https://hypebeast.com/2026/3/sza-earns-first-diamond-riaa-plaques-kill-bill-snooze",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "0aea731cda61",
-      "title": "表参道春日限定：草莓苹果花见芭菲",
-      "summary": "东京表参道The Strings咖啡厅推出季节限定“草莓苹果花见芭菲”，将春日赏花的概念融入味蕾体验。这款甜品融合了新鲜草莓与苹果的清甜，搭配浓郁焦糖冰淇淋和清爽红茶冻，多重口感交织，为追求精致生活方式的时尚人士带来独特的味觉享受。在繁华的表参道，品尝一口春天的味道。",
-      "key_points": [
-        "表参道The Strings限定",
-        "草莓苹果花见芭菲",
-        "焦糖冰淇淋与红茶冻"
-      ],
-      "tags": [
-        "美食",
-        "甜品",
-        "季节限定",
-        "表参道",
-        "生活方式"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144499/top.jpg?1773804544",
-      "published": "2026-03-18T06:51:48+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "ザ ストリングス 表参道「いちごとりんごのお花見パフェ」濃厚キャラメルアイスや紅茶ゼリー入り",
-          "link": "https://www.fashion-press.net/news/144499",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "33955c625a7b",
-      "title": "萌力爆棚！三丽鸥主题咖啡厅登陆六本木",
-      "summary": "备受瞩目的三丽鸥展览即将在六本木盛大开幕，届时还将开设期间限定的合作咖啡厅。这家咖啡厅将三丽鸥旗下超人气角色融入美食创作中，为粉丝们带来一场视觉与味觉的双重盛宴。菜单亮点包括漂浮着棉花糖云朵的肉桂卷苏打，造型梦幻可爱，以及暖心治愈的布丁狗主题炖菜，每一道都充满了童趣。",
-      "key_points": [
-        "三丽鸥展览开设合作咖啡厅",
-        "六本木期间限定",
-        "人气角色主题餐饮"
-      ],
-      "tags": [
-        "三丽鸥",
-        "合作咖啡厅",
-        "主题餐饮",
-        "六本木",
-        "展览"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144503/top.jpg?1773807609",
-      "published": "2026-03-18T06:51:42+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "「サンリオ展」コラボカフェが六本木に、“綿菓子の雲”が浮かぶシナモロールソーダ＆ポチャッコのシチュー",
-          "link": "https://www.fashion-press.net/news/144503",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "0a38362424a6",
-      "title": "神户风月堂：如花束般的美味",
-      "summary": "为庆祝Gaufre饼干99周年，神户风月堂推出限定“99周年纪念Gaufre”礼盒。礼盒设计灵感源自浪漫花束，内含九种创新口味，包括草莓和巧克力香蕉等。饼干选用全麦粉，口感酥脆，是馈赠亲友的理想选择。这款充满心意的礼盒，让味蕾也沉浸在花团锦簇的幸福感中。",
-      "key_points": [
-        "Gaufre饼干99周年纪念",
-        "花束主题礼盒设计",
-        "九种全新口味"
-      ],
-      "tags": [
-        "神户风月堂",
-        "Gaufre饼干",
-        "周年纪念",
-        "礼盒",
-        "甜点"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144501/top.jpg?1773807971",
-      "published": "2026-03-18T06:51:41+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "神戸風月堂\"まるでブーケ”なゴーフル缶、苺やチョコバナナクリームなど新フレーバー9種入り",
-          "link": "https://www.fashion-press.net/news/144501",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "bde43215f9f8",
-      "title": "Maison Kitsuné x A. SOCIETY 玩转复古潮流",
-      "summary": "法式潮流品牌 Maison Kitsuné 携手香港眼镜品牌 A. SOCIETY，将于2026年3月18日推出限定联名眼镜系列。该系列包含三款日本制造的太阳镜，设计灵感巧妙融合复古格调与现代潮流。其中，“Camille”采用经典的波士顿醋酸纤维框架，“Hikari”则以双桥金属框架展现精致感，“Min”则以横向雕塑造型脱颖而出。每款眼镜都饰有 Maison Kitsuné 标志性的狐狸脸元素，细节之处彰显品牌特色。特别的是，本次联名系列的包装设计灵感源自手写明信片，并随机附赠可爱的狐狸印章，为消费者带来充满惊喜的购物体验。",
-      "key_points": [
-        "Maison Kitsuné 与 A. SOCIETY 联名合作",
-        "三款日本制造太阳镜，设计各具特色",
-        "标志性狐狸脸元素，细节彰显品牌DNA"
-      ],
-      "tags": [
-        "Maison Kitsuné",
-        "A. SOCIETY",
-        "联名眼镜",
-        "太阳镜",
-        "复古潮流"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144500/top.jpg?1773804578",
-      "published": "2026-03-18T06:51:39+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "メゾン キツネのサングラス“きつねの顔”パーツ煌めくボストンフレーム、A. ソサエティとコラボ",
-          "link": "https://www.fashion-press.net/news/144500",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "ddd304666f2f",
-      "title": "UGG 2026春季：一鞋两穿，解锁未来潮流",
-      "summary": "UGG发布2026春季“Heritage Utility”系列运动鞋，该系列主打无性别风，将经典设计与现代生活方式巧妙融合。其中，Axoid无鞋带低帮运动鞋尤为吸睛，采用抽绳设计，兼顾透气性与稳定性，巧妙地将运动鞋的包裹感与凉鞋的清爽感合二为一，引领未来鞋履新风尚。",
-      "key_points": [
-        "UGG 2026春季新款运动鞋系列",
-        "Heritage Utility系列，无性别设计",
-        "Axoid无鞋带低帮运动鞋，抽绳调节"
-      ],
-      "tags": [
-        "UGG",
-        "运动鞋",
-        "2026春季",
-        "无鞋带",
-        "潮流新品"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144493/top.jpg?1773798584",
-      "published": "2026-03-18T06:51:36+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "UGG2026年春“紐なし”ローカットシューズ、スニーカーとサンダルを一足に凝縮",
-          "link": "https://www.fashion-press.net/news/144493",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "1c750e1e5e04",
-      "title": "萌翻！榮太樓恐龍和菓子甜蜜來襲",
-      "summary": "日本老字號和菓子品牌榮太樓總本鋪，即將在2026年3月18日至23日於日本橋三越本店舉辦的「お菓子の恐竜展」上，推出一款名為「あめのザウルス」（愛吃糖的恐龍）的可愛和菓子。這款和菓子以Q萌恐龍造型呈現，內餡包裹著清爽的水果風味，更搭配了靈感源自榮太樓飴的獨特三角形錦玉，共有紅、黃兩種口味，帶來視覺與味覺的双重享受。無論是送禮或自用，都能感受到滿滿的日式甜蜜。",
-      "key_points": [
-        "榮太樓總本鋪推出恐龍造型和菓子",
-        "日本橋三越本店「お菓子の恐竜展」限定發售",
-        "水果內餡搭配榮太樓飴靈感錦玉"
-      ],
-      "tags": [
-        "和菓子",
-        "榮太樓總本鋪",
-        "恐龍",
-        "日本橋三越",
-        "美食",
-        "甜點"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144506/top.jpg?1773811456",
-      "published": "2026-03-18T06:51:34+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "“飴が好きな恐竜”「あめのザウルス」の和菓子が榮太樓總本鋪から、日本橋三越本店「お菓子の恐竜展」",
-          "link": "https://www.fashion-press.net/news/144506",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "e45f8891b2d8",
-      "title": "40+美肌秘诀：UV隔离霜选购指南",
-      "summary": "针对40代女性，底妆选择至关重要。Elegance和Shu Uemura两款UV隔离霜，不仅能有效防护紫外线，更能调整肤色，打造理想妆容。本文评测了两款产品的颜色、质地和使用效果，对比不同颜色隔离霜的差异，助你找到最适合自己的底妆产品，轻松拥有健康光泽美肌。",
-      "key_points": [
-        "底妆选择影响肤色",
-        "UV隔离的重要性",
-        "Elegance和Shu Uemura产品评测"
-      ],
-      "tags": [
-        "美妆",
-        "UV隔离",
-        "底妆",
-        "抗衰老"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://mi-mollet.ismcdn.jp/mwimgs/0/0/-/img_009d425ae2fd816bf3628eb8677b5558381540.jpg?rd=202603121355",
-      "published": "2026-03-18T06:51:27+00:00",
-      "sources": [
-        {
-          "name": "mi-mollet",
-          "title": "40代からは下地選びで肌に差が出る！なりたい肌色もUV対策も一本におまかせ！おすすめUVカラー下地【エレガンス・シュウ ウエムラ】",
-          "link": "https://mi-mollet.com/articles/-/58904",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "75b6bb9dbe84",
-      "title": "珍珠饰品：日常穿搭的点睛之笔",
-      "summary": "还在认为珍珠只属于正式场合？本文打破传统观念，教你如何将优雅的珍珠首饰融入日常穿搭，为你的造型注入精致与华丽。无论是搭配休闲T恤、率性牛仔，还是简约连衣裙，珍珠都能巧妙提升时尚感。文章精选多种搭配方案，并推荐值得关注的珍珠单品，助你玩转珍珠时尚，打造专属风格。",
-      "key_points": [
-        "珍珠饰品日常化",
-        "休闲服装搭配",
-        "提升造型精致度"
-      ],
-      "tags": [
-        "珍珠",
-        "日常穿搭",
-        "时尚搭配"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://mi-mollet.ismcdn.jp/mwimgs/3/8/-/img_38d86acc127aebbfd7a2d859830d574b789384.jpg?rd=202603121355",
-      "published": "2026-03-18T06:51:25+00:00",
-      "sources": [
-        {
-          "name": "mi-mollet",
-          "title": "フォーマルだけではもったいない！「パールジュエリー」を日常使いして、着こなしに華やぎを",
-          "link": "https://mi-mollet.com/articles/-/58905",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "f75ed2d6595e",
-      "title": "春日轻装：小包与钱包的色彩游戏",
-      "summary": "日系时尚杂志mi-mollet倾情推荐QVC原创品牌+grace的春季新款小包及钱包系列。该系列甄选高品质收缩皮革，匠心独运，设计精巧，配色方案更是令人心动。托普色优雅大气，牛仔蓝率性洒脱，柠檬黄明媚动人，经典黑色沉稳百搭，烟熏粉则增添一抹温柔。文章不仅详细解读了每款单品的特色与搭配技巧，更有限时优惠惊喜放送，为你的春日造型提供完美配饰方案。",
-      "key_points": [
-        "+grace春季新品",
-        "高品质收缩皮革",
-        "丰富色彩选择"
-      ],
-      "tags": [
-        "小包",
-        "钱包",
-        "春季时尚",
-        "QVC",
-        "+grace",
-        "日系"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://mi-mollet.ismcdn.jp/mwimgs/c/f/-/img_cf89773fe68648073c20b89c2b360d54526100.jpg?rd=202603121355",
-      "published": "2026-03-18T06:51:24+00:00",
-      "sources": [
-        {
-          "name": "mi-mollet",
-          "title": "春のおしゃれは「小物」から。「小さめバッグ」と「ウォレット」華やぎカラーはどれを選ぶ？[PR]",
-          "link": "https://mi-mollet.com/articles/-/58809",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "39dc5555f998",
-      "title": "AFEELA 1 艺术车：未来主义的跨界碰撞",
-      "summary": "索尼本田移动（Sony Honda Mobility）为旗下电动汽车品牌AFEELA 1 注入艺术活力，携手两位先锋艺术家空山基和 Matt Copson 打造艺术车。空山基以其标志性的铬合金未来主义风格，在东京呈现充满金属质感的视觉盛宴；Matt Copson 则在洛杉矶 Frieze 艺术展上，运用反光材料，赋予 AFEELA 1 独特的艺术表达。此次合作旨在通过艺术与汽车的融合，提升 AFEELA 品牌的吸引力，与更广泛的受众建立互动。",
-      "key_points": [
-        "索尼本田移动联手艺术家",
-        "AFEELA 1 推出艺术车",
-        "空山基和 Matt Copson 操刀设计"
-      ],
-      "tags": [
-        "索尼本田移动",
-        "AFEELA",
-        "艺术车",
-        "空山基",
-        "Matt Copson"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F18%2Fsony-honda-afeela-1-art-cars-spotlight-sorayama-and-copson-1.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-18T06:49:26+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Sony Honda Mobility Tags Hajime Sorayama and Matt Copson for AFEELA 1 Art Cars",
-          "link": "https://hypebeast.com/2026/3/sony-honda-afeela-1-art-cars-spotlight-sorayama-and-copson",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "6291cf6d927b",
-      "title": "泰特美术馆：2027莫奈大展",
-      "summary": "泰特现代艺术馆公布2027年展览计划，重头戏是印象派大师克劳德·莫奈的首次个人展览“莫奈：绘画时间”，定于2027年2月开幕。展览将深入探索莫奈的艺术创作与工业时代“时间”概念的关联。此外，还将举办庆祝大卫·霍克尼90岁生日的大型展览，以及阿尔及利亚现代主义艺术家Baya在英国的首次个人展览，令人期待。",
-      "key_points": [
-        "泰特现代艺术馆2027展览计划",
-        "克劳德·莫奈首次个人展",
-        "探索莫奈与工业时代时间的关系"
-      ],
-      "tags": [
-        "克劳德·莫奈",
-        "泰特现代艺术馆",
-        "艺术展览",
-        "印象派",
-        "大卫·霍克尼",
-        "Baya"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fstatic.hypebeast.com%2Fimages%2Fplaceholder-960x640.jpg?w=960&cbr=1&q=90&fit=max",
-      "published": "2026-03-18T06:32:05+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "The Claude Monet \"Painting Time\" Solo Exhibit Heads to Tate Modern in 2027",
-          "link": "https://hypebeast.com/2026/3/claude-monet-painting-time-heads-to-tate-modern-in-2027",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "400a030950bd",
-      "title": "Diesel 2026春夏日本限定系列：灰黑潮酷再袭，快闪店即将登陆",
-      "summary": "Diesel（迪赛）2026春夏日本限定胶囊系列在原有春夏系列基础上，注入专属日本的灰、黑配色，并于细节处精益求精。该系列涵盖牛仔夹克、长裤、衬衫及裙装等单品，大胆玩转丹宁与提花面料的拼接，并采用光泽感涂层牛仔布，部分设计更巧妙融入机车夹克元素，尽显不羁型格。该系列将于3月18日起在日本指定店铺和快闪店限时发售，伊势丹新宿男士馆也将于4月8日至21日开设快闪店，并销售店铺限定商品，敬请期待。",
-      "key_points": [
-        "Diesel 2026春夏日本限定胶囊系列发布",
-        "系列采用灰、黑限定配色，细节设计精益求精",
-        "单品包括牛仔夹克、长裤、衬衫、裙装等",
-        "3月18日起在日本指定店铺和快闪店发售",
-        "伊势丹新宿男士馆4月开设快闪店，发售限定商品"
-      ],
-      "tags": [
-        "Diesel",
-        "2026春夏",
-        "日本限定",
-        "胶囊系列",
-        "快闪店",
-        "丹宁",
-        "格伦·马滕斯",
-        "Glenn Martens"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://www.fashion-press.net/img/news/144480/top.jpg?1773799787",
-      "published": "2026-03-18T06:30:00+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "ディーゼル2026年春夏“日本限定カラー”のデニムジャケットやパンツをユニセックスで",
-          "link": "https://www.fashion-press.net/news/144480",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「ディーゼル」から春夏日本限定コレクションが登場　限定カラーや特別なデザインで再構築",
-          "link": "https://www.wwdjapan.com/articles/2357549",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "f3bb62cb2508",
-      "title": "告别笨重！巴黎时髦客的新宠是...",
-      "summary": "时尚风向标悄然转变！在巴黎、奥斯陆和伦敦的街头，追求精致优雅的时尚达人们纷纷舍弃了曾经风靡一时的厚底运动鞋，转而拥抱线条简洁、低调内敛的极简运动鞋。这一趋势预示着舒适与格调并存的轻奢风潮再度回归。我们为你精选了多款极简运动鞋，助你轻松打造毫不费力的时髦造型。",
-      "key_points": [
-        "极简运动鞋取代厚底款",
-        "巴黎、奥斯陆、伦敦街头趋势",
-        "优雅舒适的轻奢风回归"
-      ],
-      "tags": [
-        "运动鞋",
-        "潮流趋势",
-        "极简主义",
-        "鞋履",
-        "街拍"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/ET6LqHJHvrwgUBVQN4PLYG-1280-80.jpg",
-      "published": "2026-03-18T06:30:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Sorry, Chunky Trainers—Chic Dressers in Paris, Oslo and London Are Wearing This Low-Profile Style Instead",
-          "link": "https://www.whowhatwear.com/fashion/shoes/best-minimal-trainers-for-women",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "7230b464ad0a",
-      "title": "Lil Wayne嘻哈盛宴，传奇再续！",
-      "summary": "嘻哈巨星Lil Wayne宣布为其经典专辑系列“Tha Carter”举办20周年巡演，并将于今夏再度加开场次。本次巡演不仅是对这位新奥尔良音乐重量级人物音乐生涯的盛大回顾，更将携手2 Chainz和The Game等大咖，共同在北美各地掀起嘻哈狂潮，为乐迷带来一场视听盛宴。",
-      "key_points": [
-        "Lil Wayne“Tha Carter”系列20周年巡演",
-        "2 Chainz和The Game倾情加盟",
-        "北美地区嘻哈音乐盛事"
-      ],
-      "tags": [
-        "Lil Wayne",
-        "嘻哈音乐",
-        "巡回演出",
-        "潮流文化"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F18%2FLil-Wayne-Tha-Carter-20th-Anniversary-extended-Tour-Dates-Announcement-Info-0.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-18T06:23:06+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Lil Wayne Announces More ‘Tha Carter’ 20th Anniversary Tour Dates",
-          "link": "https://hypebeast.com/2026/3/lil-wayne-tha-carter-20th-anniversary-extended-tour-dates-announcement-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "717a3cbc4443",
-      "title": "ETVOS温和焕肤，敏感肌福音",
-      "summary": "日本轻奢美妆品牌ETVOS将于6月1日推出专为敏感肌设计的去角质化妆水“アルティモイストピールローション”。这款新品蕴含PHA和发酵蜂蜜酸等成分，在温和去除老旧角质的同时，为肌肤补充水分，改善粗糙暗沉。其浓稠质地能有效减少摩擦，降低对敏感肌肤的刺激。新品已于5月18日在ETVOS品牌官网抢先发售，为敏感肌人士带来温和焕肤新选择。",
-      "key_points": [
-        "ETVOS新品：敏感肌去角质化妆水",
-        "PHA+发酵蜂蜜酸：温和去角质并补水",
-        "浓稠质地：减少摩擦，保护肌肤"
-      ],
-      "tags": [
-        "ETVOS",
-        "敏感肌",
-        "去角质",
-        "化妆水",
-        "新品"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/16164132/20260316ETVOSOG.jpg",
-      "published": "2026-03-18T06:20:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "「エトヴォス」が敏感肌向けのピールローションを発売　古い角質を穏やかに除去",
-          "link": "https://www.wwdjapan.com/articles/2355595",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "19cdc0fef46d",
-      "title": "植村秀澡堂快闪升级：&TEAM惊喜助阵，表参道旗舰店同步开启！",
-      "summary": "植村秀澡堂主题快闪活动“Shu Sento”不仅在东京涩谷限时开启，更登陆表参道旗舰店！活动将日式澡堂文化与美妆体验巧妙融合，旨在通过舒适放松的氛围，提升顾客对植村秀底妆产品的认知与喜爱。韩国男团&TEAM的成员FUMA和JO惊喜担任特别嘉宾，以特别定制的语音在澡堂区域迎接顾客，并带来专属影片福利。全国门店也将同步释出限定信息影片，带来沉浸式体验。",
-      "key_points": [
-        "植村秀澡堂主题快闪活动“Shu Sento”在东京涩谷和表参道旗舰店同步开启。",
-        "&TEAM成员FUMA和JO担任特别嘉宾，提供定制语音和专属影片福利。",
-        "全国门店也将释出限定信息影片，提供线上线下沉浸式体验。"
-      ],
-      "tags": [
-        "植村秀",
-        "Shu Sento",
-        "快闪活动",
-        "澡堂文化",
-        "&TEAM",
-        "FUMA",
-        "JO",
-        "美妆",
-        "表参道",
-        "涩谷"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/shuuemura-sento-and-team-20260318-007-c7712b1b-0eaa-434e-a548-5417d407d517.jpg",
-      "published": "2026-03-18T06:14:44+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "シュウ ウエムラの銭湯ポップアップに&TEAM FUMA・JOが特別ボイスで参加",
-          "link": "https://www.fashionsnap.com/article/2026-03-18/shuuemura-sento-and-team",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "＆TEAMのFUMAとJOが番頭に！　「シュウ ウエムラ」ポップアップイベント来場者を特別ボイスでお出迎え",
-          "link": "https://www.wwdjapan.com/articles/2358103",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 3
-    },
-    {
-      "id": "e72c371495a4",
-      "title": "Kehlani全新同名专辑即将发布：灵魂告白与格莱美加冕",
-      "summary": "R&B天后Kehlani宣布其第五张同名专辑将于4月24日全球发行，并公开专辑封面。这张专辑是继2024年《Crash》后的首张完整专辑，收录17首歌曲，包括格莱美获奖单曲《Folded》。Kehlani将通过这张专辑深入探讨爱、转变与脆弱等人生主题，并将在ESSENCE文化节上首次亮相。时尚界持续关注，期待从中汲取灵感。",
-      "key_points": [
-        "Kehlani发布第五张同名专辑，定档4月24日",
-        "专辑收录17首歌曲，包含格莱美获奖单曲《Folded》",
-        "专辑主题涉及爱、转变与脆弱等深刻人生议题",
-        "Kehlani将在ESSENCE文化节上首次亮相",
-        "时尚界关注专辑发布，期待从中获得灵感"
-      ],
-      "tags": [
-        "Kehlani",
-        "新专辑",
-        "R&B",
-        "格莱美",
-        "ESSENCE文化节",
-        "音乐",
-        "时尚灵感"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fstatic.hypebeast.com%2Fimages%2Fplaceholder-960x640.jpg?w=960&cbr=1&q=90&fit=max",
-      "published": "2026-03-18T06:14:20+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Kehlani Announces Self-Titled Fifth Album",
-          "link": "https://hypebeast.com/2026/3/kehlani-announces-self-titled-fifth-album-kehlani",
-          "lang": "en"
-        },
-        {
-          "name": "Essence",
-          "title": "Kehlani Announces Self-Titled Album, Reveals Cover Art",
-          "link": "https://www.essence.com/entertainment/kehlani-announces-self-titled-album-reveals-cover-art",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "548ff882362c",
-      "title": "妮可·基德曼的奥斯卡战袍：香奈儿980小时的奢华定制",
-      "summary": "妮可·基德曼在2026年奥斯卡颁奖典礼上惊艳亮相，身穿由马修·布雷兹设计的香奈儿高级定制礼服。这件礼服耗时980小时精心制作，并手工镶嵌了18900颗精致刺绣，尽显奢华。设计灵感源自香奈儿2026春夏高定时装系列，并根据妮可·基德曼的个人风格和身形特点量身打造。该礼服不仅展现了香奈儿精湛的工艺，也体现了妮可·基德曼与品牌之间的深厚情谊。报道深入解析了礼服的设计理念、制作过程，以及妮可·基德曼与香奈儿品牌之间的长期合作关系。",
-      "key_points": [
-        "妮可·基德曼奥斯卡礼服",
-        "香奈儿高级定制",
-        "980小时手工制作"
-      ],
-      "tags": [
-        "妮可·基德曼",
-        "香奈儿",
-        "奥斯卡",
-        "定制礼服",
-        "名人时尚"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vogue.co.jp/photos/69ba189ecc341c542ca4c56f/master/pass/SHOT_02-160_v2A_QC_R150-1.jpg",
-      "published": "2026-03-18T05:58:24+00:00",
-      "sources": [
-        {
-          "name": "Vogue Japan",
-          "title": "【アカデミー賞2026】ニコール・キッドマンのアカデミー賞ルックができるまで──シャネルが980時間かけて制作した、珠玉の1着",
-          "link": "https://www.vogue.co.jp/article/nicole-kidman-chanel-2026-oscars-dress",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "ade3314f1497",
-      "title": "泳坛冠军汪顺 携手lululemon",
-      "summary": "运动品牌lululemon正式宣布游泳世界冠军汪顺成为其最新品牌大使。双方将展开深度合作，通过创意活动推广积极健康的生活方式，鼓励更多人享受运动的乐趣。汪顺表示，lululemon的经典产品是他日常训练的得力助手，期待通过此次合作，将运动理念传递给更多人，让运动融入大众生活。",
-      "key_points": [
-        "lululemon签约汪顺为品牌大使",
-        "双方将合作推广运动生活方式",
-        "汪顺认可lululemon产品对训练的帮助"
-      ],
-      "tags": [
-        "lululemon",
-        "汪顺",
-        "品牌大使",
-        "运动生活方式",
-        "合作"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstchina.com/hmg-prod/images/7f999fa9-b8c3-42f7-8889-102f4c1cf7c1.jpg?crop=1.00xw:0.376xh;0,0.0867xh&resize=1200:*",
-      "published": "2026-03-18T05:37:00+00:00",
-      "sources": [
-        {
-          "name": "ELLE China",
-          "title": "汪顺加入lululemon大使阵容，诠释专注训练的力量",
-          "link": "https://www.ellechina.com/fashion/news/a70776017/lululemon-announces-wang-shun-as-the-new-brand-ambassador",
-          "lang": "zh"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "a1ab988f6276",
-      "title": "Converse x Schott One Star：复古机车风潮再续，拉链细节致敬经典",
-      "summary": "Converse再度携手Schott推出第二弹One Star联名鞋款，4月3日正式发售。本次合作延续复古机车风格，采用茶芯皮革鞋面，并大胆将Schott机车夹克标志性拉链设计融入鞋款中央，细节之处尽显诚意。售价34100日元。",
-      "key_points": [
-        "Converse与Schott再度联名，推出第二弹One Star鞋款",
-        "鞋款设计融合Schott机车夹克元素与Converse One Star经典鞋型",
-        "采用茶芯皮革鞋面，致敬复古机车风格",
-        "鞋款中央采用Schott机车夹克同款拉链设计",
-        "4月3日发售，售价34100日元"
-      ],
-      "tags": [
-        "Converse",
-        "Schott",
-        "One Star",
-        "联名",
-        "机车风",
-        "复古",
-        "茶芯皮革",
-        "拉链"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/converse-schott-20260318-005-9512b1c4-cc03-4d43-a07e-29e57f1fe2eb.jpg",
-      "published": "2026-03-18T05:36:08+00:00",
-      "sources": [
-        {
-          "name": "Fashionsnap",
-          "title": "ショットがコンバースとコラボした「ワンスター」第2弾を発売　ライダースジャケットのジッパーをセンタージップに採用",
-          "link": "https://www.fashionsnap.com/article/2026-03-18/converse-schott",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "ef394559180d",
-      "title": "Bode x Levi's & J.Crew x Lee：复古牛仔风潮持续升温，Bode东京首发限定款细节及灵感来源揭秘",
-      "summary": "Bode与Levi's首次合作，推出灵感源自西部牛仔竞技文化的“Barrel Racer Jeans”系列，重塑复古牛仔风潮。该系列灵感源自Emily Bode的童年记忆和50年代牛仔竞技风格，特别是设计师童年时期名为“Checkers”的斑点小马驹，采用14盎司防缩牛仔布，并饰有定制刺绣、做旧铜钉、银色铆钉、红色宝石、链式缝线等细节，并有浅色和深色两种水洗选择。J.Crew与Lee也首次联手，将牛仔风与学院风巧妙融合，从Lee的复古广告中汲取灵感，打造出兼具经典与创新的合作系列。Bode x Levi's系列已于4月3日在Bode东京首发，之后将在纽约、巴黎、洛杉矶的店铺和官网发售，4月10日全球发售。两大合作系列均是对复古牛仔风格的全新演绎，为时尚爱好者带来更多选择。",
-      "key_points": [
-        "Bode与Levi's合作系列“Barrel Racer Jeans”灵感源自设计师Emily Bode的童年记忆，特别是名为“Checkers”的斑点小马驹。",
-        "Bode x Levi's系列采用14盎司防缩牛仔布，并饰有银色铆钉和红色宝石等细节。",
-        "Bode x Levi's系列已于4月3日在BODE Tokyo先行发售，随后将在Bode官网及纽约、巴黎、洛杉矶门店发售。",
-        "J.Crew与Lee首次联手，将牛仔风与学院风巧妙融合，打造复古牛仔风格的全新演绎。"
-      ],
-      "tags": [
-        "Bode",
-        "Levi's",
-        "J.Crew",
-        "Lee",
-        "牛仔",
-        "复古",
-        "合作系列",
-        "Barrel Racer Jeans",
-        "东京首发",
-        "牛仔竞技",
-        "Emily Bode",
-        "Checkers"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.gq.com/photos/69b4437aac51904e3fc34ceb/master/pass/bode-levis2.jpg",
-      "published": "2026-03-18T05:35:06+00:00",
-      "sources": [
-        {
-          "name": "GQ",
-          "title": "An Exclusive Look at Bode’s Rodeo-Ready Levi’s Collaboration",
-          "link": "https://www.gq.com/story/bode-levis-collaboration-jeans",
-          "lang": "en"
-        },
-        {
-          "name": "GQ",
-          "title": "J.Crew and Lee's First Collab Is the Perfect Mash-Up of Cowboy and Prep",
-          "link": "https://www.gq.com/story/jcrew-lee-collaboration",
-          "lang": "en"
-        },
-        {
-          "name": "WWD",
-          "title": "Bode Creates Barrel Racer Jean for Levi’s",
-          "link": "https://wwd.com/fashion-news/fashion-scoops/bode-barrel-racer-jean-levis-1238679101",
-          "lang": "en"
-        },
-        {
-          "name": "Hypebeast",
-          "title": "Levi's x Bode Selvedge \"Barrel Racer Jean\" Takes Inspiration From '50s Archival Designs",
-          "link": "https://hypebeast.com/2026/3/levis-bode-collaboration-fw26-barrel-racer-jean-release-date-info",
-          "lang": "en"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "リーバイス®×ボーディが初コラボを発表──ロデオに着想を得た「バレルレーサー・ジーンズ」が日本先行発売",
-          "link": "https://www.gqjapan.jp/article/20260317-bode-levis-collaboration-jeans-news",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "「リーバイス」とNY発の「ボーディ」がコラボした限定デニムが発売　サイドスタッズがポイント",
-          "link": "https://www.wwdjapan.com/articles/2356395",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "リーバイス × ボーディ　ロデオ競技のポニーから着想を得た限定デニム2型を発売",
-          "link": "https://www.fashionsnap.com/article/2026-03-18/levi-s-bode-collaboration",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 9
-    },
-    {
-      "id": "bfa9515a36dc",
-      "title": "金价狂飙！轻奢珠宝的生存战",
-      "summary": "金价持续上涨给轻奢珠宝品牌带来巨大挑战。这些品牌一直以高性价比吸引消费者，如今却面临原材料成本上升的困境。与对价格不敏感的高端珠宝客户不同，轻奢珠宝的消费者对价格更为敏感，购买行为已发生改变。品牌们正在积极调整策略，以应对这一市场变化，包括优化设计、寻找替代材料以及调整定价策略等。",
-      "key_points": [
-        "金价上涨冲击轻奢珠宝",
-        "消费者对价格敏感度提升",
-        "品牌调整市场策略应对"
-      ],
-      "tags": [
-        "珠宝",
-        "金价",
-        "轻奢",
-        "市场趋势",
-        "消费者行为"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://assets.vogue.com/photos/69b96e4fdcd8c9b52b26487e/master/pass/03-19-26-JEWELRY-DESIGNERS-vogue-business-story.jpg",
-      "published": "2026-03-18T05:30:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "How Demi-Fine Jewelry Designers Are Handling Spiking Gold Prices",
-          "link": "https://www.vogue.com/article/how-demi-fine-jewelry-designers-are-handling-spiking-gold-prices",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "01d1e89cc891",
-      "title": "奥斯卡余波：简·方达不满芭芭拉追悼",
-      "summary": "2026年奥斯卡颁奖典礼上，芭芭拉·史翠珊追悼了已故演员罗伯特·雷德福。简·方达在《名利场》派对上接受采访时表达了对此的不满，她认为自己与雷德福合作更多，由她来追悼可能更合适。方达同时分享了她对雷德福的深切怀念。此外，报道还简要提及了奥斯卡颁奖典礼上其他名人的追悼环节。",
-      "key_points": [
-        "2026奥斯卡追悼环节",
-        "简·方达质疑追悼人选",
-        "方达怀念罗伯特·雷德福"
-      ],
-      "tags": [
-        "奥斯卡",
-        "名人八卦",
-        "简·方达",
-        "罗伯特·雷德福",
-        "芭芭拉·史翠珊"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vogue.co.jp/photos/69ba293edeb4449cbd32c7e4/master/pass/GettyImages-2266735685.jpg",
-      "published": "2026-03-18T05:30:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue Japan",
-          "title": "【アカデミー賞2026】ジェーン・フォンダ、ロバート・レッドフォードを追悼したバーブラ・ストライサンドに不満",
-          "link": "https://www.vogue.co.jp/article/oscars-2026-jane-fonda-robert-redford-tribute-barbra-streisand",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "ce6e1b6280d5",
-      "title": "Prada星光熠熠，环保再升级",
-      "summary": "Prada 隆重推出2026 Re-Nylon系列，并携手国家地理CreativeWorks，由 Benedict Cumberbatch 和 Letitia Wright 倾情演绎全新广告大片。该系列延续品牌对可持续发展的承诺，聚焦“Sea Beyond”海洋知识项目，旨在提高公众对海洋保护的意识，将环保理念融入时尚前沿。",
-      "key_points": [
-        "Prada 2026 Re-Nylon系列发布",
-        "Benedict Cumberbatch、Letitia Wright代言",
-        "聚焦海洋保护，体现可持续理念"
-      ],
-      "tags": [
-        "Prada",
-        "Re-Nylon",
-        "可持续时尚",
-        "环保",
-        "Benedict Cumberbatch",
-        "Letitia Wright"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/Benedict-Cumberbatch-and-Letitia-Wright-star-in-the-Prada-Re-Nylon-2026-ad-campaign.001.jpeg?w=1000&h=563&crop=1",
-      "published": "2026-03-18T05:01:00+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "EXCLUSIVE: Benedict Cumberbatch, Letitia Wright Feature in Prada Re-Nylon 2026 Campaign",
-          "link": "https://wwd.com/sustainability/environment/benedict-cumberbatch-letitia-wright-prada-renylon-2026-ad-1238680059",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "5ce84b6a036f",
-      "title": "ZIMMERMANN：刚柔并济的女性锋芒",
-      "summary": "ZIMMERMANN于巴黎发布2026秋季成衣系列，以“自成锋芒”为主题，灵感源自1920年代澳大利亚的先锋女性。该系列巧妙融合硬朗的男性化剪裁与柔美的女性化元素，探索女性力量的全新表达方式。实用主义与浪漫主义并存，充分展现品牌对于“无性别边界”和“实用浪漫主义”的独特理解。设计上，ZIMMERMANN大胆解构制服元素，并融入胸衣的贴身设计，同时保留品牌标志性的印花和垂褶细节，打造出兼具力量与优雅的独特风格。",
-      "key_points": [
-        "灵感源自1920年代澳大利亚先锋女性",
-        "融合男性风格与柔美元素",
-        "解构制服，重塑女性力量"
-      ],
-      "tags": [
-        "ZIMMERMANN",
-        "2026秋冬",
-        "女性力量"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://hips.hearstchina.com/hmg-prod/images/5066bd10-10a4-4ab2-b764-d62dc4325287.png?crop=1.00xw:0.706xh;0,0&resize=1200:*",
-      "published": "2026-03-18T05:01:00+00:00",
-      "sources": [
-        {
-          "name": "ELLE China",
-          "title": "以先锋女性之名，织就ZIMMERMANN刚柔共生的时装新篇",
-          "link": "https://www.ellechina.com/fashion/fashionweek/a70775877/zimmermann-2026-fall-winter-collection",
-          "lang": "zh"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "95bc292f67c1",
-      "title": "FURLA之家：意式优雅登陆上海",
-      "summary": "意大利轻奢品牌FURLA在上海北外滩开设全球首家“FURLA CASA”生活方式体验中心，正式进军家居和室内设计领域。该体验中心不仅展示全系列家具产品，更提供定制服务，未来还将开设咖啡馆，旨在通过沉浸式空间体验传递FURLA的品牌理念。设计灵感源自意大利博洛尼亚的经典拱廊，目标客户锁定设计师、酒店等专业人士。品牌CEO表示，这是FURLA发展历程中的重要里程碑，标志着品牌将意大利设计精髓融入家居生活。",
-      "key_points": [
-        "FURLA首家生活方式体验中心落户上海",
-        "品牌从皮具拓展至家居领域",
-        "体验中心提供家具展示、定制服务及咖啡体验"
-      ],
-      "tags": [
-        "FURLA",
-        "家居",
-        "生活方式",
-        "品牌扩张",
-        "上海"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/18112106/top_IMG_8420%E3%81%AE%E3%82%B3%E3%83%92%E3%82%9A%E3%83%BC-scaled.jpeg",
-      "published": "2026-03-18T05:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "上海で世界初の「フルラ カーサ」を満喫【ヒキタミワの水玉上海】",
-          "link": "https://www.wwdjapan.com/articles/2357690",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "0b9041e4e04f",
-      "title": "JOOPITER联名：复刻史前时尚，致敬三角龙“Trey”",
-      "summary": "潮流拍卖平台JOOPITER携手Co-Museum，联袂洛杉矶品牌424和Hoorsenbuhs，推出限量版联名胶囊系列，致敬即将拍卖的6600万年前三角龙化石“Trey”。该系列将史前元素融入现代潮流，包含424的做旧街头服饰、Hoorsenbuhs的纯银钥匙链，以及内含真实化石碎片的限量版三角龙头骨复制品。该系列已于3月17日在线发售，与“Trey”的全球竞标同步开启，为时尚爱好者和古生物收藏家带来独特体验。",
-      "key_points": [
-        "JOOPITER联手Co-Museum、424和Hoorsenbuhs推出联名系列。",
-        "该系列致敬即将拍卖的三角龙化石“Trey”。",
-        "系列包含做旧街头服饰、纯银钥匙链和含化石碎片的头骨复制品。",
-        "已于3月17日在线发售，与全球竞标同步。"
-      ],
-      "tags": [
-        "JOOPITER",
-        "Co-Museum",
-        "424",
-        "Hoorsenbuhs",
-        "联名",
-        "三角龙",
-        "Trey",
-        "化石",
-        "限量版",
-        "街头服饰",
-        "纯银",
-        "拍卖"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F18%2Fjoopiter-co-museum-424-hoorsenbuhs-limited-edition-capsule-commemorating-trey-the-triceratops-release-info-000.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-18T04:51:24+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast Fashion",
-          "title": "JOOPITER and Co-Museum Launch Limited-Edition Capsule Commemorating \"Trey\" the Triceratops",
-          "link": "https://hypebeast.com/2026/3/joopiter-co-museum-424-hoorsenbuhs-limited-edition-capsule-commemorating-trey-the-triceratops-release-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "5bff4f3b8878",
-      "title": "基努·里维斯新片：好莱坞“翻车”大戏？",
-      "summary": "Apple TV+释出黑色喜剧电影《Outcome》预告片，该片由乔纳·希尔执导，基努·里维斯领衔主演。故事围绕好莱坞明星Reef Hawk展开，他因一段可能断送职业生涯的视频而遭遇勒索，被迫直面不堪回首的往事。影片汇集了卡梅隆·迪亚兹、马特·波莫、马丁·斯科塞斯等一众大咖，预计将于2026年4月10日全球首映。这部星光熠熠的电影将如何辛辣讽刺好莱坞乱象，令人期待。",
-      "key_points": [
-        "乔纳·希尔执导黑色喜剧",
-        "基努·里维斯主演",
-        "聚焦好莱坞明星危机"
-      ],
-      "tags": [
-        "Apple TV+",
-        "基努·里维斯",
-        "好莱坞电影"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F18%2Fapple-tv-official-trailer-jonah-hill-keanu-reeves-cameron-diaz-outcome-release-info-000.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-18T04:38:45+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Apple TV+ Unveils the Official Trailer for Jonah Hill's 'Outcome'",
-          "link": "https://hypebeast.com/2026/3/apple-tv-official-trailer-jonah-hill-keanu-reeves-cameron-diaz-outcome-release-info",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "ef20714921f2",
-      "title": "莱卡公司破产：启动债务重组，弹性纤维巨头陨落？",
-      "summary": "全球知名氨纶生产商莱卡公司（The Lycra Company）已在美国申请破产保护，正式启动债务重组，旨在削减约12亿美元的债务。公司已被债权人掌控并多次被收购。公司及包括日本合资伙伴东丽公司在内的各方均表示运营将正常进行，供应链预计不受影响，莱卡公司预计45天内完成破产程序。作为全球领先的弹性纤维供应商，莱卡公司的破产或将对整个服装行业的面料供应和成本结构产生深远影响。行业专家正在密切关注此次事件。",
-      "key_points": [
-        "莱卡公司已在美国申请破产保护，启动债务重组。",
-        "重组计划旨在削减约12亿美元的债务，预计45天内完成。",
-        "莱卡公司和东丽公司均表示运营正常，供应链预计不受影响。",
-        "莱卡公司破产或将对服装行业的面料供应和成本结构产生影响。"
-      ],
-      "tags": [
-        "莱卡",
-        "破产",
-        "债务重组",
-        "氨纶",
-        "弹性纤维",
-        "东丽",
-        "LYCRA"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.fashionnetwork.com/m/3379/da01/6326/037e/b2c3/e036/fe4f/95f2/1352/7bf7/208x208/7bf7.jpg",
-      "published": "2026-03-18T04:15:00+00:00",
-      "sources": [
-        {
-          "name": "Fashion Network",
-          "title": "Spandex maker Lycra files for bankruptcy after years of stress",
-          "link": "https://ww.fashionnetwork.com/news/Spandex-maker-lycra-files-for-bankruptcy-after-years-of-stress,1816379.html",
-          "lang": "en"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "繊維大手ザ・ライクラ・カンパニーが破産申請　12億ドルの負債削減へ",
-          "link": "https://www.fashionsnap.com/article/2026-03-18/lycra-bankruptcy",
-          "lang": "ja"
-        },
-        {
-          "name": "WWD Japan",
-          "title": "米国の名門繊維「ライクラ」が倒産、チャプター11を申請",
-          "link": "https://www.wwdjapan.com/articles/2357960",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 4
     }
   ]
 }
