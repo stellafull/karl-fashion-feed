@@ -4,8 +4,7 @@
 
 ## 代码规范
 
-当你编写任何TypeScript代码时，强制使用
-当你编写任何Python代码时, 强制使用
+当你编写任何Python代码时, 强制使用 Skill python-code-style
 
 
 ## 方案规范
