@@ -11,6 +11,7 @@
 #   lang:         语言代码 (en / ja / zh / fr / ko 等)
 #   category:     默认分类（LLM 可能会重新分类）
 #   enabled:      是否启用（false 则跳过）
+#   requires_js:  是否使用 Playwright 渲染详情页 / 列表页
 #   max_articles: 每次最多抓取文章数（可选，默认 30）
 #
 # Web 字段:
@@ -37,6 +38,7 @@
 #   lang: zh
 #   category: 品牌/市场
 #   max_articles: 20
+#   requires_js: false
 #   start_urls:
 #     - https://example.com/fashion
 #   allowed_domains:
@@ -166,6 +168,7 @@
   lang: en
   category: 潮流街头
   enabled: true
+  requires_js: true
   max_articles: 30
 
 - name: Hypebeast Fashion
@@ -174,6 +177,7 @@
   lang: en
   category: 潮流街头
   enabled: true
+  requires_js: true
   max_articles: 20
 
 # Highsnobiety
@@ -183,6 +187,7 @@
   lang: en
   category: 潮流街头
   enabled: true
+  requires_js: true
   max_articles: 30
 
 # Fashionista

@@ -34,6 +34,12 @@ class ArticleImage(Base):
     # Source identity and dedupe anchor.
     source_url: Mapped[str] = mapped_column(Text, nullable=False, comment="原始图片URL")
     normalized_url: Mapped[str] = mapped_column(Text, nullable=False, index=True, comment="归一化图片URL")
+    image_hash: Mapped[str | None] = mapped_column(
+        String(16),
+        nullable=True,
+        index=True,
+        comment="感知哈希，用于跨文章图片去重和分析复用",
+    )
 
     # Placement inside the source article.
     role: Mapped[str] = mapped_column(String(32), nullable=False, default="inline", comment="图片在文章中的角色")

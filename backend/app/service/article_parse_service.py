@@ -20,6 +20,7 @@ from backend.app.service.news_collection_service import NewsCollectionService
 
 
 FetchText = Callable[[str], Awaitable[str]]
+FetchBytes = Callable[[str], Awaitable[bytes]]
 
 
 @dataclass(frozen=True)
@@ -46,12 +47,14 @@ class ArticleParseService:
         markdown_service: ArticleMarkdownService | None = None,
         parse_batch_size: int = 20,
         fetch_text: FetchText | None = None,
+        fetch_bytes: FetchBytes | None = None,
     ) -> None:
         self._session_factory = session_factory
         self._collector = collector or NewsCollectionService()
         self._markdown_service = markdown_service or ArticleMarkdownService()
         self._parse_batch_size = max(parse_batch_size, 1)
         self._fetch_text_override = fetch_text
+        self._fetch_bytes_override = fetch_bytes
 
     async def parse_articles(
         self,
@@ -64,8 +67,13 @@ class ArticleParseService:
             return ParseResult(candidates=0, parsed=0, failed=0, parsed_article_ids=tuple())
 
         fetch_text = self._fetch_text_override or getattr(self._collector, "_fetch_text_override", None)
-        if fetch_text is not None:
-            outcomes = await self._parse_batches(candidates=candidates, fetch_text=fetch_text)
+        fetch_bytes = self._fetch_bytes_override
+        if fetch_text is not None and fetch_bytes is not None:
+            outcomes = await self._parse_batches(
+                candidates=candidates,
+                fetch_text=fetch_text,
+                fetch_bytes=fetch_bytes,
+            )
         else:
             outcomes = await self._parse_batches_with_http_session(candidates)
 
@@ -107,18 +115,36 @@ class ArticleParseService:
                         response.raise_for_status()
                         return await response.text()
 
-            return await self._parse_batches(candidates=candidates, fetch_text=fetch_text)
+            async def fetch_bytes(url: str) -> bytes:
+                async with semaphore:
+                    async with session.get(url) as response:
+                        response.raise_for_status()
+                        return await response.read()
+
+            return await self._parse_batches(
+                candidates=candidates,
+                fetch_text=fetch_text,
+                fetch_bytes=fetch_bytes,
+            )
 
     async def _parse_batches(
         self,
         *,
         candidates: list[Article],
         fetch_text: FetchText,
+        fetch_bytes: FetchBytes,
     ) -> list[_ParseOutcome]:
         outcomes: list[_ParseOutcome] = []
         for batch in _chunked(candidates, self._parse_batch_size):
             results = await asyncio.gather(
-                *(self._parse_single(article=article, fetch_text=fetch_text) for article in batch)
+                *(
+                    self._parse_single(
+                        article=article,
+                        fetch_text=fetch_text,
+                        fetch_bytes=fetch_bytes,
+                    )
+                    for article in batch
+                )
             )
             outcomes.extend(results)
         return outcomes
@@ -128,13 +154,29 @@ class ArticleParseService:
         *,
         article: Article,
         fetch_text: FetchText,
+        fetch_bytes: FetchBytes,
     ) -> _ParseOutcome:
         try:
-            html_text = await fetch_text(article.canonical_url)
+            html_text = await self._collector.fetch_html(
+                source_name=article.source_name,
+                url=article.canonical_url,
+                fetch_text=fetch_text,
+            )
             parsed = self._collector.parse_article_html(
                 source_name=article.source_name,
                 url=article.canonical_url,
                 html_text=html_text,
+            )
+            parsed = type(parsed)(
+                title=parsed.title,
+                summary=parsed.summary,
+                markdown_blocks=parsed.markdown_blocks,
+                images=await self._collector.attach_image_hashes(
+                    images=parsed.images,
+                    fetch_bytes=fetch_bytes,
+                ),
+                published_at=parsed.published_at,
+                metadata=parsed.metadata,
             )
             return _ParseOutcome(article_id=article.article_id, parsed=parsed)
         except Exception as exc:
@@ -215,6 +257,7 @@ class ArticleParseService:
 
                             existing_image.source_url = image.source_url
                             existing_image.normalized_url = image.normalized_url
+                            existing_image.image_hash = _metadata_string(image.metadata, "image_hash")
                             existing_image.role = image.role
                             existing_image.position = index
                             existing_image.alt_text = image.alt_text
@@ -227,6 +270,7 @@ class ArticleParseService:
                                 **dict(existing_image.analysis_metadata_json or {}),
                                 **dict(image.metadata),
                             }
+                            _reuse_duplicate_image(existing_image=existing_image, session=session)
                             image_ids_by_index[index] = existing_image.image_id
 
                         obsolete_image_ids = [
@@ -241,6 +285,10 @@ class ArticleParseService:
 
                         stored.title_raw = parsed.title
                         stored.summary_raw = parsed.summary
+                        stored.character_count = _compute_character_count(
+                            title=parsed.title,
+                            blocks=parsed.markdown_blocks,
+                        )
                         stored.published_at = parsed.published_at or stored.published_at
                         stored.markdown_rel_path = relative_path
                         stored.hero_image_id = _select_hero_image_id(parsed.images, image_ids_by_index)
@@ -309,3 +357,58 @@ def _format_error(error: Exception | None) -> str:
     if error is None:
         return "RuntimeError: missing parse result"
     return f"{error.__class__.__name__}: {error}"
+
+
+def _compute_character_count(*, title: str, blocks) -> int:
+    parts = [title.strip(), *(block.text.strip() for block in blocks if block.text.strip())]
+    return len("\n".join(part for part in parts if part))
+
+
+def _metadata_string(metadata: dict, key: str) -> str | None:
+    value = metadata.get(key)
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
+
+
+def _reuse_duplicate_image(*, existing_image: ArticleImage, session: Session) -> None:
+    if not existing_image.image_hash:
+        return
+
+    duplicate = session.execute(
+        select(ArticleImage)
+        .where(ArticleImage.image_hash == existing_image.image_hash)
+        .where(ArticleImage.image_id != existing_image.image_id)
+        .order_by(ArticleImage.image_id.asc())
+        .limit(1)
+    ).scalar_one_or_none()
+    if duplicate is None:
+        return
+
+    if (existing_image.fetch_status or "discovered") == "discovered" and duplicate.fetch_status != "discovered":
+        existing_image.fetch_status = duplicate.fetch_status
+    if existing_image.last_fetched_at is None and duplicate.last_fetched_at is not None:
+        existing_image.last_fetched_at = duplicate.last_fetched_at
+    if not existing_image.mime_type and duplicate.mime_type:
+        existing_image.mime_type = duplicate.mime_type
+    if existing_image.width is None and duplicate.width is not None:
+        existing_image.width = duplicate.width
+    if existing_image.height is None and duplicate.height is not None:
+        existing_image.height = duplicate.height
+    if (existing_image.visual_status or "pending") == "pending" and duplicate.visual_status != "pending":
+        existing_image.visual_status = duplicate.visual_status
+    if not existing_image.observed_description and duplicate.observed_description:
+        existing_image.observed_description = duplicate.observed_description
+    if not existing_image.ocr_text and duplicate.ocr_text:
+        existing_image.ocr_text = duplicate.ocr_text
+    if not existing_image.visible_entities_json and duplicate.visible_entities_json:
+        existing_image.visible_entities_json = list(duplicate.visible_entities_json)
+    if not existing_image.style_signals_json and duplicate.style_signals_json:
+        existing_image.style_signals_json = list(duplicate.style_signals_json)
+    if not existing_image.contextual_interpretation and duplicate.contextual_interpretation:
+        existing_image.contextual_interpretation = duplicate.contextual_interpretation
+    existing_image.analysis_metadata_json = {
+        **dict(duplicate.analysis_metadata_json or {}),
+        **dict(existing_image.analysis_metadata_json or {}),
+    }

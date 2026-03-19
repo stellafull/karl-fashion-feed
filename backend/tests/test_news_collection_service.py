@@ -165,6 +165,62 @@ class NewsCollectionServiceTest(unittest.TestCase):
         self.assertEqual(article.title, "Street Style Story")
         self.assertEqual(article.summary, "Lead paragraph before image.")
 
+    def test_collect_web_articles_uses_js_renderer_when_required(self) -> None:
+        web_source = SourceConfig(
+            name="Hypebeast",
+            type="web",
+            lang="en",
+            category="潮流街头",
+            requires_js=True,
+            max_articles=5,
+            start_urls=("https://example.com/style",),
+            allowed_domains=("example.com",),
+            discovery=DiscoveryConfig(
+                link_selectors=("a.story-link",),
+                article_url_patterns=(r"/style/story-\d$",),
+            ),
+            detail=DetailConfig(
+                title_selectors=("h1",),
+                content_selectors=("article",),
+            ),
+        )
+
+        rendered_pages = {
+            "https://example.com/style": """
+                <html><body>
+                  <a class="story-link" href="/style/story-1">Story</a>
+                </body></html>
+            """,
+            "https://example.com/style/story-1": """
+                <html><body>
+                  <h1>Rendered Story</h1>
+                  <article><p>Rendered body.</p></article>
+                </body></html>
+            """,
+        }
+        rendered_urls: list[str] = []
+
+        async def fetch_text(_: str) -> str:
+            raise AssertionError("plain fetch should not be used for JS sources")
+
+        async def render_html(url: str) -> str:
+            rendered_urls.append(url)
+            return rendered_pages[url]
+
+        service = NewsCollectionService(
+            source_configs=[web_source],
+            fetch_text=fetch_text,
+            render_html=render_html,
+        )
+        articles = asyncio.run(service.collect_articles())
+
+        self.assertEqual(len(articles), 1)
+        self.assertEqual(articles[0].title, "Rendered Story")
+        self.assertEqual(
+            rendered_urls,
+            ["https://example.com/style", "https://example.com/style/story-1"],
+        )
+
     def test_parse_article_html_returns_text_blocks_and_images(self) -> None:
         source = SourceConfig(
             name="Vogue",
@@ -212,6 +268,61 @@ class NewsCollectionServiceTest(unittest.TestCase):
         self.assertEqual(tuple(block.kind for block in parsed.markdown_blocks), ("paragraph", "paragraph"))
         self.assertEqual(inline_image.caption_raw, "Figure caption should stay on image rows.")
         self.assertIn("Second paragraph", inline_image.context_snippet)
+
+    def test_parse_article_html_extracts_picture_lazy_and_background_images(self) -> None:
+        source = SourceConfig(
+            name="Highsnobiety",
+            type="rss",
+            lang="en",
+            category="潮流街头",
+            max_articles=5,
+            feed_url="https://example.com/feed.xml",
+            detail=DetailConfig(
+                title_selectors=("h1",),
+                content_selectors=("article",),
+                image_selectors=("meta[property='og:image']",),
+            ),
+        )
+        html = """
+            <html>
+              <head>
+                <meta property="og:image" content="https://example.com/hero.jpg" />
+              </head>
+              <body>
+                <h1>Picture Story</h1>
+                <article>
+                  <p>Lead paragraph.</p>
+                  <figure>
+                    <picture>
+                      <source srcset="https://example.com/look-small.jpg 480w, https://example.com/look-large.jpg 1600w" />
+                      <img data-src="https://example.com/look-fallback.jpg" alt="Look image" />
+                    </picture>
+                    <figcaption>Look caption</figcaption>
+                  </figure>
+                  <div class="backdrop" style="background-image: url('https://example.com/bg.jpg')"></div>
+                </article>
+              </body>
+            </html>
+        """
+
+        service = NewsCollectionService(source_configs=[source])
+        parsed = service.parse_article_html(
+            source_name="Highsnobiety",
+            url="https://example.com/story",
+            html_text=html,
+        )
+
+        urls = {image.source_url for image in parsed.images}
+        self.assertEqual(
+            urls,
+            {
+                "https://example.com/hero.jpg",
+                "https://example.com/look-large.jpg",
+                "https://example.com/bg.jpg",
+            },
+        )
+        picture_image = next(image for image in parsed.images if image.source_url == "https://example.com/look-large.jpg")
+        self.assertEqual(picture_image.caption_raw, "Look caption")
 
 
 if __name__ == "__main__":

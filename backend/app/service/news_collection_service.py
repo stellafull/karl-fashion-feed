@@ -8,12 +8,21 @@ import re
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from html import unescape
+from io import BytesIO
 from typing import Any, Awaitable, Callable, Iterable
 from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
 
 import aiohttp
 import feedparser
+import numpy as np
+import trafilatura
 from bs4 import BeautifulSoup, NavigableString, Tag
+from PIL import Image
+
+try:
+    from readability import Document as ReadabilityDocument
+except ImportError:  # pragma: no cover - dependency enforced at runtime
+    ReadabilityDocument = None
 
 from backend.app.config.source_config import (
     DetailConfig,
@@ -48,6 +57,7 @@ SKIP_TAGS = {"script", "style", "noscript", "iframe", "svg"}
 TEXT_BLOCK_KINDS = {"heading", "paragraph", "list_item", "blockquote"}
 
 FetchText = Callable[[str], Awaitable[str]]
+FetchBytes = Callable[[str], Awaitable[bytes]]
 
 
 class NewsCollectionService:
@@ -60,6 +70,7 @@ class NewsCollectionService:
         source_concurrency: int = 4,
         global_http_concurrency: int = 16,
         continue_on_source_error: bool = True,
+        render_html: FetchText | None = None,
     ) -> None:
         self._source_configs = source_configs
         self._fetch_text_override = fetch_text
@@ -67,6 +78,7 @@ class NewsCollectionService:
         self._source_concurrency = max(source_concurrency, 1)
         self._global_http_concurrency = max(global_http_concurrency, 1)
         self._continue_on_source_error = continue_on_source_error
+        self._render_html_override = render_html
 
     async def collect_articles(
         self,
@@ -192,6 +204,41 @@ class NewsCollectionService:
                 "block_count": len(blocks),
             },
         )
+
+    async def fetch_html(
+        self,
+        *,
+        source_name: str,
+        url: str,
+        fetch_text: FetchText,
+    ) -> str:
+        source = self.source_config_for_name(source_name)
+        return await self._fetch_source_html(
+            source=source,
+            url=url,
+            fetch_text=fetch_text,
+        )
+
+    async def attach_image_hashes(
+        self,
+        *,
+        images: tuple[CollectedImage, ...],
+        fetch_bytes: FetchBytes,
+    ) -> tuple[CollectedImage, ...]:
+        if not images:
+            return images
+
+        cache: dict[str, str] = {}
+        enriched: list[CollectedImage] = []
+        for image in images:
+            enriched.append(
+                await self._attach_single_image_hash(
+                    image=image,
+                    fetch_bytes=fetch_bytes,
+                    cache=cache,
+                )
+            )
+        return tuple(enriched)
 
     async def _collect_source_results_with_fetch(
         self,
@@ -324,7 +371,11 @@ class NewsCollectionService:
 
             async with detail_semaphore:
                 try:
-                    detail_html = await fetch_text(link)
+                    detail_html = await self._fetch_source_html(
+                        source=source,
+                        url=link,
+                        fetch_text=fetch_text,
+                    )
                 except Exception:
                     return None
 
@@ -387,7 +438,11 @@ class NewsCollectionService:
         async def build_article(url: str) -> CollectedArticle | None:
             async with detail_semaphore:
                 try:
-                    html_text = await fetch_text(url)
+                    html_text = await self._fetch_source_html(
+                        source=source,
+                        url=url,
+                        fetch_text=fetch_text,
+                    )
                 except Exception:
                     return None
 
@@ -444,7 +499,11 @@ class NewsCollectionService:
                 break
             page_url = pending_pages[page_index]
             try:
-                html_text = await fetch_text(page_url)
+                html_text = await self._fetch_source_html(
+                    source=source,
+                    url=page_url,
+                    fetch_text=fetch_text,
+                )
             except Exception:
                 continue
 
@@ -482,6 +541,53 @@ class NewsCollectionService:
                         pending_pages.append(next_page)
 
         return discovered
+
+    async def _fetch_source_html(
+        self,
+        *,
+        source: SourceConfig,
+        url: str,
+        fetch_text: FetchText,
+    ) -> str:
+        if not source.requires_js:
+            return await fetch_text(url)
+        return await self._render_html(url)
+
+    async def _render_html(self, url: str) -> str:
+        if self._render_html_override is not None:
+            return await self._render_html_override(url)
+
+        try:
+            from playwright.async_api import async_playwright
+        except ImportError as exc:  # pragma: no cover - depends on local env
+            raise RuntimeError(
+                "playwright is required for sources with requires_js=true"
+            ) from exc
+
+        async with async_playwright() as playwright:
+            browser = await playwright.chromium.launch(headless=True)
+            try:
+                page = await browser.new_page()
+                await page.goto(url, wait_until="networkidle")
+                return await page.content()
+            finally:
+                await browser.close()
+
+    async def _attach_single_image_hash(
+        self,
+        *,
+        image: CollectedImage,
+        fetch_bytes: FetchBytes,
+        cache: dict[str, str],
+    ) -> CollectedImage:
+        image_hash = cache.get(image.normalized_url)
+        if image_hash is None:
+            payload = await fetch_bytes(image.source_url)
+            image_hash = _compute_perceptual_hash(payload)
+            cache[image.normalized_url] = image_hash
+
+        image.metadata["image_hash"] = image_hash
+        return image
 
     def _extract_seed_detail(
         self,
@@ -549,21 +655,23 @@ class NewsCollectionService:
             )
             title = _extract_node_text(title_node)
 
-        content_nodes = []
-        matched_selector = ""
-        for selector in detail_config.content_selectors:
-            nodes = [node for node in soup.select(selector) if _node_has_content(node)]
-            if nodes:
-                content_nodes = nodes
-                matched_selector = selector
-                break
-        if not content_nodes and soup.body is not None:
-            content_nodes = [soup.body]
+        content_scope = _resolve_content_scope(
+            soup=soup,
+            selectors=detail_config.content_selectors,
+        )
+        content_nodes = content_scope["nodes"]
+        scope_html = content_scope["html"]
 
-        blocks, images, image_anchor_positions = _build_blocks_and_images(
+        blocks = _extract_main_text_blocks(
+            html_text=scope_html,
+            base_url=url,
+            title=title,
+            fallback_html=html_text,
+        )
+        dom_blocks, images, image_anchor_positions = _build_blocks_and_images(
             nodes=content_nodes,
             base_url=url,
-            source_selector=matched_selector or "body",
+            source_selector=content_scope["selector"],
             normalize_url=self.normalize_url,
         )
 
@@ -582,7 +690,7 @@ class NewsCollectionService:
         )
         images = _merge_meta_images(hero_images, images)
         images = _with_context_snippets(
-            blocks=blocks,
+            blocks=dom_blocks,
             images=images,
             image_anchor_positions=image_anchor_positions,
         )
@@ -642,6 +750,151 @@ def _build_blocks_and_images(
         )
 
     return _normalize_blocks(blocks), images, image_anchor_positions
+
+
+def _resolve_content_scope(
+    *,
+    soup: BeautifulSoup,
+    selectors: Iterable[str],
+) -> dict[str, Any]:
+    for selector in selectors:
+        nodes = [node for node in soup.select(selector) if _node_has_content(node)]
+        if nodes:
+            return {
+                "nodes": nodes,
+                "selector": selector,
+                "html": "\n".join(str(node) for node in nodes),
+            }
+
+    if soup.body is not None:
+        return {
+            "nodes": [soup.body],
+            "selector": "body",
+            "html": str(soup.body),
+        }
+
+    return {
+        "nodes": [],
+        "selector": "document",
+        "html": str(soup),
+    }
+
+
+def _extract_main_text_blocks(
+    *,
+    html_text: str,
+    base_url: str,
+    title: str,
+    fallback_html: str,
+) -> list[MarkdownBlock]:
+    blocks = _extract_blocks_with_trafilatura(html_text=html_text, base_url=base_url, title=title)
+    if blocks:
+        return blocks
+
+    blocks = _extract_blocks_with_readability(html_text=html_text, base_url=base_url)
+    if blocks:
+        return blocks
+
+    if html_text != fallback_html:
+        blocks = _extract_blocks_with_trafilatura(
+            html_text=fallback_html,
+            base_url=base_url,
+            title=title,
+        )
+        if blocks:
+            return blocks
+        blocks = _extract_blocks_with_readability(html_text=fallback_html, base_url=base_url)
+        if blocks:
+            return blocks
+
+    fallback_text = _clean_text(BeautifulSoup(html_text, "html.parser").get_text("\n", strip=True))
+    if fallback_text:
+        return _text_to_blocks(fallback_text, title=title)
+    return []
+
+
+def _extract_blocks_with_trafilatura(
+    *,
+    html_text: str,
+    base_url: str,
+    title: str,
+) -> list[MarkdownBlock]:
+    extracted = trafilatura.extract(
+        html_text,
+        url=base_url,
+        include_comments=False,
+        include_tables=False,
+        favor_precision=True,
+        no_fallback=False,
+        output_format="txt",
+    )
+    if not extracted:
+        return []
+    return _text_to_blocks(extracted, title=title)
+
+
+def _extract_blocks_with_readability(
+    *,
+    html_text: str,
+    base_url: str,
+) -> list[MarkdownBlock]:
+    if ReadabilityDocument is None:
+        raise RuntimeError("readability-lxml is required for fallback content extraction")
+
+    document = ReadabilityDocument(html_text, url=base_url)
+    summary_html = document.summary(html_partial=True)
+    summary_soup = BeautifulSoup(summary_html, "html.parser")
+    blocks, _, _ = _build_blocks_and_images(
+        nodes=summary_soup.children,
+        base_url=base_url,
+        source_selector="readability",
+        normalize_url=lambda value: NewsCollectionService.normalize_url(value),
+    )
+    return blocks
+
+
+def _text_to_blocks(text: str, *, title: str) -> list[MarkdownBlock]:
+    normalized = text.replace("\r", "\n")
+    parts = [part.strip() for part in re.split(r"\n\s*\n", normalized) if part.strip()]
+    if len(parts) <= 1:
+        line_parts = [_clean_text(line) for line in normalized.splitlines() if _clean_text(line)]
+        if len(line_parts) > len(parts):
+            parts = line_parts
+    blocks: list[MarkdownBlock] = []
+    for index, part in enumerate(parts):
+        clean_part = _clean_text(part)
+        if not clean_part:
+            continue
+        kind = "heading" if index == 0 and title and clean_part == title.strip() else "paragraph"
+        blocks.append(MarkdownBlock(kind=kind, text=clean_part))
+    return _normalize_blocks(blocks)
+
+
+def _extract_scope_images(
+    *,
+    nodes: Iterable[Tag],
+    base_url: str,
+    source_selector: str,
+    normalize_url: Callable[[str], str],
+) -> tuple[list[CollectedImage], dict[int, int]]:
+    blocks: list[MarkdownBlock] = []
+    images: list[CollectedImage] = []
+    image_index_by_url: dict[str, int] = {}
+    image_anchor_positions: dict[int, int] = {}
+
+    for node in nodes:
+        _consume_image_nodes(
+            node=node,
+            blocks=blocks,
+            images=images,
+            image_index_by_url=image_index_by_url,
+            image_anchor_positions=image_anchor_positions,
+            base_url=base_url,
+            source_selector=source_selector,
+            normalize_url=normalize_url,
+        )
+
+    return images, image_anchor_positions
 
 
 def _consume_node(
@@ -717,7 +970,7 @@ def _consume_node(
             normalize_url=normalize_url,
         )
         return
-    if node.name == "img":
+    if node.name in {"img", "picture"} or _background_image_url(node):
         _append_image_block(
             image_tag=node,
             role="inline",
@@ -738,7 +991,9 @@ def _consume_node(
         for child in node.find_all(recursive=False)
         if isinstance(child, Tag)
     }
-    if child_block_tags.intersection({"p", "img", "figure", "ul", "ol", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6"}):
+    if child_block_tags.intersection(
+        {"p", "img", "picture", "figure", "ul", "ol", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6"}
+    ):
         for child in node.children:
             _consume_node(
                 node=child,
@@ -785,7 +1040,7 @@ def _consume_mixed_container(
             continue
         if not isinstance(child, Tag):
             continue
-        if child.name == "img":
+        if child.name in {"img", "picture"} or _background_image_url(child):
             flush_text()
             _append_image_block(
                 image_tag=child,
@@ -833,10 +1088,11 @@ def _consume_figure(
     normalize_url: Callable[[str], str],
 ) -> None:
     caption = _clean_text(node.find("figcaption").get_text(" ", strip=True)) if node.find("figcaption") else ""
-    for image_tag in node.find_all("img"):
+    media_tags = _collect_media_tags(node)
+    for image_tag in media_tags:
         _append_image_block(
             image_tag=image_tag,
-            role="gallery" if len(node.find_all("img")) > 1 else "inline",
+            role="gallery" if len(media_tags) > 1 else "inline",
             caption_raw=caption,
             images=images,
             image_index_by_url=image_index_by_url,
@@ -844,6 +1100,61 @@ def _consume_figure(
             anchor_index=len(blocks),
             base_url=base_url,
             source_kind="figure",
+            source_selector=source_selector,
+            normalize_url=normalize_url,
+        )
+
+
+def _consume_image_nodes(
+    *,
+    node: Tag | NavigableString,
+    blocks: list[MarkdownBlock],
+    images: list[CollectedImage],
+    image_index_by_url: dict[str, int],
+    image_anchor_positions: dict[int, int],
+    base_url: str,
+    source_selector: str,
+    normalize_url: Callable[[str], str],
+) -> None:
+    if isinstance(node, NavigableString) or not isinstance(node, Tag):
+        return
+    if node.name in SKIP_TAGS:
+        return
+    if node.name == "figure":
+        _consume_figure(
+            node=node,
+            blocks=blocks,
+            images=images,
+            image_index_by_url=image_index_by_url,
+            image_anchor_positions=image_anchor_positions,
+            base_url=base_url,
+            source_selector=source_selector,
+            normalize_url=normalize_url,
+        )
+        return
+    if node.name in {"img", "picture"} or _background_image_url(node):
+        _append_image_block(
+            image_tag=node,
+            role="inline",
+            caption_raw="",
+            images=images,
+            image_index_by_url=image_index_by_url,
+            image_anchor_positions=image_anchor_positions,
+            anchor_index=len(blocks),
+            base_url=base_url,
+            source_kind="inline",
+            source_selector=source_selector,
+            normalize_url=normalize_url,
+        )
+        return
+    for child in node.children:
+        _consume_image_nodes(
+            node=child,
+            blocks=blocks,
+            images=images,
+            image_index_by_url=image_index_by_url,
+            image_anchor_positions=image_anchor_positions,
+            base_url=base_url,
             source_selector=source_selector,
             normalize_url=normalize_url,
         )
@@ -893,12 +1204,7 @@ def _image_from_tag(
     source_selector: str,
     normalize_url: Callable[[str], str],
 ) -> CollectedImage | None:
-    raw_url = (
-        image_tag.get("src")
-        or image_tag.get("data-src")
-        or image_tag.get("data-original")
-        or _first_srcset_url(image_tag.get("srcset", ""))
-    )
+    raw_url = _resolve_image_url(image_tag)
     if not raw_url:
         return None
     source_url = urljoin(base_url, raw_url)
@@ -907,8 +1213,9 @@ def _image_from_tag(
         source_url=source_url,
         normalized_url=normalized_url,
         role=role,
-        alt_text=_clean_text(image_tag.get("alt", "")),
+        alt_text=_extract_image_alt_text(image_tag),
         caption_raw=caption_raw,
+        credit_raw=_extract_credit_text(image_tag),
         source_kind=source_kind,
         source_selector=source_selector,
     )
@@ -971,15 +1278,8 @@ def _extract_selector_image_candidates(
         for node in soup.select(selector):
             if node.name == "meta":
                 raw_url = node.get("content", "").strip()
-            elif node.name == "img":
-                raw_url = (
-                    node.get("src")
-                    or node.get("data-src")
-                    or node.get("data-original")
-                    or _first_srcset_url(node.get("srcset", ""))
-                )
             else:
-                raw_url = ""
+                raw_url = _resolve_image_url(node)
 
             if not raw_url:
                 continue
@@ -993,7 +1293,9 @@ def _extract_selector_image_candidates(
                     source_url=source_url,
                     normalized_url=normalized_url,
                     role="hero",
-                    alt_text=_clean_text(node.get("alt", "")) if node.name == "img" else "",
+                    alt_text=_extract_image_alt_text(node),
+                    caption_raw=_extract_caption_text(node),
+                    credit_raw=_extract_credit_text(node),
                     source_kind="meta" if node.name == "meta" else "selector",
                     source_selector=selector,
                 )
@@ -1138,6 +1440,89 @@ def _plain_text_from_blocks(blocks: Iterable[MarkdownBlock]) -> str:
     ).strip()
 
 
+def _collect_media_tags(node: Tag) -> list[Tag]:
+    tags: list[Tag] = []
+    for candidate in node.find_all(["picture", "img"], recursive=True):
+        if candidate.name == "img" and candidate.find_parent("picture") is not None:
+            continue
+        tags.append(candidate)
+    if _background_image_url(node):
+        tags.append(node)
+    return tags
+
+
+def _resolve_image_url(node: Tag) -> str:
+    if node.name == "meta":
+        return node.get("content", "").strip()
+
+    if node.name == "picture":
+        for source in node.find_all("source", recursive=False):
+            image_url = _resolve_image_url(source)
+            if image_url:
+                return image_url
+        picture_img = node.find("img")
+        if picture_img is not None:
+            image_url = _resolve_image_url(picture_img)
+            if image_url:
+                return image_url
+
+    candidates = (
+        node.get("src"),
+        node.get("data-src"),
+        node.get("data-original"),
+        node.get("data-lazy-src"),
+        node.get("data-lazy"),
+        node.get("data-url"),
+        node.get("data-image"),
+        node.get("data-fallback-src"),
+        _best_srcset_url(node.get("data-srcset", "")),
+        _best_srcset_url(node.get("srcset", "")),
+        _background_image_url(node),
+    )
+    for candidate in candidates:
+        if candidate and str(candidate).strip():
+            return str(candidate).strip()
+    return ""
+
+
+def _extract_image_alt_text(node: Tag) -> str:
+    if node.name == "picture":
+        image_tag = node.find("img")
+        if image_tag is not None:
+            return _clean_text(image_tag.get("alt", ""))
+    return _clean_text(node.get("alt", ""))
+
+
+def _extract_caption_text(node: Tag) -> str:
+    figure = node if node.name == "figure" else node.find_parent("figure")
+    if figure is None:
+        return ""
+    caption = figure.find("figcaption")
+    if caption is None:
+        return ""
+    return _clean_text(caption.get_text(" ", strip=True))
+
+
+def _extract_credit_text(node: Tag) -> str:
+    figure = node if node.name == "figure" else node.find_parent("figure")
+    if figure is None:
+        return ""
+    credit_node = figure.select_one("[class*='credit'], [rel='author'], .byline, .copyright")
+    if credit_node is None:
+        return ""
+    return _clean_text(credit_node.get_text(" ", strip=True))
+
+
+def _background_image_url(node: Tag) -> str:
+    style = str(node.get("style", "")).strip()
+    if not style:
+        return ""
+    match = re.search(r"background-image\s*:\s*url\((['\"]?)(.*?)\1\)", style, flags=re.IGNORECASE)
+    if match is None:
+        return ""
+    return match.group(2).strip()
+
+
 def _extract_text_by_selectors(soup: BeautifulSoup, selectors: Iterable[str]) -> str:
     for selector in selectors:
         node = soup.select_one(selector)
@@ -1264,11 +1649,53 @@ def _passes_published_window(
     return published_at >= published_after
 
 
-def _first_srcset_url(srcset: str) -> str:
+def _best_srcset_url(srcset: str) -> str:
     if not srcset.strip():
         return ""
-    first = srcset.split(",")[0].strip()
-    return first.split(" ")[0].strip()
+
+    best_url = ""
+    best_score = -1.0
+    for part in srcset.split(","):
+        candidate = part.strip()
+        if not candidate:
+            continue
+        pieces = candidate.split()
+        url = pieces[0].strip()
+        descriptor = pieces[1].strip().lower() if len(pieces) > 1 else ""
+        if descriptor.endswith("w"):
+            score = float(descriptor[:-1] or 0)
+        elif descriptor.endswith("x"):
+            score = float(descriptor[:-1] or 0) * 1000.0
+        else:
+            score = 0.0
+        if score >= best_score:
+            best_url = url
+            best_score = score
+    return best_url
+
+
+def _compute_perceptual_hash(payload: bytes) -> str:
+    with Image.open(BytesIO(payload)) as image:
+        grayscale = image.convert("L").resize((32, 32))
+        matrix = np.asarray(grayscale, dtype=float)
+
+    dct_matrix = _dct_transform_matrix(32)
+    coefficients = dct_matrix @ matrix @ dct_matrix.T
+    low_frequency = coefficients[:8, :8]
+    median = float(np.median(low_frequency[1:, :]))
+    bits = "".join("1" if value > median else "0" for value in low_frequency.flatten())
+    return f"{int(bits, 2):016x}"
+
+
+def _dct_transform_matrix(size: int) -> np.ndarray:
+    indices = np.arange(size, dtype=float)
+    matrix = np.empty((size, size), dtype=float)
+    matrix[0, :] = 1.0 / np.sqrt(size)
+    for row in range(1, size):
+        matrix[row, :] = np.sqrt(2.0 / size) * np.cos(
+            ((2.0 * indices + 1.0) * row * np.pi) / (2.0 * size)
+        )
+    return matrix
 
 
 def _role_priority(role: str) -> int:

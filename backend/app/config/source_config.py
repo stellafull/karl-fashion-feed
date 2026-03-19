@@ -61,6 +61,7 @@ class SourceConfig:
     lang: str
     category: str
     enabled: bool = True
+    requires_js: bool = False
     max_articles: int = 30
     feed_url: str | None = None
     start_urls: tuple[str, ...] = ()
@@ -99,6 +100,7 @@ def _parse_source_config(item: Any) -> SourceConfig:
     lang = _required_str(item, "lang")
     category = _required_str(item, "category")
     enabled = bool(item.get("enabled", True))
+    requires_js = bool(item.get("requires_js", False))
     max_articles = int(item.get("max_articles", 30))
     detail_concurrency = int(item.get("detail_concurrency", 4))
 
@@ -110,6 +112,7 @@ def _parse_source_config(item: Any) -> SourceConfig:
             lang=lang,
             category=category,
             enabled=enabled,
+            requires_js=requires_js,
             max_articles=max_articles,
             feed_url=feed_url,
             detail=_parse_detail_config(item.get("detail") or {}),
@@ -129,6 +132,7 @@ def _parse_source_config(item: Any) -> SourceConfig:
         lang=lang,
         category=category,
         enabled=enabled,
+        requires_js=requires_js,
         max_articles=max_articles,
         start_urls=start_urls,
         allowed_domains=allowed_domains,

@@ -12,7 +12,7 @@ ARTICLE_ENRICHMENT_PROMPT = """
 - 提取 `tags`、`brands`、`category_candidates`
 - 严禁编造正文里不存在的信息
 - 保留事实，不要写营销口吻
-- `category_candidates` 优先使用贴近时尚媒体阅读习惯的中文分类
+- `category_candidates` 包含 秀场/系列、街拍/造型、时尚趋势、品牌/市场
 
 判定口径：
 - 这是给中国区同事看的内部监测与阅读 feed，不是面向大众首页的严格精选栏目。

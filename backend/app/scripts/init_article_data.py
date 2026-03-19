@@ -78,7 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main() -> int:
+async def main() -> int:
     args = build_parser().parse_args()
     cutoff = datetime.now(UTC).replace(tzinfo=None) - timedelta(days=args.days_back)
 
@@ -102,13 +102,11 @@ def main() -> int:
     )
 
     try:
-        source_results = asyncio.run(
-            collector.collect_source_results(
-                published_after=cutoff,
-                max_articles_per_source=args.max_articles_per_source,
-                max_pages_per_source=args.max_pages_per_source,
-                include_undated=args.include_undated,
-            )
+        source_results = await collector.collect_source_results(
+            published_after=cutoff,
+            max_articles_per_source=args.max_articles_per_source,
+            max_pages_per_source=args.max_pages_per_source,
+            include_undated=args.include_undated,
         )
     except Exception as exc:  # pragma: no cover - runtime guard
         print(f"collection failed: {exc.__class__.__name__}: {exc}", file=sys.stderr)
@@ -145,7 +143,7 @@ def main() -> int:
         aggregate["skipped_existing"] += collection_result.skipped_existing
         aggregate["skipped_in_batch"] += collection_result.skipped_in_batch
 
-    parse_result = asyncio.run(ArticleParseService(collector=collector).parse_articles())
+    parse_result = await ArticleParseService(collector=collector).parse_articles()
 
     _print_summary(args, cutoff, all_articles, aggregate, source_counter, failed_sources)
     print(
@@ -223,4 +221,4 @@ def _print_collection_results(results: list[SourceCollectionResult]) -> None:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(asyncio.run(main()))

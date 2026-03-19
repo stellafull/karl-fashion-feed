@@ -17,6 +17,7 @@ build/
 # IDE and editor files
 .vscode/
 .codex/
+.claude/
 .idea/
 *.swp
 *.swo
@@ -46,8 +47,7 @@ pids
 *.seed
 *.pid.lock
 backend/.runtime/
-data/articles/
-
+data/
 # Coverage directory used by tools like istanbul
 coverage/
 *.lcov

@@ -61,6 +61,11 @@ class Article(Base):
         default="",
         comment="原始摘要/预览",
     )
+    character_count: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+        comment="标题加正文纯文本字符数，用于chunking策略评估",
+    )
     markdown_rel_path: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
@@ -188,6 +193,7 @@ class ArticleImage(Base):
     )
     source_url: Mapped[str] = mapped_column(Text, nullable=False)
     normalized_url: Mapped[str] = mapped_column(Text, nullable=False, index=True)
+    image_hash: Mapped[str | None] = mapped_column(String(16), nullable=True, index=True)
     role: Mapped[str] = mapped_column(String(32), nullable=False, default="inline")
     position: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     alt_text: Mapped[str] = mapped_column(Text, nullable=False, default="")
@@ -225,6 +231,8 @@ def ensure_article_storage_schema(bind: Engine) -> None:
     missing_statements = []
     if "markdown_rel_path" not in existing_columns:
         missing_statements.append("ALTER TABLE article ADD COLUMN markdown_rel_path TEXT")
+    if "character_count" not in existing_columns:
+        missing_statements.append("ALTER TABLE article ADD COLUMN character_count INTEGER")
     if "hero_image_id" not in existing_columns:
         missing_statements.append("ALTER TABLE article ADD COLUMN hero_image_id VARCHAR(36)")
     if "should_publish" not in existing_columns:
@@ -261,6 +269,10 @@ def ensure_article_storage_schema(bind: Engine) -> None:
         missing_statements.append(
             "ALTER TABLE article ADD COLUMN parse_attempts INTEGER DEFAULT 0 NOT NULL"
         )
+    if "article_image" in inspector.get_table_names():
+        image_columns = {column["name"] for column in inspector.get_columns("article_image")}
+        if "image_hash" not in image_columns:
+            missing_statements.append("ALTER TABLE article_image ADD COLUMN image_hash VARCHAR(16)")
 
     _apply_schema_statements(bind, missing_statements)
 

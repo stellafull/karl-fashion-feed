@@ -16,8 +16,10 @@ class StorageSchemaTest(unittest.TestCase):
         inspector = inspect(engine)
         article_columns = {column["name"] for column in inspector.get_columns("article")}
         self.assertTrue(
-            {"parse_status", "parsed_at", "parse_error", "parse_attempts"}.issubset(article_columns)
+            {"character_count", "parse_status", "parsed_at", "parse_error", "parse_attempts"}.issubset(article_columns)
         )
+        article_image_columns = {column["name"] for column in inspector.get_columns("article_image")}
+        self.assertIn("image_hash", article_image_columns)
         story_columns = {column["name"] for column in inspector.get_columns("story")}
         self.assertTrue(
             {
