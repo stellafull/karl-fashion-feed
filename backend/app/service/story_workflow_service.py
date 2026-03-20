@@ -142,43 +142,28 @@ class StoryWorkflowService:
         ]
 
     async def _enrich_candidates(self, article_ids: list[str]) -> tuple[int, int]:
+        enriched_count = 0
+        skipped_existing = 0
         with self._session_factory() as session:
-            articles = session.scalars(
+            for article in session.scalars(
                 select(Article)
                 .where(Article.article_id.in_(article_ids))
                 .order_by(Article.ingested_at.asc(), Article.article_id.asc())
-            ).all()
-
-        pending_articles: list[Article] = []
-        skipped_existing = 0
-        for article in articles:
-            checker = getattr(self._enrichment_service, "is_complete", None)
-            if callable(checker):
-                if checker(article):
+            ).all():
+                if (
+                    article.enrichment_status == "done"
+                    and bool((article.title_zh or "").strip())
+                    and bool((article.summary_zh or "").strip())
+                    and bool((article.cluster_text or "").strip())
+                ):
                     skipped_existing += 1
                     continue
-            elif article.enrichment_status == "done" and bool((article.cluster_text or "").strip()):
-                skipped_existing += 1
-                continue
-            pending_articles.append(article)
-
-        if not pending_articles:
-            return 0, skipped_existing
-
-        payloads = [self._enrichment_service.build_input(article) for article in pending_articles]
-        batch_results = await self._enrichment_service.infer_many(payloads)
-
-        enriched_count = 0
-        with self._session_factory() as session:
-            for article, outcome in zip(pending_articles, batch_results, strict=True):
-                stored = session.get(Article, article.article_id)
-                if stored is None:
-                    continue
-                if isinstance(outcome, Exception):
-                    self._enrichment_service.apply_failure(article=stored, error=outcome)
-                    continue
-                self._enrichment_service.apply_result(article=stored, result=outcome)
-                enriched_count += 1
+                try:
+                    if await self._enrichment_service.enrich_article(session, article):
+                        enriched_count += 1
+                except Exception:
+                    session.commit()
+                    raise
             session.commit()
 
         return enriched_count, skipped_existing
