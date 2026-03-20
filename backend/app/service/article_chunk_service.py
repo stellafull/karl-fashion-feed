@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-import tiktoken
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
 HEADERS_TO_SPLIT_ON: list[tuple[str, str]] = [
@@ -49,7 +48,8 @@ MULTILINGUAL_SEPARATORS: list[str] = [
     " ",
     "",
 ]
-TOKEN_ENCODING = tiktoken.get_encoding("cl100k_base")
+
+
 def normalize_markdown(markdown_text: str) -> str:
     return "\n".join(
         line.rstrip()
@@ -75,12 +75,12 @@ def split_markdown_into_text_chunks(
     if not section_docs:
         return []
 
-    text_splitter = RecursiveCharacterTextSplitter(
+    text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+        encoding_name="cl100k_base",
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
         separators=MULTILINGUAL_SEPARATORS,
         keep_separator="end",
-        length_function=_count_tokens,
     )
 
     chunks: list[dict[str, Any]] = []
@@ -89,7 +89,11 @@ def split_markdown_into_text_chunks(
         if not section_text:
             continue
 
-        heading_path = _build_heading_path(section_doc.metadata)
+        heading_path = [
+            value.strip()
+            for level in ("h2", "h3", "h4", "h5", "h6")
+            if isinstance(value := section_doc.metadata.get(level), str) and value.strip()
+        ]
         search_offset = 0
         for piece in text_splitter.split_text(section_text):
             page_content = piece.strip()
@@ -129,16 +133,3 @@ def split_markdown_into_text_chunks(
                 chunks[chunk_index - 1]["metadata"]["next_chunk_id"] = chunk_id
 
     return chunks
-
-
-def _build_heading_path(metadata: dict[str, Any]) -> list[str]:
-    heading_path: list[str] = []
-    for level in ("h2", "h3", "h4", "h5", "h6"):
-        value = metadata.get(level)
-        if isinstance(value, str) and value.strip():
-            heading_path.append(value.strip())
-    return heading_path
-
-
-def _count_tokens(text: str) -> int:
-    return len(TOKEN_ENCODING.encode(text))
