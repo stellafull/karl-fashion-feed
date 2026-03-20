@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 from collections import defaultdict
-from dataclasses import asdict, dataclass
 from datetime import datetime
 import json
 from typing import Any
@@ -19,17 +18,6 @@ from backend.app.schemas.llm.story_cluster_review import StoryClusterReviewSchem
 from backend.app.service.story_pipeline_contracts import EmbeddedArticle
 
 
-@dataclass(frozen=True)
-class ClusterReviewArticleInput:
-    article_id: str
-    title_zh: str
-    summary_zh: str
-    tags: tuple[str, ...]
-    brands: tuple[str, ...]
-    category_candidates: tuple[str, ...]
-    source_name: str
-
-
 class ArticleClusterService:
     def __init__(
         self,
@@ -37,21 +25,16 @@ class ArticleClusterService:
         client: Any | None = None,
         distance_threshold: float = 0.18,
     ) -> None:
-        api_key = STORY_SUMMARIZATION_MODEL_CONFIG.api_key
-        if client is None and not api_key:
-            raise ValueError(f"missing API key for {STORY_SUMMARIZATION_MODEL_CONFIG.model_name}")
-        self._client = client or AsyncOpenAI(
-            api_key=api_key,
-            base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
-            timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
-        )
+        if client is None:
+            client = AsyncOpenAI(
+                api_key=STORY_SUMMARIZATION_MODEL_CONFIG.api_key,
+                base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
+                timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
+            )
+        self._client = client
         self._distance_threshold = distance_threshold
 
     async def cluster_articles(self, articles: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
-        semantic_clusters = self.build_semantic_clusters(articles)
-        return await self.review_clusters(semantic_clusters)
-
-    def build_semantic_clusters(self, articles: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
         if not articles:
             return []
         if len(articles) == 1:
@@ -71,89 +54,64 @@ class ArticleClusterService:
 
         semantic_clusters = [_sort_articles(cluster) for cluster in grouped.values()]
         semantic_clusters.sort(key=_cluster_sort_key, reverse=True)
-        return semantic_clusters
-
-    async def review_clusters(
-        self,
-        clusters: list[list[EmbeddedArticle]],
-    ) -> list[list[EmbeddedArticle]]:
-        if not clusters:
-            return []
         reviewed_clusters: list[list[EmbeddedArticle]] = []
+        review_tasks = []
         review_targets: list[list[EmbeddedArticle]] = []
-        for cluster in clusters:
+        for cluster in semantic_clusters:
             if len(cluster) <= 1:
                 reviewed_clusters.append(cluster)
                 continue
             review_targets.append(cluster)
-
-        if review_targets:
-            results = await asyncio.gather(
-                *(self._review_cluster(cluster) for cluster in review_targets),
-                return_exceptions=True,
+            review_tasks.append(
+                self._client.beta.chat.completions.parse(
+                    model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+                    temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
+                    messages=[
+                        {"role": "system", "content": STORY_CLUSTER_REVIEW_PROMPT},
+                        {
+                            "role": "user",
+                            "content": json.dumps(
+                                [
+                                    {
+                                        "article_id": item.article.article_id,
+                                        "title_zh": item.article.title_zh,
+                                        "summary_zh": item.article.summary_zh,
+                                        "tags": item.article.tags,
+                                        "brands": item.article.brands,
+                                        "category_candidates": item.article.category_candidates,
+                                        "source_name": item.article.source_name,
+                                    }
+                                    for item in cluster
+                                ],
+                                ensure_ascii=False,
+                                indent=2,
+                                sort_keys=True,
+                            ),
+                        },
+                    ],
+                    response_format=StoryClusterReviewSchema,
+                )
             )
-            for cluster, result in zip(review_targets, results, strict=True):
-                if isinstance(result, Exception):
-                    reviewed_clusters.append(cluster)
-                    continue
-                reviewed_clusters.extend(result)
+
+        responses = await asyncio.gather(*review_tasks)
+        for cluster, response in zip(review_targets, responses, strict=True):
+            result = response.choices[0].message.parsed
+            if result is None:
+                raise ValueError("story cluster review response missing parsed payload")
+
+            cluster_by_id = {item.article.article_id: item for item in cluster}
+            reviewed_article_ids = [article_id for group in result.groups for article_id in group.article_ids]
+            expected_article_ids = [item.article.article_id for item in cluster]
+            if sorted(reviewed_article_ids) != sorted(expected_article_ids):
+                raise ValueError("story cluster review returned mismatched article ids")
+            if len(set(reviewed_article_ids)) != len(reviewed_article_ids):
+                raise ValueError("story cluster review returned duplicate article ids")
+
+            for group in result.groups:
+                reviewed_clusters.append(_sort_articles([cluster_by_id[article_id] for article_id in group.article_ids]))
 
         reviewed_clusters.sort(key=_cluster_sort_key, reverse=True)
         return reviewed_clusters
-
-    def build_review_messages(self, cluster: list[EmbeddedArticle]) -> list[dict[str, str]]:
-        payload = [
-            ClusterReviewArticleInput(
-                article_id=item.article.article_id,
-                title_zh=item.article.title_zh,
-                summary_zh=item.article.summary_zh,
-                tags=item.article.tags,
-                brands=item.article.brands,
-                category_candidates=item.article.category_candidates,
-                source_name=item.article.source_name,
-            )
-            for item in cluster
-        ]
-        return [
-            {"role": "system", "content": STORY_CLUSTER_REVIEW_PROMPT},
-            {"role": "user", "content": _render_json_payload([asdict(item) for item in payload])},
-        ]
-
-    def apply_review_result(
-        self,
-        cluster: list[EmbeddedArticle],
-        result: StoryClusterReviewSchema,
-    ) -> list[list[EmbeddedArticle]]:
-        cluster_by_id = {item.article.article_id: item for item in cluster}
-        proposed_ids = [article_id for group in result.groups for article_id in group.article_ids]
-        expected_ids = [item.article.article_id for item in cluster]
-        if sorted(proposed_ids) != sorted(expected_ids):
-            return [cluster]
-
-        if len(set(proposed_ids)) != len(proposed_ids):
-            return [cluster]
-
-        reviewed: list[list[EmbeddedArticle]] = []
-        for group in result.groups:
-            reviewed.append(_sort_articles([cluster_by_id[article_id] for article_id in group.article_ids]))
-
-        reviewed.sort(key=_cluster_sort_key, reverse=True)
-        return reviewed
-
-    async def _review_cluster(self, cluster: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
-        if len(cluster) <= 1:
-            return [cluster]
-
-        response = await self._client.beta.chat.completions.parse(
-            model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-            temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
-            messages=self.build_review_messages(cluster),
-            response_format=StoryClusterReviewSchema,
-        )
-        result = response.choices[0].message.parsed
-        if result is None:
-            raise ValueError("story cluster review response missing parsed payload")
-        return self.apply_review_result(cluster, result)
 
 
 def _sort_articles(cluster: list[EmbeddedArticle]) -> list[EmbeddedArticle]:
@@ -177,7 +135,3 @@ def _normalize_embeddings(articles: list[EmbeddedArticle]) -> np.ndarray:
     norms = np.linalg.norm(matrix, axis=1, keepdims=True)
     norms[norms == 0.0] = 1.0
     return matrix / norms
-
-
-def _render_json_payload(payload: list[dict[str, Any]]) -> str:
-    return json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True)
