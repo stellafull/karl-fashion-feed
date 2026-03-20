@@ -16,8 +16,10 @@ from sqlalchemy.orm import Session
 from backend.app.config.storage_config import ARTICLE_MARKDOWN_ROOT
 from backend.app.core.database import SessionLocal
 from backend.app.models.article import Article, ArticleImage, ensure_article_storage_schema
-from backend.app.service.article_contracts import MarkdownBlock
+from backend.app.service.article_contracts import MarkdownBlock, ParsedArticle
 from backend.app.service.news_collection_service import NewsCollectionService
+
+PARSE_BATCH_SIZE = 20
 
 
 @dataclass(frozen=True)
@@ -26,13 +28,6 @@ class ParseResult:
     parsed: int
     failed: int
     parsed_article_ids: tuple[str, ...]
-
-
-@dataclass(frozen=True)
-class _ParseOutcome:
-    article_id: str
-    parsed: object | None = None
-    error: Exception | None = None
 
 
 class ArticleMarkdownService:
@@ -85,18 +80,9 @@ class ArticleMarkdownService:
 
 
 class ArticleParseService:
-    def __init__(
-        self,
-        *,
-        session_factory: Callable[[], Session] = SessionLocal,
-        collector: NewsCollectionService | None = None,
-        markdown_service: ArticleMarkdownService | None = None,
-        parse_batch_size: int = 20,
-    ) -> None:
-        self._session_factory = session_factory
-        self._collector = collector or NewsCollectionService()
-        self._markdown_service = markdown_service or ArticleMarkdownService()
-        self._parse_batch_size = max(parse_batch_size, 1)
+    def __init__(self) -> None:
+        self._collector = NewsCollectionService()
+        self._markdown_service = ArticleMarkdownService()
 
     async def parse_articles(
         self,
@@ -117,7 +103,7 @@ class ArticleParseService:
         article_ids: list[str] | None,
         limit: int | None,
     ) -> list[Article]:
-        with self._session_factory() as session:
+        with SessionLocal() as session:
             query = (
                 select(Article)
                 .where(Article.parse_status.in_(("pending", "failed")))
@@ -129,7 +115,10 @@ class ArticleParseService:
                 query = query.limit(limit)
             return session.scalars(query).all()
 
-    async def _parse_batches_with_http_session(self, candidates: list[Article]) -> list[_ParseOutcome]:
+    async def _parse_batches_with_http_session(
+        self,
+        candidates: list[Article],
+    ) -> list[tuple[str, ParsedArticle | None, Exception | None]]:
         timeout = aiohttp.ClientTimeout(total=getattr(self._collector, "_request_timeout_seconds", 20))
         headers = {
             "User-Agent": (
@@ -153,8 +142,9 @@ class ArticleParseService:
                         response.raise_for_status()
                         return await response.read()
 
-            outcomes: list[_ParseOutcome] = []
-            for batch in _chunked(candidates, self._parse_batch_size):
+            outcomes: list[tuple[str, ParsedArticle | None, Exception | None]] = []
+            for batch_start in range(0, len(candidates), PARSE_BATCH_SIZE):
+                batch = candidates[batch_start : batch_start + PARSE_BATCH_SIZE]
                 results = await asyncio.gather(
                     *(
                         self._parse_single(
@@ -174,7 +164,7 @@ class ArticleParseService:
         article: Article,
         fetch_text: Callable[[str], Awaitable[str]],
         fetch_bytes: Callable[[str], Awaitable[bytes]],
-    ) -> _ParseOutcome:
+    ) -> tuple[str, ParsedArticle | None, Exception | None]:
         try:
             html_text = await self._collector.fetch_html(
                 source_name=article.source_name,
@@ -186,7 +176,7 @@ class ArticleParseService:
                 url=article.canonical_url,
                 html_text=html_text,
             )
-            parsed = type(parsed)(
+            parsed = ParsedArticle(
                 title=parsed.title,
                 summary=parsed.summary,
                 markdown_blocks=parsed.markdown_blocks,
@@ -197,15 +187,18 @@ class ArticleParseService:
                 published_at=parsed.published_at,
                 metadata=parsed.metadata,
             )
-            return _ParseOutcome(article_id=article.article_id, parsed=parsed)
+            return article.article_id, parsed, None
         except Exception as exc:
-            return _ParseOutcome(article_id=article.article_id, error=exc)
+            return article.article_id, None, exc
 
-    def _persist_outcomes(self, outcomes: list[_ParseOutcome]) -> ParseResult:
+    def _persist_outcomes(
+        self,
+        outcomes: list[tuple[str, ParsedArticle | None, Exception | None]],
+    ) -> ParseResult:
         if not outcomes:
             return ParseResult(candidates=0, parsed=0, failed=0, parsed_article_ids=tuple())
 
-        session = self._session_factory()
+        session = SessionLocal()
         replaced_paths: list[Path] = []
         parsed_count = 0
         failed_count = 0
@@ -214,23 +207,23 @@ class ArticleParseService:
             bind = session.get_bind()
             ensure_article_storage_schema(bind)
 
-            for batch in _chunked(outcomes, self._parse_batch_size):
+            for batch_start in range(0, len(outcomes), PARSE_BATCH_SIZE):
+                batch = outcomes[batch_start : batch_start + PARSE_BATCH_SIZE]
                 batch_written_paths: list[Path] = []
                 batch_replaced_paths: list[Path] = []
                 try:
-                    for outcome in batch:
-                        stored = session.get(Article, outcome.article_id)
+                    for article_id, parsed, error in batch:
+                        stored = session.get(Article, article_id)
                         if stored is None:
                             continue
 
                         stored.parse_attempts += 1
-                        if outcome.error is not None or outcome.parsed is None:
+                        if error is not None or parsed is None:
                             stored.parse_status = "failed"
-                            stored.parse_error = _format_error(outcome.error)
+                            stored.parse_error = _format_error(error)
                             failed_count += 1
                             continue
 
-                        parsed = outcome.parsed
                         existing_images = session.scalars(
                             select(ArticleImage)
                             .where(ArticleImage.article_id == stored.article_id)
@@ -317,7 +310,7 @@ class ArticleParseService:
                             **dict(parsed.metadata),
                         }
                         stored.parse_status = "done"
-                        stored.parsed_at = _utcnow_naive()
+                        stored.parsed_at = datetime.now(UTC).replace(tzinfo=None)
                         stored.parse_error = None
                         stored.ingested_at = stored.parsed_at
                         parsed_count += 1
@@ -346,10 +339,6 @@ class ArticleParseService:
         )
 
 
-def _chunked(values: list[Article], size: int) -> list[list[Article]]:
-    return [values[index : index + size] for index in range(0, len(values), size)]
-
-
 def _select_hero_image_id(images, image_ids_by_index: dict[int, str]) -> str | None:
     for index, image in enumerate(images):
         if image.role == "hero":
@@ -366,10 +355,6 @@ def _select_hero_image_url(images) -> str | None:
     if images:
         return images[0].source_url
     return None
-
-
-def _utcnow_naive() -> datetime:
-    return datetime.now(UTC).replace(tzinfo=None)
 
 
 def _format_error(error: Exception | None) -> str:

@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any
 
 from openai import AsyncOpenAI
 from sqlalchemy.orm import Session
@@ -33,20 +32,13 @@ class EnrichedArticle:
 
 
 class ArticleEnrichmentService:
-    def __init__(
-        self,
-        *,
-        client: Any | None = None,
-        markdown_service: ArticleMarkdownService | None = None,
-    ) -> None:
-        if client is None:
-            client = AsyncOpenAI(
-                api_key=STORY_SUMMARIZATION_MODEL_CONFIG.api_key,
-                base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
-                timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
-            )
-        self._client = client
-        self._markdown_service = markdown_service or ArticleMarkdownService()
+    def __init__(self) -> None:
+        self._client = AsyncOpenAI(
+            api_key=STORY_SUMMARIZATION_MODEL_CONFIG.api_key,
+            base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
+            timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
+        )
+        self._markdown_service = ArticleMarkdownService()
 
     async def enrich_article(self, session: Session, article: Article) -> bool:
         if (

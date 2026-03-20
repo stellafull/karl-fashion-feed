@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass
 
 from qdrant_client.http import models
 from sqlalchemy import select
@@ -43,29 +42,14 @@ IMAGE_GROUNDING_LIMIT = 2
 IMAGE_QUERY_EMBEDDING_TEXT = "image query"
 
 
-@dataclass(frozen=True)
-class _LaneCandidate:
-    point: models.ScoredPoint
-    score: float
-
-
 class QueryService:
     """Execute one deterministic retrieval plan over the shared collection."""
 
-    def __init__(
-        self,
-        *,
-        session_factory: Callable[[], Session] = SessionLocal,
-        markdown_service: ArticleMarkdownService | None = None,
-        qdrant_service: QdrantService | None = None,
-        reranker_service: RerankerService | None = None,
-        collection_name: str = RAG_COLLECTION_NAME,
-    ) -> None:
-        self._session_factory = session_factory
-        self._markdown_service = markdown_service or ArticleMarkdownService()
-        self._qdrant_service = qdrant_service or QdrantService()
-        self._reranker_service = reranker_service or RerankerService()
-        self._collection_name = collection_name
+    def __init__(self) -> None:
+        self._markdown_service = ArticleMarkdownService()
+        self._qdrant_service = QdrantService()
+        self._reranker_service = RerankerService()
+        self._collection_name = RAG_COLLECTION_NAME
 
     def execute(self, query_plan: QueryPlan) -> QueryResult:
         """Execute one retrieval plan and return structured evidence."""
@@ -149,7 +133,7 @@ class QueryService:
                 filters=metadata_filter,
             )
             candidates = [
-                _LaneCandidate(point=point, score=float(point.score))
+                (point, float(point.score))
                 for point in scored_points[: query_plan.limit]
             ]
             return self._build_image_hits(candidates)
@@ -194,27 +178,24 @@ class QueryService:
         query: str,
         top_n: int,
         documents: list[str],
-    ) -> list[_LaneCandidate]:
+    ) -> list[tuple[models.ScoredPoint, float]]:
         if not scored_points:
             return []
         rerank_results = self._reranker_service.rerank(query, documents, top_n)
         return [
-            _LaneCandidate(
-                point=scored_points[result.index],
-                score=float(result.relevance_score),
-            )
-            for result in rerank_results
+            (scored_points[index], score)
+            for index, score in rerank_results
         ]
 
-    def _build_text_hits(self, candidates: list[_LaneCandidate]) -> list[RetrievalHit]:
+    def _build_text_hits(self, candidates: list[tuple[models.ScoredPoint, float]]) -> list[RetrievalHit]:
         article_map = self._load_articles(
-            self._require_str(self._require_payload(candidate.point), "article_id")
-            for candidate in candidates
+            self._require_str(self._require_payload(point), "article_id")
+            for point, _score in candidates
         )
         chunk_content_map_by_article_id: dict[str, dict[int, str]] = {}
         hits: list[RetrievalHit] = []
-        for candidate in candidates:
-            payload = self._require_payload(candidate.point)
+        for point, score in candidates:
+            payload = self._require_payload(point)
             article_id = self._require_str(payload, "article_id")
             chunk_index = self._require_int(payload, "chunk_index")
             article = article_map[article_id]
@@ -236,7 +217,7 @@ class QueryService:
                     article_id=article.article_id,
                     article_image_id=None,
                     content=content,
-                    score=candidate.score,
+                    score=score,
                     citation_locator=locator,
                     title_zh=article.title_zh,
                     summary_zh=article.summary_zh,
@@ -244,22 +225,22 @@ class QueryService:
             )
         return hits
 
-    def _build_image_hits(self, candidates: list[_LaneCandidate]) -> list[RetrievalHit]:
+    def _build_image_hits(self, candidates: list[tuple[models.ScoredPoint, float]]) -> list[RetrievalHit]:
         article_map = self._load_articles(
-            self._require_str(self._require_payload(candidate.point), "article_id")
-            for candidate in candidates
+            self._require_str(self._require_payload(point), "article_id")
+            for point, _score in candidates
         )
         image_map = self._load_images(
-            self._require_image_id(self._require_payload(candidate.point)) for candidate in candidates
+            self._require_image_id(self._require_payload(point)) for point, _score in candidates
         )
         hits: list[RetrievalHit] = []
-        for candidate in candidates:
-            payload = self._require_payload(candidate.point)
+        for point, score in candidates:
+            payload = self._require_payload(point)
             article_id = self._require_str(payload, "article_id")
             image_id = self._require_image_id(payload)
             article = article_map[article_id]
             image = image_map[image_id]
-            content = self._build_image_content(article, image)
+            content = build_image_retrieval_content(article, image)
             if not content:
                 raise ValueError(f"image grounding content must not be empty: {image.image_id}")
             locator = CitationLocator(
@@ -275,7 +256,7 @@ class QueryService:
                     article_id=article.article_id,
                     article_image_id=image.image_id,
                     content=content,
-                    score=candidate.score,
+                    score=score,
                     citation_locator=locator,
                     source_url=image.source_url,
                     caption_raw=image.caption_raw or None,
@@ -296,7 +277,7 @@ class QueryService:
         normalized_article_ids = sorted(set(article_ids))
         if not normalized_article_ids:
             return {}
-        with self._session_factory() as session:
+        with SessionLocal() as session:
             articles = session.scalars(
                 select(Article).where(Article.article_id.in_(normalized_article_ids))
             ).all()
@@ -310,7 +291,7 @@ class QueryService:
         normalized_image_ids = sorted({image_id for image_id in image_ids if image_id})
         if not normalized_image_ids:
             return {}
-        with self._session_factory() as session:
+        with SessionLocal() as session:
             images = session.scalars(
                 select(ArticleImage).where(ArticleImage.image_id.in_(normalized_image_ids))
             ).all()
@@ -475,9 +456,6 @@ class QueryService:
                 )
             chunk_content_map[chunk_index] = str(chunk["page_content"])
         return chunk_content_map
-
-    def _build_image_content(self, article: Article, image: ArticleImage) -> str:
-        return build_image_retrieval_content(article, image)
 
     def _append_citation_locator(
         self,

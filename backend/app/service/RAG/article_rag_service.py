@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
 
 from backend.app.core.database import SessionLocal
 from backend.app.models import Article, ArticleImage
@@ -71,18 +69,10 @@ def _join_terms(value: object) -> str:
 class ArticleRagService:
     """Build retrieval units from articles and insert them into Qdrant."""
 
-    def __init__(
-        self,
-        *,
-        session_factory: Callable[[], Session] = SessionLocal,
-        markdown_service: ArticleMarkdownService | None = None,
-        qdrant_service: QdrantService | None = None,
-        collection_name: str = RAG_COLLECTION_NAME,
-    ) -> None:
-        self._session_factory = session_factory
-        self._markdown_service = markdown_service or ArticleMarkdownService()
-        self._qdrant_service = qdrant_service or QdrantService()
-        self._collection_name = collection_name
+    def __init__(self) -> None:
+        self._markdown_service = ArticleMarkdownService()
+        self._qdrant_service = QdrantService()
+        self._collection_name = RAG_COLLECTION_NAME
 
     def upsert_articles(self, articles: list[Article]) -> RagInsertResult:
         """Upsert retrieval units for publishable articles into Qdrant."""
@@ -171,7 +161,7 @@ class ArticleRagService:
     def _build_image_records(self, articles: list[Article]) -> list[dict[str, object]]:
         article_by_id = {article.article_id: article for article in articles}
         article_ids = list(article_by_id)
-        with self._session_factory() as session:
+        with SessionLocal() as session:
             images = session.scalars(
                 select(ArticleImage)
                 .where(ArticleImage.article_id.in_(article_ids))

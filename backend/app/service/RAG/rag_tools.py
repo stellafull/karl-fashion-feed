@@ -12,8 +12,8 @@ from backend.app.service.RAG.query_service import QueryService
 class RagTools:
     """Build retrieval plans from tool arguments and execute them."""
 
-    def __init__(self, *, query_service: QueryService | None = None) -> None:
-        self._query_service = query_service or QueryService()
+    def __init__(self) -> None:
+        self._query_service = QueryService()
 
     def search_fashion_articles(
         self,

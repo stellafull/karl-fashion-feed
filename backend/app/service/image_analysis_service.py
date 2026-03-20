@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
 import json
-from typing import Any
 
 from openai import AsyncOpenAI
 from sqlalchemy.orm import Session
@@ -15,28 +13,12 @@ from backend.app.prompts.image_analysis_prompt import IMAGE_ANALYSIS_PROMPT
 from backend.app.schemas.llm.image_analysis import ImageAnalysisSchema
 
 
-@dataclass(frozen=True)
-class ImageAnalysisInput:
-    image_id: str
-    image_url: str
-    article_title: str
-    article_summary: str
-    alt_text: str
-    caption_raw: str
-    credit_raw: str
-    context_snippet: str
-
-
 class ImageAnalysisService:
-    def __init__(
-        self,
-        *,
-        client: Any | None = None,
-    ) -> None:
+    def __init__(self) -> None:
         api_key = IMAGE_ANALYSIS_MODEL_CONFIG.api_key
-        if client is None and not api_key:
+        if not api_key:
             raise ValueError(f"missing API key for {IMAGE_ANALYSIS_MODEL_CONFIG.model_name}")
-        self._client = client or AsyncOpenAI(
+        self._client = AsyncOpenAI(
             api_key=api_key,
             base_url=IMAGE_ANALYSIS_MODEL_CONFIG.base_url,
             timeout=IMAGE_ANALYSIS_MODEL_CONFIG.timeout_seconds,
@@ -58,32 +40,32 @@ class ImageAnalysisService:
         return True
 
     @staticmethod
-    def build_input(*, article: Article, image: ArticleImage) -> ImageAnalysisInput:
-        return ImageAnalysisInput(
-            image_id=image.image_id,
-            image_url=image.source_url,
-            article_title=(article.title_zh or article.title_raw or "").strip(),
-            article_summary=(article.summary_zh or article.summary_raw or "").strip(),
-            alt_text=(image.alt_text or "").strip(),
-            caption_raw=(image.caption_raw or "").strip(),
-            credit_raw=(image.credit_raw or "").strip(),
-            context_snippet=(image.context_snippet or "").strip(),
-        )
+    def build_input(*, article: Article, image: ArticleImage) -> dict[str, str]:
+        return {
+            "image_id": image.image_id,
+            "image_url": image.source_url,
+            "article_title": (article.title_zh or article.title_raw or "").strip(),
+            "article_summary": (article.summary_zh or article.summary_raw or "").strip(),
+            "alt_text": (image.alt_text or "").strip(),
+            "caption_raw": (image.caption_raw or "").strip(),
+            "credit_raw": (image.credit_raw or "").strip(),
+            "context_snippet": (image.context_snippet or "").strip(),
+        }
 
-    def build_messages(self, payload: ImageAnalysisInput) -> list[dict[str, object]]:
-        context = json.dumps(asdict(payload), ensure_ascii=False, indent=2, sort_keys=True)
+    def build_messages(self, payload: dict[str, str]) -> list[dict[str, object]]:
+        context = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True)
         return [
             {"role": "system", "content": IMAGE_ANALYSIS_PROMPT},
             {
                 "role": "user",
                 "content": [
                     {"type": "text", "text": context},
-                    {"type": "image_url", "image_url": {"url": payload.image_url}},
+                    {"type": "image_url", "image_url": {"url": payload["image_url"]}},
                 ],
             },
         ]
 
-    async def infer_payload(self, payload: ImageAnalysisInput) -> ImageAnalysisSchema:
+    async def infer_payload(self, payload: dict[str, str]) -> ImageAnalysisSchema:
         response = await self._client.beta.chat.completions.parse(
             model=IMAGE_ANALYSIS_MODEL_CONFIG.model_name,
             temperature=IMAGE_ANALYSIS_MODEL_CONFIG.temperature,

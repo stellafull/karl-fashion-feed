@@ -4,16 +4,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Callable, Iterable
+from typing import Iterable
 from uuid import uuid4
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
 
 from backend.app.core.database import SessionLocal
 from backend.app.models.article import Article, ensure_article_storage_schema
 from backend.app.service.article_contracts import CollectedArticle
 from backend.app.service.news_collection_service import NewsCollectionService
+
+INSERT_BATCH_SIZE = 100
 
 
 @dataclass(frozen=True)
@@ -27,16 +28,8 @@ class CollectionResult:
 
 
 class ArticleCollectionService:
-    def __init__(
-        self,
-        *,
-        session_factory: Callable[[], Session] = SessionLocal,
-        collector: NewsCollectionService | None = None,
-        insert_batch_size: int = 100,
-    ) -> None:
-        self._session_factory = session_factory
-        self._collector = collector or NewsCollectionService()
-        self._insert_batch_size = max(insert_batch_size, 1)
+    def __init__(self) -> None:
+        self._collector = NewsCollectionService()
 
     async def collect_articles(
         self,
@@ -71,7 +64,7 @@ class ArticleCollectionService:
             seen_urls.add(article.canonical_url)
             deduped.append(article)
 
-        session = self._session_factory()
+        session = SessionLocal()
         inserted = 0
         skipped_existing = 0
         inserted_article_ids: list[str] = []
@@ -79,7 +72,8 @@ class ArticleCollectionService:
             bind = session.get_bind()
             ensure_article_storage_schema(bind)
 
-            for batch in _chunked(deduped, self._insert_batch_size):
+            for batch_start in range(0, len(deduped), INSERT_BATCH_SIZE):
+                batch = deduped[batch_start : batch_start + INSERT_BATCH_SIZE]
                 canonical_urls = [item.canonical_url for item in batch]
                 existing_urls = set(
                     session.scalars(
@@ -129,7 +123,3 @@ class ArticleCollectionService:
             raise
         finally:
             session.close()
-
-
-def _chunked(values: list[CollectedArticle], size: int) -> list[list[CollectedArticle]]:
-    return [values[index : index + size] for index in range(0, len(values), size)]

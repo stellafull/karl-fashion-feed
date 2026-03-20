@@ -59,10 +59,3 @@ class ParsedArticle:
     published_at: datetime | None
     metadata: dict[str, Any] = field(default_factory=dict)
 
-
-@dataclass
-class SourceCollectionResult:
-    source_name: str
-    source_type: str
-    articles: list[CollectedArticle] = field(default_factory=list)
-    error: Exception | None = None

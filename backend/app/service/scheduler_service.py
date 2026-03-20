@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
-from typing import Any, Awaitable, Callable
+from typing import Any
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import Select, select
@@ -35,88 +34,31 @@ STAGE_SEMANTIC_CLUSTER = "semantic_cluster"
 STAGE_CLUSTER_REVIEW = "cluster_review"
 STAGE_STORY_GENERATION = "story_generation"
 STAGE_STORY_PERSIST = "story_persist"
-PROCESSING_STAGES = (
-    STAGE_ENRICHMENT,
+STORY_DRAFT_STAGES = (
     STAGE_STORY_EMBEDDING,
     STAGE_SEMANTIC_CLUSTER,
     STAGE_CLUSTER_REVIEW,
     STAGE_STORY_GENERATION,
 )
-
-
-@dataclass(frozen=True)
-class StoryWorkflowResult:
-    enriched_count: int
-    skipped_existing_enrichment: int
-    publishable_records: tuple[EnrichedArticle, ...]
-    watermark_ingested_at: datetime | None
-    story_drafts: tuple[StoryDraft, ...]
-    stages_completed: tuple[str, ...] = field(default_factory=tuple)
-    stages_skipped: tuple[str, ...] = field(default_factory=tuple)
-
-
-@dataclass(frozen=True)
-class DailyPipelineResult:
-    run_id: str
-    candidates: int
-    enriched: int
-    published: int
-    stories_created: int
-    watermark_ingested_at: datetime | None
-    story_date: datetime | None = None
-    story_grouping_mode: str = STORY_GROUPING_INCREMENTAL
-    stages_completed: tuple[str, ...] = field(default_factory=tuple)
-    stages_skipped: tuple[str, ...] = field(default_factory=tuple)
-    skipped_existing_enrichment: int = 0
-    errors: tuple[str, ...] = field(default_factory=tuple)
+WORKFLOW_STAGES = (STAGE_ENRICHMENT, *STORY_DRAFT_STAGES)
 
 
 class SchedulerService:
     """Schedule and run the daily story pipeline at a fixed Beijing local time."""
 
-    def __init__(
-        self,
-        *,
-        session_factory: Callable[[], Session] = SessionLocal,
-        collection_service: ArticleCollectionService | None = None,
-        parse_service: ArticleParseService | None = None,
-        enrichment_service: ArticleEnrichmentService | None = None,
-        embedding_service: Any | None = None,
-        cluster_service: ArticleClusterService | None = None,
-        story_generation_service: StoryGenerationService | None = None,
-        now_factory: Callable[[], datetime] | None = None,
-        sleep_func: Callable[[float], Awaitable[None]] | None = None,
-        timezone: ZoneInfo = BEIJING_TIMEZONE,
-        run_hour: int = DEFAULT_RUN_HOUR,
-        run_minute: int = DEFAULT_RUN_MINUTE,
-    ) -> None:
-        if not 0 <= run_hour <= 23:
-            raise ValueError("run_hour must be between 0 and 23")
-        if not 0 <= run_minute <= 59:
-            raise ValueError("run_minute must be between 0 and 59")
-
-        self._session_factory = session_factory
-        self._collection_service = collection_service or ArticleCollectionService(
-            session_factory=session_factory,
-        )
-        self._parse_service = parse_service or ArticleParseService(
-            session_factory=session_factory,
-        )
-        self._enrichment_service = enrichment_service or ArticleEnrichmentService()
-        self._embedding_service = embedding_service
-        self._cluster_service = cluster_service or ArticleClusterService()
-        self._story_generation_service = story_generation_service or StoryGenerationService()
-        self._now_factory = now_factory or (lambda: datetime.now(UTC))
-        self._sleep_func = sleep_func or asyncio.sleep
-        self._timezone = timezone
-        self._run_hour = run_hour
-        self._run_minute = run_minute
+    def __init__(self) -> None:
+        self._collection_service = ArticleCollectionService()
+        self._parse_service = ArticleParseService()
+        self._enrichment_service = ArticleEnrichmentService()
+        self._embedding_service = None
+        self._cluster_service = ArticleClusterService()
+        self._story_generation_service = StoryGenerationService()
 
     async def enrich_articles(self, article_ids: list[str]) -> tuple[int, int]:
         """Run enrichment for the provided article ids and persist results."""
         enriched_count = 0
         skipped_existing = 0
-        with self._session_factory() as session:
+        with SessionLocal() as session:
             articles = session.scalars(
                 select(Article)
                 .where(Article.article_id.in_(article_ids))
@@ -140,56 +82,43 @@ class SchedulerService:
             session.commit()
         return enriched_count, skipped_existing
 
-    async def build_story_drafts(self, article_ids: list[str]) -> StoryWorkflowResult:
+    async def build_story_drafts(
+        self,
+        article_ids: list[str],
+    ) -> tuple[tuple[EnrichedArticle, ...], datetime | None, tuple[StoryDraft, ...]]:
         """Build story drafts from already-enriched publishable articles."""
         publishable_records, watermark = self._load_publishable_records(article_ids)
         if not publishable_records:
-            return StoryWorkflowResult(
-                enriched_count=0,
-                skipped_existing_enrichment=0,
-                publishable_records=tuple(),
-                watermark_ingested_at=watermark,
-                story_drafts=tuple(),
-                stages_completed=tuple(),
-                stages_skipped=PROCESSING_STAGES[1:],
-            )
+            return tuple(), watermark, tuple()
 
         embedded_articles = self._embed_articles(publishable_records)
         clusters = await self._cluster_service.cluster_articles(embedded_articles)
         story_drafts = await self._story_generation_service.generate_stories(clusters)
-        return StoryWorkflowResult(
-            enriched_count=0,
-            skipped_existing_enrichment=0,
-            publishable_records=tuple(publishable_records),
-            watermark_ingested_at=watermark,
-            story_drafts=tuple(story_drafts),
-            stages_completed=PROCESSING_STAGES[1:],
-            stages_skipped=tuple(),
-        )
+        return tuple(publishable_records), watermark, tuple(story_drafts)
 
-    async def run_story_workflow(self, article_ids: list[str]) -> StoryWorkflowResult:
+    async def run_story_workflow(self, article_ids: list[str]) -> dict[str, Any]:
         """Run enrichment plus story draft generation for the given articles."""
         enriched_count, skipped_existing = await self.enrich_articles(article_ids)
-        build_result = await self.build_story_drafts(article_ids)
-        if not build_result.publishable_records:
-            return StoryWorkflowResult(
-                enriched_count=enriched_count,
-                skipped_existing_enrichment=skipped_existing,
-                publishable_records=tuple(),
-                watermark_ingested_at=build_result.watermark_ingested_at,
-                story_drafts=tuple(),
-                stages_completed=(STAGE_ENRICHMENT,),
-                stages_skipped=PROCESSING_STAGES[1:],
-            )
-        return StoryWorkflowResult(
-            enriched_count=enriched_count,
-            skipped_existing_enrichment=skipped_existing,
-            publishable_records=build_result.publishable_records,
-            watermark_ingested_at=build_result.watermark_ingested_at,
-            story_drafts=build_result.story_drafts,
-            stages_completed=(STAGE_ENRICHMENT, *build_result.stages_completed),
-            stages_skipped=build_result.stages_skipped,
-        )
+        publishable_records, watermark_ingested_at, story_drafts = await self.build_story_drafts(article_ids)
+        if not publishable_records:
+            return {
+                "enriched_count": enriched_count,
+                "skipped_existing_enrichment": skipped_existing,
+                "publishable_records": tuple(),
+                "watermark_ingested_at": watermark_ingested_at,
+                "story_drafts": tuple(),
+                "stages_completed": (STAGE_ENRICHMENT,),
+                "stages_skipped": STORY_DRAFT_STAGES,
+            }
+        return {
+            "enriched_count": enriched_count,
+            "skipped_existing_enrichment": skipped_existing,
+            "publishable_records": publishable_records,
+            "watermark_ingested_at": watermark_ingested_at,
+            "story_drafts": story_drafts,
+            "stages_completed": WORKFLOW_STAGES,
+            "stages_skipped": tuple(),
+        }
 
     async def run_pipeline_once(
         self,
@@ -197,7 +126,7 @@ class SchedulerService:
         skip_ingest: bool = False,
         source_names: list[str] | None = None,
         limit_sources: int | None = None,
-    ) -> DailyPipelineResult:
+    ) -> dict[str, Any]:
         """Run one full daily pipeline cycle immediately."""
         ensure_article_storage_schema(engine)
         Base.metadata.create_all(bind=engine)
@@ -222,23 +151,19 @@ class SchedulerService:
                     limit_sources=limit_sources,
                 )
                 stages_completed.append(STAGE_COLLECTION)
-        except Exception as exc:
-            self._mark_failed(run_id, exc)
-            raise
 
-        try:
             parse_result = await self._parse_service.parse_articles()
             if parse_result.candidates > 0:
                 stages_completed.append(STAGE_PARSE)
             else:
                 stages_skipped.append(STAGE_PARSE)
 
-            with self._session_factory() as session:
+            with SessionLocal() as session:
                 last_success_watermark = self._get_last_success_watermark(session, run_id=run_id)
                 candidate_articles = session.scalars(self._candidate_query(last_success_watermark)).all()
 
             if not candidate_articles:
-                stages_skipped.extend(PROCESSING_STAGES + (STAGE_STORY_PERSIST,))
+                stages_skipped.extend(WORKFLOW_STAGES + (STAGE_STORY_PERSIST,))
                 self._mark_success(
                     run_id,
                     watermark_ingested_at=last_success_watermark,
@@ -256,34 +181,35 @@ class SchedulerService:
                         "stages_skipped": stages_skipped,
                     },
                 )
-                return DailyPipelineResult(
-                    run_id=run_id,
-                    candidates=0,
-                    enriched=0,
-                    published=0,
-                    stories_created=0,
-                    watermark_ingested_at=last_success_watermark,
-                    story_grouping_mode=STORY_GROUPING_INCREMENTAL,
-                    stages_completed=tuple(),
-                    stages_skipped=tuple(stages_skipped),
-                )
+                return {
+                    "run_id": run_id,
+                    "candidates": 0,
+                    "enriched": 0,
+                    "published": 0,
+                    "stories_created": 0,
+                    "watermark_ingested_at": last_success_watermark,
+                    "story_grouping_mode": STORY_GROUPING_INCREMENTAL,
+                    "stages_completed": tuple(stages_completed),
+                    "stages_skipped": tuple(stages_skipped),
+                    "skipped_existing_enrichment": 0,
+                }
 
             candidate_ids = [article.article_id for article in candidate_articles]
             workflow_result = await self.run_story_workflow(candidate_ids)
-            stages_completed.extend(workflow_result.stages_completed)
-            stages_skipped.extend(workflow_result.stages_skipped)
+            stages_completed.extend(workflow_result["stages_completed"])
+            stages_skipped.extend(workflow_result["stages_skipped"])
             if STAGE_STORY_PERSIST not in stages_completed:
                 stages_completed.append(STAGE_STORY_PERSIST)
 
             self._persist_stories(
                 run_id=run_id,
-                story_drafts=list(workflow_result.story_drafts),
-                watermark_ingested_at=workflow_result.watermark_ingested_at,
+                story_drafts=list(workflow_result["story_drafts"]),
+                watermark_ingested_at=workflow_result["watermark_ingested_at"],
                 metadata={
                     "candidates": len(candidate_ids),
-                    "enriched": workflow_result.enriched_count,
-                    "published": len(workflow_result.publishable_records),
-                    "stories_created": len(workflow_result.story_drafts),
+                    "enriched": workflow_result["enriched_count"],
+                    "published": len(workflow_result["publishable_records"]),
+                    "stories_created": len(workflow_result["story_drafts"]),
                     "collected": collection_result.inserted if collection_result else 0,
                     "parsed": parse_result.parsed if parse_result else 0,
                     "parse_failed": parse_result.failed if parse_result else 0,
@@ -293,28 +219,33 @@ class SchedulerService:
                     "stages_skipped": stages_skipped,
                 },
             )
-            return DailyPipelineResult(
-                run_id=run_id,
-                candidates=len(candidate_ids),
-                enriched=workflow_result.enriched_count,
-                published=len(workflow_result.publishable_records),
-                stories_created=len(workflow_result.story_drafts),
-                watermark_ingested_at=workflow_result.watermark_ingested_at,
-                story_grouping_mode=STORY_GROUPING_INCREMENTAL,
-                stages_completed=tuple(stages_completed),
-                stages_skipped=tuple(stages_skipped),
-                skipped_existing_enrichment=workflow_result.skipped_existing_enrichment,
-            )
+            return {
+                "run_id": run_id,
+                "candidates": len(candidate_ids),
+                "enriched": workflow_result["enriched_count"],
+                "published": len(workflow_result["publishable_records"]),
+                "stories_created": len(workflow_result["story_drafts"]),
+                "watermark_ingested_at": workflow_result["watermark_ingested_at"],
+                "story_grouping_mode": STORY_GROUPING_INCREMENTAL,
+                "stages_completed": tuple(stages_completed),
+                "stages_skipped": tuple(stages_skipped),
+                "skipped_existing_enrichment": workflow_result["skipped_existing_enrichment"],
+            }
         except Exception as exc:
             self._mark_failed(run_id, exc)
             raise
 
     def next_run_at(self, *, now: datetime | None = None) -> datetime:
         """Return the next scheduled Beijing-local run time."""
-        current_time = self._normalize_now(now or self._now_factory()).astimezone(self._timezone)
+        current_time = now or datetime.now(UTC)
+        if current_time.tzinfo is None:
+            current_time = current_time.replace(tzinfo=UTC)
+        else:
+            current_time = current_time.astimezone(UTC)
+        current_time = current_time.astimezone(BEIJING_TIMEZONE)
         scheduled_time = current_time.replace(
-            hour=self._run_hour,
-            minute=self._run_minute,
+            hour=DEFAULT_RUN_HOUR,
+            minute=DEFAULT_RUN_MINUTE,
             second=0,
             microsecond=0,
         )
@@ -324,7 +255,11 @@ class SchedulerService:
 
     def seconds_until_next_run(self, *, now: datetime | None = None) -> float:
         """Return the positive sleep duration until the next scheduled run."""
-        current_time = self._normalize_now(now or self._now_factory())
+        current_time = now or datetime.now(UTC)
+        if current_time.tzinfo is None:
+            current_time = current_time.replace(tzinfo=UTC)
+        else:
+            current_time = current_time.astimezone(UTC)
         next_run = self.next_run_at(now=current_time).astimezone(UTC)
         delay_seconds = (next_run - current_time.astimezone(UTC)).total_seconds()
         return max(delay_seconds, 0.0)
@@ -343,7 +278,7 @@ class SchedulerService:
 
         completed_cycles = 0
         while max_cycles is None or completed_cycles < max_cycles:
-            await self._sleep_func(self.seconds_until_next_run())
+            await asyncio.sleep(self.seconds_until_next_run())
             await self.run_pipeline_once(
                 skip_ingest=skip_ingest,
                 source_names=source_names,
@@ -371,7 +306,7 @@ class SchedulerService:
         self,
         article_ids: list[str],
     ) -> tuple[list[EnrichedArticle], datetime | None]:
-        with self._session_factory() as session:
+        with SessionLocal() as session:
             articles = session.scalars(
                 select(Article)
                 .where(Article.article_id.in_(article_ids))
@@ -394,7 +329,7 @@ class SchedulerService:
         limit_sources: int | None,
         story_grouping_mode: str,
     ) -> str:
-        with self._session_factory() as session:
+        with SessionLocal() as session:
             ensure_article_storage_schema(session.get_bind())
             run = PipelineRun(
                 run_type=RUN_TYPE_DAILY_STORY,
@@ -444,7 +379,7 @@ class SchedulerService:
         watermark_ingested_at: datetime | None,
         metadata: dict[str, Any],
     ) -> None:
-        with self._session_factory() as session:
+        with SessionLocal() as session:
             run = session.get(PipelineRun, run_id)
             if run is None:
                 raise ValueError(f"pipeline run not found: {run_id}")
@@ -467,7 +402,7 @@ class SchedulerService:
                     session.add(StoryArticle(story_key=story.story_key, article_id=article_id, rank=rank))
 
             run.status = "success"
-            run.finished_at = _utcnow_naive()
+            run.finished_at = datetime.now(UTC).replace(tzinfo=None)
             run.watermark_ingested_at = watermark_ingested_at
             run.metadata_json = metadata
             run.error_message = None
@@ -480,32 +415,23 @@ class SchedulerService:
         watermark_ingested_at: datetime | None,
         metadata: dict[str, Any],
     ) -> None:
-        with self._session_factory() as session:
+        with SessionLocal() as session:
             run = session.get(PipelineRun, run_id)
             if run is None:
                 raise ValueError(f"pipeline run not found: {run_id}")
             run.status = "success"
-            run.finished_at = _utcnow_naive()
+            run.finished_at = datetime.now(UTC).replace(tzinfo=None)
             run.watermark_ingested_at = watermark_ingested_at
             run.metadata_json = metadata
             run.error_message = None
             session.commit()
 
     def _mark_failed(self, run_id: str, exc: Exception) -> None:
-        with self._session_factory() as session:
+        with SessionLocal() as session:
             run = session.get(PipelineRun, run_id)
             if run is None:
                 return
             run.status = "failed"
-            run.finished_at = _utcnow_naive()
+            run.finished_at = datetime.now(UTC).replace(tzinfo=None)
             run.error_message = f"{exc.__class__.__name__}: {exc}"
             session.commit()
-
-    def _normalize_now(self, value: datetime) -> datetime:
-        if value.tzinfo is None:
-            return value.replace(tzinfo=UTC)
-        return value.astimezone(UTC)
-
-
-def _utcnow_naive() -> datetime:
-    return datetime.now(UTC).replace(tzinfo=None)

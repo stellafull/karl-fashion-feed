@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import asyncio
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 import json
-from typing import Any
 
 from openai import AsyncOpenAI
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
@@ -26,27 +25,12 @@ class StoryDraft:
     source_article_count: int
 
 
-@dataclass(frozen=True)
-class StoryGenerationArticleInput:
-    article_id: str
-    title_zh: str
-    summary_zh: str
-    tags: tuple[str, ...]
-    brands: tuple[str, ...]
-    category_candidates: tuple[str, ...]
-    source_name: str
-
-
 class StoryGenerationService:
-    def __init__(
-        self,
-        *,
-        client: Any | None = None,
-    ) -> None:
+    def __init__(self) -> None:
         api_key = STORY_SUMMARIZATION_MODEL_CONFIG.api_key
-        if client is None and not api_key:
+        if not api_key:
             raise ValueError(f"missing API key for {STORY_SUMMARIZATION_MODEL_CONFIG.model_name}")
-        self._client = client or AsyncOpenAI(
+        self._client = AsyncOpenAI(
             api_key=api_key,
             base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
             timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
@@ -54,15 +38,15 @@ class StoryGenerationService:
 
     async def generate_story(self, cluster: list[EmbeddedArticle]) -> StoryDraft:
         payload = [
-            StoryGenerationArticleInput(
-                article_id=item.article.article_id,
-                title_zh=item.article.title_zh,
-                summary_zh=item.article.summary_zh,
-                tags=item.article.tags,
-                brands=item.article.brands,
-                category_candidates=item.article.category_candidates,
-                source_name=item.article.source_name,
-            )
+            {
+                "article_id": item.article.article_id,
+                "title_zh": item.article.title_zh,
+                "summary_zh": item.article.summary_zh,
+                "tags": item.article.tags,
+                "brands": item.article.brands,
+                "category_candidates": item.article.category_candidates,
+                "source_name": item.article.source_name,
+            }
             for item in cluster
         ]
         response = await self._client.beta.chat.completions.parse(
@@ -71,7 +55,10 @@ class StoryGenerationService:
             response_format=StoryGenerationSchema,
             messages=[
                 {"role": "system", "content": STORY_GENERATION_PROMPT},
-                {"role": "user", "content": _render_json_payload([asdict(item) for item in payload])},
+                {
+                    "role": "user",
+                    "content": json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True),
+                },
             ],
         )
         result = response.choices[0].message.parsed
@@ -100,7 +87,3 @@ class StoryGenerationService:
             return_exceptions=False,
         )
         return list(results)
-
-
-def _render_json_payload(payload: list[dict[str, Any]]) -> str:
-    return json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True)

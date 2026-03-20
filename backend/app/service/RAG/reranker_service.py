@@ -2,26 +2,15 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from dashscope import TextReRank
 
 from backend.app.config.embedding_config import RERANKER_CONFIG
 
 
-@dataclass(frozen=True)
-class RerankResult:
-    """One reranked document with its cross-encoder relevance score."""
-
-    index: int
-    relevance_score: float
-    document: str
-
-
 class RerankerService:
     """Encapsulate DashScope text reranking for retrieval lanes."""
 
-    def rerank(self, query: str, documents: list[str], top_n: int) -> list[RerankResult]:
+    def rerank(self, query: str, documents: list[str], top_n: int) -> list[tuple[int, float]]:
         """Rerank candidate documents for one retrieval lane."""
         if not query.strip():
             raise ValueError("rerank query must not be empty")
@@ -44,10 +33,6 @@ class RerankerService:
                 f"status={response.status_code} code={response.code} message={response.message}"
             )
         return [
-            RerankResult(
-                index=int(result.index),
-                relevance_score=float(result.relevance_score),
-                document=documents[int(result.index)],
-            )
+            (int(result.index), float(result.relevance_score))
             for result in response.output.results or []
         ]

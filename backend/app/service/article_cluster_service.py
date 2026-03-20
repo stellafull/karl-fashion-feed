@@ -7,7 +7,6 @@ from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 import json
-from typing import Any
 
 import numpy as np
 from openai import AsyncOpenAI
@@ -26,20 +25,13 @@ class EmbeddedArticle:
 
 
 class ArticleClusterService:
-    def __init__(
-        self,
-        *,
-        client: Any | None = None,
-        distance_threshold: float = 0.18,
-    ) -> None:
-        if client is None:
-            client = AsyncOpenAI(
-                api_key=STORY_SUMMARIZATION_MODEL_CONFIG.api_key,
-                base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
-                timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
-            )
-        self._client = client
-        self._distance_threshold = distance_threshold
+    def __init__(self) -> None:
+        self._client = AsyncOpenAI(
+            api_key=STORY_SUMMARIZATION_MODEL_CONFIG.api_key,
+            base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
+            timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
+        )
+        self._distance_threshold = 0.18
 
     async def cluster_articles(self, articles: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
         if not articles:

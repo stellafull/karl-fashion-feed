@@ -55,11 +55,11 @@ class QdrantService:
         "ingested_at": models.PayloadSchemaType.DATETIME,
     }
 
-    def __init__(self, *, client: QdrantClient | None = None) -> None:
+    def __init__(self) -> None:
         self.url = os.getenv("QDRANT_URL", "http://localhost:6333")
         self.api_key = os.getenv("QDRANT_API_KEY", "")
         self.vector_dim = int(os.getenv("DENSE_EMBEDDING_DIMENSION", "2560"))
-        self._client = client or QdrantClient(
+        self._client = QdrantClient(
             url=self.url,
             api_key=self.api_key or None,
         )

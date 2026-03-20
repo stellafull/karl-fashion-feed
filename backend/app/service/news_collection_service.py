@@ -34,7 +34,6 @@ from backend.app.service.article_contracts import (
     CollectedImage,
     MarkdownBlock,
     ParsedArticle,
-    SourceCollectionResult,
 )
 
 
@@ -90,29 +89,6 @@ class NewsCollectionService:
         max_pages_per_source: int | None = None,
         include_undated: bool = False,
     ) -> list[CollectedArticle]:
-        results = await self.collect_source_results(
-            source_names=source_names,
-            limit_sources=limit_sources,
-            published_after=published_after,
-            max_articles_per_source=max_articles_per_source,
-            max_pages_per_source=max_pages_per_source,
-            include_undated=include_undated,
-        )
-        articles: list[CollectedArticle] = []
-        for result in results:
-            articles.extend(result.articles)
-        return articles
-
-    async def collect_source_results(
-        self,
-        *,
-        source_names: list[str] | None = None,
-        limit_sources: int | None = None,
-        published_after: datetime | None = None,
-        max_articles_per_source: int | None = None,
-        max_pages_per_source: int | None = None,
-        include_undated: bool = False,
-    ) -> list[SourceCollectionResult]:
         sources = self._select_sources(
             source_names=source_names,
             limit_sources=limit_sources,
@@ -121,7 +97,7 @@ class NewsCollectionService:
             return []
 
         if self._fetch_text_override is not None:
-            return await self._collect_source_results_with_fetch(
+            return await self._collect_articles_with_fetch(
                 sources=sources,
                 fetch_text=self._fetch_text_override,
                 published_after=published_after,
@@ -145,7 +121,7 @@ class NewsCollectionService:
                         response.raise_for_status()
                         return await response.text()
 
-            return await self._collect_source_results_with_fetch(
+            return await self._collect_articles_with_fetch(
                 sources=sources,
                 fetch_text=fetch_text,
                 published_after=published_after,
@@ -240,7 +216,7 @@ class NewsCollectionService:
             )
         return tuple(enriched)
 
-    async def _collect_source_results_with_fetch(
+    async def _collect_articles_with_fetch(
         self,
         *,
         sources: list[SourceConfig],
@@ -249,7 +225,7 @@ class NewsCollectionService:
         max_articles_per_source: int | None,
         max_pages_per_source: int | None,
         include_undated: bool,
-    ) -> list[SourceCollectionResult]:
+    ) -> list[CollectedArticle]:
         queue: asyncio.Queue[tuple[int, SourceConfig] | None] = asyncio.Queue()
         for index, source in enumerate(sources):
             queue.put_nowait((index, source))
@@ -258,7 +234,7 @@ class NewsCollectionService:
         for _ in range(worker_count):
             queue.put_nowait(None)
 
-        results: list[SourceCollectionResult | None] = [None] * len(sources)
+        results: list[list[CollectedArticle] | None] = [None] * len(sources)
 
         async def worker() -> None:
             while True:
@@ -268,7 +244,7 @@ class NewsCollectionService:
                         return
                     index, source = item
                     try:
-                        articles = await self._collect_for_source(
+                        results[index] = await self._collect_for_source(
                             source,
                             fetch_text=fetch_text,
                             published_after=published_after,
@@ -276,19 +252,11 @@ class NewsCollectionService:
                             max_pages_per_source=max_pages_per_source,
                             include_undated=include_undated,
                         )
-                        results[index] = SourceCollectionResult(
-                            source_name=source.name,
-                            source_type=source.type,
-                            articles=articles,
-                        )
                     except Exception as exc:
                         if not self._continue_on_source_error:
                             raise
-                        results[index] = SourceCollectionResult(
-                            source_name=source.name,
-                            source_type=source.type,
-                            error=exc,
-                        )
+                        del exc
+                        results[index] = []
                 finally:
                     queue.task_done()
 
@@ -298,7 +266,11 @@ class NewsCollectionService:
         finally:
             await asyncio.gather(*workers, return_exceptions=True)
 
-        return [result for result in results if result is not None]
+        articles: list[CollectedArticle] = []
+        for result in results:
+            if result:
+                articles.extend(result)
+        return articles
 
     async def _collect_for_source(
         self,
