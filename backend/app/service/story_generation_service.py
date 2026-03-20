@@ -11,7 +11,19 @@ from openai import AsyncOpenAI
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
 from backend.app.prompts.story_generation_prompt import STORY_GENERATION_PROMPT
 from backend.app.schemas.llm.story_generation import StoryGenerationSchema
-from backend.app.service.story_pipeline_contracts import EmbeddedArticle, StoryDraft
+from backend.app.service.article_cluster_service import EmbeddedArticle
+
+
+@dataclass(frozen=True)
+class StoryDraft:
+    title_zh: str
+    summary_zh: str
+    key_points: tuple[str, ...]
+    tags: tuple[str, ...]
+    category: str
+    article_ids: tuple[str, ...]
+    hero_image_url: str | None
+    source_article_count: int
 
 
 @dataclass(frozen=True)

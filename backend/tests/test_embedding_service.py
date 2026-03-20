@@ -10,6 +10,7 @@ from backend.app.config.embedding_config import (
     SPARSE_EMBEDDING_CONFIG,
 )
 from backend.app.service.RAG.embedding_service import (
+    EMBEDDING_MAX_RETRIES,
     generate_article_summary_embedding,
     generate_dense_embedding,
     generate_sparse_embedding,
@@ -220,6 +221,52 @@ class EmbeddingServiceTest(unittest.TestCase):
         with patch("backend.app.service.RAG.embedding_service.MultiModalEmbedding.call", FakeMultiModalEmbedding.call):
             with self.assertRaises(ValueError):
                 generate_dense_embedding(["image+text"], ["https://cdn.example.com/look.jpg"])
+
+    def test_generate_dense_embedding_retries_when_output_is_missing(self) -> None:
+        call_count = 0
+
+        class FakeMultiModalEmbedding:
+            @staticmethod
+            def call(**kwargs: object):
+                nonlocal call_count
+                del kwargs
+                call_count += 1
+                if call_count < 3:
+                    return type("Response", (), {"output": None})()
+                return type(
+                    "Response",
+                    (),
+                    {"output": {"embeddings": [{"embedding": [3.0]}]}},
+                )()
+
+        with patch(
+            "backend.app.service.RAG.embedding_service.MultiModalEmbedding.call",
+            FakeMultiModalEmbedding.call,
+        ), patch("backend.app.service.RAG.embedding_service.time.sleep") as sleep_mock:
+            embeddings = generate_dense_embedding(["image+text"], ["https://cdn.example.com/look.jpg"])
+
+        self.assertEqual(embeddings, [[3.0]])
+        self.assertEqual(call_count, 3)
+        self.assertEqual(sleep_mock.call_count, 2)
+
+    def test_generate_dense_embedding_fails_after_retry_budget(self) -> None:
+        class FakeMultiModalEmbedding:
+            @staticmethod
+            def call(**kwargs: object):
+                del kwargs
+                return type("Response", (), {"output": None})()
+
+        with patch(
+            "backend.app.service.RAG.embedding_service.MultiModalEmbedding.call",
+            FakeMultiModalEmbedding.call,
+        ), patch("backend.app.service.RAG.embedding_service.time.sleep") as sleep_mock:
+            with self.assertRaisesRegex(
+                ValueError,
+                f"dense embedding failed after {EMBEDDING_MAX_RETRIES} attempts",
+            ):
+                generate_dense_embedding(["image+text"], ["https://cdn.example.com/look.jpg"])
+
+        self.assertEqual(sleep_mock.call_count, EMBEDDING_MAX_RETRIES - 1)
 
     def test_generate_article_summary_embedding_passes_dimension(self) -> None:
         calls: list[dict[str, object]] = []

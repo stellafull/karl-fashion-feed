@@ -8,8 +8,8 @@ from backend.app.schemas.llm.story_cluster_review import (
     StoryClusterGroupSchema,
     StoryClusterReviewSchema,
 )
-from backend.app.service.article_cluster_service import ArticleClusterService
-from backend.app.service.story_pipeline_contracts import EmbeddedArticle, EnrichedArticleRecord
+from backend.app.service.article_cluster_service import ArticleClusterService, EmbeddedArticle
+from backend.app.service.article_enrichment_service import EnrichedArticle
 
 
 class StubReviewClient:
@@ -59,7 +59,7 @@ class StubReviewClient:
 
 def build_embedded(article_id: str, vector: tuple[float, ...], *, published_at: datetime) -> EmbeddedArticle:
     return EmbeddedArticle(
-        article=EnrichedArticleRecord(
+        article=EnrichedArticle(
             article_id=article_id,
             title_zh=f"title-{article_id}",
             summary_zh=f"summary-{article_id}",
@@ -121,6 +121,24 @@ class ArticleClusterServiceTest(unittest.TestCase):
         self.assertEqual(len(clusters), 2)
         self.assertEqual([item.article.article_id for item in clusters[0]], ["a-1"])
         self.assertEqual([item.article.article_id for item in clusters[1]], ["a-2"])
+
+    def test_review_raises_when_result_ids_do_not_match_cluster(self) -> None:
+        service = ArticleClusterService(
+            client=StubReviewClient(
+                StoryClusterReviewSchema(
+                    groups=[
+                        StoryClusterGroupSchema(article_ids=["a-1", "missing"]),
+                    ]
+                )
+            )
+        )
+        articles = [
+            build_embedded("a-1", (1.0, 0.0), published_at=datetime(2026, 3, 13, 8, 0, 0)),
+            build_embedded("a-2", (0.98, 0.02), published_at=datetime(2026, 3, 13, 7, 0, 0)),
+        ]
+
+        with self.assertRaisesRegex(ValueError, "mismatched article ids"):
+            asyncio.run(service.cluster_articles(articles))
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@ from backend.app.service.RAG.embedding_service import (
 )
 from backend.app.service.RAG.qdrant_service import QdrantService
 from backend.app.service.article_chunk_service import split_markdown_into_text_chunks
-from backend.app.service.article_markdown_service import ArticleMarkdownService
+from backend.app.service.article_parse_service import ArticleMarkdownService
 
 RAG_COLLECTION_NAME = "kff_retrieval"
 
@@ -27,6 +27,45 @@ class RagInsertResult:
     text_units: int
     image_units: int
     upserted_units: int
+
+
+def build_image_retrieval_content(article: Article, image: ArticleImage) -> str:
+    """Build the canonical image-lane retrieval content from truth sources."""
+    parts = [
+        image.caption_raw,
+        image.alt_text,
+        image.credit_raw,
+        image.context_snippet,
+        image.ocr_text,
+        image.observed_description,
+        image.contextual_interpretation,
+        article.title_zh,
+        article.summary_zh,
+        _join_terms(article.tags_json),
+        _join_terms(article.brands_json),
+    ]
+    normalized_parts = [part.strip() for part in parts if isinstance(part, str) and part.strip()]
+    return "\n".join(normalized_parts)
+
+
+def has_image_text_projection(image: ArticleImage) -> bool:
+    """Return whether an image has at least one retrieval text projection signal."""
+    projection_fields = (
+        image.alt_text,
+        image.caption_raw,
+        image.credit_raw,
+        image.context_snippet,
+        image.ocr_text,
+        image.observed_description,
+        image.contextual_interpretation,
+    )
+    return any(isinstance(field, str) and field.strip() for field in projection_fields)
+
+
+def _join_terms(value: object) -> str:
+    if not isinstance(value, list):
+        return ""
+    return " ".join(str(item).strip() for item in value if str(item).strip())
 
 
 class ArticleRagService:
@@ -148,8 +187,10 @@ class ArticleRagService:
             article = article_by_id.get(image.article_id)
             if article is None or image.visual_status != "done":
                 continue
+            if not has_image_text_projection(image):
+                continue
 
-            content = self._build_image_content(article, image)
+            content = build_image_retrieval_content(article, image)
             if not content:
                 continue
 
@@ -172,7 +213,3 @@ class ArticleRagService:
                 }
             )
         return records
-
-    def _build_image_content(self, article: Article, image: ArticleImage) -> str:
-        del article
-        return (image.observed_description or "").strip()

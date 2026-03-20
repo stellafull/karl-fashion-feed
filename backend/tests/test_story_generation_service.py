@@ -5,8 +5,9 @@ import unittest
 from datetime import datetime
 
 from backend.app.schemas.llm.story_generation import StoryGenerationSchema
+from backend.app.service.article_cluster_service import EmbeddedArticle
+from backend.app.service.article_enrichment_service import EnrichedArticle
 from backend.app.service.story_generation_service import StoryGenerationService
-from backend.app.service.story_pipeline_contracts import EmbeddedArticle, EnrichedArticleRecord
 
 
 class StubStoryClient:
@@ -73,7 +74,7 @@ def build_cluster(article_id: str) -> list[EmbeddedArticle]:
     published_at = datetime(2026, 3, 13, 8, 0, 0)
     return [
         EmbeddedArticle(
-            article=EnrichedArticleRecord(
+            article=EnrichedArticle(
                 article_id=article_id,
                 title_zh=f"title-{article_id}",
                 summary_zh=f"summary-{article_id}",

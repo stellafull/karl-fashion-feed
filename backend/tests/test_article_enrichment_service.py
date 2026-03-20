@@ -13,7 +13,7 @@ from backend.app.core.database import Base
 from backend.app.models.article import Article
 from backend.app.schemas.llm.article_enrichment import ArticleEnrichmentSchema
 from backend.app.service.article_enrichment_service import ArticleEnrichmentService
-from backend.app.service.article_markdown_service import ArticleMarkdownService
+from backend.app.service.article_parse_service import ArticleMarkdownService
 
 
 class StubLLMClient:
@@ -183,7 +183,7 @@ class ArticleEnrichmentServiceTest(unittest.TestCase):
             self.assertEqual(article.reject_reason, "")
             self.assertEqual(article.title_zh, "巴黎时装周观察")
 
-    def test_enrich_article_overrides_legacy_market_fit_rejection(self) -> None:
+    def test_enrich_article_keeps_llm_rejection_decision(self) -> None:
         service = ArticleEnrichmentService(
             client=StubLLMClient(
                 ArticleEnrichmentSchema(
@@ -219,8 +219,8 @@ class ArticleEnrichmentServiceTest(unittest.TestCase):
 
             self.assertTrue(changed)
             self.assertEqual(article.enrichment_status, "done")
-            self.assertTrue(article.should_publish)
-            self.assertEqual(article.reject_reason, "")
+            self.assertFalse(article.should_publish)
+            self.assertEqual(article.reject_reason, "文章内容为购物推荐，不适合作为时尚资讯发布。")
 
 if __name__ == "__main__":
     unittest.main()

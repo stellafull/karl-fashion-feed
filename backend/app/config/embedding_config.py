@@ -24,6 +24,18 @@ class EmbeddingModelConfig:
         return value or None
 
 
+@dataclass(frozen=True)
+class RerankerModelConfig:
+    model_name: str
+    api_key_env: str = "DASHSCOPE_API_KEY"
+    timeout_seconds: int = 120
+
+    @property
+    def api_key(self) -> str | None:
+        value = os.getenv(self.api_key_env, "").strip()
+        return value or None
+
+
 
 # modality embedding model setup
 # dense embedding model for text and image, sparse embedding model for text only
@@ -48,3 +60,7 @@ DENSE_SUMMARIZATION_EMBEDDING_CONFIG = EmbeddingModelConfig(
     batch_size=min(max(int(os.getenv("DENSE_SUMMARIZATION_EMBEDDING_BATCH_SIZE", "10")), 1), 10),
 )
 
+
+RERANKER_CONFIG = RerankerModelConfig(
+    model_name=os.getenv("RERANKER_MODEL", "gte-rerank"),
+)

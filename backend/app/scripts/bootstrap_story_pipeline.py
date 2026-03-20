@@ -18,8 +18,8 @@ from backend.app.core.database import Base, SessionLocal, engine
 from backend.app.models import Article, PipelineRun, Story, StoryArticle, ensure_article_storage_schema
 from backend.app.service.article_collection_service import ArticleCollectionService
 from backend.app.service.article_parse_service import ArticleParseService
-from backend.app.service.story_pipeline_contracts import StoryDraft
-from backend.app.service.story_workflow_service import StoryWorkflowService
+from backend.app.service.scheduler_service import SchedulerService
+from backend.app.service.story_generation_service import StoryDraft
 
 RUN_TYPE_BOOTSTRAP_STORY = "bootstrap_story_day"
 STAGE_STORY_PERSIST = "story_persist"
@@ -86,7 +86,7 @@ async def main() -> int:
         print("bootstrap story pipeline completed: story_dates=[] candidates=0 stories_created=0")
         return 0
 
-    workflow_service = StoryWorkflowService()
+    scheduler_service = SchedulerService()
     aggregate = {"candidates": 0, "enriched": 0, "published": 0, "stories_created": 0}
     for story_date in story_dates:
         article_ids = _load_story_date_article_ids(story_date)
@@ -97,7 +97,7 @@ async def main() -> int:
             story_date=story_date,
         )
         try:
-            result = await workflow_service.run(article_ids)
+            result = await scheduler_service.run_story_workflow(article_ids)
             stages_completed = list(result.stages_completed)
             if STAGE_STORY_PERSIST not in stages_completed:
                 stages_completed.append(STAGE_STORY_PERSIST)

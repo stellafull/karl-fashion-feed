@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from collections import defaultdict
+from dataclasses import dataclass
 from datetime import datetime
 import json
 from typing import Any
@@ -15,7 +16,13 @@ from sklearn.cluster import AgglomerativeClustering
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
 from backend.app.prompts.story_cluster_review_prompt import STORY_CLUSTER_REVIEW_PROMPT
 from backend.app.schemas.llm.story_cluster_review import StoryClusterReviewSchema
-from backend.app.service.story_pipeline_contracts import EmbeddedArticle
+from backend.app.service.article_enrichment_service import EnrichedArticle
+
+
+@dataclass(frozen=True)
+class EmbeddedArticle:
+    article: EnrichedArticle
+    embedding: tuple[float, ...]
 
 
 class ArticleClusterService:

@@ -12,12 +12,16 @@
   增量采集 + parse
 - `backend/app/scripts/run_daily_pipeline.py`
   日更 story pipeline 入口
+- `backend/app/scripts/run_scheduler.py`
+  每天北京时间 8 点触发一次 `DailyPipelineService`
 - `backend/app/scripts/init_article_data.py`
   初始化或回填近一段时间的 `article`
 - `backend/app/scripts/dev_ingest_parse_today.py`
   dev 专用增量脚本，只 parse 本次新插入 article，不跑 enrichment / cluster
 - `backend/app/scripts/dev_ingest_story_rag_today.py`
   dev 专用全链路脚本，跑 enrichment、image analysis、story draft、RAG 导入
+- `backend/app/scripts/rebuild_rag_collection.py`
+  从 Postgres + Markdown 真相源全量重建 `kff_retrieval`
 
 ## 常用命令
 
@@ -61,6 +65,12 @@ python backend/app/scripts/dev_ingest_parse_today.py --source Vogue --source WWD
 
 ```bash
 python backend/app/scripts/run_daily_pipeline.py
+```
+
+执行每天北京时间 8 点触发的 scheduler：
+
+```bash
+python backend/app/scripts/run_scheduler.py
 ```
 
 只处理已入库 article，不重新采集：
@@ -109,6 +119,18 @@ python backend/app/scripts/dev_ingest_story_rag_today.py
 
 ```bash
 python backend/app/scripts/dev_ingest_story_rag_today.py --source Vogue --source WWD
+```
+
+执行 dev 检索联调脚本（验证 `RagTools` 4 条路径）：
+
+```bash
+python backend/app/scripts/dev_query_retrieval.py
+```
+
+重建 shared retrieval collection：
+
+```bash
+python backend/app/scripts/rebuild_rag_collection.py
 ```
 
 ## 初始化回填

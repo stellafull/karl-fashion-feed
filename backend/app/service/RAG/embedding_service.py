@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from typing import Any, List, Sequence
 
 from dashscope import MultiModalEmbedding, TextEmbedding
@@ -13,6 +14,8 @@ from backend.app.config.embedding_config import (
 )
 
 SparseEmbedding = dict[int, float]
+EMBEDDING_MAX_RETRIES = 3
+EMBEDDING_RETRY_DELAY_SECONDS = 1
 
 
 def generate_article_summary_embedding(text: str) -> List[float]:
@@ -25,8 +28,12 @@ def generate_article_summary_embedding(text: str) -> List[float]:
     if DENSE_SUMMARIZATION_EMBEDDING_CONFIG.vector_dimension is not None:
         request_kwargs["dimension"] = DENSE_SUMMARIZATION_EMBEDDING_CONFIG.vector_dimension
 
-    response = TextEmbedding.call(**request_kwargs)
-    [item] = response.output["embeddings"]
+    response = _call_with_retry(
+        request_callable=TextEmbedding.call,
+        request_kwargs=request_kwargs,
+        operation_name="summary embedding",
+    )
+    [item] = _extract_embeddings(response=response, operation_name="summary embedding")
     return [float(value) for value in item["embedding"]]
 
 
@@ -54,8 +61,12 @@ def generate_dense_embedding(
         if DENSE_EMBEDDING_CONFIG.vector_dimension is not None:
             request_kwargs["parameters"] = {"dimension": DENSE_EMBEDDING_CONFIG.vector_dimension}
 
-        response = MultiModalEmbedding.call(**request_kwargs)
-        [item] = response.output["embeddings"]
+        response = _call_with_retry(
+            request_callable=MultiModalEmbedding.call,
+            request_kwargs=request_kwargs,
+            operation_name="dense embedding",
+        )
+        [item] = _extract_embeddings(response=response, operation_name="dense embedding")
         embeddings.append([float(value) for value in item["embedding"]])
 
     return embeddings
@@ -67,13 +78,17 @@ def generate_sparse_embedding(texts: List[str]) -> List[SparseEmbedding]:
     batch_size = SPARSE_EMBEDDING_CONFIG.batch_size
     for index in range(0, len(texts), batch_size):
         batch = texts[index : index + batch_size]
-        response = TextEmbedding.call(
-            model=SPARSE_EMBEDDING_CONFIG.model_name,
-            input=batch,
-            api_key=SPARSE_EMBEDDING_CONFIG.api_key,
-            output_type="sparse",
+        response = _call_with_retry(
+            request_callable=TextEmbedding.call,
+            request_kwargs={
+                "model": SPARSE_EMBEDDING_CONFIG.model_name,
+                "input": batch,
+                "api_key": SPARSE_EMBEDDING_CONFIG.api_key,
+                "output_type": "sparse",
+            },
+            operation_name="sparse embedding",
         )
-        for item in response.output["embeddings"]:
+        for item in _extract_embeddings(response=response, operation_name="sparse embedding"):
             raw_vector = item["sparse_embedding"] if "sparse_embedding" in item else item["embedding"]
             if isinstance(raw_vector, list) and raw_vector and isinstance(raw_vector[0], dict):
                 embeddings.append(
@@ -94,4 +109,36 @@ def generate_sparse_embedding(texts: List[str]) -> List[SparseEmbedding]:
                     for vector_index, vector_value in enumerate(raw_vector)
                 }
             )
+    return embeddings
+
+
+def _call_with_retry(
+    *,
+    request_callable,
+    request_kwargs: dict[str, Any],
+    operation_name: str,
+):
+    last_error: Exception | None = None
+    for attempt in range(1, EMBEDDING_MAX_RETRIES + 1):
+        try:
+            response = request_callable(**request_kwargs)
+            _extract_embeddings(response=response, operation_name=operation_name)
+            return response
+        except Exception as exc:
+            last_error = exc
+            if attempt == EMBEDDING_MAX_RETRIES:
+                break
+            time.sleep(EMBEDDING_RETRY_DELAY_SECONDS)
+    raise ValueError(f"{operation_name} failed after {EMBEDDING_MAX_RETRIES} attempts") from last_error
+
+
+def _extract_embeddings(*, response: Any, operation_name: str) -> list[dict[str, Any]]:
+    output = getattr(response, "output", None)
+    if not isinstance(output, dict):
+        raise ValueError(f"{operation_name} response missing output")
+    embeddings = output.get("embeddings")
+    if not isinstance(embeddings, list) or not embeddings:
+        raise ValueError(f"{operation_name} response missing embeddings")
+    if not all(isinstance(item, dict) for item in embeddings):
+        raise ValueError(f"{operation_name} response embeddings must be dict items")
     return embeddings

@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 from backend.app.service.article_contracts import MarkdownBlock
-from backend.app.service.article_markdown_service import ArticleMarkdownService
+from backend.app.service.article_parse_service import ArticleMarkdownService
 
 
 class ArticleMarkdownServiceTest(unittest.TestCase):

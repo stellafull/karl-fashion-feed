@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any
 
@@ -13,8 +14,22 @@ from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
 from backend.app.models import Article
 from backend.app.prompts.article_enrichment_prompt import ARTICLE_ENRICHMENT_PROMPT
 from backend.app.schemas.llm.article_enrichment import ArticleEnrichmentSchema
-from backend.app.service.article_markdown_service import ArticleMarkdownService
-from backend.app.service.story_pipeline_contracts import EnrichedArticleRecord
+from backend.app.service.article_parse_service import ArticleMarkdownService
+
+
+@dataclass(frozen=True)
+class EnrichedArticle:
+    article_id: str
+    title_zh: str
+    summary_zh: str
+    tags: tuple[str, ...]
+    brands: tuple[str, ...]
+    category_candidates: tuple[str, ...]
+    cluster_text: str
+    published_at: datetime | None
+    ingested_at: datetime
+    hero_image_url: str | None
+    source_name: str
 
 
 class ArticleEnrichmentService:
@@ -154,7 +169,7 @@ class ArticleEnrichmentService:
         return True
 
     @staticmethod
-    def to_record(article: Article) -> EnrichedArticleRecord:
+    def to_record(article: Article) -> EnrichedArticle:
         title_zh = (article.title_zh or "").strip()
         summary_zh = (article.summary_zh or "").strip()
         cluster_text = (article.cluster_text or "").strip()
@@ -179,7 +194,7 @@ class ArticleEnrichmentService:
                 str(item).strip() for item in article.category_candidates_json if str(item).strip()
             )
 
-        return EnrichedArticleRecord(
+        return EnrichedArticle(
             article_id=article.article_id,
             title_zh=title_zh,
             summary_zh=summary_zh,

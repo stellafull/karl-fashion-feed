@@ -6,21 +6,18 @@ import asyncio
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Awaitable, Callable
+from typing import Awaitable, Callable, Iterable
 from uuid import uuid4
 
 import aiohttp
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+from backend.app.config.storage_config import ARTICLE_MARKDOWN_ROOT
 from backend.app.core.database import SessionLocal
 from backend.app.models.article import Article, ArticleImage, ensure_article_storage_schema
-from backend.app.service.article_markdown_service import ArticleMarkdownService
+from backend.app.service.article_contracts import MarkdownBlock
 from backend.app.service.news_collection_service import NewsCollectionService
-
-
-FetchText = Callable[[str], Awaitable[str]]
-FetchBytes = Callable[[str], Awaitable[bytes]]
 
 
 @dataclass(frozen=True)
@@ -38,6 +35,55 @@ class _ParseOutcome:
     error: Exception | None = None
 
 
+class ArticleMarkdownService:
+    """Canonical markdown storage and materialization helpers."""
+
+    def __init__(self, root_path: Path | None = None) -> None:
+        self.root_path = Path(root_path or ARTICLE_MARKDOWN_ROOT)
+
+    def build_relative_path(
+        self,
+        *,
+        article_id: str,
+        reference_time: datetime | None,
+    ) -> str:
+        dt = reference_time or datetime.now(UTC).replace(tzinfo=None)
+        return str(Path(dt.date().isoformat()) / f"{article_id}.md")
+
+    def render_canonical_markdown(
+        self,
+        *,
+        title: str,
+        summary: str,
+        blocks: Iterable[MarkdownBlock],
+    ) -> str:
+        lines: list[str] = [f"# {title.strip()}"]
+        if summary.strip():
+            lines.extend(["", summary.strip()])
+
+        for block in blocks:
+            lines.append("")
+            if block.kind == "heading":
+                lines.append(f"## {block.text.strip()}")
+            elif block.kind == "paragraph":
+                lines.append(block.text.strip())
+            elif block.kind == "list_item":
+                lines.append(f"- {block.text.strip()}")
+            elif block.kind == "blockquote":
+                lines.append(f"> {block.text.strip()}")
+
+        return "\n".join(line for line in lines if line is not None).strip() + "\n"
+
+    def write_markdown(self, *, relative_path: str, content: str) -> Path:
+        absolute_path = self.root_path / relative_path
+        absolute_path.parent.mkdir(parents=True, exist_ok=True)
+        absolute_path.write_text(content, encoding="utf-8")
+        return absolute_path
+
+    def read_markdown(self, *, relative_path: str) -> str:
+        return (self.root_path / relative_path).read_text(encoding="utf-8")
+
+
 class ArticleParseService:
     def __init__(
         self,
@@ -46,15 +92,11 @@ class ArticleParseService:
         collector: NewsCollectionService | None = None,
         markdown_service: ArticleMarkdownService | None = None,
         parse_batch_size: int = 20,
-        fetch_text: FetchText | None = None,
-        fetch_bytes: FetchBytes | None = None,
     ) -> None:
         self._session_factory = session_factory
         self._collector = collector or NewsCollectionService()
         self._markdown_service = markdown_service or ArticleMarkdownService()
         self._parse_batch_size = max(parse_batch_size, 1)
-        self._fetch_text_override = fetch_text
-        self._fetch_bytes_override = fetch_bytes
 
     async def parse_articles(
         self,
@@ -66,17 +108,7 @@ class ArticleParseService:
         if not candidates:
             return ParseResult(candidates=0, parsed=0, failed=0, parsed_article_ids=tuple())
 
-        fetch_text = self._fetch_text_override or getattr(self._collector, "_fetch_text_override", None)
-        fetch_bytes = self._fetch_bytes_override
-        if fetch_text is not None and fetch_bytes is not None:
-            outcomes = await self._parse_batches(
-                candidates=candidates,
-                fetch_text=fetch_text,
-                fetch_bytes=fetch_bytes,
-            )
-        else:
-            outcomes = await self._parse_batches_with_http_session(candidates)
-
+        outcomes = await self._parse_batches_with_http_session(candidates)
         return self._persist_outcomes(outcomes)
 
     def _load_candidates(
@@ -121,40 +153,27 @@ class ArticleParseService:
                         response.raise_for_status()
                         return await response.read()
 
-            return await self._parse_batches(
-                candidates=candidates,
-                fetch_text=fetch_text,
-                fetch_bytes=fetch_bytes,
-            )
-
-    async def _parse_batches(
-        self,
-        *,
-        candidates: list[Article],
-        fetch_text: FetchText,
-        fetch_bytes: FetchBytes,
-    ) -> list[_ParseOutcome]:
-        outcomes: list[_ParseOutcome] = []
-        for batch in _chunked(candidates, self._parse_batch_size):
-            results = await asyncio.gather(
-                *(
-                    self._parse_single(
-                        article=article,
-                        fetch_text=fetch_text,
-                        fetch_bytes=fetch_bytes,
+            outcomes: list[_ParseOutcome] = []
+            for batch in _chunked(candidates, self._parse_batch_size):
+                results = await asyncio.gather(
+                    *(
+                        self._parse_single(
+                            article=article,
+                            fetch_text=fetch_text,
+                            fetch_bytes=fetch_bytes,
+                        )
+                        for article in batch
                     )
-                    for article in batch
                 )
-            )
-            outcomes.extend(results)
-        return outcomes
+                outcomes.extend(results)
+            return outcomes
 
     async def _parse_single(
         self,
         *,
         article: Article,
-        fetch_text: FetchText,
-        fetch_bytes: FetchBytes,
+        fetch_text: Callable[[str], Awaitable[str]],
+        fetch_bytes: Callable[[str], Awaitable[bytes]],
     ) -> _ParseOutcome:
         try:
             html_text = await self._collector.fetch_html(

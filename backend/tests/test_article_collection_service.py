@@ -16,8 +16,7 @@ from backend.app.core.database import Base
 from backend.app.models.article import Article, ArticleImage
 from backend.app.service.article_collection_service import ArticleCollectionService
 from backend.app.service.article_contracts import CollectedArticle
-from backend.app.service.article_markdown_service import ArticleMarkdownService
-from backend.app.service.article_parse_service import ArticleParseService
+from backend.app.service.article_parse_service import ArticleMarkdownService, ArticleParseService
 from backend.app.service.news_collection_service import NewsCollectionService
 
 
@@ -108,6 +107,60 @@ class ArticleParseServiceTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
 
+    def _patch_http_session(
+        self,
+        *,
+        text_payloads: dict[str, str] | None = None,
+        byte_payloads: dict[str, bytes] | None = None,
+        text_errors: dict[str, Exception] | None = None,
+    ):
+        text_payloads = text_payloads or {}
+        byte_payloads = byte_payloads or {}
+        text_errors = text_errors or {}
+
+        class FakeResponse:
+            def __init__(self, url: str) -> None:
+                self._url = url
+
+            async def __aenter__(self):
+                if self._url in text_errors:
+                    raise text_errors[self._url]
+                return self
+
+            async def __aexit__(self, exc_type, exc, tb) -> None:
+                del exc_type, exc, tb
+
+            def raise_for_status(self) -> None:
+                return None
+
+            async def text(self) -> str:
+                if self._url not in text_payloads:
+                    raise AssertionError(self._url)
+                return text_payloads[self._url]
+
+            async def read(self) -> bytes:
+                if self._url not in byte_payloads:
+                    raise AssertionError(self._url)
+                return byte_payloads[self._url]
+
+        class FakeClientSession:
+            def __init__(self, *args, **kwargs) -> None:
+                del args, kwargs
+
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, exc_type, exc, tb) -> None:
+                del exc_type, exc, tb
+
+            def get(self, url: str):
+                return FakeResponse(url)
+
+        return unittest.mock.patch(
+            "backend.app.service.article_parse_service.aiohttp.ClientSession",
+            FakeClientSession,
+        )
+
     def test_parse_articles_writes_pure_text_markdown_and_image_assets(self) -> None:
         with self.session_factory() as session:
             session.add(
@@ -160,27 +213,20 @@ class ArticleParseServiceTest(unittest.TestCase):
             </html>
         """
 
-        async def fetch_text(url: str) -> str:
-            self.assertEqual(url, "https://example.com/story")
-            return html
-
-        async def fetch_bytes(url: str) -> bytes:
-            palette = {
-                "https://example.com/hero.jpg": (255, 0, 0),
-                "https://example.com/look.jpg": (0, 255, 0),
-            }
-            return _png_bytes(palette[url])
-
-        collector = NewsCollectionService(source_configs=[source], fetch_text=fetch_text)
+        collector = NewsCollectionService(source_configs=[source])
         service = ArticleParseService(
             session_factory=self.session_factory,
             collector=collector,
             markdown_service=self.markdown_service,
-            fetch_text=fetch_text,
-            fetch_bytes=fetch_bytes,
         )
-
-        result = asyncio.run(service.parse_articles(article_ids=["article-1"]))
+        with self._patch_http_session(
+            text_payloads={"https://example.com/story": html},
+            byte_payloads={
+                "https://example.com/hero.jpg": _png_bytes((255, 0, 0)),
+                "https://example.com/look.jpg": _png_bytes((0, 255, 0)),
+            },
+        ):
+            result = asyncio.run(service.parse_articles(article_ids=["article-1"]))
         self.assertEqual(result.parsed, 1)
         self.assertEqual(result.failed, 0)
 
@@ -242,19 +288,16 @@ class ArticleParseServiceTest(unittest.TestCase):
             ),
         )
 
-        async def fetch_text(_: str) -> str:
-            raise RuntimeError("boom")
-
-        collector = NewsCollectionService(source_configs=[source], fetch_text=fetch_text)
+        collector = NewsCollectionService(source_configs=[source])
         service = ArticleParseService(
             session_factory=self.session_factory,
             collector=collector,
             markdown_service=self.markdown_service,
-            fetch_text=fetch_text,
-            fetch_bytes=fetch_text,  # unreachable in failure path
         )
-
-        result = asyncio.run(service.parse_articles(article_ids=["article-2"]))
+        with self._patch_http_session(
+            text_errors={"https://example.com/fail": RuntimeError("boom")},
+        ):
+            result = asyncio.run(service.parse_articles(article_ids=["article-2"]))
         self.assertEqual(result.parsed, 0)
         self.assertEqual(result.failed, 1)
 
@@ -315,26 +358,20 @@ class ArticleParseServiceTest(unittest.TestCase):
             </html>
         """
 
-        async def fetch_text(_: str) -> str:
-            return html
-
-        async def fetch_bytes(url: str) -> bytes:
-            palette = {
-                "https://example.com/hero.jpg": (255, 0, 0),
-                "https://example.com/look.jpg": (0, 255, 0),
-            }
-            return _png_bytes(palette[url])
-
-        collector = NewsCollectionService(source_configs=[source], fetch_text=fetch_text)
+        collector = NewsCollectionService(source_configs=[source])
         service = ArticleParseService(
             session_factory=self.session_factory,
             collector=collector,
             markdown_service=self.markdown_service,
-            fetch_text=fetch_text,
-            fetch_bytes=fetch_bytes,
         )
-
-        first_result = asyncio.run(service.parse_articles(article_ids=["article-3"]))
+        with self._patch_http_session(
+            text_payloads={"https://example.com/reparse": html},
+            byte_payloads={
+                "https://example.com/hero.jpg": _png_bytes((255, 0, 0)),
+                "https://example.com/look.jpg": _png_bytes((0, 255, 0)),
+            },
+        ):
+            first_result = asyncio.run(service.parse_articles(article_ids=["article-3"]))
         self.assertEqual(first_result.parsed, 1)
 
         with self.session_factory() as session:
@@ -353,7 +390,14 @@ class ArticleParseServiceTest(unittest.TestCase):
             stored_article.parse_status = "failed"
             session.commit()
 
-        second_result = asyncio.run(service.parse_articles(article_ids=["article-3"]))
+        with self._patch_http_session(
+            text_payloads={"https://example.com/reparse": html},
+            byte_payloads={
+                "https://example.com/hero.jpg": _png_bytes((255, 0, 0)),
+                "https://example.com/look.jpg": _png_bytes((0, 255, 0)),
+            },
+        ):
+            second_result = asyncio.run(service.parse_articles(article_ids=["article-3"]))
         self.assertEqual(second_result.parsed, 1)
 
         with self.session_factory() as session:
@@ -423,24 +467,20 @@ class ArticleParseServiceTest(unittest.TestCase):
             """,
         }
 
-        async def fetch_text(url: str) -> str:
-            return pages[url]
-
-        async def fetch_bytes(url: str) -> bytes:
-            if url in {"https://example.com/shared.jpg", "https://example.com/shared-copy.jpg"}:
-                return _png_bytes((0, 0, 255))
-            raise AssertionError(url)
-
-        collector = NewsCollectionService(source_configs=[source], fetch_text=fetch_text)
+        collector = NewsCollectionService(source_configs=[source])
         service = ArticleParseService(
             session_factory=self.session_factory,
             collector=collector,
             markdown_service=self.markdown_service,
-            fetch_text=fetch_text,
-            fetch_bytes=fetch_bytes,
         )
-
-        first_result = asyncio.run(service.parse_articles(article_ids=["article-4"]))
+        with self._patch_http_session(
+            text_payloads=pages,
+            byte_payloads={
+                "https://example.com/shared.jpg": _png_bytes((0, 0, 255)),
+                "https://example.com/shared-copy.jpg": _png_bytes((0, 0, 255)),
+            },
+        ):
+            first_result = asyncio.run(service.parse_articles(article_ids=["article-4"]))
         self.assertEqual(first_result.parsed, 1)
 
         with self.session_factory() as session:
@@ -450,7 +490,14 @@ class ArticleParseServiceTest(unittest.TestCase):
             first_image.analysis_metadata_json = {"source": "reused"}
             session.commit()
 
-        second_result = asyncio.run(service.parse_articles(article_ids=["article-5"]))
+        with self._patch_http_session(
+            text_payloads=pages,
+            byte_payloads={
+                "https://example.com/shared.jpg": _png_bytes((0, 0, 255)),
+                "https://example.com/shared-copy.jpg": _png_bytes((0, 0, 255)),
+            },
+        ):
+            second_result = asyncio.run(service.parse_articles(article_ids=["article-5"]))
         self.assertEqual(second_result.parsed, 1)
 
         with self.session_factory() as session:

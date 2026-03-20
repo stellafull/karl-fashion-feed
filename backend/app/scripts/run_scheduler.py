@@ -1,4 +1,4 @@
-"""Run the daily story pipeline."""
+"""Run the daily scheduler that triggers the story pipeline at Beijing 08:00."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from backend.app.service.scheduler_service import SchedulerService
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Collect, parse, enrich, cluster, and generate immutable stories"
+        description="Run the daily story scheduler at Beijing 08:00",
     )
     parser.add_argument(
         "--skip-ingest",
@@ -40,23 +40,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 async def main() -> int:
     args = build_parser().parse_args()
-    result = await SchedulerService().run_pipeline_once(
+    await SchedulerService().run_forever(
         skip_ingest=args.skip_ingest,
         source_names=args.sources,
         limit_sources=args.limit_sources,
-    )
-    print(
-        "daily pipeline completed: "
-        f"run_id={result.run_id} "
-        f"candidates={result.candidates} "
-        f"enriched={result.enriched} "
-        f"published={result.published} "
-        f"stories_created={result.stories_created} "
-        f"skipped_existing_enrichment={result.skipped_existing_enrichment} "
-        f"story_grouping_mode={result.story_grouping_mode} "
-        f"stages_completed={list(result.stages_completed)} "
-        f"stages_skipped={list(result.stages_skipped)} "
-        f"watermark_ingested_at={result.watermark_ingested_at}"
     )
     return 0
 

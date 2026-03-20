@@ -22,7 +22,7 @@ from backend.app.service.article_collection_service import ArticleCollectionServ
 from backend.app.service.article_parse_service import ArticleParseService
 from backend.app.service.image_analysis_service import ImageAnalysisService
 from backend.app.service.news_collection_service import NewsCollectionService
-from backend.app.service.story_workflow_service import StoryWorkflowService
+from backend.app.service.scheduler_service import SchedulerService
 
 
 @dataclass(frozen=True)
@@ -107,7 +107,7 @@ async def run(args: argparse.Namespace) -> int:
     )
     collection_service = ArticleCollectionService(collector=collector)
     parse_service = ArticleParseService(collector=collector)
-    story_workflow_service = StoryWorkflowService()
+    scheduler_service = SchedulerService()
     rag_service = ArticleRagService()
 
     collection_result = await collection_service.collect_articles(
@@ -159,10 +159,10 @@ async def run(args: argparse.Namespace) -> int:
             retry_delay_seconds=args.image_analysis_retry_delay_seconds,
         )
     )
-    enrichment_task = asyncio.create_task(story_workflow_service.enrich_articles(parsed_article_ids))
+    enrichment_task = asyncio.create_task(scheduler_service.enrich_articles(parsed_article_ids))
     enriched_count, skipped_existing_enrichment = await enrichment_task
 
-    story_task = asyncio.create_task(story_workflow_service.build_story_drafts(parsed_article_ids))
+    story_task = asyncio.create_task(scheduler_service.build_story_drafts(parsed_article_ids))
     story_result, rag_result = await asyncio.gather(story_task, rag_task)
 
     print(

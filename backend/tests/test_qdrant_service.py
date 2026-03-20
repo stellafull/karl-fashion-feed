@@ -77,6 +77,125 @@ class QdrantServiceTest(unittest.TestCase):
         self.assertEqual(stored.payload["chunk_index"], None)
         self.assertEqual(stored.payload["ingested_at"], "2026-03-17T00:00:00Z")
 
+    def test_search_dense_returns_filtered_points(self) -> None:
+        self.service.upsert_data(
+            "kff_retrieval",
+            [
+                self._text_record(),
+                self._image_record(),
+            ],
+        )
+
+        results = self.service.search_dense(
+            "kff_retrieval",
+            [1.0, 0.0],
+            limit=5,
+            filters=self.service.build_metadata_filter(modality="text"),
+        )
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].payload["retrieval_unit_id"], "text:article-1:0")
+
+    def test_search_sparse_returns_expected_keyword_match(self) -> None:
+        self.service.upsert_data(
+            "kff_retrieval",
+            [
+                self._text_record(),
+                {
+                    **self._text_record(),
+                    "retrieval_unit_id": "text:article-2:0",
+                    "article_id": "article-2",
+                    "content": "second content",
+                    "sparse_vector": {9: 1.0},
+                    "dense_vector": [0.0, 1.0],
+                    "category": "culture",
+                    "tags_json": ["tag-b"],
+                    "brands_json": ["brand-b"],
+                },
+            ],
+        )
+
+        results = self.service.search_sparse(
+            "kff_retrieval",
+            {9: 1.0},
+            limit=5,
+            filters=self.service.build_metadata_filter(
+                modality="text",
+                categories=["culture"],
+            ),
+        )
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].payload["retrieval_unit_id"], "text:article-2:0")
+
+    def test_search_hybrid_supports_time_range_filter(self) -> None:
+        self.service.upsert_data(
+            "kff_retrieval",
+            [
+                self._text_record(),
+                {
+                    **self._text_record(),
+                    "retrieval_unit_id": "text:article-2:0",
+                    "article_id": "article-2",
+                    "content": "newer content",
+                    "dense_vector": [1.0, 0.0],
+                    "sparse_vector": {1: 1.0},
+                    "ingested_at": datetime(2026, 3, 18, 0, 0, 0, tzinfo=UTC),
+                },
+            ],
+        )
+
+        results = self.service.search_hybrid(
+            "kff_retrieval",
+            [1.0, 0.0],
+            {1: 1.0},
+            limit=5,
+            filters=self.service.build_metadata_filter(
+                modality="text",
+                start_at=datetime(2026, 3, 18, 0, 0, 0, tzinfo=UTC),
+            ),
+        )
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].payload["retrieval_unit_id"], "text:article-2:0")
+
+    def test_search_hybrid_supports_combined_brands_and_time_range_filters(self) -> None:
+        self.service.upsert_data(
+            "kff_retrieval",
+            [
+                self._text_record(),
+                {
+                    **self._text_record(),
+                    "retrieval_unit_id": "text:article-2:0",
+                    "article_id": "article-2",
+                    "brands_json": ["brand-b"],
+                    "ingested_at": datetime(2026, 3, 18, 0, 0, 0, tzinfo=UTC),
+                },
+                {
+                    **self._text_record(),
+                    "retrieval_unit_id": "text:article-3:0",
+                    "article_id": "article-3",
+                    "brands_json": ["brand-b"],
+                    "ingested_at": datetime(2026, 3, 16, 0, 0, 0, tzinfo=UTC),
+                },
+            ],
+        )
+
+        results = self.service.search_hybrid(
+            "kff_retrieval",
+            [1.0, 0.0],
+            {1: 1.0},
+            limit=5,
+            filters=self.service.build_metadata_filter(
+                modality="text",
+                brands=["brand-b"],
+                start_at=datetime(2026, 3, 17, 0, 0, 0, tzinfo=UTC),
+                end_at=datetime(2026, 3, 19, 0, 0, 0, tzinfo=UTC),
+            ),
+        )
+
+        self.assertEqual([point.payload["retrieval_unit_id"] for point in results], ["text:article-2:0"])
+
     def _text_record(self) -> dict[str, object]:
         return {
             "retrieval_unit_id": "text:article-1:0",

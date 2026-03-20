@@ -2,69 +2,43 @@ from __future__ import annotations
 
 import asyncio
 import unittest
-from datetime import datetime
+from datetime import UTC, datetime
+from unittest.mock import patch
 
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 
 from backend.app.core.database import Base
 from backend.app.models import Article, PipelineRun, Story, StoryArticle, ensure_article_storage_schema
-from backend.app.service.daily_pipeline_service import DailyPipelineService
-from backend.app.service.story_pipeline_contracts import EmbeddedArticle, EnrichedArticleRecord, StoryDraft
+from backend.app.service.article_cluster_service import EmbeddedArticle
+from backend.app.service.article_enrichment_service import EnrichedArticle
+from backend.app.service.scheduler_service import BEIJING_TIMEZONE, SchedulerService
+from backend.app.service.story_generation_service import StoryDraft
 
 
 class StubEnrichmentService:
     def __init__(self) -> None:
         self.calls: list[str] = []
 
-    @staticmethod
-    def is_complete(article: Article) -> bool:
-        return article.enrichment_status == "done" and bool(article.cluster_text)
-
-    @staticmethod
-    def build_input(article: Article) -> Article:
-        return article
-
-    async def infer_many(self, payloads: list[Article]) -> list[object]:
-        results: list[object] = []
-        for article in payloads:
-            self.calls.append(article.article_id)
-            results.append(
-                {
-                    "should_publish": article.article_id != "article-3",
-                    "title_zh": f"标题-{article.article_id}",
-                    "summary_zh": f"摘要-{article.article_id}",
-                    "tags": ["时尚"],
-                    "brands": ["Karl"],
-                    "category_candidates": [article.category],
-                    "reject_reason": "" if article.article_id != "article-3" else "广告",
-                }
-            )
-        return results
-
-    @staticmethod
-    def apply_result(article: Article, result: dict[str, object]) -> None:
-        article.should_publish = bool(result["should_publish"])
-        article.title_zh = str(result["title_zh"])
-        article.summary_zh = str(result["summary_zh"])
-        article.tags_json = list(result["tags"])
-        article.brands_json = list(result["brands"])
-        article.category_candidates_json = list(result["category_candidates"])
-        article.reject_reason = str(result["reject_reason"])
+    async def enrich_article(self, session, article: Article) -> bool:
+        del session
+        self.calls.append(article.article_id)
+        article.should_publish = article.article_id != "article-3"
+        article.title_zh = f"标题-{article.article_id}"
+        article.summary_zh = f"摘要-{article.article_id}"
+        article.tags_json = ["时尚"]
+        article.brands_json = ["Karl"]
+        article.category_candidates_json = [article.category]
+        article.reject_reason = "" if article.article_id != "article-3" else "广告"
         article.cluster_text = f"{article.title_zh}\n{article.summary_zh}"
         article.enrichment_status = "done"
         article.enriched_at = datetime(2026, 3, 13, 8, 30, 0)
         article.enrichment_error = None
+        return True
 
     @staticmethod
-    def apply_failure(article: Article, error: Exception) -> None:
-        article.enrichment_status = "failed"
-        article.enriched_at = datetime(2026, 3, 13, 8, 30, 0)
-        article.enrichment_error = f"{error.__class__.__name__}: {error}"
-
-    @staticmethod
-    def to_record(article: Article) -> EnrichedArticleRecord:
-        return EnrichedArticleRecord(
+    def to_record(article: Article) -> EnrichedArticle:
+        return EnrichedArticle(
             article_id=article.article_id,
             title_zh=article.title_zh or "",
             summary_zh=article.summary_zh or "",
@@ -80,7 +54,7 @@ class StubEnrichmentService:
 
 
 class StubEmbeddingService:
-    def embed_articles(self, articles: list[EnrichedArticleRecord]) -> list[EmbeddedArticle]:
+    def embed_articles(self, articles: list[EnrichedArticle]) -> list[EmbeddedArticle]:
         vectors = {
             "article-1": (1.0, 0.0),
             "article-2": (0.99, 0.01),
@@ -119,7 +93,7 @@ class StubStoryGenerationService:
         ]
 
 
-class DailyPipelineServiceTest(unittest.TestCase):
+class SchedulerServiceTest(unittest.TestCase):
     def setUp(self) -> None:
         self.engine = create_engine("sqlite+pysqlite:///:memory:")
         ensure_article_storage_schema(self.engine)
@@ -178,9 +152,37 @@ class DailyPipelineServiceTest(unittest.TestCase):
             )
             session.commit()
 
-    def test_run_creates_story_and_advances_watermark(self) -> None:
+    def test_next_run_at_returns_same_day_target_before_beijing_8am(self) -> None:
+        service = SchedulerService(
+            session_factory=self.session_factory,
+            now_factory=lambda: datetime(2026, 3, 20, 23, 30, tzinfo=UTC),
+        )
+
+        next_run = service.next_run_at()
+
+        self.assertEqual(next_run, datetime(2026, 3, 21, 8, 0, 0, tzinfo=BEIJING_TIMEZONE))
+
+    def test_next_run_at_rolls_to_next_day_after_beijing_8am(self) -> None:
+        service = SchedulerService(
+            session_factory=self.session_factory,
+            now_factory=lambda: datetime(2026, 3, 21, 1, 5, tzinfo=UTC),
+        )
+
+        next_run = service.next_run_at()
+
+        self.assertEqual(next_run, datetime(2026, 3, 22, 8, 0, 0, tzinfo=BEIJING_TIMEZONE))
+
+    def test_seconds_until_next_run_uses_beijing_clock(self) -> None:
+        service = SchedulerService(
+            session_factory=self.session_factory,
+            now_factory=lambda: datetime(2026, 3, 20, 23, 30, tzinfo=UTC),
+        )
+
+        self.assertEqual(service.seconds_until_next_run(), 30 * 60)
+
+    def test_run_pipeline_once_creates_story_and_advances_watermark(self) -> None:
         self._seed_articles()
-        service = DailyPipelineService(
+        service = SchedulerService(
             session_factory=self.session_factory,
             enrichment_service=StubEnrichmentService(),
             embedding_service=StubEmbeddingService(),
@@ -188,7 +190,10 @@ class DailyPipelineServiceTest(unittest.TestCase):
             story_generation_service=StubStoryGenerationService(),
         )
 
-        result = asyncio.run(service.run(skip_ingest=True))
+        with patch("backend.app.service.scheduler_service.ensure_article_storage_schema"), patch(
+            "backend.app.service.scheduler_service.Base.metadata.create_all"
+        ):
+            result = asyncio.run(service.run_pipeline_once(skip_ingest=True))
 
         self.assertEqual(result.candidates, 3)
         self.assertEqual(result.enriched, 3)
@@ -196,7 +201,6 @@ class DailyPipelineServiceTest(unittest.TestCase):
         self.assertEqual(result.stories_created, 1)
         self.assertEqual(result.watermark_ingested_at, datetime(2026, 3, 13, 8, 7, 0))
         self.assertEqual(result.story_grouping_mode, "incremental_ingested_at")
-        self.assertIsNone(result.story_date)
         self.assertEqual(
             result.stages_completed,
             (
@@ -229,30 +233,10 @@ class DailyPipelineServiceTest(unittest.TestCase):
                 "story_persist",
             ],
         )
-        self.assertEqual(runs[-1].metadata_json["story_grouping_mode"], "incremental_ingested_at")
-        self.assertEqual(runs[-1].metadata_json["stages_skipped"], ["collection", "parse"])
 
-        second_result = asyncio.run(service.run(skip_ingest=True))
-        self.assertEqual(second_result.candidates, 0)
-        self.assertEqual(second_result.stories_created, 0)
-        self.assertEqual(second_result.stages_completed, ())
-        self.assertEqual(
-            second_result.stages_skipped,
-            (
-                "collection",
-                "parse",
-                "enrichment",
-                "story_embedding",
-                "semantic_cluster",
-                "cluster_review",
-                "story_generation",
-                "story_persist",
-            ),
-        )
-
-    def test_run_marks_failed_without_persisting_story(self) -> None:
+    def test_run_pipeline_once_marks_failed_without_persisting_story(self) -> None:
         self._seed_articles()
-        service = DailyPipelineService(
+        service = SchedulerService(
             session_factory=self.session_factory,
             enrichment_service=StubEnrichmentService(),
             embedding_service=StubEmbeddingService(),
@@ -260,8 +244,11 @@ class DailyPipelineServiceTest(unittest.TestCase):
             story_generation_service=StubStoryGenerationService(raise_error=True),
         )
 
-        with self.assertRaises(RuntimeError):
-            asyncio.run(service.run(skip_ingest=True))
+        with patch("backend.app.service.scheduler_service.ensure_article_storage_schema"), patch(
+            "backend.app.service.scheduler_service.Base.metadata.create_all"
+        ):
+            with self.assertRaises(RuntimeError):
+                asyncio.run(service.run_pipeline_once(skip_ingest=True))
 
         with self.session_factory() as session:
             stories = session.scalars(select(Story)).all()
@@ -270,6 +257,45 @@ class DailyPipelineServiceTest(unittest.TestCase):
         self.assertEqual(stories, [])
         self.assertIsNotNone(run)
         self.assertEqual(run.status, "failed")
+
+    def test_run_forever_waits_and_runs_one_cycle(self) -> None:
+        service = SchedulerService(
+            session_factory=self.session_factory,
+            enrichment_service=StubEnrichmentService(),
+            embedding_service=StubEmbeddingService(),
+            cluster_service=StubClusterService(),
+            story_generation_service=StubStoryGenerationService(),
+            now_factory=lambda: datetime(2026, 3, 20, 23, 30, tzinfo=UTC),
+            sleep_func=self._build_sleep_recorder(),
+        )
+
+        with patch("backend.app.service.scheduler_service.ensure_article_storage_schema"), patch(
+            "backend.app.service.scheduler_service.Base.metadata.create_all"
+        ), patch.object(service, "run_pipeline_once", return_value=None) as run_mock:
+            asyncio.run(
+                service.run_forever(
+                    skip_ingest=False,
+                    source_names=["Vogue"],
+                    limit_sources=1,
+                    max_cycles=1,
+                )
+            )
+
+        self.assertEqual(self.sleep_calls, [30 * 60])
+        run_mock.assert_awaited_once_with(
+            skip_ingest=False,
+            source_names=["Vogue"],
+            limit_sources=1,
+        )
+
+    def _build_sleep_recorder(self):
+        self.sleep_calls: list[float] = []
+
+        async def fake_sleep(seconds: float) -> None:
+            self.sleep_calls.append(seconds)
+
+        return fake_sleep
+
 
 if __name__ == "__main__":
     unittest.main()

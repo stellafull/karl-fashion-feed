@@ -11,8 +11,8 @@ os.environ["QDRANT_URL"] = "http://localhost:6333"
 from backend.app.scripts.dev_ingest_story_rag_today import ArticleRagRunResult, run
 from backend.app.service.article_collection_service import CollectionResult
 from backend.app.service.article_parse_service import ParseResult
-from backend.app.service.story_pipeline_contracts import StoryDraft
-from backend.app.service.story_workflow_service import StoryWorkflowResult
+from backend.app.service.scheduler_service import StoryWorkflowResult
+from backend.app.service.story_generation_service import StoryDraft
 
 
 class DevIngestStoryRagTodayTest(unittest.TestCase):
@@ -56,7 +56,7 @@ class DevIngestStoryRagTodayTest(unittest.TestCase):
                 if left != right:
                     raise AssertionError(f"{left!r} != {right!r}")
 
-        class StubStoryWorkflowService:
+        class StubSchedulerService:
             async def enrich_articles(self, article_ids: list[str]) -> tuple[int, int]:
                 self.assertEqual(article_ids, ["article-1"])
                 events.append("enrich")
@@ -139,8 +139,8 @@ class DevIngestStoryRagTodayTest(unittest.TestCase):
             "backend.app.scripts.dev_ingest_story_rag_today.ArticleParseService",
             StubArticleParseService,
         ), patch(
-            "backend.app.scripts.dev_ingest_story_rag_today.StoryWorkflowService",
-            StubStoryWorkflowService,
+            "backend.app.scripts.dev_ingest_story_rag_today.SchedulerService",
+            StubSchedulerService,
         ), patch(
             "backend.app.scripts.dev_ingest_story_rag_today.ArticleRagService",
             StubArticleRagService,

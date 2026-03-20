@@ -139,6 +139,113 @@ class QdrantService:
         )
         return len(records)
 
+    def search_dense(
+        self,
+        collection_name: str,
+        query_vector: list[float],
+        *,
+        limit: int,
+        filters: models.Filter | None = None,
+    ) -> list[models.ScoredPoint]:
+        """Run dense retrieval against the shared collection."""
+        response = self._client.query_points(
+            collection_name=collection_name,
+            query=list(query_vector),
+            using=self.DENSE_VECTOR_NAME,
+            query_filter=filters,
+            limit=limit,
+            with_payload=True,
+            with_vectors=False,
+        )
+        return list(response.points)
+
+    def search_sparse(
+        self,
+        collection_name: str,
+        query_sparse_vector: dict[int, float],
+        *,
+        limit: int,
+        filters: models.Filter | None = None,
+    ) -> list[models.ScoredPoint]:
+        """Run sparse retrieval against the shared collection."""
+        response = self._client.query_points(
+            collection_name=collection_name,
+            query=self._build_sparse_vector(query_sparse_vector),
+            using=self.SPARSE_VECTOR_NAME,
+            query_filter=filters,
+            limit=limit,
+            with_payload=True,
+            with_vectors=False,
+        )
+        return list(response.points)
+
+    def search_hybrid(
+        self,
+        collection_name: str,
+        dense_vector: list[float],
+        sparse_vector: dict[int, float],
+        *,
+        limit: int,
+        filters: models.Filter | None = None,
+    ) -> list[models.ScoredPoint]:
+        """Run dense+sparse hybrid retrieval fused by Qdrant RRF."""
+        response = self._client.query_points(
+            collection_name=collection_name,
+            query=models.FusionQuery(fusion=models.Fusion.RRF),
+            prefetch=[
+                models.Prefetch(
+                    query=list(dense_vector),
+                    using=self.DENSE_VECTOR_NAME,
+                    limit=limit,
+                    filter=filters,
+                ),
+                models.Prefetch(
+                    query=self._build_sparse_vector(sparse_vector),
+                    using=self.SPARSE_VECTOR_NAME,
+                    limit=limit,
+                    filter=filters,
+                ),
+            ],
+            limit=limit,
+            with_payload=True,
+            with_vectors=False,
+        )
+        return list(response.points)
+
+    def build_metadata_filter(
+        self,
+        *,
+        modality: str,
+        source_names: list[str] | None = None,
+        categories: list[str] | None = None,
+        tags: list[str] | None = None,
+        brands: list[str] | None = None,
+        start_at: datetime | None = None,
+        end_at: datetime | None = None,
+    ) -> models.Filter:
+        """Build one shared-collection metadata filter."""
+        must_conditions: list[models.Condition] = [
+            models.FieldCondition(
+                key="modality",
+                match=models.MatchAny(any=[modality]),
+            )
+        ]
+        self._append_match_any(must_conditions, "source_name", source_names)
+        self._append_match_any(must_conditions, "category", categories)
+        self._append_match_any(must_conditions, "tags_json", tags)
+        self._append_match_any(must_conditions, "brands_json", brands)
+        if start_at is not None or end_at is not None:
+            must_conditions.append(
+                models.FieldCondition(
+                    key="ingested_at",
+                    range=models.DatetimeRange(
+                        gte=self._normalize_datetime(start_at) if start_at is not None else None,
+                        lt=self._normalize_datetime(end_at) if end_at is not None else None,
+                    ),
+                )
+            )
+        return models.Filter(must=must_conditions)
+
     def _build_dense_vector_params(self) -> models.VectorParams:
         return models.VectorParams(
             size=self.vector_dim,
@@ -230,6 +337,22 @@ class QdrantService:
         return models.SparseVector(
             indices=[index for index, _ in sorted_items],
             values=[weight for _, weight in sorted_items],
+        )
+
+    def _append_match_any(
+        self,
+        must_conditions: list[models.Condition],
+        field_name: str,
+        values: list[str] | None,
+    ) -> None:
+        normalized_values = [value.strip() for value in values or [] if value and value.strip()]
+        if not normalized_values:
+            return
+        must_conditions.append(
+            models.FieldCondition(
+                key=field_name,
+                match=models.MatchAny(any=normalized_values),
+            )
         )
 
     def _fetch_existing_ids(
