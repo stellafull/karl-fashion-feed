@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-03-21T05:16:42+00:00",
+    "generated_at": "2026-03-21T06:37:36+00:00",
     "total_topics": 500,
-    "total_articles": 1179,
+    "total_articles": 1181,
     "sources_count": 49,
     "sources": [
       "Allure",
@@ -58,21 +58,21 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 8,
-      "blocked_by_tombstones": 330,
+      "new_articles_in_2h": 9,
+      "blocked_by_tombstones": 335,
       "evicted_topics": 6,
       "pipeline_stats": {
         "incremental_assigned_to_existing": 2,
-        "incremental_new_topics_created": 6,
-        "cross_merge_candidates": 1,
-        "cross_merge_low_reviews": 1,
+        "incremental_new_topics_created": 7,
+        "cross_merge_candidates": 2,
+        "cross_merge_low_reviews": 2,
         "cross_merge_high_reviews": 0,
-        "cross_merge_merged_topics": 0
+        "cross_merge_merged_topics": 1
       }
     },
     "quality": {
-      "merge_rate": 0.5759,
-      "avg_sources_per_topic": 1.288,
+      "merge_rate": 0.5766,
+      "avg_sources_per_topic": 1.286,
       "high_confidence_topic_ratio": 0.962,
       "rebuild_mode": "incremental"
     }
@@ -3646,6 +3646,321 @@
       "article_count": 1
     },
     {
+      "id": "4fc201e7024f",
+      "title": "春日限定：樱花好礼与午后甜点，悦享新生活",
+      "summary": "日本时尚生活方式网站mi-mollet精选多款樱花主题礼品套装，为迎接新生活的朋友们献上春日祝福。礼品价格亲民，从几百日元到五千日元不等，涵盖美味与实用。推荐中川政七商店的樱花点心与纱布巾组合，以及Kneipp的樱花沐浴系列，让收礼人在馥郁芬芳中感受春意。此外，mi-mollet还以播客形式分享了春日享受鲜花和甜点的生活方式，推荐适合下午茶的甜点和时尚穿搭，为读者提供生活灵感。",
+      "key_points": [
+        "mi-mollet精选樱花主题礼品套装",
+        "推荐中川政七商店樱花点心与纱布巾组合",
+        "推荐Kneipp樱花沐浴系列",
+        "mi-mollet播客分享春日鲜花与甜点生活方式",
+        "推荐适合下午茶的甜点和时尚穿搭"
+      ],
+      "tags": [
+        "mi-mollet",
+        "樱花",
+        "礼品",
+        "下午茶",
+        "甜点",
+        "生活方式",
+        "春日"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://mi-mollet.ismcdn.jp/mwimgs/a/3/-/img_a3b13ee9570e68e46d696b0987dea515938815.jpg?rd=202603121355",
+      "published": "2026-03-21T06:31:36+00:00",
+      "sources": [
+        {
+          "name": "mi-mollet",
+          "title": "【ワンコインから5000円まで！堤信子の推しプチギフト】春爛漫！新生活を迎えるあの人に贈りたい桜のギフトセット",
+          "link": "https://mi-mollet.com/articles/-/58920",
+          "lang": "ja"
+        },
+        {
+          "name": "mi-mollet",
+          "title": "春の花とおやつを楽しみたい！【午後３時、おやつ、ときどきお洒落】",
+          "link": "https://mi-mollet.com/articles/-/58921",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "d9731851dc4e",
+      "title": "旧衣新生：PASSTO开启时尚循环",
+      "summary": "日本时尚编辑昼田祥子力荐PASSTO衣物回收服务，该服务通过遍布日本的回收箱和便捷的上门回收，收集旧衣物、玩具等。专业团队对回收物品进行细致分类，将尚可使用的衣物重新投入市场，无法再利用的则进行环保回收处理，实现了高达98%的惊人再流通率。PASSTO致力于打造一个从你我衣橱出发的，可持续的时尚循环。",
+      "key_points": [
+        "PASSTO提供便捷的衣物回收方式",
+        "专业分类确保高再流通率",
+        "致力于构建可持续时尚生态"
+      ],
+      "tags": [
+        "可持续时尚",
+        "服装回收",
+        "循环经济",
+        "环保",
+        "PASSTO"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://mi-mollet.ismcdn.jp/mwimgs/2/9/-/img_29c97a634771e08a4fd1b9a7fb443bce822137.jpg?rd=202603121355",
+      "published": "2026-03-21T06:31:32+00:00",
+      "sources": [
+        {
+          "name": "mi-mollet",
+          "title": "服を手放すときに「PASSTO（パスト）」を全力でおすすめしたい理由。手元にある服から始まる、幸せな循環【エディター昼田祥子】",
+          "link": "https://mi-mollet.com/articles/-/58779",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "35c963b31411",
+      "title": "2026春夏潮流预测：法式优雅与个性表达领衔",
+      "summary": "2026春夏时尚趋势呈现多元化，法式优雅风潮持续盛行，衬衫成为巴黎女性衣橱必备单品。个性化表达和穿着乐趣成为重点，短裤长度、鞋履设计及搭配备受关注。牛仔裤以直筒、低腰、深色水洗等全新姿态回归，褶皱上衣成为焦点。巧妙的叠穿和运动廓形也将成为趋势重点。时尚icon如赞达亚、海莉·比伯的造型具有风向标意义。",
+      "key_points": [
+        "法式衬衫风潮持续，成为2026春夏关键单品",
+        "个性化表达和穿着乐趣是重要趋势",
+        "牛仔裤以直筒、低腰、深色水洗等新形式回归",
+        "褶皱上衣成为焦点",
+        "叠穿和运动廓形是趋势重点",
+        "时尚icon的造型具有风向标意义"
+      ],
+      "tags": [
+        "2026春夏",
+        "潮流趋势",
+        "法式风格",
+        "衬衫",
+        "牛仔裤",
+        "个性化",
+        "叠穿",
+        "运动风"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/rZr787VRDnmoJBs9DDP35U-1280-80.png",
+      "published": "2026-03-21T06:00:00+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "5 Blouse Trends French Women Will Wear With Jeans, Skirts, and Trousers in 2026",
+          "link": "https://www.whowhatwear.com/fashion/trends/french-blouse-trends-spring-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Hate Short Shorts? Zendaya Knows the Exact Length Fashion People Will Wear This Spring",
+          "link": "https://www.whowhatwear.com/fashion/celebrity-style/zendaya-shorts-trend-spring-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "I Thought This Shoe Trend Was Dated, But These Elegant Spring Outfits Proved Me Wrong",
+          "link": "https://www.whowhatwear.com/fashion/celebrity/dua-lipa-zendaya-white-heels",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Wait: Did Hailey Bieber Just Declare These Heels Spring’s Biggest Shoe Trend?",
+          "link": "https://www.whowhatwear.com/fashion/shoes/hailey-bieber-flip-flop-shoe-trend-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "In Paris, Every Elegant Dresser's 2026 Wardrobe Includes One of These Chic Cardigan Trends",
+          "link": "https://www.whowhatwear.com/fashion/jumpers-sweaters/french-girl-cardigan-trends-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "In Paris, Every French Woman’s Transitional Wardrobe Starts With a Pretty Blouse—9 Styles Worth Knowing",
+          "link": "https://www.whowhatwear.com/fashion/shopping/french-girl-blouses-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "I’ve Done the Research—These Are the Flat Shoes That Look Chicest With Leggings",
+          "link": "https://www.whowhatwear.com/fashion/flat-shoe-trends-to-wear-with-leggings-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Chic French Women Are Wearing These Flat-Shoe Trends With Everything in 2026",
+          "link": "https://www.whowhatwear.com/fashion/trends/french-woman-flat-shoe-trends-spring-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Instead of Trainers and Loafers, The French Always Wear this Chic Shoe Trend with Cropped Jeans",
+          "link": "https://www.whowhatwear.com/fashion/shoes/jeans-and-ballet-flats-outfits-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue Fashion",
+          "title": "Catwalk to Closet: Spring 2026’s Runway Standouts Are Finally Here",
+          "link": "https://www.vogue.com/article/catwalk-to-closet-spring-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "The Runways Spoke; Editors Listened—These Are the Spring 2026 Trends We're Most Excited to Wear",
+          "link": "https://www.whowhatwear.com/fashion/spring/luxury-fashion-trends-spring-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "I’ve Been Reporting on Trends for Nearly a Decade—5 Styles That Look “Dated” This Spring",
+          "link": "https://www.whowhatwear.com/fashion/spring/outdated-fashion-trends-spring-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "From Copenhagen to Paris: These Are the Emerging Brands That Stood Out to Me During Fashion Month",
+          "link": "https://www.whowhatwear.com/fashion/runway/fashion-month-fall-winter-2026-emerging-designers",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "This Is the Trend to Wear With a White Skirt in 2026 to Look Cool Instead of Dated",
+          "link": "https://www.whowhatwear.com/fashion/celebrity-style/belted-leather-jacket-white-skirt-outfit-trend-demi-lovato",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Goodbye Oversize Button-Down Shirts: In 2026, This Style Looks Way More Expensive",
+          "link": "https://www.whowhatwear.com/fashion/shopping/best-fitted-button-down-shirts",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "We Now Know What the #1 Hat Trend of 2026 Will Be",
+          "link": "https://www.whowhatwear.com/fashion/celebrity-style/crochet-bucket-hat-trend-zoe-kravitz",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Call Off the Search: This Is the Pretty Top Trend Parisians Are Wearing With Jeans and Trousers Right Now",
+          "link": "https://www.whowhatwear.com/fashion/tops/french-girl-pleated-top-trend-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Chic French Women Are Wearing This Exact Blouse With Jeans This Spring—But It Won’t Be in Stock for Long",
+          "link": "https://www.whowhatwear.com/fashion/shopping/best-doen-blouses",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Everyone With Expensive Taste Is Trading In Their Basic Button-Downs For This Elevated Alt",
+          "link": "https://www.whowhatwear.com/fashion/trends/tuxedo-shirt-chanel-trend-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Wait, I Just Found the 2026 Flat Shoe Trends Fashion People Care About at the New Nordstrom Sale",
+          "link": "https://www.whowhatwear.com/fashion/shopping/best-shoe-trends-on-sale-nordstrom",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "6 Rich-Looking Shoe Trends at Nordstrom That Chic Women Are Wearing for Spring 2026",
+          "link": "https://www.whowhatwear.com/fashion/shopping/rich-looking-shoe-trends-nordstrom-spring-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "The One Sneaker Style Every Fashion Person Will Wear in 2026",
+          "link": "https://www.whowhatwear.com/fashion/shoes/derby-sneakers",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "No, Not Jeans—Chic Women Are Wearing This Divisive Trouser Trend Instead This Spring",
+          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/outfits-with-culottes",
+          "lang": "en"
+        },
+        {
+          "name": "Who What Wear",
+          "title": "Don't Buy Any More Blue Denim Until You've Seen the New Jeans Trend That Might Change Your Mind",
+          "link": "https://www.whowhatwear.com/fashion/denim/khaki-denim-colour-trend-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue Fashion",
+          "title": "The Key Spring 2026 Trends to Add to Your Wardrobe Now",
+          "link": "https://www.vogue.com/article/spring-2026-fashion-trends",
+          "lang": "en"
+        },
+        {
+          "name": "Harper's Bazaar",
+          "title": "The Best Spring Trends of 2026",
+          "link": "https://www.harpersbazaar.com/fashion/trends/a67970766/spring-2026-fashion-trends",
+          "lang": "en"
+        }
+      ],
+      "article_count": 30
+    },
+    {
+      "id": "030ba66851ae",
+      "title": "重返90年代：极简主义的2026时尚宣言",
+      "summary": "时尚风向标指向2026，90年代极简主义强势回归！本季，化繁为简成为潮流主旋律。从Calvin Klein的经典线条到Prada的低调奢华，我们精选7件必备单品，助你轻松打造兼具复古与现代感的极简造型。无论是职场通勤还是休闲出街，都能在NET-A-PORTER找到你的专属时尚灵感。",
+      "key_points": [
+        "90年代极简主义复兴",
+        "2026年时尚趋势预测",
+        "7件必备单品推荐"
+      ],
+      "tags": [
+        "90年代极简主义",
+        "2026时尚趋势",
+        "单品推荐",
+        "时尚购物"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/97zJsKLmz8pZajsHhTqD46-1280-80.jpg",
+      "published": "2026-03-21T06:00:00+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "'90s Minimalism Is My 2026 Aesthetic—7 Staples I'm Relying On to Get the Look",
+          "link": "https://www.whowhatwear.com/fashion/90s-minimalist-capsule-wardrobe",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "70d9184e4d21",
+      "title": "VIVIANO：东京时装周的未来之光",
+      "summary": "日本轻奢品牌VIVIANO于东京时装周发布了其充满前瞻性的2026-27年秋冬系列。该系列不仅是本季时装周的焦点，更充分展现了品牌独特的设计理念和对未来时尚的深刻理解，引发了时尚界的广泛关注与热烈讨论。VIVIANO以其大胆的创意和精湛的工艺，再次巩固了其在日本乃至国际时尚舞台上的地位。",
+      "key_points": [
+        "VIVIANO发布2026-27秋冬系列",
+        "东京时装周重点系列",
+        "品牌设计理念展示"
+      ],
+      "tags": [
+        "VIVIANO",
+        "2026-27秋冬系列",
+        "东京时装周",
+        "日本品牌",
+        "轻奢"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/21143857/viviano_26-27aw_og.jpg",
+      "published": "2026-03-21T06:00:00+00:00",
+      "sources": [
+        {
+          "name": "WWD Japan",
+          "title": "「ヴィヴィアーノ」2026-27年秋冬コレクション",
+          "link": "https://www.wwdjapan.com/articles/2359915",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "67becd3cf16c",
       "title": "皮衣蕾丝裙与多元夹克：解锁你的甜酷时尚与轻熟魅力",
       "summary": "日本时尚博主塚本桃子分享了皮衣与蕾丝裙的“甜辣”穿搭秘诀，推荐了カレンソロジー、ドゥーズィエムクラス、ロンハーマン、LENK、ZARA等品牌。同时，mi-mollet分享了40+女性利用ZARA夹克进行时尚穿搭的技巧，为不同年龄段的女性提供穿搭灵感，让你在追求时尚的同时，也不忘呵护肌肤。",
@@ -3685,6 +4000,36 @@
         }
       ],
       "article_count": 2
+    },
+    {
+      "id": "c347810b7678",
+      "title": "金宾燃擎F1®中国站",
+      "summary": "轻奢威士忌品牌金宾，携手凯迪拉克F1车队，以官方烈酒合作伙伴身份亮相F1®中国大奖赛，点燃赛道激情。周冠宇、李治廷、王霏霏、欧阳娣娣等明星嘉宾齐聚现场，共同见证这场速度盛宴。金宾旨在通过此次合作，打造沉浸式粉丝体验和文化联动，让更多人领略赛车运动的独特魅力，感受品牌所倡导的激情与连接。",
+      "key_points": [
+        "金宾威士忌合作F1",
+        "凯迪拉克F1车队官方烈酒",
+        "名人助阵赛车活动"
+      ],
+      "tags": [
+        "品牌合作",
+        "F1赛事",
+        "金宾威士忌",
+        "凯迪拉克",
+        "明星活动"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstchina.com/hmg-prod/images/c7ad817c-53be-48cf-a9b1-adab6a62a3fe.jpg?crop=1.00xw:0.752xh;0,0.149xh&resize=1200:*",
+      "published": "2026-03-21T04:45:00+00:00",
+      "sources": [
+        {
+          "name": "ELLE China",
+          "title": "从肯塔基到上海：金宾亮相F1®中国大奖赛",
+          "link": "https://www.ellechina.com/fashion/news/a70808633/jim-beam-f1-chinese-grand-prix",
+          "lang": "zh"
+        }
+      ],
+      "article_count": 1
     },
     {
       "id": "2db2fa24cc2c",
@@ -3802,36 +4147,6 @@
           "name": "Fashion Press",
           "title": "ホテル椿山荘東京×サクラクレパス“7つの季節”を描く限定クレパス、東京雲海や桜を表現する12色",
           "link": "https://www.fashion-press.net/news/144614",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "4fc201e7024f",
-      "title": "春日限定：樱花好礼，悦享新生活",
-      "summary": "日本时尚生活方式网站mi-mollet精选多款樱花主题礼品套装，为迎接新生活的朋友们献上春日祝福。礼品价格亲民，从几百日元到五千日元不等，涵盖美味与实用。推荐中川政七商店的樱花点心与纱布巾组合，以及Kneipp的樱花沐浴系列，让收礼人在馥郁芬芳中感受春意。",
-      "key_points": [
-        "mi-mollet推荐樱花礼品",
-        "价格范围广，选择多样",
-        "兼顾美味与实用性"
-      ],
-      "tags": [
-        "礼品",
-        "樱花",
-        "日本品牌",
-        "春季",
-        "生活方式"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://mi-mollet.ismcdn.jp/mwimgs/a/3/-/img_a3b13ee9570e68e46d696b0987dea515938815.jpg?rd=202603121355",
-      "published": "2026-03-21T03:56:21+00:00",
-      "sources": [
-        {
-          "name": "mi-mollet",
-          "title": "【ワンコインから5000円まで！堤信子の推しプチギフト】春爛漫！新生活を迎えるあの人に贈りたい桜のギフトセット",
-          "link": "https://mi-mollet.com/articles/-/58920",
           "lang": "ja"
         }
       ],
@@ -4010,6 +4325,37 @@
           "title": "The Devil Wears Prada 2 Is Already Bringing Throwback Trends to the Spotlight—5 Predictions I Have",
           "link": "https://www.whowhatwear.com/fashion/trends/devil-wears-prada-2-trend-prediction",
           "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "4bca6ad0d7c8",
+      "title": "冈﨑龍之祐：情感祈祷",
+      "summary": "新锐品牌RYUNOSUKEOKAZAKI于2026秋冬东京时装周发布“005”系列。设计师冈﨑龍之祐从日常细微情感中汲取灵感，将之视为一种祈祷的表达。本季亮点在于首次采用花卉与动物印花面料，并携手艺术家辻一徹打造金属配饰，探索成衣设计的更多可能性，为观者带来耳目一新的视觉体验。",
+      "key_points": [
+        "2026秋冬东京时装周",
+        "日常情感的祈祷",
+        "花卉动物印花与金属配饰"
+      ],
+      "tags": [
+        "RYUNOSUKEOKAZAKI",
+        "东京时装周",
+        "2026秋冬",
+        "冈﨑龍之祐",
+        "印花",
+        "金属配饰"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/collection/images/2026/03/RYUNOSUKEOKAZAKI_Tokyo26FW_0001-aa9d0bfe-726d-4442-b724-89185bc2574a.jpg",
+      "published": "2026-03-21T01:00:01+00:00",
+      "sources": [
+        {
+          "name": "Fashionsnap",
+          "title": "RYUNOSUKEOKAZAKI 005 コレクション",
+          "link": "https://www.fashionsnap.com/collection/ryunosukeokazaki/005/2026aw",
+          "lang": "ja"
         }
       ],
       "article_count": 1
@@ -11182,188 +11528,6 @@
       "article_count": 1
     },
     {
-      "id": "be0ddd2fde3d",
-      "title": "2026春夏潮流趋势：个性化表达、法式优雅与多元风格",
-      "summary": "2026春夏时尚趋势呈现多元化，强调个性化和穿着乐趣。短裤长度、鞋履设计及搭配成为焦点，赞达亚、海莉·比伯等时尚icon的造型具有风向标意义。开衫与衬衫将成为优雅巴黎女性衣橱的必备单品，法式优雅风潮持续盛行。紧身裤搭配平底鞋依旧流行，牛仔裤以直筒、低腰、深色水洗等全新姿态回归。褶皱上衣成为焦点，衬衫的替代款式和牛仔裤的搭配方式值得关注。巧妙的叠穿和运动廓形也将成为趋势重点。Gucci Jackie 1961手袋、Bottega Veneta真丝衬衫、Miu Miu丝巾等单品值得关注。",
-      "key_points": [
-        "个性化表达和穿着乐趣是核心",
-        "短裤、鞋履设计及搭配是重点",
-        "法式优雅风潮持续，开衫与衬衫是必备",
-        "牛仔裤以直筒、低腰、深色水洗等新姿态回归",
-        "巧妙叠穿和运动廓形是趋势",
-        "关注Gucci Jackie 1961手袋、Bottega Veneta真丝衬衫、Miu Miu丝巾等单品"
-      ],
-      "tags": [
-        "2026春夏",
-        "潮流趋势",
-        "短裤",
-        "鞋履",
-        "法式优雅",
-        "个性化",
-        "牛仔裤",
-        "叠穿",
-        "运动廓形",
-        "配饰"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://cdn.mos.cms.futurecdn.net/AFLpKvr8TrxRgDqoihH52L-1280-80.jpg",
-      "published": "2026-03-20T10:00:00+00:00",
-      "sources": [
-        {
-          "name": "Who What Wear",
-          "title": "Hate Short Shorts? Zendaya Knows the Exact Length Fashion People Will Wear This Spring",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/zendaya-shorts-trend-spring-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "I Thought This Shoe Trend Was Dated, But These Elegant Spring Outfits Proved Me Wrong",
-          "link": "https://www.whowhatwear.com/fashion/celebrity/dua-lipa-zendaya-white-heels",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Wait: Did Hailey Bieber Just Declare These Heels Spring’s Biggest Shoe Trend?",
-          "link": "https://www.whowhatwear.com/fashion/shoes/hailey-bieber-flip-flop-shoe-trend-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "In Paris, Every Elegant Dresser's 2026 Wardrobe Includes One of These Chic Cardigan Trends",
-          "link": "https://www.whowhatwear.com/fashion/jumpers-sweaters/french-girl-cardigan-trends-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "In Paris, Every French Woman’s Transitional Wardrobe Starts With a Pretty Blouse—9 Styles Worth Knowing",
-          "link": "https://www.whowhatwear.com/fashion/shopping/french-girl-blouses-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "I’ve Done the Research—These Are the Flat Shoes That Look Chicest With Leggings",
-          "link": "https://www.whowhatwear.com/fashion/flat-shoe-trends-to-wear-with-leggings-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Chic French Women Are Wearing These Flat-Shoe Trends With Everything in 2026",
-          "link": "https://www.whowhatwear.com/fashion/trends/french-woman-flat-shoe-trends-spring-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Instead of Trainers and Loafers, The French Always Wear this Chic Shoe Trend with Cropped Jeans",
-          "link": "https://www.whowhatwear.com/fashion/shoes/jeans-and-ballet-flats-outfits-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue Fashion",
-          "title": "Catwalk to Closet: Spring 2026’s Runway Standouts Are Finally Here",
-          "link": "https://www.vogue.com/article/catwalk-to-closet-spring-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "The Runways Spoke; Editors Listened—These Are the Spring 2026 Trends We're Most Excited to Wear",
-          "link": "https://www.whowhatwear.com/fashion/spring/luxury-fashion-trends-spring-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "I’ve Been Reporting on Trends for Nearly a Decade—5 Styles That Look “Dated” This Spring",
-          "link": "https://www.whowhatwear.com/fashion/spring/outdated-fashion-trends-spring-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "From Copenhagen to Paris: These Are the Emerging Brands That Stood Out to Me During Fashion Month",
-          "link": "https://www.whowhatwear.com/fashion/runway/fashion-month-fall-winter-2026-emerging-designers",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "This Is the Trend to Wear With a White Skirt in 2026 to Look Cool Instead of Dated",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/belted-leather-jacket-white-skirt-outfit-trend-demi-lovato",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Goodbye Oversize Button-Down Shirts: In 2026, This Style Looks Way More Expensive",
-          "link": "https://www.whowhatwear.com/fashion/shopping/best-fitted-button-down-shirts",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "We Now Know What the #1 Hat Trend of 2026 Will Be",
-          "link": "https://www.whowhatwear.com/fashion/celebrity-style/crochet-bucket-hat-trend-zoe-kravitz",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Call Off the Search: This Is the Pretty Top Trend Parisians Are Wearing With Jeans and Trousers Right Now",
-          "link": "https://www.whowhatwear.com/fashion/tops/french-girl-pleated-top-trend-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Chic French Women Are Wearing This Exact Blouse With Jeans This Spring—But It Won’t Be in Stock for Long",
-          "link": "https://www.whowhatwear.com/fashion/shopping/best-doen-blouses",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Everyone With Expensive Taste Is Trading In Their Basic Button-Downs For This Elevated Alt",
-          "link": "https://www.whowhatwear.com/fashion/trends/tuxedo-shirt-chanel-trend-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Wait, I Just Found the 2026 Flat Shoe Trends Fashion People Care About at the New Nordstrom Sale",
-          "link": "https://www.whowhatwear.com/fashion/shopping/best-shoe-trends-on-sale-nordstrom",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "6 Rich-Looking Shoe Trends at Nordstrom That Chic Women Are Wearing for Spring 2026",
-          "link": "https://www.whowhatwear.com/fashion/shopping/rich-looking-shoe-trends-nordstrom-spring-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "The One Sneaker Style Every Fashion Person Will Wear in 2026",
-          "link": "https://www.whowhatwear.com/fashion/shoes/derby-sneakers",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "No, Not Jeans—Chic Women Are Wearing This Divisive Trouser Trend Instead This Spring",
-          "link": "https://www.whowhatwear.com/fashion/outfit-ideas/outfits-with-culottes",
-          "lang": "en"
-        },
-        {
-          "name": "Who What Wear",
-          "title": "Don't Buy Any More Blue Denim Until You've Seen the New Jeans Trend That Might Change Your Mind",
-          "link": "https://www.whowhatwear.com/fashion/denim/khaki-denim-colour-trend-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue Fashion",
-          "title": "The Key Spring 2026 Trends to Add to Your Wardrobe Now",
-          "link": "https://www.vogue.com/article/spring-2026-fashion-trends",
-          "lang": "en"
-        },
-        {
-          "name": "Harper's Bazaar",
-          "title": "The Best Spring Trends of 2026",
-          "link": "https://www.harpersbazaar.com/fashion/trends/a67970766/spring-2026-fashion-trends",
-          "lang": "en"
-        }
-      ],
-      "article_count": 29
-    },
-    {
       "id": "e057abb5164b",
       "title": "未来已来？机器人入侵美发界",
       "summary": "《Esquire》杂志近日发布报道，标题“机器人要来剪头发了”引发热议。虽然具体内容因故未能加载，但这一标题已足够引人遐想：科技是否即将颠覆传统美发行业？机器人理发师的出现，或许不再是科幻小说中的情节，而是触手可及的未来趋势。这场技术革新，将如何影响美发师的职业生涯，又将为消费者带来怎样的全新体验，值得我们拭目以待。",
@@ -12029,18 +12193,21 @@
     },
     {
       "id": "a5e290a478be",
-      "title": "Lunetta BADA：重塑轮廓之美",
-      "summary": "日本眼镜品牌Lunetta BADA近日发布全新“Contours”系列，该系列以“轮廓”为设计核心，旨在通过精妙的线条，不动声色地提升佩戴者的面部轮廓美感。Lunetta BADA于1984年在东京代官山创立，以精湛的日本工匠技艺著称，曾引领80、90年代的潮流风尚。在暂停运营后，品牌于2022年强势回归。此次发布的“Contours”系列包含六种款式，涵盖经典的威灵顿型、硬朗的方形以及复古的皇冠潘托型，满足不同风格的需求。",
+      "title": "Lunetta BADA “Contours”系列：以轮廓为题，重塑极简之美",
+      "summary": "日本眼镜品牌Lunetta BADA近日发布全新“Contours”系列，该系列以“轮廓”为设计核心，旨在通过精妙的线条，不动声色地提升佩戴者的面部轮廓美感，并在极简设计中体现个性。Lunetta BADA于1984年在东京代官山创立，以精湛的日本工匠技艺著称，曾引领80、90年代的潮流风尚。在暂停运营后，品牌于2022年强势回归。此次发布的“Contours”系列包含六种款式，涵盖经典的威灵顿型、硬朗的方形以及复古的皇冠潘托型，满足不同风格的需求。该系列将于3月25日在直营店和线上商店发售。",
       "key_points": [
-        "Lunetta BADA发布全新“Contours”系列",
-        "设计主题为“轮廓”，修饰脸型",
-        "包含威灵顿型、方形、皇冠潘托型等六种款式"
+        "Lunetta BADA发布全新“Contours”系列，以“轮廓”为主题。",
+        "系列包含威灵顿型、方形和皇冠潘托型等六种款式。",
+        "追求在极简设计中体现个性。",
+        "将于3月25日在直营店和线上商店发售。"
       ],
       "tags": [
+        "Lunetta BADA",
+        "Contours系列",
         "眼镜",
-        "日本品牌",
-        "新品发布",
-        "配饰"
+        "轮廓",
+        "极简设计",
+        "日本品牌"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -12049,12 +12216,12 @@
       "sources": [
         {
           "name": "Fashionsnap",
-          "title": "アイウェア「ルネッタバダ」が新作を発売　“輪郭”を追求したコレクション",
+          "title": "アイウェア「ルネッタバダ」新作は“輪郭”がテーマ　一癖ありながらミニマルなデザイン",
           "link": "https://www.fashionsnap.com/article/2026-03-20/lunettabada-8th",
           "lang": "ja"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "b598432c2b98",
@@ -13313,6 +13480,34 @@
           "title": "「デニムの日、なんだか地味…」と思ったら。パリで学んだ“腕まわりのおしゃれ”",
           "link": "https://mi-mollet.com/articles/-/58789",
           "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "fcfede409be5",
+      "title": "WACKO MARIA：美式复古新浪潮",
+      "summary": "WACKO MARIA 释出2026春夏系列，再度展现其独特的混搭美学。本次品牌携手美国经典休闲品牌McGREGOR和配饰品牌WOLF’S HEAD，将原汁原味的美式复古风情融入东京街头潮流。系列单品涵盖Drizzler夹克、虎纹迷彩外套、非结构化夹克等，下装则有斜纹棉布裤可选，更有蟒蛇皮带等细节配饰加持，为整体造型注入不羁的野性魅力。WACKO MARIA以其标志性的风格，再次引领新一季的时尚风潮。",
+      "key_points": [
+        "WACKO MARIA 2026春夏系列发布",
+        "联手McGREGOR和WOLF'S HEAD",
+        "美式休闲与东京潮流融合"
+      ],
+      "tags": [
+        "WACKO MARIA",
+        "联名系列",
+        "2026春夏"
+      ],
+      "category": "runway-collection",
+      "category_name": "秀场/系列",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F20%2FftWOLFS-HEAD-McGregor-WACKO-MARIA-spring-summer-ss-2026-Collaboration-collection-Release-Info.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-20T06:29:35+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "WACKO MARIA Taps WOLF'S HEAD and McGREGOR for 2026 Spring/Summer Collection",
+          "link": "https://hypebeast.com/2026/3/wolfs-head-mcgregor-wacko-maria-spring-summer-ss-2026-collaboration-collection-release-info",
+          "lang": "en"
         }
       ],
       "article_count": 1
@@ -18875,190 +19070,6 @@
           "title": "A Labubu Movie Is Happening: Here's Everything We Know So Far",
           "link": "https://www.glamour.com/story/a-labubu-movie-is-happening-heres-everything-we-know-so-far",
           "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "8545e38dcdf1",
-      "title": "黛米·洛瓦托的皮革时尚三连击",
-      "summary": "黛米·洛瓦托近日在纽约街头展现了她对皮革材质的独特偏爱，以三套风格各异的皮革造型惊艳亮相。从干练的皮革外套到性感皮革连衣裙，再到前卫的皮革套装，她完美驾驭了不同款式的皮革单品，充分展现了其大胆前卫的时尚态度和高超的搭配技巧。时尚评论家们纷纷称赞她将皮革元素穿出了新高度，引领了新一季的皮革潮流。",
-      "key_points": [
-        "黛米·洛瓦托",
-        "皮革造型",
-        "纽约街拍"
-      ],
-      "tags": [
-        "明星穿搭",
-        "皮革时尚",
-        "街头风格"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/449bcf4e-94ba-49ee-af63-cd26a54ae309.jpg",
-      "published": "2026-03-19T16:16:00+00:00",
-      "sources": [
-        {
-          "name": "Harper's Bazaar",
-          "title": "Demi Lovato’s NYC Wardrobe Includes a Triple-Threat of Leather Looks",
-          "link": "https://www.harpersbazaar.com/celebrity/latest/a70791824/demi-lovato-new-york-city-street-style-streak-three-leather-looks",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "2d8f58de55a1",
-      "title": "斯卡斯加德联手范桑特，惊悚新作引关注",
-      "summary": "《Dazed》杂志近日报道，比尔·斯卡斯加德与格斯·范·桑特合作打造的惊悚片《Dead Man’s Wire》备受瞩目。影片改编自1977年真实发生的绑架案，斯卡斯加德在片中饰演Kiritsis，一个策划绑架富商之子并勒索赎金的罪犯。范·桑特表示，这部低成本制作的电影是他对早期独立电影风格的一次回归，令人期待。",
-      "key_points": [
-        "比尔·斯卡斯加德主演",
-        "格斯·范·桑特执导",
-        "改编自真实绑架案"
-      ],
-      "tags": [
-        "比尔·斯卡斯加德",
-        "格斯·范·桑特",
-        "惊悚片",
-        "电影"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://images-prod.dazeddigital.com/786/azure/dazed-prod/1440/2/1442047.jpg",
-      "published": "2026-03-19T16:16:00+00:00",
-      "sources": [
-        {
-          "name": "Dazed",
-          "title": "Bill Skarsgård and Gus Van Sant on their scrappy thriller Dead Man’s Wire",
-          "link": "https://www.dazeddigital.com/film-tv/article/69939/1/dead-man-wire-interview-gus-van-sant-bill-skarsgard-luigi-mangione",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "bcb6419d2ddf",
-      "title": "Vestiaire Collective 加速盈利，技术与产品高管履新",
-      "summary": "二手奢侈品电商平台 Vestiaire Collective 近期迎来重要人事调整，Thomas Hézard 和 Rémi Bouchez 分别晋升为产品主管和 IT 主管。在新任 CEO Bernard Osta 的带领下，公司将加大技术投入，尤其是人工智能的应用，旨在优化用户体验、提升运营效率，并力争在今年实现盈利目标。此次高管变动预示着 Vestiaire Collective 将在技术驱动下，进一步巩固其在二手奢侈品市场的领先地位，也反映了公司在产品和技术方面的战略调整。",
-      "key_points": [
-        "Vestiaire Collective 任命 Thomas Hézard 和 Rémi Bouchez 为产品主管和 IT 主管。",
-        "公司加大技术投入，特别是人工智能的应用，以优化用户体验和运营效率。",
-        "Vestiaire Collective 力争在今年实现盈利目标。",
-        "高管变动反映了公司在产品和技术方面的战略调整。"
-      ],
-      "tags": [
-        "Vestiaire Collective",
-        "二手奢侈品",
-        "电商",
-        "人事变动",
-        "技术",
-        "人工智能",
-        "盈利",
-        "高管任命"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/remicouchez-thomashezard.jpg?w=1000&h=563&crop=1",
-      "published": "2026-03-19T16:14:56+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "Vestiaire Collective Names Tech, Product Chiefs in First Key Hires Under New CEO Bernard Osta",
-          "link": "https://wwd.com/business-news/human-resources/vestiaire-collective-tech-product-chiefs-ceo-bernard-osta-1238682190",
-          "lang": "en"
-        },
-        {
-          "name": "Fashion Network",
-          "title": "Vestiaire Collective names new heads of product and IT",
-          "link": "https://ww.fashionnetwork.com/news/Vestiaire-collective-names-new-heads-of-product-and-it,1817320.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "15cc89e067f3",
-      "title": "莎拉·米歇尔·盖拉的暗黑魅力",
-      "summary": "莎拉·米歇尔·盖拉近日以一身哥特风造型亮相电影《准备好了没2》的放映活动，尽显其独特的时尚品味。此次造型由知名造型师Tara Swennen操刀，将暗黑元素与红毯风格巧妙融合，令人眼前一亮。作为好莱坞的时尚icon，莎拉·米歇尔·盖拉的每一次亮相都备受瞩目，此次的哥特风尝试无疑再次证明了她对时尚的敏锐度和驾驭能力。",
-      "key_points": [
-        "莎拉·米歇尔·盖拉哥特风造型",
-        "《准备好了没2》放映活动",
-        "造型师Tara Swennen合作"
-      ],
-      "tags": [
-        "莎拉·米歇尔·盖拉",
-        "哥特风格",
-        "名人造型",
-        "电影首映",
-        "红毯造型"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/smg-fi.jpg?w=1000&h=563&crop=1",
-      "published": "2026-03-19T16:13:19+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "Sarah Michelle Gellar Goes Goth for ‘Ready or Not 2’ Screening",
-          "link": "https://wwd.com/pop-culture/celebrity-news/sarah-michelle-gellar-ready-or-not-2-screening-outfit-1238682847",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "a7aa39e640fa",
-      "title": "米兰时尚朝圣：凯悦尚萃酒店成新宠？",
-      "summary": "《Elle》杂志指出，米兰中央车站凯悦尚萃酒店(Hyatt Centric Milan Centrale)正迅速成为时尚爱好者的理想下榻之选。具体原因虽未在摘要中明确说明，但其优越的地理位置、可能提供的时尚相关服务或活动，以及与米兰时尚氛围的契合度，都使其备受关注。对于计划前往米兰体验时尚之旅的旅客而言，这家酒店值得进一步了解。",
-      "key_points": [
-        "凯悦尚萃米兰中央车站酒店受时尚爱好者青睐",
-        "具体原因需参考原文",
-        "地理位置优越，或提供时尚相关服务"
-      ],
-      "tags": [
-        "米兰",
-        "酒店",
-        "时尚旅行",
-        "凯悦尚萃"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/ee97df77-4af8-4d4e-b6d4-269fa26c9d91.jpg",
-      "published": "2026-03-19T16:12:56+00:00",
-      "sources": [
-        {
-          "name": "Elle",
-          "title": "Why Hyatt Centric Milan Centrale Is the Perfect Hotspot for Fashion Lovers",
-          "link": "https://www.elle.com/culture/travel-food/a70792211/hyatt-centric-milan-centrale-hotel-review-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "e650f53a1525",
-      "title": "2026春夏美甲潮流风向标",
-      "summary": "Vogue西班牙版抢先发布2026春夏五大美甲趋势，预示着指尖时尚的新动向。从经典的樱桃红到优雅的奶白色法式，色彩选择将成为提升整体造型的关键。紧跟潮流，让指尖在春夏绽放时尚光彩。",
-      "key_points": [
-        "Vogue西班牙版发布美甲趋势",
-        "2026春夏流行色预测",
-        "樱桃红与奶白色法式美甲"
-      ],
-      "tags": [
-        "美甲",
-        "潮流趋势",
-        "2026春夏"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.vogue.es/photos/69bbd21c2f787f660531dc8c/master/pass/GettyImages-2059609241.jpg",
-      "published": "2026-03-19T16:09:14+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "Las 5 pedicuras que querrás hacerte sí o sí esta primavera/verano 2026",
-          "link": "https://www.vogue.es/articulos/pedicuras-tendencias-primavera-verano-2026",
-          "lang": "es"
         }
       ],
       "article_count": 1
