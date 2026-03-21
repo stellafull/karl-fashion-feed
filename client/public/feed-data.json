@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-03-21T18:29:12+00:00",
+    "generated_at": "2026-03-21T20:22:18+00:00",
     "total_topics": 500,
     "total_articles": 1198,
     "sources_count": 49,
@@ -58,12 +58,12 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 9,
-      "blocked_by_tombstones": 324,
-      "evicted_topics": 4,
+      "new_articles_in_2h": 8,
+      "blocked_by_tombstones": 327,
+      "evicted_topics": 7,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 4,
-        "incremental_new_topics_created": 5,
+        "incremental_assigned_to_existing": 0,
+        "incremental_new_topics_created": 8,
         "cross_merge_candidates": 2,
         "cross_merge_low_reviews": 2,
         "cross_merge_high_reviews": 0,
@@ -72,7 +72,7 @@
     },
     "quality": {
       "merge_rate": 0.5826,
-      "avg_sources_per_topic": 1.294,
+      "avg_sources_per_topic": 1.29,
       "high_confidence_topic_ratio": 0.956,
       "rebuild_mode": "incremental"
     }
@@ -225,25 +225,34 @@
     },
     {
       "id": "05e1b390d606",
-      "title": "2026秋冬全球时装周趋势总结：巴黎、伦敦、米兰、东京及高定系列",
-      "summary": "2026秋冬全球时装周在巴黎、伦敦、米兰和东京盛大举行，RVNG Couture发布了高定系列，Yushokobayashi发布了秋季系列。时装周汇聚国际知名品牌和日本本土新锐设计师，以前卫理念和创新设计展现未来时尚的多元可能性。巴黎、伦敦、米兰时装周呈现了戏剧性元素、力量着装、文艺复兴灵感、“裸露”风潮等多元风格。东京时装周聚焦本土力量和新锐设计，呈现未来解构与多元风格，Yohei Ohno延续未来主义和解构主义。东京时装周上，冈崎龙之介(RYUNOSUKEOKAZAKI)、Kotohayokozawa、yushokobayashi、MATSUFUJI和VIVIANO等日本设计师品牌发布了引人注目的秋冬系列。冈崎龙之介的“005”系列延续了品牌对“祈祷”主题的探索，通过雕塑般的礼服等设计捕捉人类情感的复杂性。Kotohayokozawa以前卫设计和实验性廓形著称，在传统日式美学中融入解构主义元素。VIVIANO则以“Portrait",
+      "title": "2026秋冬全球时装周趋势总结：巴黎、伦敦、米兰、东京及高定系列亮点解析",
+      "summary": "2026秋冬全球时装周在巴黎、伦敦、米兰和东京盛大举行，RVNG Couture发布了高定系列，Yushokobayashi发布了秋季系列。时装周汇聚国际知名品牌和日本本土新锐设计师，以前卫理念和创新设计展现未来时尚的多元可能性。巴黎、伦敦、米兰时装周呈现了戏剧性元素、力量着装、文艺复兴灵感、“裸露”风潮等多元风格。东京时装周聚焦本土力量和新锐设计，呈现未来解构与多元风格，Yohei Ohno延续未来主义和解构主义。东京时装周上，Mukcyen设计师木村由佳从多重角色解读玛丽·安托瓦内特，汲取18世纪法国服饰精神，展现前卫设计；EITARO上村英太郎以“背花着”为主题，从蝉蛹化蝶中获得灵感；RYUNOSUKEOKAZAKI的“005”系列则关注日常情感，以花卉动物印花和金属配饰为特色；MIKIOSAKABE呈现品牌对未来时尚的独特见解和创新设计。",
       "key_points": [
-        "2026秋冬全球时装周涵盖巴黎、伦敦、米兰、东京及高定系列。",
-        "巴黎、伦敦、米兰时装周呈现戏剧性元素、力量着装、文艺复兴灵感、“裸露”风潮等多元风格。",
-        "东京时装周聚焦本土力量和新锐设计，呈现未来解构与多元风格。",
-        "冈崎龙之介、Kotohayokozawa、yushokobayashi、MATSUFUJI和VIVIANO等日本设计师品牌在东京时装周发布了引人注目的秋冬系列，展现情感表达与前卫设计。"
+        "巴黎、伦敦、米兰时装周：戏剧性元素、力量着装、文艺复兴灵感、“裸露”风潮",
+        "东京时装周：本土力量、新锐设计、未来解构、多元风格",
+        "RVNG Couture高定系列及Yushokobayashi秋季系列发布",
+        "Mukcyen：解构玛丽·安托瓦内特，汲取18世纪法国服饰精神",
+        "EITARO：“背花着”主题，灵感来自蝉蛹化蝶",
+        "RYUNOSUKEOKAZAKI：“005”系列，关注日常情感，花卉动物印花和金属配饰",
+        "MIKIOSAKABE：未来时尚的独特见解和创新设计",
+        "Yohei Ohno：延续未来主义和解构主义"
       ],
       "tags": [
         "2026秋冬",
         "时装周",
-        "巴黎",
-        "伦敦",
-        "米兰",
-        "东京",
+        "巴黎时装周",
+        "伦敦时装周",
+        "米兰时装周",
+        "东京时装周",
         "高定",
-        "新锐设计师",
+        "成衣",
+        "趋势",
+        "设计师品牌",
         "解构主义",
-        "未来主义"
+        "未来主义",
+        "玛丽·安托瓦内特",
+        "花卉印花",
+        "金属配饰"
       ],
       "category": "trend-summary",
       "category_name": "趋势总结",
@@ -2907,9 +2916,45 @@
           "title": "VIVIANO 2026AW コレクション",
           "link": "https://www.fashionsnap.com/collection/viviano/2026aw",
           "lang": "ja"
+        },
+        {
+          "name": "Vogue",
+          "title": "Mukcyen Tokyo Fall 2026",
+          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/mukcyen",
+          "lang": "en"
+        },
+        {
+          "name": "Fashion Press",
+          "title": "ムッシャン 2026-27年秋冬コレクション、マリー・アントワネットの“役割とイメージ”に着目",
+          "link": "https://www.fashion-press.net/news/144618",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashion Press",
+          "title": "エイタロウ 2026-27年秋冬コレクション - 羽ばたく前に花を着る、その背中が物語るもの",
+          "link": "https://www.fashion-press.net/news/144616",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "EITARO 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/eitaro/2026aw",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "RYUNOSUKEOKAZAKI 005 コレクション",
+          "link": "https://www.fashionsnap.com/collection/ryunosukeokazaki/005/2026aw",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "MIKIOSAKABE 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/mikiosakabe/2026aw",
+          "lang": "ja"
         }
       ],
-      "article_count": 456
+      "article_count": 462
     },
     {
       "id": "bc8630abc9cf",
@@ -3618,6 +3663,184 @@
       "article_count": 1
     },
     {
+      "id": "b44cb4a6ecbe",
+      "title": "吉丽丝朵：水晶花束的纯净献礼",
+      "summary": "JILLSTUART Beauty 推出全新“Something Pure Blue”系列，灵感源自晶莹剔透的水晶花束。该系列包含花蜜唇膏和香水等明星产品，以纯净浪漫的蓝色为主色调，旨在为使用者带来如水晶般闪耀的清新体验。新品设计梦幻唯美，是少女心与精致感的完美结合。",
+      "key_points": [
+        "JILLSTUART Beauty 新品",
+        "Something Pure Blue 系列",
+        "水晶花束设计灵感"
+      ],
+      "tags": [
+        "JILLSTUART Beauty",
+        "美妆新品",
+        "香水",
+        "唇膏",
+        "限定系列"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://www.fashion-press.net/img/news/144620/top.jpg?1774117578",
+      "published": "2026-03-21T20:15:50+00:00",
+      "sources": [
+        {
+          "name": "Fashion Press",
+          "title": "ジルスチュアート ビューティ「サムシングピュアブルー」クリスタルの花束煌めく花蜜リップやフレグランス",
+          "link": "https://www.fashion-press.net/news/144620",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "af505d6e1fa2",
+      "title": "WNBA迎来历史性时刻：薪酬福利突破10亿！",
+      "summary": "WNBA与球员工会达成一项具有里程碑意义的集体谈判协议，预计在协议有效期内，将为球员带来超过10亿美元的薪资和福利待遇。此举不仅是WNBA发展史上的重要篇章，更象征着女子体育在争取公平薪酬方面取得了重大突破，为其他体育联盟树立了榜样。新协议的达成，无疑将极大提升WNBA球员的职业保障和发展前景，吸引更多优秀人才加入，进一步推动女子篮球运动的蓬勃发展。",
+      "key_points": [
+        "WNBA达成历史性集体谈判协议",
+        "球员薪资福利总额超10亿美元",
+        "女子体育争取公平薪酬的重大胜利"
+      ],
+      "tags": [
+        "WNBA",
+        "女性权益",
+        "薪酬福利",
+        "体育",
+        "女子篮球"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.glamour.com/photos/69bef8f554bebb1c7149abec/master/pass/2226201690",
+      "published": "2026-03-21T20:04:47+00:00",
+      "sources": [
+        {
+          "name": "Glamour",
+          "title": "The WNBA Enters a Historic New Era With Their Tentative Collective Bargaining Agreement",
+          "link": "https://www.glamour.com/story/the-wnba-is-entering-a-historic-new-era-with-their-tentative-collective-bargaining-agreement",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "40eab256780b",
+      "title": "茵菲尼迪：钴蓝LV惊艳Series Mania",
+      "summary": "好莱坞新星Chase Infiniti身着Louis Vuitton为其量身定制的钴蓝色礼服，亮相Series Mania电影节，出席热门剧集《使女的故事》续集首映礼。作为品牌大使，继奥斯卡红毯之后，茵菲尼迪再次选择LV，以一袭设计感十足的褶皱蓝色礼服，成为当晚红毯焦点，尽显优雅与时尚品味。",
+      "key_points": [
+        "Chase Infiniti身着定制Louis Vuitton礼服",
+        "亮相Series Mania电影节",
+        "品牌大使身份加持"
+      ],
+      "tags": [
+        "Louis Vuitton",
+        "Chase Infiniti",
+        "钴蓝色礼服",
+        "Series Mania",
+        "红毯造型"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/chase-infiniti-louis-vuitton-custom-gown-series-mania-the-testaments-opening-france.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-21T19:19:02+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Chase Infiniti Brings Cobalt Drama to ‘The Testaments’ Opening at Series Mania in Custom Louis Vuitton",
+          "link": "https://wwd.com/pop-culture/celebrity-news/chase-infiniti-louis-vuitton-the-testaments-series-mania-1238685390",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "816f0e973ecd",
+      "title": "格诺利回顾展：被低估的意大利大师",
+      "summary": "Vogue聚焦Lévy Gorvy Dayan画廊，正在举办意大利艺术家Domenico Gnoli数十年来在美国最大规模的作品展。Gnoli身份多元，既是儿童书籍插画家，也曾涉足服装和舞台设计，最终以其独特的绘画风格闻名。本次展览着重展现了Gnoli作品中令人惊叹的精湛技艺，让观众重新认识这位被低估的艺术大师。",
+      "key_points": [
+        "Domenico Gnoli大型回顾展",
+        "美国数十年来最大规模Gnoli作品展",
+        "Gnoli的多重艺术身份与精湛技艺"
+      ],
+      "tags": [
+        "艺术展览",
+        "意大利艺术",
+        "多梅尼科·格诺利"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://assets.vogue.com/photos/69be7f6d4a4a42912cd30bd2/master/pass/Domenico%20Gnoli%20in%20front%20of%20Tour%20de%20Cou%2015%201%202%20(1966),%20Documenta%204%20Kassel,%20June%201968.jpg",
+      "published": "2026-03-21T18:53:55+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "At Lévy Gorvy Dayan, an Underrated Italian Master Gets His Biggest American Showcase in Decades",
+          "link": "https://www.vogue.com/article/domenico-gnoli-levy-gorvy-dayan",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "07c2dd4ee73d",
+      "title": "黑人社群闪耀时刻：本周的喜悦集锦",
+      "summary": "《Essence》杂志本周聚焦黑人社群的振奋瞬间，传递积极能量。霍华德大学在NCAA锦标赛中创造历史，赢得瞩目胜利；纽约皇后区一位百岁老人于生日派对上翩翩起舞，庆祝生命的美好。这些动人时刻展现了黑人社群的卓越与活力，为读者带来鼓舞。",
+      "key_points": [
+        "霍华德大学NCAA历史性胜利",
+        "皇后区百岁老人舞动庆生",
+        "展现黑人社群的快乐与卓越"
+      ],
+      "tags": [
+        "黑人文化",
+        "正能量",
+        "社群",
+        "生活方式"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/GettyImages-2267551797-Cropped-1-1-1920x1080.jpg",
+      "published": "2026-03-21T18:42:08+00:00",
+      "sources": [
+        {
+          "name": "Essence",
+          "title": "Celebrate Black Joy : This Week’s Best Uplifting Moments",
+          "link": "https://www.essence.com/community/celebrate-black-joy-this-weeks-best-moments",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "915768645da7",
+      "title": "小预算，后院大变身！",
+      "summary": "想用有限的预算打造一个精致的后院绿洲吗？Bustle精选了85款亚马逊上的高性价比好物，单品价格均低于30美元。无论是晶莹剔透的阳光捕捉器，浪漫的LED网灯，实用的太阳能阶梯灯，还是充满趣味的夜光石，都能轻松提升后院的格调，让你的户外空间焕发新生。",
+      "key_points": [
+        "Bustle推荐85款平价后院好物",
+        "单品价格均低于30美元",
+        "涵盖照明、装饰等多种品类"
+      ],
+      "tags": [
+        "后院",
+        "户外",
+        "家居",
+        "亚马逊",
+        "平价好物",
+        "生活方式"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2025/9/17/7f261180/bougie-things-for-your.jpg?w=1200&fit=max",
+      "published": "2026-03-21T18:30:58+00:00",
+      "sources": [
+        {
+          "name": "Bustle",
+          "title": "85 Bougie Things For Your Backyard That Are Surprisingly Under $30 On Amazon",
+          "link": "https://www.bustle.com/life/bougie-things-for-your-backyard-that-are-surprisingly-under-30-on-amazon",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "206b5c220c84",
       "title": "赤坂见附：昭和风情美食巡礼",
       "summary": "在东京赤坂见附，隐藏着一家由昭和初期澡堂改造而成的特色中国料理店“白碗竹筷樓”。这家店不仅提供美味的午餐，其充满怀旧气息的内部装饰更是吸引眼球。建议错峰前往，避开排队人潮，尽情享受这份独特的复古美食体验。这里是复古爱好者和建筑迷们不可错过的打卡地。",
@@ -3673,6 +3896,65 @@
           "name": "Elite Daily",
           "title": "The 75 Most Impressive Home Upgrades We Found On Amazon Under $25",
           "link": "https://www.elitedaily.com/shopping/the-most-impressive-home-upgrades-we-found-on-amazon-under-25",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "d70ed3d64822",
+      "title": "格温妮丝优雅亮相，穆勒鞋成焦点",
+      "summary": "格温妮丝·帕特洛身着自家品牌Goop的精致裙装套装，现身Muse Awards颁奖典礼。引人注目的是她脚上的黑色Jude Date穆勒鞋，完美诠释了当下流行的时尚风潮。此次亮相不仅展现了格温妮丝的个人风格，也再次印证了穆勒鞋在时尚界的地位，舒适与潮流兼备。",
+      "key_points": [
+        "格温妮丝·帕特洛",
+        "Goop品牌裙装",
+        "Jude Date穆勒鞋"
+      ],
+      "tags": [
+        "格温妮丝·帕特洛",
+        "名人穿搭",
+        "穆勒鞋",
+        "Goop",
+        "时尚潮流"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/gwyneth-paltrow-jude-mule-trend-nywift-muse-awards-nyc.jpg?w=1000&h=563&crop=1",
+      "published": "2026-03-21T18:13:36+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "Gwyneth Paltrow Joins the Jude Date Mule Trend at the Muse Awards",
+          "link": "https://wwd.com/footwear-news/shoe-trends/gwyneth-paltrow-jude-date-mules-nywift-muse-awards-nyc-1238685380",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "b40e57779177",
+      "title": "赋能单亲妈妈：社群力量崛起",
+      "summary": "Jeremiah Program峰会在波士顿成功举办，峰会汇集了单亲母亲、倡导者和行业领袖，共同探讨如何打破贫困循环，实现经济流动性和持久变革。该项目致力于为全美单亲母亲及其子女提供支持，助力她们获得大学学位，从而显著降低贫困率。峰会强调社群的重要性，通过分享故事和资源，赋能单亲母亲，帮助她们实现长期转型，创造更美好的未来。",
+      "key_points": [
+        "Jeremiah Program峰会在波士顿举行",
+        "关注单亲母亲的经济流动性",
+        "教育是打破贫困循环的关键"
+      ],
+      "tags": [
+        "女性赋权",
+        "公益项目",
+        "社会责任",
+        "单亲妈妈"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://media.essence.com/vxcjywbwpa/uploads/2026/03/A4A01007-scaled.jpg",
+      "published": "2026-03-21T18:06:47+00:00",
+      "sources": [
+        {
+          "name": "Essence",
+          "title": "Community Is A Verb: How The Jeremiah Program Summit Empowers Single Moms",
+          "link": "https://www.essence.com/lifestyle/jeremiah-program",
           "lang": "en"
         }
       ],
@@ -4231,71 +4513,6 @@
         }
       ],
       "article_count": 2
-    },
-    {
-      "id": "a4d0b35b4985",
-      "title": "2026秋冬东京时装周：Mukcyen解构玛丽·安托瓦内特，EITARO背花诗篇，RYUNOSUKEOKAZAKI情感祈祷，MIKIOSAKABE未来时尚",
-      "summary": "2026秋冬东京时装周汇聚多元设计理念。Mukcyen设计师木村由佳从多重角色解读玛丽·安托瓦内特，汲取18世纪法国服饰精神，展现前卫设计。EITARO上村英太郎以“背花着”为主题，从蝉蛹化蝶中获得灵感。RYUNOSUKEOKAZAKI的“005”系列则关注日常情感，以花卉动物印花和金属配饰为特色。MIKIOSAKABE呈现品牌对未来时尚的独特见解和创新设计。",
-      "key_points": [
-        "Mukcyen：解构玛丽·安托瓦内特，从角色和精神层面汲取灵感，而非直接采用洛可可元素。",
-        "EITARO：以“背花着”为主题，灵感来自蝉蛹化蝶，运用几何线条和南法绗缝工艺。",
-        "RYUNOSUKEOKAZAKI：“005”系列关注日常情感，以花卉动物印花和金属配饰为亮点。",
-        "MIKIOSAKABE：呈现品牌对未来时尚的独特见解和创新设计。"
-      ],
-      "tags": [
-        "2026秋冬",
-        "东京时装周",
-        "Mukcyen",
-        "EITARO",
-        "RYUNOSUKEOKAZAKI",
-        "MIKIOSAKABE",
-        "玛丽·安托瓦内特",
-        "蝉蛹化蝶",
-        "未来时尚"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://assets.vogue.com/photos/69be885e2a749a8127cdf134/master/pass/00001-mukcyen-fall-2026-ready-to-wear-tokyo-credit-gorunway.jpg",
-      "published": "2026-03-21T14:18:30+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "Mukcyen Tokyo Fall 2026",
-          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/mukcyen",
-          "lang": "en"
-        },
-        {
-          "name": "Fashion Press",
-          "title": "ムッシャン 2026-27年秋冬コレクション、マリー・アントワネットの“役割とイメージ”に着目",
-          "link": "https://www.fashion-press.net/news/144618",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashion Press",
-          "title": "エイタロウ 2026-27年秋冬コレクション - 羽ばたく前に花を着る、その背中が物語るもの",
-          "link": "https://www.fashion-press.net/news/144616",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "EITARO 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/eitaro/2026aw",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "RYUNOSUKEOKAZAKI 005 コレクション",
-          "link": "https://www.fashionsnap.com/collection/ryunosukeokazaki/005/2026aw",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "MIKIOSAKABE 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/mikiosakabe/2026aw",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 6
     },
     {
       "id": "fa98a9a12c8a",
@@ -18987,221 +19204,6 @@
         }
       ],
       "article_count": 1
-    },
-    {
-      "id": "1a516f3c7470",
-      "title": "Nike致敬俄勒冈大学：自然主题Air Max 95",
-      "summary": "Nike为纪念俄勒冈大学及其标志性的廷克·哈特菲尔德篮球场，特别推出两款Air Max 95配色，隶属于“Ducks of a Feather”项目。设计灵感源自太平洋西北地区的葱郁森林和木材厂，分别命名为“The Woods”和“Lumber Yard”。这两款运动鞋以自然为灵感，将俄勒冈州的地域特色融入经典鞋款，是运动与时尚的完美结合。",
-      "key_points": [
-        "Nike推出Air Max 95俄勒冈大学特别版",
-        "两款配色灵感来自西北太平洋自然环境",
-        "属于“Ducks of a Feather”项目"
-      ],
-      "tags": [
-        "Nike",
-        "Air Max 95",
-        "俄勒冈大学",
-        "联名",
-        "运动鞋"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F19%2Fducks-of-a-feather-nike-air-max-95-release-date-0.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-19T20:23:24+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Nike Celebrates the University of Oregon With Two Nature-Themed Air Max 95s",
-          "link": "https://hypebeast.com/2026/3/ducks-of-a-feather-nike-air-max-95-release-date",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "7c6fee481d0c",
-      "title": "奥莉维亚·罗德里戈新专辑即将发行！",
-      "summary": "流行歌手奥莉维亚·罗德里戈即将推出她的第三张个人专辑，引发时尚界和音乐爱好者的广泛关注。虽然目前专辑的具体信息尚未公布，但作为备受瞩目的新生代偶像，罗德里戈的音乐风格和个人穿搭一直引领潮流，她的新专辑无疑将成为时尚风向标，值得期待。",
-      "key_points": [
-        "奥莉维亚·罗德里戈新专辑",
-        "第三张个人专辑",
-        "时尚风向标"
-      ],
-      "tags": [
-        "奥莉维亚·罗德里戈",
-        "新专辑",
-        "流行音乐",
-        "时尚",
-        "名人"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/b86c9335-6d7f-4d7f-b62a-412e6a0f2b98.jpeg",
-      "published": "2026-03-19T20:16:00+00:00",
-      "sources": [
-        {
-          "name": "Harper's Bazaar",
-          "title": "Everything to Know About Olivia Rodrigo’s Upcoming Third Album",
-          "link": "https://www.harpersbazaar.com/culture/art-books-music/a70794949/olivia-rodrigo-third-album-news-details",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "a5a200a50929",
-      "title": "摇滚入足：Skechers x Rolling Stones 联名系列",
-      "summary": "Skechers 携手 Rolling Stones 推出全新联名运动鞋系列，将摇滚传奇的狂野不羁融入舒适的穿着体验。该系列专为追求舒适与时尚的音乐爱好者设计，是音乐节造型的理想之选。舒适度与潮流感兼备，让你在享受音乐的同时，也能展现独特的个性魅力。",
-      "key_points": [
-        "Skechers联名Rolling Stones",
-        "舒适运动鞋",
-        "音乐节穿搭"
-      ],
-      "tags": [
-        "Skechers",
-        "Rolling Stones",
-        "联名系列",
-        "运动鞋",
-        "摇滚",
-        "音乐节",
-        "时尚"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://stylecaster.com/wp-content/uploads/2026/03/Skechers-Shoes.gif",
-      "published": "2026-03-19T20:13:21+00:00",
-      "sources": [
-        {
-          "name": "StyleCaster",
-          "title": "The New Skechers x Rolling Stones Collab Has Some of the Most Comfortable Sneakers You’ll Ever Slip Into",
-          "link": "https://stylecaster.com/fashion/shopping-guides/1234882370/skechers-x-rolling-stones",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "08d1d8dac142",
-      "title": "三星Frame TV限时特惠，艺术与科技的完美邂逅！",
-      "summary": "《Esquire》杂志报道，三星Frame TV正进行高达41%的折扣促销。这款电视不仅拥有卓越的视听体验，更能化身为艺术画廊，为家居空间增添艺术气息。对于追求高品质生活、注重家居美学的消费者而言，现在是入手Frame TV的绝佳时机，不容错过。",
-      "key_points": [
-        "三星Frame TV大幅折扣",
-        "兼具电视与艺术品双重功能",
-        "提升家居生活品质"
-      ],
-      "tags": [
-        "三星",
-        "Frame TV",
-        "折扣优惠",
-        "家居生活",
-        "艺术电视"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/4046749a-3394-4545-9614-5114059d0567.jpeg",
-      "published": "2026-03-19T20:10:00+00:00",
-      "sources": [
-        {
-          "name": "Esquire",
-          "title": "We Can't Believe the Samsung Frame TV Is 41% Off Right Now",
-          "link": "https://www.esquire.com/lifestyle/a70793722/samsung-frame-tv-sale-march-2026",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "20d73ccb4d88",
-      "title": "泰勒与特拉维斯：甜蜜恋情或将迎来新篇章？",
-      "summary": "乐坛天后泰勒·斯威夫特与橄榄球明星特拉维斯·凯尔斯的恋情持续升温，尽管尚未步入婚姻殿堂，但关于两人是否计划组建家庭的猜测甚嚣尘上。起因是特拉维斯的母亲Donna在公开场合的一些暗示性言论，引发了媒体和粉丝的广泛关注，纷纷猜测这对情侣是否已在为迎接新生命的到来做准备。目前，双方均未对此传闻作出回应，但大众对这对明星情侣的未来充满期待。",
-      "key_points": [
-        "泰勒与特拉维斯恋情甜蜜",
-        "Donna暗示两人或备孕",
-        "引发大众对两人未来的猜测"
-      ],
-      "tags": [
-        "泰勒·斯威夫特",
-        "特拉维斯·凯尔斯",
-        "名人八卦",
-        "明星恋情"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://stylecaster.com/wp-content/uploads/2026/02/Donna-Taylor-Travis.jpg",
-      "published": "2026-03-19T20:08:49+00:00",
-      "sources": [
-        {
-          "name": "StyleCaster",
-          "title": "Taylor Swift & Travis Kelce Spark Speculation They’re Quietly ‘Making Room for a Baby’ After Donna’s Telling Comment",
-          "link": "https://stylecaster.com/entertainment/celebrity-news/1234882380/taylor-swift-travis-kelce-baby-wedding",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "e958d97a8e84",
-      "title": "影帝影后联袂！《夜幕降临》星光熠熠",
-      "summary": "好莱坞巨星莱昂纳多·迪卡普里奥与詹妮弗·劳伦斯将携手主演备受瞩目的新电影《夜幕降临》。这部影片汇集了两位极具票房号召力的演员，引发了影迷和时尚界的广泛关注。目前关于电影情节的细节尚未公布，但两位主演的加盟无疑为影片增添了无限期待，预示着一场视觉与演技的盛宴即将上演。我们将持续关注《夜幕降临》的最新动态，为大家带来更多幕后花絮和时尚解读。",
-      "key_points": [
-        "莱昂纳多与劳伦斯首度合作",
-        "电影《夜幕降临》备受期待",
-        "明星效应带动时尚关注"
-      ],
-      "tags": [
-        "莱昂纳多·迪卡普里奥",
-        "詹妮弗·劳伦斯",
-        "电影",
-        "明星",
-        "时尚"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/3259d7fb-cc05-49f3-8c76-cd2a24fdef2e.jpeg",
-      "published": "2026-03-19T20:06:19+00:00",
-      "sources": [
-        {
-          "name": "Elle",
-          "title": "Leonardo DiCaprio and Jennifer Lawrence Star in <em>What Happens at Night</em>: Everything We Know",
-          "link": "https://www.elle.com/culture/movies-tv/a70793992/leonardo-dicaprio-jennifer-lawrence-what-happens-at-night-news-date-cast",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "16cdf31142f9",
-      "title": "Zendaya红色战袍再掀波澜，致敬传奇王子！",
-      "summary": "Zendaya近日身着Lacy Harris设计的红色套装惊艳亮相，向音乐传奇人物Prince在1985年演唱会上的经典造型致敬。这一大胆前卫的造型不仅引爆时尚圈，更引发了Harper's Bazaar等权威媒体的关注与报道，再次印证了名人风格对潮流趋势的强大影响力以及时尚的传承与致敬。Zendaya巧妙地将复古元素与现代时尚融合，展现出独特的个人魅力，也引发了人们对Prince经典造型的回忆与致敬。",
-      "key_points": [
-        "Zendaya身穿Lacy Harris红色套装致敬Prince",
-        "造型复刻Prince 1985年演唱会经典造型",
-        "名人风格对潮流趋势的强大影响力",
-        "时尚的传承与致敬"
-      ],
-      "tags": [
-        "Zendaya",
-        "Prince",
-        "Lacy Harris",
-        "红色套装",
-        "致敬",
-        "名人风格",
-        "复古",
-        "时尚传承"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/0593919b-e9b2-46e4-b4b3-4b8498072a22.jpg",
-      "published": "2026-03-19T20:03:00+00:00",
-      "sources": [
-        {
-          "name": "Harper's Bazaar",
-          "title": "Zendaya’s Lacy Harris Reed Set Is an Homage to a 1985 Concert Look Worn by Prince",
-          "link": "https://www.harpersbazaar.com/celebrity/latest/a70794297/zendaya-lace-white-bridal-set-the-drama-press-homage-prince-1985-concert-look",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
     }
   ]
 }
