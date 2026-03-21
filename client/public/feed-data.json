@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-03-21T01:14:13+00:00",
+    "generated_at": "2026-03-21T04:03:05+00:00",
     "total_topics": 500,
-    "total_articles": 1189,
+    "total_articles": 1187,
     "sources_count": 49,
     "sources": [
       "Allure",
@@ -58,12 +58,12 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 16,
-      "blocked_by_tombstones": 328,
-      "evicted_topics": 7,
+      "new_articles_in_2h": 13,
+      "blocked_by_tombstones": 330,
+      "evicted_topics": 10,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 8,
-        "incremental_new_topics_created": 8,
+        "incremental_assigned_to_existing": 2,
+        "incremental_new_topics_created": 11,
         "cross_merge_candidates": 2,
         "cross_merge_low_reviews": 2,
         "cross_merge_high_reviews": 0,
@@ -71,8 +71,8 @@
       }
     },
     "quality": {
-      "merge_rate": 0.5795,
-      "avg_sources_per_topic": 1.312,
+      "merge_rate": 0.5788,
+      "avg_sources_per_topic": 1.302,
       "high_confidence_topic_ratio": 0.96,
       "rebuild_mode": "incremental"
     }
@@ -226,12 +226,12 @@
     {
       "id": "05e1b390d606",
       "title": "2026秋冬全球时装周趋势总结：巴黎、伦敦、米兰、东京及高定系列",
-      "summary": "2026秋冬全球时装周在巴黎、伦敦、米兰和东京盛大举行，RVNG Couture发布了高定系列，Yushokobayashi发布了秋季系列。时装周汇聚国际知名品牌和日本本土新锐设计师，以前卫理念和创新设计展现未来时尚的多元可能性。巴黎、伦敦、米兰时装周呈现了戏剧性元素、力量着装、文艺复兴灵感、“裸露”风潮等多元风格。东京时装周聚焦本土力量和新锐设计，呈现未来解构与多元风格，Yohei Ohno延续未来主义和解构主义。东京时装周还呈现了多元化的日本时尚风貌，芦田多惠(TAE ASHIDA)以精湛工艺和利落剪裁展现轻盈飘逸的秋冬美学；kotohayokozawa从西新宿汲取灵感，用鲜艳色彩表达都市活力，其“IN THIS TEMPORARY CITY”系列融入旅行者和跑步者元素；Seishin融合传统与现代，探索未来时尚；YOSHIO KUBO呈现独特设计理念。Cote Mer则将和服解构，以黑留袖、西阵织等珍贵面料重塑街头潮流。",
+      "summary": "2026秋冬全球时装周在巴黎、伦敦、米兰和东京盛大举行，RVNG Couture发布了高定系列，Yushokobayashi发布了秋季系列。时装周汇聚国际知名品牌和日本本土新锐设计师，以前卫理念和创新设计展现未来时尚的多元可能性。巴黎、伦敦、米兰时装周呈现了戏剧性元素、力量着装、文艺复兴灵感、“裸露”风潮等多元风格。东京时装周聚焦本土力量和新锐设计，呈现未来解构与多元风格，Yohei Ohno延续未来主义和解构主义。东京时装周上，冈崎龙之介(RYUNOSUKEOKAZAKI)、Kotohayokozawa、yushokobayashi、MATSUFUJI和VIVIANO等日本设计师品牌发布了引人注目的秋冬系列。冈崎龙之介的“005”系列延续了品牌对“祈祷”主题的探索，通过雕塑般的礼服等设计捕捉人类情感的复杂性。Kotohayokozawa以前卫设计和实验性廓形著称，在传统日式美学中融入解构主义元素。VIVIANO则以“Portrait",
       "key_points": [
+        "2026秋冬全球时装周涵盖巴黎、伦敦、米兰、东京及高定系列。",
         "巴黎、伦敦、米兰时装周呈现戏剧性元素、力量着装、文艺复兴灵感、“裸露”风潮等多元风格。",
         "东京时装周聚焦本土力量和新锐设计，呈现未来解构与多元风格。",
-        "东京时装周展现日本传统工艺与现代设计的融合，如Cote Mer对和服的解构和再创造。",
-        "多个品牌和设计师在时装周上发布了新系列，包括RVNG Couture, Yushokobayashi, TAE ASHIDA, kotohayokozawa, Seishin, YOSHIO KUBO, Yohei Ohno, Viviano等。"
+        "冈崎龙之介、Kotohayokozawa、yushokobayashi、MATSUFUJI和VIVIANO等日本设计师品牌在东京时装周发布了引人注目的秋冬系列，展现情感表达与前卫设计。"
       ],
       "tags": [
         "2026秋冬",
@@ -241,10 +241,9 @@
         "米兰",
         "东京",
         "高定",
-        "日本时尚",
+        "新锐设计师",
         "解构主义",
-        "未来主义",
-        "传统工艺"
+        "未来主义"
       ],
       "category": "trend-summary",
       "category_name": "趋势总结",
@@ -2872,9 +2871,45 @@
           "title": "kotohayokozawa 2026AW コレクション",
           "link": "https://www.fashionsnap.com/collection/kotoha-yokozawa/2026aw",
           "lang": "ja"
+        },
+        {
+          "name": "Vogue",
+          "title": "Ryunosukeokazaki Tokyo Fall 2026",
+          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/ryunosukeokazaki",
+          "lang": "en"
+        },
+        {
+          "name": "Vogue",
+          "title": "Kotohayokozawa Tokyo Fall 2026",
+          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/kotohayokozawa",
+          "lang": "en"
+        },
+        {
+          "name": "Fashion Press",
+          "title": "リュウノスケオカザキ 「005」コレクション - 感情の揺らぎをなぞって",
+          "link": "https://www.fashion-press.net/news/144612",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "人間は弱く儚いからこそ愛おしい　「ユウショウコバヤシ」が描いた柔らかな死後の世界",
+          "link": "https://www.fashionsnap.com/article/yushokobayashi-26aw-report",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "MATSUFUJI 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/matsufuji/2026aw",
+          "lang": "ja"
+        },
+        {
+          "name": "Fashionsnap",
+          "title": "VIVIANO 2026AW コレクション",
+          "link": "https://www.fashionsnap.com/collection/viviano/2026aw",
+          "lang": "ja"
         }
       ],
-      "article_count": 450
+      "article_count": 456
     },
     {
       "id": "bc8630abc9cf",
@@ -3583,6 +3618,243 @@
       "article_count": 1
     },
     {
+      "id": "e1f4fd3f440c",
+      "title": "椿山荘×樱花蜡笔：色彩绘东京",
+      "summary": "东京椿山庄酒店携手知名文具品牌樱花蜡笔，推出限定版“七个季节”蜡笔套装。这套包含12种色彩的蜡笔，灵感源自酒店内的标志性景观，如梦幻的东京云海和烂漫的樱花盛景。此次跨界合作旨在通过独特的色彩组合，生动展现椿山庄酒店的四季魅力，为生活增添艺术气息。",
+      "key_points": [
+        "椿山荘酒店与樱花蜡笔联名",
+        "限定蜡笔套装，12种颜色",
+        "灵感来自酒店景观"
+      ],
+      "tags": [
+        "品牌联名",
+        "生活方式",
+        "酒店",
+        "文具",
+        "限定款"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://www.fashion-press.net/img/news/144614/top.jpg?1774032169",
+      "published": "2026-03-21T03:56:30+00:00",
+      "sources": [
+        {
+          "name": "Fashion Press",
+          "title": "ホテル椿山荘東京×サクラクレパス“7つの季節”を描く限定クレパス、東京雲海や桜を表現する12色",
+          "link": "https://www.fashion-press.net/news/144614",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "4fc201e7024f",
+      "title": "春日限定：樱花好礼，悦享新生活",
+      "summary": "日本时尚生活方式网站mi-mollet精选多款樱花主题礼品套装，为迎接新生活的朋友们献上春日祝福。礼品价格亲民，从几百日元到五千日元不等，涵盖美味与实用。推荐中川政七商店的樱花点心与纱布巾组合，以及Kneipp的樱花沐浴系列，让收礼人在馥郁芬芳中感受春意。",
+      "key_points": [
+        "mi-mollet推荐樱花礼品",
+        "价格范围广，选择多样",
+        "兼顾美味与实用性"
+      ],
+      "tags": [
+        "礼品",
+        "樱花",
+        "日本品牌",
+        "春季",
+        "生活方式"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://mi-mollet.ismcdn.jp/mwimgs/a/3/-/img_a3b13ee9570e68e46d696b0987dea515938815.jpg?rd=202603121355",
+      "published": "2026-03-21T03:56:21+00:00",
+      "sources": [
+        {
+          "name": "mi-mollet",
+          "title": "【ワンコインから5000円まで！堤信子の推しプチギフト】春爛漫！新生活を迎えるあの人に贈りたい桜のギフトセット",
+          "link": "https://mi-mollet.com/articles/-/58920",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "092107038755",
+      "title": "无印良品限时优惠：夏日内衣T恤精选",
+      "summary": "无印良品促销周来袭！编辑倾情推荐多款舒适内衣与T恤，助你清爽度夏。女士平滑胸罩背心、抹胸，罗纹背心，以及毛巾双面毛圈胸罩背心等，亲肤透气，多款选择满足不同需求。更有穿搭建议，轻松打造简约时尚的夏日造型。",
+      "key_points": [
+        "无印良品促销周",
+        "多款内衣T恤推荐",
+        "夏季舒适穿搭"
+      ],
+      "tags": [
+        "无印良品",
+        "内衣",
+        "T恤",
+        "促销",
+        "夏季穿搭"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://mi-mollet.ismcdn.jp/mwimgs/3/7/-/img_3778aeada08b1006a08f1a920caab476155548.jpg?rd=202603121355",
+      "published": "2026-03-21T03:56:20+00:00",
+      "sources": [
+        {
+          "name": "mi-mollet",
+          "title": "着心地の良さが沼！【無印良品週間】で狙いたい「カップ付きインナー」＆「Tシャツ」７選",
+          "link": "https://mi-mollet.com/articles/-/58963",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "be5ad5d43004",
+      "title": "蓝色衬衫：40+女性的春日时尚密钥",
+      "summary": "日系轻熟风来袭！本季，蓝色衬衫不再是职场专属。针对40代女性，我们提供多款蓝色衬衫的春季穿搭灵感，无论是休闲风、优雅风，都能轻松驾驭。从衬衫款式选择到配饰搭配，全方位解析，助您找到最适合自己的蓝色衬衫造型，焕发春日活力。",
+      "key_points": [
+        "蓝色衬衫的多样款式选择",
+        "不同风格的春季穿搭方案",
+        "配饰搭配技巧提升造型感"
+      ],
+      "tags": [
+        "40代穿搭",
+        "蓝色衬衫",
+        "春季时尚",
+        "日系穿搭"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://mi-mollet.ismcdn.jp/mwimgs/0/6/-/img_06f3b19d4e25278dd5d101d4a57c7cf5756322.jpg?rd=202603121355",
+      "published": "2026-03-21T03:56:20+00:00",
+      "sources": [
+        {
+          "name": "mi-mollet",
+          "title": "「色から春を取り入れたい」定番“ブルーシャツ”、この春おしゃれな大人はどう着こなす？",
+          "link": "https://mi-mollet.com/articles/-/58955",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e36746e07c4b",
+      "title": "告别传统？沙龙业的新选择",
+      "summary": "越来越多顾客选择专门的白发染发或剪发服务，而非传统美发沙龙。一位美发沙龙老板认为，这是市场趋势，顾客有权选择更便捷经济的服务。传统沙龙的优势在于提供个性化发型设计和颜色定制，根据顾客的肤色、发质等因素打造专属造型。面对新趋势，传统沙龙也在积极寻求转型。",
+      "key_points": [
+        "顾客选择专门染发/剪发服务成趋势",
+        "传统沙龙提供个性化定制服务",
+        "行业面临转型与变革"
+      ],
+      "tags": [
+        "美发沙龙",
+        "白发染发",
+        "美容服务",
+        "顾客选择",
+        "行业趋势"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://mi-mollet.ismcdn.jp/mwimgs/4/e/-/img_4e121d431cf5625637bd82a1321b841b563447.jpg?rd=202603121355",
+      "published": "2026-03-21T03:56:19+00:00",
+      "sources": [
+        {
+          "name": "mi-mollet",
+          "title": "「白髪染めや前髪カットだけ、いつもと違うサロンへ行っても大丈夫？」美容師の本音を聞いてみた！",
+          "link": "https://mi-mollet.com/articles/-/58918",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "475a89b01c89",
+      "title": "美由心生：脑科学揭秘变美秘诀",
+      "summary": "日本Vogue邀请脑科学家解读美容与脑科学的奥秘，颠覆传统美容认知。文章指出，美丽并非仅仅依靠外在手段，更与大脑状态息息相关。通过积极的心理暗示，避免过度劳累，即使在假日也保持精致妆容，并在日常护肤中投入更多心思，都能有效激活大脑的美容开关，由内而外焕发美丽光彩。掌握这五个脑科学美容习惯，轻松拥有由大脑塑造的美丽。",
+      "key_points": [
+        "积极心理暗示提升自信",
+        "避免过度劳累，保持身心愉悦",
+        "假日化妆，维持精致状态",
+        "用心护肤，享受美丽过程"
+      ],
+      "tags": [
+        "美容",
+        "脑科学",
+        "心理美容",
+        "生活方式",
+        "健康"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.vogue.co.jp/photos/69a3fb9599fa829ed81e5795/master/pass/GettyImages-2183204660.jpg",
+      "published": "2026-03-21T03:30:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue Japan",
+          "title": "キレイは脳で作られる。人気脳科学者が解き明かす、美しくなる５つの脳習慣・前編",
+          "link": "https://www.vogue.co.jp/article/brain-training-to-become-beauty-1-onayami",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "71b0f6d9c450",
+      "title": "玩转色彩，释放真我！",
+      "summary": "《Vogue Japan》最新时尚特辑鼓励大胆穿搭，打破传统规则，拥抱色彩与自由。报道展示了睡衣与夹克、前卫珠宝等混搭造型， Saint Laurent、Dior、Dolce & Gabbana、Prada、Bottega Veneta、Miu Miu、Ralph Lauren、Givenchy等品牌单品巧妙运用，为读者带来无限穿搭灵感，尽情展现个性风采。",
+      "key_points": [
+        "色彩穿搭",
+        "混搭风",
+        "品牌单品"
+      ],
+      "tags": [
+        "时尚搭配",
+        "造型趋势",
+        "色彩搭配"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://media.vogue.co.jp/photos/69afa8dd2fe5ba9c10c6abd3/master/pass/1-SURPRISE-ME-voguejapan.jpg",
+      "published": "2026-03-21T03:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue Japan",
+          "title": "陽気に、自由を着る！ カラフル＆ムーディなスタイリングが気分",
+          "link": "https://www.vogue.co.jp/gallery/unexpected",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "c144e9884675",
+      "title": "《穿Prada的女王2》：2026时尚风向标？",
+      "summary": "时尚杂志Who What Wear预测，备受期待的《穿普拉达的女王2》上映后，势必将引发新一轮时尚潮流。该杂志大胆预测了五个可能重回大众视野的怀旧趋势，并探讨了这部电影对未来时尚界，尤其是2026年时尚走向的潜在影响。经典电影续作能否再次引领时尚风潮，值得拭目以待。",
+      "key_points": [
+        "《穿普拉达的女王2》或将引发怀旧风潮",
+        "预测电影对2026年时尚趋势的影响",
+        "五个可能回归的潮流趋势"
+      ],
+      "tags": [
+        "时尚趋势",
+        "电影",
+        "穿普拉达的女王",
+        "怀旧"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://cdn.mos.cms.futurecdn.net/ZpsXCDndjtgbjRfMUSWEW9-1280-80.jpg",
+      "published": "2026-03-21T02:00:00+00:00",
+      "sources": [
+        {
+          "name": "Who What Wear",
+          "title": "The Devil Wears Prada 2 Is Already Bringing Throwback Trends to the Spotlight—5 Predictions I Have",
+          "link": "https://www.whowhatwear.com/fashion/trends/devil-wears-prada-2-trend-prediction",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "3322be26e6bf",
       "title": "焕发活力：13种高钾美食指南",
       "summary": "《Vogue Japan》精选13种富含钾元素的食物，助你维持健康活力。钾对心脏、肌肉和神经系统至关重要。这份指南囊括南瓜、杏干、牛油果、葡萄柚、腰豆、小扁豆、牛奶、橙汁、土豆、西梅、葡萄干、大豆和红薯等多种选择，建议通过均衡饮食，轻松补充每日所需钾元素，提升整体健康水平。",
@@ -3663,6 +3935,64 @@
           "name": "GQ Japan",
           "title": "夕食は17時〜19時がベスト？ 専門家に訊く最適解",
           "link": "https://www.gqjapan.jp/article/20260321-eating-dinner-earlier-benefits",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "ea6bfea052ab",
+      "title": "《爱恋》男主带货，Kohl's意外翻红？",
+      "summary": "凭借剧集《Love Story》走红的演员Paul Anthony Kelly，早年曾担任Kohl's电商平台的模特。近期，随着剧集热播，粉丝们纷纷涌入Kohl's官网，抢购Kelly展示过的同款服装，直接带动了相关产品的销量增长。Kohl's也迅速抓住这一波“名人效应”，重新发布了Kelly之前拍摄的男装宣传照，借此机会扩大品牌影响力，实现了一次意想不到的营销成功。",
+      "key_points": [
+        "《Love Story》男主昔日为Kohl's电商模特",
+        "剧集热播带动Kohl's相关产品销量",
+        "Kohl's借势营销，重塑品牌形象"
+      ],
+      "tags": [
+        "名人效应",
+        "电商",
+        "Kohl's",
+        "服装销售"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://wwd.com/wp-content/uploads/2026/03/paul-anthony-kelly-model-kohls.png?w=1000&h=563&crop=1",
+      "published": "2026-03-21T00:29:29+00:00",
+      "sources": [
+        {
+          "name": "WWD",
+          "title": "‘Love Story’ Star Paul Anthony Kelly Was An E-Commerce Model for Kohl’s — and Fans Are Buying Up His Pieces Online",
+          "link": "https://wwd.com/shop/shop-fashion/see-paul-anthony-kelly-modeling-kohls-clothing-buy-online-1238685105",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "e1f43bb4d206",
+      "title": "吉冈引入中国绗缝机，力保日本服装供应链",
+      "summary": "日本服饰辅料批发商吉冈株式会社近日宣布，将独家代理销售中国高速绗缝机，旨在应对日本国内绗缝产业萎缩的困境，维持本土生产力。随着日本制造商的逐渐退出，设备更新和技术支持成为难题。吉冈与中国机械制造商达成合作，引进低噪音、高效率的绗缝设备，并提供安装及技术指导，以支持日本国内及海外日系服装工厂的生产需求，保障供应链的稳定。",
+      "key_points": [
+        "吉冈代理中国高速绗缝机",
+        "应对日本绗缝产业萎缩",
+        "保障日系服装供应链"
+      ],
+      "tags": [
+        "供应链",
+        "生产",
+        "设备",
+        "中日合作"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://fashionsnap-assets.com/asset/format=auto,fit=crop,width=300,height=300/article/images/2026/03/imgi_33_large_yoshioka-260313-76d9e61c-b8f7-4143-aba7-a1e49247d30a.png",
+      "published": "2026-03-20T23:59:00+00:00",
+      "sources": [
+        {
+          "name": "Fashionsnap",
+          "title": "服飾副資材卸の吉岡が中国の高速キルトマシンを販売　「国内生産を維持したい」",
+          "link": "https://www.fashionsnap.com/article/2026-03-21/senken-yoshioka",
           "lang": "ja"
         }
       ],
@@ -4444,18 +4774,23 @@
     },
     {
       "id": "735c3bb972e6",
-      "title": "Taylor Frankie Paul的“单身女郎”秘辛",
-      "summary": "社交媒体红人Taylor Frankie Paul的“单身女郎”节目幕后故事曝光，尽管该节目最终未能播出，但围绕其拍摄期间的各种花絮和戏剧性事件依然引发热议。报道揭露了Paul在节目中选择的“获胜者”，以及节目录制过程中发生的争议事件，满足了大众对真人秀幕后八卦的好奇心。",
+      "title": "Taylor Frankie Paul《单身女郎》节目取消风波：违约金与ABC的愤怒",
+      "summary": "社交媒体红人Taylor Frankie Paul参与的《单身女郎》节目取消事件持续发酵。最新报道指出，Paul可能因“违反合约”面临巨额罚款，节目的取消给ABC电视台造成数百万美元的损失，电视台高管对此表示强烈不满。该事件被认为是近年来真人秀电视节目中最大的丑闻之一，引发广泛关注，同时也让人们对Paul此前“单身女郎”节目的幕后故事，包括选角和争议事件，更加好奇。",
       "key_points": [
-        "Taylor Frankie Paul“单身女郎”节目幕后",
-        "节目最终未能播出",
-        "揭露“获胜者”及争议事件"
+        "Taylor Frankie Paul可能因违反合约面临罚款",
+        "《单身女郎》节目取消给ABC造成巨大经济损失",
+        "ABC高管对Taylor Frankie Paul的行为感到愤怒",
+        "该事件被认为是近年来真人秀电视节目中最大的丑闻之一",
+        "事件引发对Paul此前节目幕后故事的关注"
       ],
       "tags": [
-        "名人",
+        "Taylor Frankie Paul",
+        "单身女郎",
         "真人秀",
-        "娱乐八卦",
-        "生活方式"
+        "ABC",
+        "违约",
+        "丑闻",
+        "电视节目"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -4467,9 +4802,15 @@
           "title": "All of Taylor Frankie Paul’s Bachelorette Spoilers, Including Her Winner & if They’re Still Together",
           "link": "https://stylecaster.com/entertainment/tv-movies/1234882573/taylor-frankie-paul-bachelorette-spoilers-winner",
           "lang": "en"
+        },
+        {
+          "name": "StyleCaster",
+          "title": "Taylor Frankie Paul Could Be Fined for ‘Breach of Contact’ as Her Bachelorette Cancellation Costs ABC Millions—Execs Are ‘Furious’ at Her",
+          "link": "https://stylecaster.com/entertainment/celebrity-news/1234882450/how-much-taylor-frankie-paul-bachelorette-cancellation-cost",
+          "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "63bfdefd76a1",
@@ -6825,18 +7166,22 @@
     },
     {
       "id": "54d701419696",
-      "title": "Tyler Perry与Marlo Hampton恋情曝光？",
-      "summary": "近日，一段《亚特兰大娇妻》明星Marlo Hampton与著名导演Tyler Perry在早午餐会上举止亲密的视频在网络疯传，引发网友热议两人是否正在秘密交往。视频中，Hampton将手亲昵地搭在Perry的胳膊上，两人笑容满面，气氛融洽。此前，Hampton曾公开透露自己与一位亿万富翁交往五年，而Perry则一向以保护个人隐私著称，这段视频的流出无疑为两人的关系增添了更多猜想。",
+      "title": "Tyler Perry与Marlo Hampton恋情疑云：亲密互动引猜测，AI照片添乱",
+      "summary": "《亚特兰大娇妻》明星Marlo Hampton与著名导演Tyler Perry在早午餐会上举止亲密的视频引发恋情猜测。Hampton将手搭在Perry胳膊上，两人有说有笑。网络流传疑似亲吻照片，但有网友质疑为AI生成。Hampton曾自曝与亿万富翁交往五年，Perry则以保护隐私著称，使得这段关系的真假更加扑朔迷离。",
       "key_points": [
-        "Marlo Hampton与Tyler Perry亲密互动视频曝光",
-        "网友猜测两人正在交往",
-        "两人此前感情生活备受关注"
+        "Marlo Hampton和Tyler Perry在早午餐会上举止亲密，引发恋情猜测。",
+        "网络流传两人亲密视频，Hampton将手搭在Perry胳膊上。",
+        "疑似亲吻照片被质疑为AI生成。",
+        "Hampton曾自称与亿万富翁交往，Perry注重隐私，恋情真假难辨。"
       ],
       "tags": [
-        "名人八卦",
-        "绯闻",
         "Tyler Perry",
-        "Marlo Hampton"
+        "Marlo Hampton",
+        "亚特兰大娇妻",
+        "恋情",
+        "绯闻",
+        "AI",
+        "社交媒体"
       ],
       "category": "brand-market",
       "category_name": "品牌/市场",
@@ -6845,12 +7190,12 @@
       "sources": [
         {
           "name": "Essence",
-          "title": "Are Tyler Perry And Marlo Hampton Dating? The Internet Is Asking Questions",
+          "title": "Are Tyler Perry And Marlo Hampton Dating? The Internet Has Questions",
           "link": "https://www.essence.com/lifestyle/tyler-perry-and-marlo-hampton",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "9e7a717ae816",
@@ -7349,74 +7694,6 @@
         }
       ],
       "article_count": 8
-    },
-    {
-      "id": "d9d9f65a2901",
-      "title": "2026秋季东京时装周：新锐设计师的情感表达与前卫设计",
-      "summary": "2026秋季东京时装周上，冈崎龙之介(RYUNOSUKEOKAZAKI)、Kotohayokozawa、yushokobayashi、MATSUFUJI和VIVIANO等日本设计师品牌发布了引人注目的秋冬系列。冈崎龙之介的“005”系列延续了品牌对“祈祷”主题的探索，通过雕塑般的礼服等设计捕捉人类情感的复杂性。Kotohayokozawa以前卫设计和实验性廓形著称，在传统日式美学中融入解构主义元素。VIVIANO则以“Portrait of Her, Unnamed”为主题，打破对个体的刻板定义，呈现力量感十足的垫肩外套、前卫皮革套装和亮粉色缎面礼服等多元风格，并与KIJIMA TAKAYUKI再度合作，以帽饰深化“混沌与混乱”的美学理念。",
-      "key_points": [
-        "冈崎龙之介延续“祈祷”主题，探索人类情感。",
-        "Kotohayokozawa以前卫解构设计著称。",
-        "VIVIANO以“无名 портрет”为主题，打破刻板印象，风格多元。",
-        "VIVIANO与KIJIMA TAKAYUKI再度合作，推出帽饰设计。"
-      ],
-      "tags": [
-        "2026秋冬",
-        "东京时装周",
-        "冈崎龙之介",
-        "Kotohayokozawa",
-        "yushokobayashi",
-        "MATSUFUJI",
-        "VIVIANO",
-        "KIJIMA TAKAYUKI",
-        "情感表达",
-        "前卫设计",
-        "解构主义",
-        "日式美学"
-      ],
-      "category": "runway-collection",
-      "category_name": "秀场/系列",
-      "image": "https://assets.vogue.com/photos/69bd49d8c766efa1664fda93/master/pass/00001-ryunosukeokazaki-fall-2026-ready-to-wear-tokyo-credit-gorunway.jpg",
-      "published": "2026-03-20T16:31:50+00:00",
-      "sources": [
-        {
-          "name": "Vogue",
-          "title": "Ryunosukeokazaki Tokyo Fall 2026",
-          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/ryunosukeokazaki",
-          "lang": "en"
-        },
-        {
-          "name": "Vogue",
-          "title": "Kotohayokozawa Tokyo Fall 2026",
-          "link": "https://www.vogue.com/fashion-shows/tokyo-fall-2026/kotohayokozawa",
-          "lang": "en"
-        },
-        {
-          "name": "Fashion Press",
-          "title": "リュウノスケオカザキ 「005」コレクション - 感情の揺らぎをなぞって",
-          "link": "https://www.fashion-press.net/news/144612",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "人間は弱く儚いからこそ愛おしい　「ユウショウコバヤシ」が描いた柔らかな死後の世界",
-          "link": "https://www.fashionsnap.com/article/yushokobayashi-26aw-report",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "MATSUFUJI 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/matsufuji/2026aw",
-          "lang": "ja"
-        },
-        {
-          "name": "Fashionsnap",
-          "title": "VIVIANO 2026AW コレクション",
-          "link": "https://www.fashionsnap.com/collection/viviano/2026aw",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 6
     },
     {
       "id": "5c08af47720d",
@@ -18813,299 +19090,6 @@
           "name": "Complex Style",
           "title": "10 Things You Need to Know About Margiela",
           "link": "https://www.complex.com/style/a/mike-destefano/margiela-10-things-you-need-to-know",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "d67de758a438",
-      "title": "韩系防晒霜：轻薄肤感与创新技术的完美融合",
-      "summary": "《Vogue》深入解析韩系防晒霜风靡全球的原因：不仅拥有轻薄透气的肤感，宛若无物，更采用创新紫外线过滤技术。文章聚焦韩系防晒在美国市场的受欢迎程度，并提供了详尽的选购指南，针对不同肤质推荐了Round Lab、Haruharu Wonder、Mixsoon、Beauty of Joseon以及Anua等热门品牌的产品，助力读者找到最适合自己的防晒方案。",
-      "key_points": [
-        "韩系防晒霜以轻薄透气的使用感著称",
-        "创新紫外线过滤技术是韩系防晒的关键",
-        "《Vogue》推荐多款热门韩系防晒品牌"
-      ],
-      "tags": [
-        "韩系防晒",
-        "防晒霜",
-        "护肤",
-        "Vogue",
-        "轻薄",
-        "紫外线过滤",
-        "Round Lab",
-        "Haruharu Wonder",
-        "Mixsoon",
-        "Beauty of Joseon",
-        "Anua"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://assets.vogue.com/photos/69b9ced8a64f96c5b71bade0/master/pass/holding-03172026_Korean%20Sunscreen.jpg",
-      "published": "2026-03-19T15:57:52+00:00",
-      "sources": [
-        {
-          "name": "Vogue Fashion",
-          "title": "What’s So Special About Korean Sunscreens?",
-          "link": "https://www.vogue.com/article/korean-sunscreens",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "d8f4d1dd398c",
-      "title": "棋盘格再度翻红？Vans经典强势回归",
-      "summary": "Vans经典棋盘格纹强势回归，重塑潮流风向标。从男团CORTIS的倾情演绎到超模街拍的实力带货，再到经典电影《Fast Times at Ridgemont High》的文化影响，多重因素助推了这股复古浪潮。文章回顾了棋盘格纹的起源和爆红历程，Vans更携手Valentino等品牌推出联名系列，将棋盘格巧妙融入各类鞋款设计，并推荐多款明星同款棋盘格鞋履，预示着这一经典元素将在时尚界掀起新的风暴。",
-      "key_points": [
-        "Vans棋盘格纹强势回归",
-        "CORTIS和超模街拍引领潮流",
-        "回顾棋盘格纹的起源和爆红历程",
-        "Vans与Valentino等品牌联名",
-        "推荐多款明星同款棋盘格鞋履"
-      ],
-      "tags": [
-        "Vans",
-        "棋盘格",
-        "CORTIS",
-        "超模街拍",
-        "Valentino",
-        "复古",
-        "潮流",
-        "经典"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://ia.marieclaire.com.tw/assets/mc/202603/69BA8E548FC8E1773833812.jpeg",
-      "published": "2026-03-19T15:57:40",
-      "sources": [
-        {
-          "name": "Marie Claire Taiwan",
-          "title": "Vans棋盤格紋準備翻紅？CORTIS入鏡同款是這5雙，到超模街拍棋盤格正悄悄回歸",
-          "link": "https://www.marieclaire.com.tw/fashion/news/92404",
-          "lang": "zh"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "97a8f9a46d57",
-      "title": "WNBA球员迎来“薪”时代",
-      "summary": "WNBA球员协会与联盟达成历史性协议，新集体谈判协议大幅提升球员薪资，工资帽从130万美元跃升至700万美元，成功避免了赛季延期。这一突破性进展不仅显著改善了球员的经济状况，更象征着女性运动员在体育界地位的提升以及商业价值的日益凸显，预示着女子篮球运动更光明的未来。",
-      "key_points": [
-        "薪资大幅提升",
-        "避免赛季延期",
-        "女性运动员地位提升"
-      ],
-      "tags": [
-        "WNBA",
-        "球员薪资",
-        "女性体育",
-        "体育商业"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://pyxis.nymag.com/v1/imgs/191/247/0748d82e96addc322a72983f658b80509f-wnba-all-star-game-pay-us.1x.rsocial.w1200.jpg",
-      "published": "2026-03-19T15:53:50+00:00",
-      "sources": [
-        {
-          "name": "The Cut",
-          "title": "The WNBA Players Are Finally Getting Paid",
-          "link": "http://www.thecut.com/article/what-are-the-terms-of-the-new-wnba-deal.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b04f42251d45",
-      "title": "艾丽·范宁：甜美风格进化与银幕之路",
-      "summary": "艾丽·范宁，从童星成长为戛纳红毯的焦点，她的时尚风格不断演变，银幕形象也日益丰富。本文回顾范宁的时尚历程，聚焦红毯和时尚活动中的经典造型，以及她超过20年的演艺生涯。不变的是她对粉彩色系的偏爱和浪漫细节的运用，以及与造型师的默契合作。同时，展现她在不同类型电影中的出色表现和在好莱坞的稳固地位。",
-      "key_points": [
-        "艾丽·范宁的时尚风格演变，甜美依旧。",
-        "回顾范宁在红毯和时尚活动中的经典造型。",
-        "Vogue西班牙版报道范宁最喜欢的14部电影，展现其演艺生涯。",
-        "范宁在好莱坞的稳固地位和多才多艺。"
-      ],
-      "tags": [
-        "艾丽·范宁",
-        "时尚风格",
-        "红毯造型",
-        "电影",
-        "Vogue",
-        "甜美风格"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://media.vogue.es/photos/69b156feb97105dd61d02f54/master/pass/GettyImages-2216857925.jpg",
-      "published": "2026-03-19T15:53:09+00:00",
-      "sources": [
-        {
-          "name": "Vogue España",
-          "title": "El estilo de Elle Fanning",
-          "link": "https://www.vogue.es/celebrities/galerias/elle-fanning-estilo",
-          "lang": "es"
-        },
-        {
-          "name": "Vogue España",
-          "title": "Las 14 películas favoritas de Elle Fanning",
-          "link": "https://www.vogue.es/articulos/elle-fanning-mejores-peliculas",
-          "lang": "es"
-        }
-      ],
-      "article_count": 2
-    },
-    {
-      "id": "9adf81ac4362",
-      "title": "凯瑟琳·纽顿的柔美锋芒：蝴蝶结高跟鞋点亮纽约街头",
-      "summary": "好莱坞新星凯瑟琳·纽顿近日现身纽约，以一双Jimmy Choo的蝴蝶结装饰高跟鞋，完美诠释了现代女性的柔美与自信。这双设计别致的鞋履，不仅凸显了纽顿的时尚品味，也为她的整体造型增添了一抹亮色。此次街拍再次印证了明星效应对于时尚单品的强大影响力，Jimmy Choo的经典设计也因此备受瞩目。",
-      "key_points": [
-        "凯瑟琳·纽顿街拍造型",
-        "Jimmy Choo蝴蝶结高跟鞋",
-        "明星时尚影响力"
-      ],
-      "tags": [
-        "凯瑟琳·纽顿",
-        "Jimmy Choo",
-        "名人街拍",
-        "鞋履",
-        "时尚品味"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://wwd.com/wp-content/uploads/2026/03/kn-3.jpg?w=1000&h=563&crop=1",
-      "published": "2026-03-19T15:49:47+00:00",
-      "sources": [
-        {
-          "name": "WWD",
-          "title": "Kathryn Newton Embraces Feminine Edge With Corset-detail Jimmy Choos",
-          "link": "https://wwd.com/footwear-news/shoe-trends/kathryn-newton-jimmy-choo-heels-1238682820",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "24cdf7bf70e3",
-      "title": "Vans珍珠系列：配色及鞋型扩容，奢华再升级",
-      "summary": "Vans珍珠系列迎来更新，在原有的复古基调上，扩充了配色选择和鞋型。除了经典的Slip-On和Old Skool 36鞋型，本次更新带来了更多Premium版本，包括两款Premium Old Skool 36和三款Premium Classic Slip-Ons。Old Skool 36继续以海军蓝和复古可可色为主打，发售日期分别为3月19日和4月21日，定价在110美元至130美元之间。新款运动鞋延续了该系列受欢迎的珍珠光泽设计，进一步提升了该系列的奢华质感，是春季潮流穿搭的理想之选。",
-      "key_points": [
-        "Vans珍珠系列推出新款配色和鞋型",
-        "新增Premium Old Skool 36和Classic Slip-Ons",
-        "延续珍珠光泽设计，提升奢华质感"
-      ],
-      "tags": [
-        "Vans",
-        "珍珠系列",
-        "Old Skool 36",
-        "Slip-On",
-        "Premium",
-        "运动鞋",
-        "春季潮流"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F18%2Fvans-pearlized-indigo-slip-on-old-skool-36-release-date-0.jpg?w=800&cbr=1&q=90&fit=max",
-      "published": "2026-03-19T15:47:01+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Vans' Pearlized Line Embraces \"Indigo\" With the Classic Slip-On and Old Skool 36",
-          "link": "https://hypebeast.com/2026/3/vans-pearlized-indigo-slip-on-old-skool-36-release-date",
-          "lang": "en"
-        },
-        {
-          "name": "Footwear News",
-          "title": "Vans Is Releasing New Colors of Its Wildly Popular Pearlized Pack Sneakers",
-          "link": "https://wwd.com/footwear-news/sneaker-news/vans-pearlized-pack-old-skool-36-classic-slip-on-release-date-1238682822",
-          "lang": "en"
-        }
-      ],
-      "article_count": 3
-    },
-    {
-      "id": "86b6b52f2c79",
-      "title": "威廉凯特：打造更亲民的王室",
-      "summary": "据《名利场》报道，威廉王子和凯特王妃计划以更富同情心和更贴近民众的方式来管理王室。皇室记者透露，他们的执政风格将具有前瞻性，凯特王妃在王室中扮演着关键角色，她的坚韧和奉献精神正在塑造他们对现代君主制的愿景，致力于建立与民众更紧密的私人关系。",
-      "key_points": [
-        "更富同情心的执政方式",
-        "与民众建立更紧密联系",
-        "凯特王妃的关键作用"
-      ],
-      "tags": [
-        "凯特王妃",
-        "威廉王子",
-        "王室",
-        "名人"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vanityfair.com/photos/69bc1612db0698c040046374/master/pass/2267197616",
-      "published": "2026-03-19T15:42:26+00:00",
-      "sources": [
-        {
-          "name": "Vanity Fair",
-          "title": "Kate Middleton and Prince William Want to Rule With “More Empathy” and a “Greater Personal Relationship With the People”",
-          "link": "https://www.vanityfair.com/style/story/kate-middleton-prince-william-empathy-rule",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "b4db3ea5288a",
-      "title": "Tia Mowry的闪耀烟熏，预见2026美妆潮流！",
-      "summary": "女星Tia Mowry近日以一款精致的烟熏妆惊艳亮相，完美演绎了2026年的美妆趋势。这款烟熏妆以灰褐色为基底，巧妙叠加闪亮的金属色，并以晕染眼线勾勒深邃眼眸，打造出迷人效果。整体妆容采用冷色调，唇颊色彩与眼妆和谐统一。发型方面，高马尾搭配光滑背头，更添一缕别致的麻花辫，尽显时尚巧思。此造型预示着烟熏眼妆、冷色调和闪粉元素将在未来回归。",
-      "key_points": [
-        "Tia Mowry的烟熏妆造型",
-        "灰褐色底色叠加金属闪粉",
-        "2026年烟熏妆趋势预测"
-      ],
-      "tags": [
-        "Tia Mowry",
-        "烟熏妆",
-        "美妆趋势",
-        "明星造型"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://imgix.bustle.com/uploads/getty/2026/3/19/c604724c/los-angeles-california-march.jpg?w=1200&fit=max",
-      "published": "2026-03-19T15:37:43+00:00",
-      "sources": [
-        {
-          "name": "The Zoe Report",
-          "title": "Tia Mowry's Glittery Smoky Eyeshadow Is So Perfectly On Trend",
-          "link": "https://www.thezoereport.com/culture/tia-mowry-glittery-smoky-eye",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "7365a2a12fc4",
-      "title": "校园恋曲：Prime Video新剧来袭",
-      "summary": "Prime Video即将推出备受期待的电视剧《Off Campus》，改编自Elle Kennedy热门小说系列。首季聚焦第一部《The Deal》，讲述了布里亚尔大学学生Hannah和Garrett之间从假装情侣到真情流露的浪漫故事。Ella Bright和Belmont Cameli分别饰演男女主角，演绎一段充满青春活力的爱情。该剧深入探讨了性积极、相互尊重和自我发现等现代主题，通过角色在亲密关系中的探索，展现人性的美好与复杂。",
-      "key_points": [
-        "Prime Video推出新剧《Off Campus》",
-        "改编自Elle Kennedy小说《The Deal》",
-        "探讨性积极和自我发现等主题"
-      ],
-      "tags": [
-        "电视剧",
-        "小说改编",
-        "校园爱情",
-        "Prime Video"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://imgix.bustle.com/uploads/image/2025/9/5/3987940d/ocps_s1_ut_102_250623_henlia_0296r.jpeg?w=1200&fit=max",
-      "published": "2026-03-19T15:37:29+00:00",
-      "sources": [
-        {
-          "name": "Bustle",
-          "title": "'Off Campus' TV Show: Cast, Release Date Clues, Plot, & Book Series",
-          "link": "https://www.bustle.com/entertainment/off-campus-tv-show-cast-release-date-clues-plot-book-series",
           "lang": "en"
         }
       ],
