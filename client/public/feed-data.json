@@ -1,9 +1,9 @@
 {
   "meta": {
-    "generated_at": "2026-03-22T12:35:49+00:00",
+    "generated_at": "2026-03-22T14:26:09+00:00",
     "total_topics": 500,
-    "total_articles": 1182,
-    "sources_count": 49,
+    "total_articles": 1188,
+    "sources_count": 48,
     "sources": [
       "Allure",
       "BOF",
@@ -39,7 +39,6 @@
       "PopDaily Style",
       "PureWow Fashion",
       "Refinery29",
-      "Seventeen",
       "StyleCaster",
       "The Cut",
       "The Zoe Report",
@@ -58,22 +57,22 @@
     "incremental": {
       "is_incremental_run": true,
       "rebuilt_full": false,
-      "new_articles_in_2h": 19,
-      "blocked_by_tombstones": 324,
-      "evicted_topics": 12,
+      "new_articles_in_2h": 17,
+      "blocked_by_tombstones": 310,
+      "evicted_topics": 10,
       "pipeline_stats": {
-        "incremental_assigned_to_existing": 5,
-        "incremental_new_topics_created": 14,
-        "cross_merge_candidates": 2,
+        "incremental_assigned_to_existing": 4,
+        "incremental_new_topics_created": 11,
+        "cross_merge_candidates": 1,
         "cross_merge_low_reviews": 1,
         "cross_merge_high_reviews": 0,
-        "cross_merge_merged_topics": 2
+        "cross_merge_merged_topics": 1
       }
     },
     "quality": {
-      "merge_rate": 0.577,
-      "avg_sources_per_topic": 1.248,
-      "high_confidence_topic_ratio": 0.948,
+      "merge_rate": 0.5791,
+      "avg_sources_per_topic": 1.254,
+      "high_confidence_topic_ratio": 0.946,
       "rebuild_mode": "incremental"
     }
   },
@@ -3693,6 +3692,363 @@
       "article_count": 1
     },
     {
+      "id": "a7723c2a564a",
+      "title": "H&M的绿色困局",
+      "summary": "快时尚巨头H&M发布可持续发展报告，引发业界关注。在全球能源市场受中东局势影响的大背景下，H&M在竞争激烈的快时尚领域面临增长瓶颈，最新季度销售额停滞不前。与此同时，上海时装周即将拉开帷幕，为中国时尚市场注入新活力。H&M能否在可持续发展和市场竞争中找到平衡点，值得期待。",
+      "key_points": [
+        "H&M发布可持续发展报告",
+        "快时尚市场竞争激烈",
+        "中东战争影响全球能源",
+        "上海时装周即将举办",
+        "H&M销售额增长停滞"
+      ],
+      "tags": [
+        "H&M",
+        "可持续发展",
+        "快时尚",
+        "零售",
+        "市场竞争",
+        "上海时装周"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://img.businessoffashion.com/resizer/v2/KFMZSADV6ZBQPHIEHDRGMDLCHU.jpg?auth=bb25c4ab87ae38e06b1c123e6a8ab63a727c876cf6ed580f696c3f06f97375ab&smart=true&width=1800&height=1013",
+      "published": "2026-03-22T14:00:30+00:00",
+      "sources": [
+        {
+          "name": "BOF",
+          "title": "Why H&M’s Sustainability Report Is So Unusual",
+          "link": "https://www.businessoffashion.com/briefings/sustainability/why-hms-sustainability-report-is-so-unusual",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "23e9fc57328b",
+      "title": "镜头下的水之殇与希望",
+      "summary": "在世界水资源日之际，摄影师Mustafah Abdulaziz用镜头捕捉了全球不同文化和社会经济背景下，人类与水之间的复杂关系。他的作品不仅记录了水资源短缺带来的挑战，更深刻地揭示了人类在重塑与水和环境和谐共生关系中的关键责任。透过这些影像，我们得以反思自身行为，并积极寻求可持续的解决方案，共同守护珍贵的水资源。",
+      "key_points": [
+        "摄影师记录水资源现状",
+        "揭示社会经济与水关系",
+        "强调人类的环保责任"
+      ],
+      "tags": [
+        "水资源",
+        "摄影纪实",
+        "社会责任",
+        "可持续发展"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://assets.vogue.com/photos/69bea7c42577baca718cfc2c/master/pass/ma_mmam_water_g1_003_low.jpg",
+      "published": "2026-03-22T14:00:00+00:00",
+      "sources": [
+        {
+          "name": "Vogue",
+          "title": "World Water Day through the lens of Mustafah Abdulaziz",
+          "link": "https://www.vogue.com/article/world-water-day-through-the-lens-of-mustafah-abdulaziz",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "5182fd8122b8",
+      "title": "焕新有术：60款美容秘器",
+      "summary": "《The Zoe Report》与《Bustle》不约而同地推荐了60款美容好物，旨在帮助读者轻松应对日常美容挑战，提升个人形象。前者侧重于解决grooming问题，涵盖头发、皮肤等多个方面，如发根补色、去除细小毛发、清新头发气味等，让精致细节触手可及。后者则聚焦平价好物，推荐美甲、腮红、古铜色修容液、冰球面部按摩器等，均可在亚马逊轻松购得。两篇文章均强调这些产品能带来意想不到的效果，由内而外提升自信与美丽，让使用者以更光彩照人的姿态迎接每一天。无论你是追求精致细节，还是希望通过平价好物焕新形象，都能从中找到适合自己的美容秘器。",
+      "key_points": [
+        "60款美容好物推荐",
+        "解决grooming问题，提升精致度",
+        "平价好物，亚马逊轻松购",
+        "提升自信与美丽"
+      ],
+      "tags": [
+        "美妆",
+        "grooming",
+        "平价好物",
+        "护肤",
+        "护发",
+        "亚马逊"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/19/938010c0/29.png?w=1200&fit=max",
+      "published": "2026-03-22T13:30:24+00:00",
+      "sources": [
+        {
+          "name": "The Zoe Report",
+          "title": "60 Weirdly Genius Things That Fix Your Grooming Problems",
+          "link": "https://www.thezoereport.com/shopping/weirdly-genius-things-that-fix-your-grooming-problems",
+          "lang": "en"
+        },
+        {
+          "name": "Bustle",
+          "title": "60 Cheap Things That Make You Look So Hot You'll Wish You Tried Them Sooner",
+          "link": "https://www.bustle.com/shopping/cheap-things-that-make-you-look-so-hot-youll-wish-you-tried-them-sooner",
+          "lang": "en"
+        }
+      ],
+      "article_count": 2
+    },
+    {
+      "id": "d0f1faf80872",
+      "title": "春日轻旅行：时髦单品清单",
+      "summary": "《The Zoe Report》精选春季旅行必备时尚单品，助你打造兼具舒适与格调的度假造型。Reformation的亚麻连衣裙，轻盈透气，Chloé的花朵戒指，增添浪漫气息。Cara Cara的印花短裤，活力四射，Galamaar的V领泳衣，性感迷人。无论海滩漫步还是城市探索，都能让你成为一道亮丽的风景线。",
+      "key_points": [
+        "Reformation亚麻连衣裙",
+        "Chloé花朵戒指",
+        "Cara Cara印花短裤",
+        "Galamaar V领泳衣"
+      ],
+      "tags": [
+        "春季旅行",
+        "时尚单品",
+        "度假风"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/20/a4090f42/travel.jpg?w=1200&fit=max",
+      "published": "2026-03-22T13:30:24+00:00",
+      "sources": [
+        {
+          "name": "The Zoe Report",
+          "title": "The Spring Travel Edit: The Chic Pieces To Pack Now",
+          "link": "https://www.thezoereport.com/shopping/the-spring-travel-edit-the-chic-pieces-to-pack-now",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "400600963552",
+      "title": "2026春季卡普里裤强势回归：平底鞋成最佳搭配",
+      "summary": "时尚杂志Glamour及Glamour UK预测，卡普里裤将在2026年春季强势回归，引领时尚潮流。卡普里裤以其舒适百搭的特性，与平底鞋的搭配将成为新一季的搭配重点。无论是牛仔材质的卡普里裤，还是乐福鞋、芭蕾舞鞋、玛丽珍鞋等经典平底鞋款，都能打造简约而Chic的春日造型，凸显足踝和小腿线条。",
+      "key_points": [
+        "卡普里裤2026春季回归",
+        "平底鞋是卡普里裤的最佳搭配",
+        "牛仔卡普里裤是推荐选择",
+        "乐福鞋、芭蕾舞鞋、玛丽珍鞋等平底鞋是搭配首选",
+        "简约Chic风是搭配重点"
+      ],
+      "tags": [
+        "卡普里裤",
+        "平底鞋",
+        "2026春季",
+        "时尚趋势",
+        "Glamour",
+        "Glamour UK",
+        "牛仔裤",
+        "乐福鞋",
+        "芭蕾舞鞋",
+        "玛丽珍鞋"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.glamour.com/photos/69bd7877ccddcfe1b25eb843/master/pass/jeans%20capri%20(1).jpg",
+      "published": "2026-03-22T13:30:00+00:00",
+      "sources": [
+        {
+          "name": "Glamour",
+          "title": "Capri Jeans Go Best With These Flats for a Stylish (and Comfortable) Spring Look",
+          "link": "https://www.glamour.com/story/capri-jeans-go-best-with-these-flats",
+          "lang": "en"
+        },
+        {
+          "name": "Glamour UK",
+          "title": "Wear capri jeans with these flats for a stylish look in spring 2026",
+          "link": "https://www.glamourmagazine.co.uk/article/capri-jeans-shoes-spring-2026",
+          "lang": "en"
+        },
+        {
+          "name": "Glamour",
+          "title": "Here’s What Flats to Wear with Jeans in 2026, Per Fashion Pros",
+          "link": "https://www.glamour.com/story/what-flats-to-wear-with-jeans",
+          "lang": "en"
+        }
+      ],
+      "article_count": 3
+    },
+    {
+      "id": "00356023a342",
+      "title": "精细勾勒：自然眉笔之选",
+      "summary": "想要拥有自然丰盈的眉毛，告别厚重妆感？本文精选六款拥有超细笔尖的眉笔，它们能精准描绘出根根分明的眉毛，效果媲美微刀片，却无需承担任何风险。文章还详细解析了眉笔与传统眉粉、眉膏的区别，并分享实用上妆技巧，助你轻松打造精致眉妆。",
+      "key_points": [
+        "推荐六款超细眉笔",
+        "打造自然丰盈眉妆",
+        "眉笔使用技巧"
+      ],
+      "tags": [
+        "眉笔",
+        "美妆",
+        "眉毛",
+        "化妆技巧",
+        "自然妆容"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.allure.com/photos/69bb149574bb33f6f2ab70bd/master/pass/03.18_ALL_Best%20Eyebrow%20Pens_v2.jpg",
+      "published": "2026-03-22T13:11:11+00:00",
+      "sources": [
+        {
+          "name": "Allure",
+          "title": "6 Best Eyebrow Pens for Natural-Looking Definition",
+          "link": "https://www.allure.com/gallery/best-eyebrow-pens",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "7f35b954cbd3",
+      "title": "小预算大改造：55招舒适家居秘籍",
+      "summary": "想用有限的预算打造更舒适的卧室和客厅？本期精选55款高性价比家居好物，涵盖沙发套、LED灯带、凉感床垫等，巧妙利用设计和功能性，无需花费大价钱，也能轻松提升居住幸福感。告别平庸，让家焕发新活力！",
+      "key_points": [
+        "高性价比家居单品推荐",
+        "提升卧室舒适度",
+        "客厅改造方案"
+      ],
+      "tags": [
+        "家居",
+        "舒适",
+        "卧室",
+        "客厅",
+        "生活方式"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/19/c7e2aa72/11.png?w=1200&fit=max",
+      "published": "2026-03-22T13:00:25+00:00",
+      "sources": [
+        {
+          "name": "Elite Daily",
+          "title": "55 Clever, Cheap Things That Make Your Bedroom & Living Room Way More Comfortable",
+          "link": "https://www.elitedaily.com/lifestyle/clever-cheap-things-that-make-your-bedroom-living-room-way-more-comfortable",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "f941331b9652",
+      "title": "《麦迪逊》：时尚塑造角色心境，从悲痛到新生，第二季新篇章",
+      "summary": "Paramount+平台时尚剧集《麦迪逊》迎来第一季第二部分及第二季。剧情聚焦Stacy Clyburn在丈夫去世后的转变，以及角色们在经历悲痛后寻求改变，甚至考虑迁居。Taylor Sheridan操刀剧集，Michelle Pfeiffer担任重要角色。剧中服装造型随人物心境变化而转变，从精致都市风到更贴近自然的风格，高端时装巧妙地服务于剧情发展，细腻展现角色内心的挣扎与重塑。Elle杂志也报道了第二季的最新消息，涵盖剧情和演员阵容。",
+      "key_points": [
+        "《麦迪逊》第二季回归，继续讲述角色在悲痛后的转变与新生。",
+        "服装造型服务于剧情，展现角色内心的挣扎与重塑。",
+        "Elle杂志报道了第二季的剧情和演员阵容等信息。"
+      ],
+      "tags": [
+        "麦迪逊",
+        "时尚剧集",
+        "Paramount+",
+        "Michelle Pfeiffer",
+        "Taylor Sheridan",
+        "角色造型",
+        "服装搭配",
+        "Elle",
+        "第二季"
+      ],
+      "category": "street-style",
+      "category_name": "街拍/造型",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/55b6bef3-2ec5-4f7a-960b-cd2fb0d97e15.jpg",
+      "published": "2026-03-22T13:00:00+00:00",
+      "sources": [
+        {
+          "name": "Harper's Bazaar",
+          "title": "In <em>The Madison</em> Season 1, Part 2, Grief Inspires Change—and a Possible Move to Montana",
+          "link": "https://www.harpersbazaar.com/culture/film-tv/a70790695/the-madison-season-1-part-2-explained",
+          "lang": "en"
+        },
+        {
+          "name": "Esquire",
+          "title": "Is <em>The Madison</em> Coming Back for Season 2?",
+          "link": "https://www.esquire.com/entertainment/tv/a70804554/the-madison-season-2-cast-news",
+          "lang": "en"
+        },
+        {
+          "name": "Esquire",
+          "title": "Taylor Sheridan Takes <em>The Madison</em> Part 2 to New York. It Doesn't Go Well.",
+          "link": "https://www.esquire.com/entertainment/tv/a70806471/the-madison-finale-recap",
+          "lang": "en"
+        },
+        {
+          "name": "Elle",
+          "title": "<em>The Madison</em> Season 2: Everything We Know",
+          "link": "https://www.elle.com/culture/movies-tv/a70804999/the-madison-season-2-news-cast-date",
+          "lang": "en"
+        }
+      ],
+      "article_count": 4
+    },
+    {
+      "id": "4185131fd342",
+      "title": "2026春夏包袋潮流趋势：Etro, Valentino, Loewe, Marni与Furla新品预览",
+      "summary": "《GQ Japan》发布Etro、Valentino Garavani、Loewe、Marni与Furla 2026年春夏新款包袋和钱包系列。Etro以标志性佩斯利花纹为灵感，打造轻便旅行风格；Valentino Garavani融合浪漫主义与波普艺术，重塑铆钉元素；Loewe推出采用起毛感グレインヌバック的Puzzle Bag新款，并与京都陶艺单元合作；Marni则巧妙融合玩味设计与实用功能，带来SCRUNCHIE背包和FILO系列钱包。Furla则从米兰建筑美学中汲取灵感，将轻盈、功能性和意大利工艺融入新款“Man Giove”托特包和“Furla Project”系列钱包中。",
+      "key_points": [
+        "Etro：佩斯利花纹，轻便旅行风格",
+        "Valentino Garavani：浪漫主义与波普艺术，铆钉元素",
+        "Loewe：グレインヌバック Puzzle Bag，京都陶艺合作",
+        "Marni：玩味设计与实用功能，SCRUNCHIE背包和FILO系列钱包",
+        "Furla：米兰建筑美学，轻盈功能，意大利工艺，Man Giove托特包，Furla Project系列钱包"
+      ],
+      "tags": [
+        "2026春夏",
+        "包袋",
+        "潮流趋势",
+        "Etro",
+        "Valentino",
+        "Loewe",
+        "Marni",
+        "Furla",
+        "新品",
+        "佩斯利花纹",
+        "铆钉",
+        "Puzzle Bag",
+        "SCRUNCHIE",
+        "FILO",
+        "Man Giove",
+        "Furla Project"
+      ],
+      "category": "trend-summary",
+      "category_name": "趋势总结",
+      "image": "https://media.gqjapan.jp/photos/69bd3157bcd9f287e54193dd/master/pass/etro-bag-wallet-2026-spring-1.jpg",
+      "published": "2026-03-22T12:45:00+00:00",
+      "sources": [
+        {
+          "name": "GQ Japan",
+          "title": "ペイズリーが描く、洗練のトラベルスタイルが魅力のエトロ──2026年春、バッグと財布の最新事情",
+          "link": "https://www.gqjapan.jp/article/20260320-etro-bag-wallet-2026-spring",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "ロマンとポップが上品に交差するヴァレンティノ ガラヴァーニ──2026年春、バッグと財布の最新事情",
+          "link": "https://www.gqjapan.jp/article/20260320-valentino-bag-wallet-2026-spring",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "クラフトとアートがモダンに交差するロエベ──2026年春、バッグと財布の最新事情",
+          "link": "https://www.gqjapan.jp/article/20260322-loewe-bag-wallet-2026-spring",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "遊び心と機能美がエレガントに共存するマルニ──2026年春、バッグと財布の最新事情",
+          "link": "https://www.gqjapan.jp/article/20260320-marni-bag-wallet-2026-spring",
+          "lang": "ja"
+        },
+        {
+          "name": "GQ Japan",
+          "title": "ミラノのエレガントな美意識を映すフルラ──2026年春、バッグと財布の最新事情",
+          "link": "https://www.gqjapan.jp/article/20260322-furla-bag-wallet-2026-spring",
+          "lang": "ja"
+        }
+      ],
+      "article_count": 5
+    },
+    {
       "id": "2c11d70bae14",
       "title": "2026春季：滤镜美甲正当红",
       "summary": "《Vogue》西班牙版预测，2026年春季美甲界将刮起一股极简主义风潮，名为“Blurred Nails”（模糊美甲）。这种美甲的精髓在于营造一种柔和、朦胧的视觉效果，宛如为指甲加上了一层美颜滤镜，巧妙地掩盖指甲表面的细微瑕疵。无需厚重的甲油或繁复的设计，就能打造出精致优雅的指尖造型。美甲师Mateja Novakic是这一潮流的积极推广者，引领着抛光美甲新风尚。",
@@ -3758,63 +4114,6 @@
       "article_count": 2
     },
     {
-      "id": "4185131fd342",
-      "title": "2026春夏包袋潮流趋势：Etro, Valentino, Loewe与Marni新品预览",
-      "summary": "《GQ Japan》发布Etro、Valentino Garavani、Loewe与Marni 2026年春夏新款包袋和钱包系列。Etro以标志性佩斯利花纹为灵感，打造轻便旅行风格；Valentino Garavani融合浪漫主义与波普艺术，重塑铆钉元素；Loewe推出采用起毛感グレインヌバック的Puzzle Bag新款，并与京都陶艺单元合作；Marni则巧妙融合玩味设计与实用功能，带来SCRUNCHIE背包和FILO系列钱包。",
-      "key_points": [
-        "Etro：佩斯利花纹，现代材质与廓形，轻便旅行风格",
-        "Valentino Garavani：浪漫主义与波普艺术，重新设计的铆钉元素",
-        "Loewe：起毛感グレインヌバック Puzzle Bag，与京都陶艺单元合作",
-        "Marni：玩味设计与实用功能，SCRUNCHIE抽绳背包，FILO系列钱包"
-      ],
-      "tags": [
-        "2026春夏",
-        "包袋",
-        "潮流趋势",
-        "Etro",
-        "Valentino",
-        "Loewe",
-        "Marni",
-        "新品",
-        "佩斯利花纹",
-        "铆钉",
-        "Puzzle Bag",
-        "SCRUNCHIE",
-        "FILO"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.gqjapan.jp/photos/69bd3157bcd9f287e54193dd/master/pass/etro-bag-wallet-2026-spring-1.jpg",
-      "published": "2026-03-22T12:00:00+00:00",
-      "sources": [
-        {
-          "name": "GQ Japan",
-          "title": "ペイズリーが描く、洗練のトラベルスタイルが魅力のエトロ──2026年春、バッグと財布の最新事情",
-          "link": "https://www.gqjapan.jp/article/20260320-etro-bag-wallet-2026-spring",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "ロマンとポップが上品に交差するヴァレンティノ ガラヴァーニ──2026年春、バッグと財布の最新事情",
-          "link": "https://www.gqjapan.jp/article/20260320-valentino-bag-wallet-2026-spring",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "クラフトとアートがモダンに交差するロエベ──2026年春、バッグと財布の最新事情",
-          "link": "https://www.gqjapan.jp/article/20260322-loewe-bag-wallet-2026-spring",
-          "lang": "ja"
-        },
-        {
-          "name": "GQ Japan",
-          "title": "遊び心と機能美がエレガントに共存するマルニ──2026年春、バッグと財布の最新事情",
-          "link": "https://www.gqjapan.jp/article/20260320-marni-bag-wallet-2026-spring",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 4
-    },
-    {
       "id": "57e4817fc93b",
       "title": "《Allure》读者挚爱：15款韩妆精选",
       "summary": "《Allure》杂志基于读者购买数据，精选出15款最受欢迎的韩国护肤品。榜单涵盖精华、面膜、卸妆油等多种品类，集结了Beauty of Joseon、CosRx、Laneige、Medicube等热门品牌。这些产品富含人参、神经酰胺、PDRN等明星成分，充分展现了韩国护肤品在全球美妆界的强大影响力。快来看看《Allure》读者们的心头好，为你的肌肤注入韩式活力！",
@@ -3845,21 +4144,20 @@
     {
       "id": "3f171134434e",
       "title": "Glass Cypress SS26：解构美学的活力新生",
-      "summary": "Glass Cypress SS26系列以高对比度图案与做旧细节为特色，将解构主义注入鲜活能量。Hypebeast的报道不仅展示了该系列的前沿潮流触觉与独特设计理念，更通过多个造型的展示，为解构风格爱好者带来更直观的视觉体验和全新选择。本季主打解构主义与鲜明设计风格的融合。",
+      "summary": "Glass Cypress SS26系列以高对比度图案与做旧细节为特色，将解构主义注入鲜活能量。Hypebeast的报道不仅展示了该系列的前沿潮流触觉与独特设计理念，更通过多个造型的展示，为解构风格爱好者带来更直观的视觉体验和全新选择。本季主打解构主义与鲜明设计风格的融合，以及潮流街头风格的独特表达。",
       "key_points": [
-        "Glass Cypress SS26系列",
-        "解构主义",
-        "高对比度图案",
-        "做旧细节",
-        "鲜明设计风格"
+        "Glass Cypress SS26系列融合解构主义与鲜明色彩",
+        "高对比度图案和做旧细节是本季亮点",
+        "展示品牌在潮流街头风格上的独特设计理念"
       ],
       "tags": [
         "Glass Cypress",
         "SS26",
         "解构主义",
-        "Hypebeast",
-        "时尚",
-        "潮流"
+        "高对比度",
+        "做旧",
+        "街头风格",
+        "Hypebeast"
       ],
       "category": "runway-collection",
       "category_name": "秀场/系列",
@@ -3867,13 +4165,13 @@
       "published": "2026-03-22T11:40:18+00:00",
       "sources": [
         {
-          "name": "Hypebeast Fashion",
+          "name": "Hypebeast",
           "title": "Glass Cypress SS26 Blends Deconstruction With a Vibrant Edge",
           "link": "https://hypebeast.com/2026/3/glass-cypress-ss26-imbues-deconstruction-with-a-vibrant-edge",
           "lang": "en"
         }
       ],
-      "article_count": 3
+      "article_count": 4
     },
     {
       "id": "29a4c490703c",
@@ -3907,18 +4205,20 @@
     },
     {
       "id": "91cd2fa71144",
-      "title": "Kith矩阵风暴：解码联名系列",
-      "summary": "街头潮牌 Kith 释出与经典科幻电影《黑客帝国》的重磅联名系列，作为其备受瞩目的“周一企划”一部分。该系列巧妙融合了电影中标志性的视觉元素，如经典的绿色代码雨，并将其注入 Kith 标志性的街头服饰美学。单品包括印有绿色代码的黑色连帽衫、主角尼奥（Neo）剪影 T 恤以及前卫的反光外套等。该系列已于3月23日在 Kith 线下门店及线上商店同步发售，为潮流爱好者带来一场赛博朋克风格的视觉盛宴。",
+      "title": "Kith x《黑客帝国》联名系列：赛博朋克风潮再掀波澜",
+      "summary": "街头潮牌 Kith 携手经典科幻电影《黑客帝国》推出重磅联名系列，巧妙融合电影标志性的反乌托邦美学与 Kith 标志性的街头服饰风格。该系列单品包括印有绿色数字代码的黑色连帽衫、主角尼奥剪影 T 恤以及前卫的反光外套等，已通过 Kith 线下门店及线上商店发售，为潮流爱好者带来一场赛博朋克风格的视觉盛宴。",
       "key_points": [
-        "Kith x《黑客帝国》联名",
-        "标志性代码元素融入设计",
-        "街头服饰风格单品"
+        "Kith 与《黑客帝国》联名，打造赛博朋克风格系列",
+        "系列单品融合电影经典视觉元素，如绿色代码雨",
+        "包含连帽衫、T恤、反光外套等多种街头服饰单品",
+        "已在 Kith 线下门店及线上商店发售"
       ],
       "tags": [
         "Kith",
         "黑客帝国",
-        "联名系列",
-        "街头潮流",
+        "联名",
+        "街头服饰",
+        "赛博朋克",
         "胶囊系列"
       ],
       "category": "brand-market",
@@ -3927,13 +4227,13 @@
       "published": "2026-03-22T11:20:46+00:00",
       "sources": [
         {
-          "name": "Hypebeast Fashion",
+          "name": "Hypebeast",
           "title": "Kith Unveils ‘The Matrix’ Capsule With Digital Code Designs",
           "link": "https://hypebeast.com/2026/3/kith-for-the-matrix-capsule-monday-program-release-info",
           "lang": "en"
         }
       ],
-      "article_count": 1
+      "article_count": 2
     },
     {
       "id": "2a7ffdd9f0dc",
@@ -4138,6 +4438,35 @@
           "name": "Vogue",
           "title": "Alexander Skarsgård is pretty in purple, care of Dior",
           "link": "https://www.vogue.com/article/alexander-skarsgard-pretty-in-purple-pillion-berlin",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "fab04cb85829",
+      "title": "Radiohead：2027年起全球巡演新模式",
+      "summary": "摇滚传奇Radiohead宣布，计划自2027年起展开一项别开生面的全球巡演。吉他手Ed O’Brien透露，为避免乐队成员过度疲劳，巡演将采取全新模式，每年仅在一个大洲进行20场演出。此举旨在确保每次演出都能保持高水准的能量与激情，为乐迷带来最佳体验。此前，乐队已成功完成2025年欧洲复出巡演，这是他们七年来的首次现场演出，为此次长期巡演计划奠定了基础。",
+      "key_points": [
+        "Radiohead计划2027年开始全球巡演",
+        "每年仅在一个大洲演出20场",
+        "旨在避免过度疲劳，保持演出质量"
+      ],
+      "tags": [
+        "Radiohead",
+        "巡演",
+        "音乐",
+        "摇滚"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F03%2F22%2Fradiohead-plot-20-show-per-year-world-tour-from-2027-2.jpg?w=800&cbr=1&q=90&fit=max",
+      "published": "2026-03-22T10:01:00+00:00",
+      "sources": [
+        {
+          "name": "Hypebeast",
+          "title": "Radiohead Plot 20-Show-Per-Year World Tour From 2027",
+          "link": "https://hypebeast.com/2026/3/radiohead-plot-20-show-per-year-world-tour-from-2027",
           "lang": "en"
         }
       ],
@@ -7204,52 +7533,6 @@
       "article_count": 1
     },
     {
-      "id": "f941331b9652",
-      "title": "《麦迪逊》：从悲痛到新生，时尚如何塑造角色心境",
-      "summary": "Paramount+平台播出的时尚剧集《麦迪逊》迎来第一季第二部分及第二季。剧情聚焦Stacy Clyburn在丈夫去世后的转变，以及角色们在经历悲痛后寻求改变，甚至考虑迁居。Taylor Sheridan操刀剧集，Michelle Pfeiffer担任重要角色。剧中的服装造型也随人物心境变化而转变，从精致都市风到更贴近自然的风格，高端时装巧妙地服务于剧情发展，细腻展现角色内心的挣扎与重塑。",
-      "key_points": [
-        "《麦迪逊》第一季第二部分及第二季剧情聚焦角色在经历悲痛后的转变。",
-        "Taylor Sheridan操刀剧集，Michelle Pfeiffer担任重要角色。",
-        "服装造型随人物心境变化而转变，展现角色内心的挣扎与重塑。",
-        "高端时装服务于剧情发展，体现人物生活方式和情感变化。"
-      ],
-      "tags": [
-        "麦迪逊",
-        "Taylor Sheridan",
-        "Michelle Pfeiffer",
-        "时尚剧集",
-        "Paramount+",
-        "角色造型",
-        "服装风格",
-        "剧情分析"
-      ],
-      "category": "street-style",
-      "category_name": "街拍/造型",
-      "image": "https://hips.hearstapps.com/hmg-prod/images/55b6bef3-2ec5-4f7a-960b-cd2fb0d97e15.jpg",
-      "published": "2026-03-21T16:00:00+00:00",
-      "sources": [
-        {
-          "name": "Harper's Bazaar",
-          "title": "In <em>The Madison</em> Season 1, Part 2, Grief Inspires Change—and a Possible Move to Montana",
-          "link": "https://www.harpersbazaar.com/culture/film-tv/a70790695/the-madison-season-1-part-2-explained",
-          "lang": "en"
-        },
-        {
-          "name": "Esquire",
-          "title": "Is <em>The Madison</em> Coming Back for Season 2?",
-          "link": "https://www.esquire.com/entertainment/tv/a70804554/the-madison-season-2-cast-news",
-          "lang": "en"
-        },
-        {
-          "name": "Esquire",
-          "title": "Taylor Sheridan Takes <em>The Madison</em> Part 2 to New York. It Doesn't Go Well.",
-          "link": "https://www.esquire.com/entertainment/tv/a70806471/the-madison-finale-recap",
-          "lang": "en"
-        }
-      ],
-      "article_count": 3
-    },
-    {
       "id": "baf646997734",
       "title": "NB 9060 变身！夏日凉拖新选择",
       "summary": "New Balance 经典 9060 迎来全新演绎，推出 9060 Mule 凉拖版本，为炎炎夏日带来更透气舒适的足部体验。此举不仅展现了 New Balance 在复古运动鞋领域的深厚底蕴，更体现了品牌不断创新、拥抱潮流的积极姿态，为消费者提供更多元化的时尚选择。",
@@ -9788,6 +10071,35 @@
           "name": "Who What Wear",
           "title": "The Devil Wears Prada 2 Is Already Bringing Throwback Trends to the Spotlight—5 Predictions I Have",
           "link": "https://www.whowhatwear.com/fashion/trends/devil-wears-prada-2-trend-prediction",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
+      "id": "58890c83942f",
+      "title": "脑洞大开！这些小玩意儿凭什么卖断货？",
+      "summary": "互联网时代，一些看似古怪的小发明总能迅速走红，成为人手必备的“神器”。它们精准地解决了你可能从未意识到的“痛点”，让生活变得更加轻松便捷。从造型奇特的工具到设计巧妙的家居用品，这些小玩意儿初看可能有些“不正经”，但它们持续热销的背后，隐藏着令人信服的实用价值。一旦你了解了它们的功能，就会恍然大悟：原来生活还可以这样！例如，一套锦鲤造型的玻璃杯，不仅美观，还能巧妙叠放，节省空间。",
+      "key_points": [
+        "解决特定生活痛点",
+        "设计巧妙，功能实用",
+        "古怪外表下的实用价值"
+      ],
+      "tags": [
+        "创意产品",
+        "生活方式",
+        "家居用品",
+        "实用好物"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://imgix.bustle.com/uploads/image/2026/3/18/57797603/14.png?w=1200&fit=max",
+      "published": "2026-03-21T01:00:24+00:00",
+      "sources": [
+        {
+          "name": "Elite Daily",
+          "title": "60 Wacky Things That Are Selling Out Because They're So Freaking Genius",
+          "link": "https://www.elitedaily.com/shopping/wacky-things-that-are-selling-out-because-theyre-so-freaking-genius",
           "lang": "en"
         }
       ],
@@ -13135,45 +13447,6 @@
       "article_count": 1
     },
     {
-      "id": "d78fd8d888ab",
-      "title": "2026春季：卡普里裤与平底鞋的时髦搭配新趋势",
-      "summary": "《Glamour UK》预测卡普里裤将在2026年春季强势回归，其舒适百搭的特性将引领时尚。同时，《Glamour》杂志报道了2026年牛仔裤和平底鞋的搭配趋势，预示着平底鞋的流行。结合两篇文章，2026春季的搭配重点在于卡普里裤与平底鞋的巧妙结合，打造简约而Chic的造型。乐福鞋、芭蕾舞鞋和玛丽珍鞋等经典平底鞋款将成为搭配首选，完美凸显足踝和小腿线条，为整体造型加分。",
-      "key_points": [
-        "卡普里裤2026春季回归",
-        "平底鞋与卡普里裤/牛仔裤的搭配成为趋势",
-        "乐福鞋、芭蕾舞鞋、玛丽珍鞋等经典平底鞋是搭配首选",
-        "鞋履选择能凸显足踝和小腿线条，为造型加分"
-      ],
-      "tags": [
-        "2026春季",
-        "卡普里裤",
-        "平底鞋",
-        "搭配趋势",
-        "乐福鞋",
-        "芭蕾舞鞋",
-        "玛丽珍鞋"
-      ],
-      "category": "trend-summary",
-      "category_name": "趋势总结",
-      "image": "https://media.glamourmagazine.co.uk/photos/69bd1b35dc56c3138ef2dda3/16:9/w_1280,c_limit/CAPRIS%20200326%20MAIN-GettyImages-2258723855.jpg",
-      "published": "2026-03-20T16:59:09+00:00",
-      "sources": [
-        {
-          "name": "Glamour UK",
-          "title": "Wear capri jeans with these flats for a stylish look in spring 2026",
-          "link": "https://www.glamourmagazine.co.uk/article/capri-jeans-shoes-spring-2026",
-          "lang": "en"
-        },
-        {
-          "name": "Glamour",
-          "title": "Here’s What Flats to Wear with Jeans in 2026, Per Fashion Pros",
-          "link": "https://www.glamour.com/story/what-flats-to-wear-with-jeans",
-          "lang": "en"
-        }
-      ],
-      "article_count": 2
-    },
-    {
       "id": "9d1e753f29aa",
       "title": "燃爆三月！大学篮球潮流文化报告",
       "summary": "Hypebeast发布最新大学篮球文化报告，聚焦三月锦标赛期间的潮流风向标。报告深入剖析赛场内外，从球员脚下的焦点球鞋到场边观众的穿搭趋势，捕捉每一个值得关注的时尚瞬间。此外，该报告还创新性地结合Robinhood的预测市场平台，让球迷可以通过实时数据和“是或否”事件合约参与赛事预测，在观赛的同时，更添一份参与感和刺激性。",
@@ -16052,6 +16325,36 @@
       "article_count": 1
     },
     {
+      "id": "1a3042f329c6",
+      "title": "双子座：被误解的时髦精？",
+      "summary": "ELLE杂志解析了双子座多面复杂的性格，指出其“双重人格”常被误解。然而，这种特质也赋予了双子座独特的时尚品味和生活方式。他们善于在不同风格间切换，勇于尝试新鲜事物，总能引领潮流，成为人群中最耀眼的存在。了解双子座，或许能帮你找到更适合自己的时尚灵感。",
+      "key_points": [
+        "双子座性格复杂多变",
+        "易被误解为表里不一",
+        "时尚品味独特，勇于尝试"
+      ],
+      "tags": [
+        "星座",
+        "双子座",
+        "性格",
+        "时尚",
+        "生活方式"
+      ],
+      "category": "brand-market",
+      "category_name": "品牌/市场",
+      "image": "https://hips.hearstapps.com/hmg-prod/images/14898924-8268-4101-af98-083435bcc98a.jpg",
+      "published": "2026-03-20T12:00:00+00:00",
+      "sources": [
+        {
+          "name": "Elle",
+          "title": "Why Geminis Are the Most Misunderstood Sign",
+          "link": "https://www.elle.com/horoscopes/profile/a70775675/gemini-personality-traits-astrology-explained",
+          "lang": "en"
+        }
+      ],
+      "article_count": 1
+    },
+    {
       "id": "2bafff363ca6",
       "title": "耐克“月球鞋”复刻再添新配色！经典传奇焕发新生",
       "summary": "耐克宣布复刻1971年推出的经典鞋款Moon Shoe，除了此前公布的“Soft Pearl”配色外，还将推出“Summit White/Team Crimson”配色。这款由耐克联合创始人Bill Bowerman设计的传奇跑鞋，以其标志性的华夫格鞋底而闻名，最初是为提升运动员表现而打造的实验性产品。复刻版本在保留经典设计的基础上，通过不同配色方案，展现其独特的复古魅力。",
@@ -18856,277 +19159,6 @@
           "title": "EXCLUSIVE: Yoox CEO Mirko Nobili Unveils Vision for Brand’s Rebirth",
           "link": "https://wwd.com/business-news/business-features/yoox-ceo-mirko-nobili-vision-brand-rebirth-1238682886",
           "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "216956f8665c",
-      "title": "焕新衣橱：Vogue编辑的春季收纳秘籍",
-      "summary": "《Vogue Japan》近日刊文，集结时尚造型师与Vogue编辑的经验，分享春季衣橱整理的实用技巧。内容涵盖衣物分类法则、高效收纳单品推荐、精准断舍离标准，以及巧妙的小物件整理术。文章更独家揭秘造型师的必备单品清单，助你轻松打造整洁有序、时尚感十足的春季衣橱。",
-      "key_points": [
-        "衣橱分类整理技巧",
-        "高效收纳单品推荐",
-        "断舍离标准与时机"
-      ],
-      "tags": [
-        "衣橱整理",
-        "春季收纳",
-        "时尚生活",
-        "Vogue"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.vogue.co.jp/photos/69a67a2522718a67ee0a333b/master/pass/022626_closetstory_holding.jpg",
-      "published": "2026-03-20T05:00:00+00:00",
-      "sources": [
-        {
-          "name": "Vogue Japan",
-          "title": "スタイリストや『VOGUE』エディターが伝授。春の衣替えにすぐ役立つクローゼット収納のコツ",
-          "link": "https://www.vogue.co.jp/article/fashion-girl-closet-organization-ideas",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "8cd651f16f64",
-      "title": "SharkNinja酷凉神器：Chillpill风扇",
-      "summary": "SharkNinja全新推出Chillpill个人冷却风扇，集风扇、喷雾、冷却板三重功能于一身，专为应对夏季酷暑设计。这款便携式风扇不仅实用，更兼具时尚感，通过众筹平台发售，提供丰富的配件和颜色选择，让降温也能成为一种时尚潮流。",
-      "key_points": [
-        "三合一冷却功能",
-        "便携时尚设计",
-        "众筹平台发售"
-      ],
-      "tags": [
-        "个人风扇",
-        "冷却技术",
-        "众筹",
-        "时尚配饰",
-        "夏日必备"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.wwdjapan.com/wp-content/uploads/2026/03/18173802/20260318%E3%82%B7%E3%83%A3%E3%83%BC%E3%82%AFog.jpg",
-      "published": "2026-03-20T05:00:00+00:00",
-      "sources": [
-        {
-          "name": "WWD Japan",
-          "title": "シャークニンジャから 3つの冷却機能を備えたパーソナルファンが登場　クラウドファンディングで販売",
-          "link": "https://www.wwdjapan.com/articles/2358600",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "251f4056118c",
-      "title": "布加迪跨界：奢华公路自行车问世",
-      "summary": "超跑品牌布加迪联手Factor Bikes，推出限量版Bugatti Factor ONE空气动力学公路自行车，全球仅发售250辆，定价23599美元。这款自行车采用布加迪标志性的蓝色涂装，并融入了定制的空气动力学组件，将超级跑车的工程技术与顶尖自行车制造工艺完美结合，为骑行爱好者带来极致奢华体验。",
-      "key_points": [
-        "布加迪联名Factor Bikes",
-        "限量250辆，售价23599美元",
-        "定制空气动力学设计"
-      ],
-      "tags": [
-        "布加迪",
-        "Factor Bikes",
-        "联名",
-        "公路自行车",
-        "奢侈品"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fstatic.hypebeast.com%2Fimages%2Fplaceholder-960x640.jpg?w=960&cbr=1&q=90&fit=max",
-      "published": "2026-03-20T04:38:13+00:00",
-      "sources": [
-        {
-          "name": "Hypebeast",
-          "title": "Factor Bikes and Bugatti Unveil the $23,599 USD Bugatti Factor ONE Aero Road Bike",
-          "link": "https://hypebeast.com/2026/3/bugatti-factor-one-aero-road-bike-breaks-uci-rules",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "d845b9ce6b54",
-      "title": "Signet集团业绩亮眼，James Allen网站将关闭",
-      "summary": "轻奢珠宝巨头Signet集团发布2026财年业绩报告，全年可比销售额达68.1亿美元，同比增长1.3%，展现出强劲的市场表现。然而，集团同时宣布将关闭旗下线上钻石销售平台James Allen。此举或为Signet集团优化资源配置，进一步聚焦核心业务。",
-      "key_points": [
-        "Signet集团全年销售额增长",
-        "James Allen网站即将关闭",
-        "集团或将优化资源配置"
-      ],
-      "tags": [
-        "Signet",
-        "珠宝",
-        "零售",
-        "业绩",
-        "James Allen"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://media.fashionnetwork.com/m/c688/9151/4af9/6821/0167/d078/cdb7/c033/df8d/7b2d/208x208/7b2d.jpg",
-      "published": "2026-03-20T04:12:54+00:00",
-      "sources": [
-        {
-          "name": "Fashion Network",
-          "title": "Signet annual profits surge, James Allen website to close",
-          "link": "https://ww.fashionnetwork.com/news/Signet-annual-profits-surge-james-allen-website-to-close,1817586.html",
-          "lang": "en"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "8d4406629db3",
-      "title": "小黄人“怪”力来袭，萌翻好莱坞！",
-      "summary": "照明娱乐宣布，备受期待的《迷你世界与怪物》将于2026年8月7日欢乐上映！这次，古灵精怪的小黄人勇闯好莱坞，在电影制作的奇妙舞台上与各式“怪物”惊喜相遇。脑洞大开的小黄人们突发奇想，怂恿导演拍摄一部“怪物电影”，不料却意外召唤出绿色小怪物“古米”，一场充满欢笑与混乱的冒险即将展开。准备好迎接这场萌力十足的视听盛宴吧！",
-      "key_points": [
-        "照明娱乐新作《迷你世界与怪物》",
-        "小黄人与怪物的好莱坞奇遇",
-        "绿色小怪物“古米”引发混乱"
-      ],
-      "tags": [
-        "电影",
-        "小黄人",
-        "怪物",
-        "好莱坞",
-        "动画"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144578/top.jpg?1773972339",
-      "published": "2026-03-20T04:05:35+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "映画『ミニオンズ＆モンスターズ』ハリウッド舞台に映画作り!?緑色モンスターとハチャメチャ騒動",
-          "link": "https://www.fashion-press.net/news/144578",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "ae8aebd731a2",
-      "title": "ETRO：意式甜点，花漾复活",
-      "summary": "ETRO携手米其林星级餐厅“Il Luogo Aimo e Nadia”，将于2026年3月20日推出复活节限定甜点“Colomba Pasquale”。这款鸽子造型的传统意式甜点，甄选意大利各地优质食材，历经45小时精心发酵烘焙，口感细腻。礼盒包装采用ETRO标志性印花，色彩明快，尽显春日活力，为节日增添一份奢华品味。",
-      "key_points": [
-        "ETRO跨界合作米其林餐厅",
-        "复活节限定鸽子造型甜点",
-        "标志性印花礼盒包装"
-      ],
-      "tags": [
-        "ETRO",
-        "复活节",
-        "甜点",
-        "跨界合作",
-        "生活方式",
-        "意大利"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144579/top.jpg?1773973803",
-      "published": "2026-03-20T04:05:33+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "エトロ26年イースター、鳩シェイプのイタリア伝統菓子「コロンバ」春を祝う華やかなボックスで",
-          "link": "https://www.fashion-press.net/news/144579",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "f7ef1c833c7a",
-      "title": "Ground Y首发中性鞋履系列",
-      "summary": "Ground Y首次推出备受瞩目的中性鞋履系列，为时尚爱好者带来全新选择。该系列包含多款设计独特的鞋履，包括前卫的厚底系带鞋、经典百搭的乐福鞋以及硬朗有型的工程师靴。厚底系带鞋采用圆润鞋头和醒目的厚鞋底，侧面松紧带设计兼顾时尚与舒适。乐福鞋则以优质牛皮鞋面搭配耐磨橡胶鞋底，提供黑白两色选择，满足不同穿搭需求。工程师靴同样采用厚实鞋底，皮革鞋面上的弧形缝线更添细节感。该系列已在Ground Y直营店及官网发售。",
-      "key_points": [
-        "Ground Y首次推出中性鞋履系列",
-        "包含厚底系带鞋、乐福鞋和工程师靴",
-        "已在Ground Y直营店及官网发售"
-      ],
-      "tags": [
-        "Ground Y",
-        "中性鞋履",
-        "新品上市",
-        "厚底鞋",
-        "乐福鞋",
-        "工程师靴"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144580/top.jpg?1773974767",
-      "published": "2026-03-20T04:05:31+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "グラウンド ワイのレザーシューズ、“ボリュームソール”のサイドゴア＆ラバーソールのローファー",
-          "link": "https://www.fashion-press.net/news/144580",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "2bdc19784448",
-      "title": "江户东京博物馆焕新启幕",
-      "summary": "时隔三十年，江户东京博物馆迎来大规模翻新，由知名建筑师重松象平操刀设计，他曾主导Coach表参道旗舰店的设计。本次翻新着重于打造沉浸式文化体验，通过引入大型模型和影像技术，革新展览内容和空间呈现方式，旨在连接江户时代与现代东京。升级后的常设展亮点包括可进入式芝居小屋“中村座”以及江户街景的重现，力求成为全新的文化地标。",
-      "key_points": [
-        "重松象平建筑设计",
-        "沉浸式体验",
-        "江户与现代连接"
-      ],
-      "tags": [
-        "博物馆",
-        "文化",
-        "建筑设计"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144577/top.jpg?1773978762",
-      "published": "2026-03-20T04:05:30+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "江戸東京博物館が約30年ぶりに大規模リニューアル、大型模型＆映像演出など展示刷新",
-          "link": "https://www.fashion-press.net/news/144577",
-          "lang": "ja"
-        }
-      ],
-      "article_count": 1
-    },
-    {
-      "id": "a6c2e302e46c",
-      "title": "京都Fauchon抹茶盛宴，辻利兵衛联袂呈献",
-      "summary": "京都Fauchon酒店再度携手抹茶名家辻利兵衛本店，将于2026年4月27日至6月19日期间限定推出第二弹抹茶下午茶“Fauchon Meets Matcha”。本次合作甄选辻利兵衛本店的顶级抹茶，匠心打造一系列浓郁奢华的抹茶甜点与咸点，包括造型别致的抹茶慕斯苔玉、风味醇厚的抹茶巴斯克芝士蛋糕等。更有融合四种茗茶的特色迷你芭菲，带来多重味蕾享受。每日还将限量提供精美漆器餐具，增添用餐仪式感。",
-      "key_points": [
-        "Fauchon酒店与辻利兵衛本店二度合作",
-        "限定抹茶下午茶，时间为2026年4月27日至6月19日",
-        "抹茶甜点包括苔玉慕斯、巴斯克芝士蛋糕等",
-        "四种茶混合的特色芭菲",
-        "每日限量漆器餐具"
-      ],
-      "tags": [
-        "下午茶",
-        "抹茶",
-        "联名",
-        "京都",
-        "甜点"
-      ],
-      "category": "brand-market",
-      "category_name": "品牌/市场",
-      "image": "https://www.fashion-press.net/img/news/144581/top.jpg?1773976052",
-      "published": "2026-03-20T04:05:29+00:00",
-      "sources": [
-        {
-          "name": "Fashion Press",
-          "title": "フォションホテル京都×辻利兵衛本店の抹茶アフタヌーンティー、苔玉風ムースなど濃厚リッチな抹茶スイーツ",
-          "link": "https://www.fashion-press.net/news/144581",
-          "lang": "ja"
         }
       ],
       "article_count": 1
