@@ -62,8 +62,9 @@
 ### 前端
 
 ```bash
+cd frontend
 pnpm install
-pnpm --dir frontend dev
+pnpm dev
 ```
 
 ### 运行 RSS 聚合脚本

@@ -11,12 +11,21 @@ export interface AiCitation {
   note: string;
 }
 
+export interface AiAttachment {
+  id: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  dataUrl: string;
+}
+
 export interface AiMessage {
   id: string;
   role: "assistant" | "user";
   content: string;
   createdAt: string;
   citations?: AiCitation[];
+  attachments?: AiAttachment[];
 }
 
 export interface AiSession {
@@ -194,12 +203,13 @@ function buildWelcomeMessage(meta: FeedMeta | null): AiMessage {
   };
 }
 
-export function createUserMessage(content: string): AiMessage {
+export function createUserMessage(content: string, attachments: AiAttachment[] = []): AiMessage {
   return {
     id: nanoid(),
     role: "user",
     content: content.trim(),
     createdAt: nowIso(),
+    attachments,
   };
 }
 

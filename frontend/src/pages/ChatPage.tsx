@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Mic, Sparkles } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { useLocation } from "wouter";
-import type { AiSession } from "@/lib/ai-demo";
+import type { AiAttachment, AiSession } from "@/lib/ai-demo";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import ChatComposer from "@/components/ChatComposer";
+import { useImageAttachments } from "@/hooks/useImageAttachments";
+import { cn } from "@/lib/utils";
 import { formatChinaDateTimeShort } from "@/lib/time";
 
 interface ChatPageProps {
   sessionId?: string;
   sessions: AiSession[];
-  onCreateSession: (question: string) => string | null;
-  onSendMessage: (sessionId: string, question: string) => void;
+  onCreateSession: (question: string, attachments?: AiAttachment[]) => string | null;
+  onSendMessage: (sessionId: string, question: string, attachments?: AiAttachment[]) => void;
 }
 
 export default function ChatPage({
@@ -21,7 +23,15 @@ export default function ChatPage({
 }: ChatPageProps) {
   const [, setLocation] = useLocation();
   const [draft, setDraft] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const {
+    attachments,
+    appendFiles,
+    removeAttachment,
+    buildOutgoingAttachments,
+    resetAttachments,
+  } = useImageAttachments();
   const session = sessionId
     ? sessions.find((item) => item.id === sessionId) ?? null
     : null;
@@ -30,23 +40,35 @@ export default function ChatPage({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [session?.messages.length]);
 
-  const handleSubmit = () => {
-    const question = draft.trim();
-    if (!question) {
-      return;
-    }
-
-    if (!sessionId) {
-      const nextSessionId = onCreateSession(question);
-      if (nextSessionId) {
-        setLocation(`/chat/${nextSessionId}`);
-      }
-      setDraft("");
-      return;
-    }
-
-    onSendMessage(sessionId, question);
+  const resetComposer = () => {
     setDraft("");
+    resetAttachments();
+  };
+
+  const handleSubmit = async () => {
+    const question = draft.trim();
+    if ((!question && attachments.length === 0) || isSubmitting) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const attachments = await buildOutgoingAttachments();
+
+      if (!sessionId) {
+        const nextSessionId = onCreateSession(question, attachments);
+        if (nextSessionId) {
+          setLocation(`/chat/${nextSessionId}`);
+        }
+        resetComposer();
+        return;
+      }
+
+      onSendMessage(sessionId, question, attachments);
+      resetComposer();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (sessionId && !session) {
@@ -64,7 +86,7 @@ export default function ChatPage({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[#f7f3eb] text-[#1f1c18]">
+    <div className="relative flex h-full min-h-0 flex-col overflow-hidden overscroll-none bg-[#f7f3eb] text-[#1f1c18]">
       <header className="shrink-0 border-b border-[#e4dccf] bg-[#f7f3eb]/90 backdrop-blur">
         <div className="flex h-16 items-center justify-between px-5 md:px-8">
           <div>
@@ -80,7 +102,7 @@ export default function ChatPage({
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-4 py-6 md:px-8">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-6 pb-44 md:px-8 md:pb-52">
         {!session && (
           <div className="flex min-h-full items-center justify-center py-12">
             <div className="w-full max-w-3xl text-center">
@@ -96,21 +118,46 @@ export default function ChatPage({
         )}
 
         {session && (
-          <div className="mx-auto w-full max-w-4xl space-y-6 py-4">
+          <div className="mx-auto w-full max-w-4xl space-y-10 py-4">
             {session.messages.map((message) => (
               <div
                 key={message.id}
                 className={message.role === "user" ? "flex justify-end" : "flex justify-start"}
               >
                 <div
-                  className={`max-w-[88%] rounded-[28px] px-5 py-4 ${
+                  className={cn(
+                    "w-full max-w-3xl",
                     message.role === "user"
-                      ? "bg-[#1f1c18] text-[#f4efe5]"
-                      : "border border-[#e4dccf] bg-white text-[#1f1c18]"
-                  }`}
+                      ? "max-w-2xl rounded-[24px] bg-[#f1e8da] px-5 py-4 text-[#1f1c18]"
+                      : "text-[#1f1c18]"
+                  )}
                 >
+                  <div className="mb-3 text-[11px] uppercase tracking-[0.18em] text-[#8a8379]">
+                    {message.role === "user" ? "You" : "Fashion Feed AI"}
+                  </div>
                   <div className="whitespace-pre-line text-[15px] leading-8">
-                    {message.content}
+                    {message.attachments && message.attachments.length > 0 && (
+                      <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                        {message.attachments.map((attachment) => (
+                          <div
+                            key={attachment.id}
+                            className="overflow-hidden rounded-2xl border border-black/10 bg-black/5"
+                          >
+                            <img
+                              src={attachment.dataUrl}
+                              alt={attachment.name}
+                              className="aspect-square w-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {message.content && (
+                      <div className="whitespace-pre-line text-[15px] leading-8">
+                        {message.content}
+                      </div>
+                    )}
                   </div>
                   <div className="mt-3 text-xs text-[#8a8379]">
                     {formatChinaDateTimeShort(message.createdAt)}
@@ -153,46 +200,23 @@ export default function ChatPage({
         )}
       </div>
 
-      <div className="shrink-0 border-t border-[#e4dccf] bg-[#f7f3eb]/95 px-4 py-4 backdrop-blur md:px-8">
-        <div className="mx-auto max-w-4xl">
-          <div className="rounded-[32px] border border-[#ddd4c7] bg-white p-3 shadow-[0_18px_50px_rgba(44,33,16,0.05)]">
-            <Textarea
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
-                  event.preventDefault();
-                  handleSubmit();
-                }
-              }}
-              placeholder={
-                session?.scope?.type === "story"
-                  ? `Continue asking about ${session.scope.topicTitle}...`
-                  : "Ask anything about fashion trends, brands, or recent signals..."
-              }
-              className="min-h-24 resize-none border-none bg-transparent px-3 py-3 text-base shadow-none focus-visible:ring-0"
-            />
-            <div className="flex items-center justify-between gap-3 px-2 pb-1 pt-2">
-              <div className="flex items-center gap-2 text-sm text-[#7a7369]">
-                <span className="rounded-full bg-[#f4efe5] px-3 py-1">Thinking</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#ddd4c7] text-[#7a7369]"
-                  aria-label="Voice input"
-                >
-                  <Mic className="h-4 w-4" />
-                </button>
-                <Button className="rounded-full bg-[#1f1c18] px-5" onClick={handleSubmit}>
-                  <Sparkles className="h-4 w-4" />
-                  Send
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ChatComposer
+        draft={draft}
+        onDraftChange={setDraft}
+        onSubmit={handleSubmit}
+        placeholder={
+          session?.scope?.type === "story"
+            ? `Continue asking about ${session.scope.topicTitle}...`
+            : "Ask anything about fashion trends, brands, or recent signals..."
+        }
+        statusLabel="Thinking"
+        submitLabel="Send"
+        submittingLabel="Sending"
+        isSubmitting={isSubmitting}
+        attachments={attachments}
+        onAppendFiles={appendFiles}
+        onRemoveAttachment={removeAttachment}
+      />
     </div>
   );
 }

@@ -235,6 +235,47 @@
   .gold-line-hover:hover::after {
     width: 100%;
   }
+
+  .ff-motion-sidebar {
+    will-change: width;
+    transition:
+      width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 220ms ease,
+      background-color 220ms ease;
+  }
+
+  .ff-motion-panel {
+    transition:
+      border-color 220ms ease,
+      background-color 220ms ease,
+      box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 220ms ease;
+  }
+
+  .ff-motion-soft {
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      border-color 180ms ease,
+      opacity 180ms ease,
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .ff-sidebar-reveal {
+    will-change: opacity, transform, max-height, max-width;
+    transition:
+      opacity 180ms ease,
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      max-height 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      max-width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      margin 220ms ease;
+    transform: translateX(0);
+  }
+
+  aside[data-expanded="false"] .ff-sidebar-reveal {
+    transform: translateX(-10px);
+  }
 }
 
 /* Smooth scrolling */

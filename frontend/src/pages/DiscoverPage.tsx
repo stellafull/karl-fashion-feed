@@ -1,8 +1,12 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, Clock3, Layers3, Share2 } from "lucide-react";
 import type { FeedData, SortMode, Topic } from "@/hooks/useFeedData";
 import { Button } from "@/components/ui/button";
 import { formatChinaDateTimeShort } from "@/lib/time";
 import DiscoverRail from "@/components/DiscoverRail";
+
+const INITIAL_LIST_STORIES = 12;
+const LIST_STORY_CHUNK = 12;
 
 interface DiscoverPageProps {
   data: FeedData;
@@ -73,6 +77,7 @@ function LeadStoryCard({
             alt=""
             className="h-full min-h-[280px] w-full object-cover"
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="flex min-h-[280px] items-center justify-center bg-[radial-gradient(circle_at_top_left,#f4ecdd,transparent_48%),linear-gradient(135deg,#ebe3d5,#d8c6ad)]" />
@@ -104,6 +109,7 @@ function GridStoryCard({
             alt=""
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="h-full w-full bg-[radial-gradient(circle_at_top,#f2ebdd,transparent_42%),linear-gradient(135deg,#ebe3d5,#d6c2a5)]" />
@@ -148,6 +154,7 @@ function RowStoryCard({
             alt=""
             className="h-full min-h-[180px] w-full object-cover"
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="h-full min-h-[180px] w-full bg-[radial-gradient(circle_at_top,#f2ebdd,transparent_42%),linear-gradient(135deg,#ebe3d5,#d6c2a5)]" />
@@ -200,7 +207,45 @@ export default function DiscoverPage({
   onClearSources,
   onOpenStory,
 }: DiscoverPageProps) {
-  const listStories = gridTopics.slice(3);
+  const listStories = useMemo(() => gridTopics.slice(3), [gridTopics]);
+  const [visibleListCount, setVisibleListCount] = useState(INITIAL_LIST_STORIES);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setVisibleListCount(INITIAL_LIST_STORIES);
+  }, [listStories.length, activeCategory, sortMode, selectedSources]);
+
+  useEffect(() => {
+    const node = loadMoreRef.current;
+    if (!node || visibleListCount >= listStories.length) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (!entry?.isIntersecting) {
+          return;
+        }
+
+        setVisibleListCount((current) =>
+          Math.min(current + LIST_STORY_CHUNK, listStories.length)
+        );
+      },
+      {
+        rootMargin: "320px 0px",
+      }
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [listStories.length, visibleListCount]);
+
+  const visibleListStories = useMemo(
+    () => listStories.slice(0, visibleListCount),
+    [listStories, visibleListCount]
+  );
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-[#f7f3eb] text-[#1f1c18]">
@@ -296,13 +341,21 @@ export default function DiscoverPage({
 
             {listStories.length > 0 && (
               <div className="space-y-4">
-                {listStories.map((topic) => (
+                {visibleListStories.map((topic) => (
                   <RowStoryCard
                     key={topic.id}
                     topic={topic}
                     onOpen={() => onOpenStory(topic.id)}
                   />
                 ))}
+                {visibleListCount < listStories.length && (
+                  <div
+                    ref={loadMoreRef}
+                    className="rounded-[24px] border border-dashed border-[#ddd4c7] bg-[#faf7f1] px-4 py-5 text-center text-sm text-[#7c756b]"
+                  >
+                    Loading more stories...
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { nanoid } from "nanoid";
 import type { FeedMeta, Topic } from "@/hooks/useFeedData";
 import {
+  type AiAttachment,
   type AiSession,
   createGlobalAssistantMessage,
   createInitialAiSessions,
@@ -18,6 +19,19 @@ function buildSessionTitle(question: string) {
   }
 
   return normalized.length > 22 ? `${normalized.slice(0, 21)}…` : normalized;
+}
+
+function buildQuestionPayload(question: string, attachments: AiAttachment[] = []) {
+  const trimmedQuestion = question.trim();
+  if (trimmedQuestion) {
+    return trimmedQuestion;
+  }
+
+  if (attachments.length > 0) {
+    return `请分析我上传的 ${attachments.length} 张图片。`;
+  }
+
+  return "";
 }
 
 function parseStoredSessions(rawValue: string | null) {
@@ -72,17 +86,17 @@ export function useChatSessions(topics: Topic[], meta: FeedMeta | null) {
     );
   }, [sessions]);
 
-  const createSession = (question: string) => {
-    const trimmedQuestion = question.trim();
-    if (!trimmedQuestion) {
+  const createSession = (question: string, attachments: AiAttachment[] = []) => {
+    const prompt = buildQuestionPayload(question, attachments);
+    if (!prompt) {
       return null;
     }
 
-    const userMessage = createUserMessage(trimmedQuestion);
-    const assistantMessage = createGlobalAssistantMessage(trimmedQuestion, topics, meta);
+    const userMessage = createUserMessage(question, attachments);
+    const assistantMessage = createGlobalAssistantMessage(prompt, topics, meta);
     const nextSession: AiSession = {
       id: nanoid(),
-      title: buildSessionTitle(trimmedQuestion),
+      title: buildSessionTitle(prompt),
       description: assistantMessage.content.split("\n")[0] ?? "跨 story 快速分析",
       updatedAt: assistantMessage.createdAt,
       messages: [userMessage, assistantMessage],
@@ -92,17 +106,21 @@ export function useChatSessions(topics: Topic[], meta: FeedMeta | null) {
     return nextSession.id;
   };
 
-  const createStorySession = (topic: Topic, question: string) => {
-    const trimmedQuestion = question.trim();
-    if (!trimmedQuestion) {
+  const createStorySession = (
+    topic: Topic,
+    question: string,
+    attachments: AiAttachment[] = []
+  ) => {
+    const prompt = buildQuestionPayload(question, attachments);
+    if (!prompt) {
       return null;
     }
 
-    const userMessage = createUserMessage(trimmedQuestion);
-    const assistantMessage = createStoryAssistantMessage(trimmedQuestion, topic);
+    const userMessage = createUserMessage(question, attachments);
+    const assistantMessage = createStoryAssistantMessage(prompt, topic);
     const nextSession: AiSession = {
       id: nanoid(),
-      title: buildSessionTitle(trimmedQuestion),
+      title: buildSessionTitle(prompt),
       description: assistantMessage.content.split("\n")[0] ?? `围绕 ${topic.title} 继续追问`,
       updatedAt: assistantMessage.createdAt,
       scope: {
@@ -117,9 +135,13 @@ export function useChatSessions(topics: Topic[], meta: FeedMeta | null) {
     return nextSession.id;
   };
 
-  const sendMessage = (sessionId: string, question: string) => {
-    const trimmedQuestion = question.trim();
-    if (!trimmedQuestion) {
+  const sendMessage = (
+    sessionId: string,
+    question: string,
+    attachments: AiAttachment[] = []
+  ) => {
+    const prompt = buildQuestionPayload(question, attachments);
+    if (!prompt) {
       return;
     }
 
@@ -129,14 +151,14 @@ export function useChatSessions(topics: Topic[], meta: FeedMeta | null) {
           return session;
         }
 
-        const userMessage = createUserMessage(trimmedQuestion);
+        const userMessage = createUserMessage(question, attachments);
         const storyScope = session.scope?.type === "story" ? session.scope : null;
         const storyTopic = storyScope
           ? topics.find((topic) => topic.id === storyScope.topicId) ?? null
           : null;
         const assistantMessage = storyTopic
-          ? createStoryAssistantMessage(trimmedQuestion, storyTopic)
-          : createGlobalAssistantMessage(trimmedQuestion, topics, meta);
+          ? createStoryAssistantMessage(prompt, storyTopic)
+          : createGlobalAssistantMessage(prompt, topics, meta);
 
         return {
           ...session,
@@ -144,7 +166,7 @@ export function useChatSessions(topics: Topic[], meta: FeedMeta | null) {
           description: assistantMessage.content.split("\n")[0] ?? session.description,
           title:
             session.title === "新建会话"
-              ? buildSessionTitle(trimmedQuestion)
+              ? buildSessionTitle(prompt)
               : session.title,
           messages: [...session.messages, userMessage, assistantMessage],
         };

@@ -7,6 +7,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useFeedData } from "@/hooks/useFeedData";
 import { useChatSessions } from "@/hooks/useChatSessions";
+import type { AiAttachment } from "@/lib/ai-demo";
 import DiscoverPage from "@/pages/DiscoverPage";
 import ChatPage from "@/pages/ChatPage";
 import StoryPage from "@/pages/StoryPage";
@@ -52,7 +53,20 @@ export default function AppShell() {
     return "Discover";
   }, [location]);
 
-  const latestSessionId = sessions[0]?.id ?? null;
+  const createSessionWithAttachments = (question: string, attachments: AiAttachment[] = []) =>
+    createSession(question, attachments);
+
+  const sendMessageWithAttachments = (
+    sessionId: string,
+    question: string,
+    attachments: AiAttachment[] = []
+  ) => sendMessage(sessionId, question, attachments);
+
+  const createStorySessionWithAttachments = (
+    topic: (typeof topics)[number],
+    question: string,
+    attachments: AiAttachment[] = []
+  ) => createStorySession(topic, question, attachments);
 
   const openDiscover = () => {
     setLocation("/discover");
@@ -60,14 +74,12 @@ export default function AppShell() {
   };
 
   const openNewChat = () => {
-    setSidebarExpanded(true);
     setLocation("/chat/new");
     setMobileSidebarOpen(false);
   };
 
   const openHistory = () => {
     setSidebarExpanded(true);
-    setLocation(latestSessionId ? `/chat/${latestSessionId}` : "/chat/new");
     setMobileSidebarOpen(false);
   };
 
@@ -127,7 +139,7 @@ export default function AppShell() {
         </SheetContent>
       </Sheet>
 
-      <div className="min-h-screen min-w-0 flex-1 md:h-screen md:min-h-0 md:overflow-hidden">
+      <div className="h-screen min-w-0 flex-1 overflow-hidden md:min-h-0">
         <div className="sticky top-0 z-40 flex items-center justify-between border-b border-[#e4dccf] bg-[#f7f3eb]/95 px-4 py-3 backdrop-blur md:hidden">
           <button
             type="button"
@@ -163,8 +175,8 @@ export default function AppShell() {
             <Route path="/chat/new">
               <ChatPage
                 sessions={sessions}
-                onCreateSession={createSession}
-                onSendMessage={sendMessage}
+                onCreateSession={createSessionWithAttachments}
+                onSendMessage={sendMessageWithAttachments}
               />
             </Route>
             <Route path="/chat/:sessionId">
@@ -172,8 +184,8 @@ export default function AppShell() {
                 <ChatPage
                   sessionId={params.sessionId}
                   sessions={sessions}
-                  onCreateSession={createSession}
-                  onSendMessage={sendMessage}
+                  onCreateSession={createSessionWithAttachments}
+                  onSendMessage={sendMessageWithAttachments}
                 />
               )}
             </Route>
@@ -181,7 +193,7 @@ export default function AppShell() {
               {(params) => (
                 <StoryPage
                   topic={data.topics.find((topic) => topic.id === params.storyId) ?? null}
-                  onStartStoryChat={createStorySession}
+                  onStartStoryChat={createStorySessionWithAttachments}
                 />
               )}
             </Route>

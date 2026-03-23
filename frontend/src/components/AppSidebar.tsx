@@ -1,6 +1,8 @@
-import { Compass, Clock3, PanelLeft, PanelLeftClose, SquarePen } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Clock3, Compass, Search, SquarePen } from "lucide-react";
 import type { AiSession } from "@/lib/ai-demo";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { formatChinaDateTimeShort } from "@/lib/time";
 
@@ -56,6 +58,19 @@ export default function AppSidebar({
   onOpenHistory,
   onSelectSession,
 }: AppSidebarProps) {
+  const [historyQuery, setHistoryQuery] = useState("");
+  const filteredSessions = useMemo(() => {
+    const query = historyQuery.trim().toLowerCase();
+    if (!query) {
+      return sessions;
+    }
+
+    return sessions.filter((session) => {
+      const haystack = `${session.title} ${session.description}`.toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [historyQuery, sessions]);
+
   if (mobile) {
     return (
       <div className="flex h-full flex-col bg-[#f7f3eb] text-[#1f1c18]">
@@ -114,100 +129,126 @@ export default function AppSidebar({
 
   return (
     <aside
+      data-expanded={expanded ? "true" : "false"}
       className={cn(
-        "sticky top-0 h-screen shrink-0 overflow-hidden border-r border-[#e4dccf] bg-[#f7f3eb] text-[#1f1c18] transition-[width] duration-300",
-        expanded ? "w-[344px]" : "w-[72px]"
+        "ff-motion-sidebar sticky top-0 h-screen shrink-0 overflow-hidden border-r border-[#e4dccf] bg-[#f7f3eb] text-[#1f1c18]",
+        expanded ? "w-[288px]" : "w-[72px]"
       )}
     >
-      <div
-        className={cn(
-          "grid h-full transition-[grid-template-columns] duration-300",
-          expanded ? "grid-cols-[72px_minmax(0,1fr)]" : "grid-cols-[72px_0px]"
-        )}
-      >
-        <div className="flex h-full flex-col items-center px-3 py-4">
+      <div className={cn("flex h-full flex-col px-3 py-4", expanded ? "items-stretch" : "items-center")}>
+        <div className={cn("flex items-center", expanded ? "justify-between gap-3" : "justify-center")}>
           <button
             type="button"
-            onClick={onOpenDiscover}
-            className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1f1c18] text-sm font-semibold text-[#f4efe5]"
+            onClick={() => onExpandedChange(!expanded)}
+            className={cn(
+              "flex h-11 w-11 items-center justify-center rounded-2xl text-sm font-semibold transition-colors",
+              expanded
+                ? "bg-[#1f1c18] text-[#f4efe5]"
+                : "bg-[#1f1c18] text-[#f4efe5] hover:bg-[#2c2721]"
+            )}
+            aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+            title={expanded ? "Collapse sidebar" : "Expand sidebar"}
           >
             FF
           </button>
-
-          <div className="mt-6 flex flex-col items-center gap-2">
-            <RailButton
-              active={activePath === "/" || activePath.startsWith("/discover")}
-              label="Discover"
-              icon={Compass}
-              onClick={onOpenDiscover}
-            />
-            <RailButton
-              active={activePath === "/chat/new"}
-              label="New chat"
-              icon={SquarePen}
-              onClick={onOpenNewChat}
-            />
-            <RailButton
-              active={activePath.startsWith("/chat/") && activePath !== "/chat/new"}
-              label="History"
-              icon={Clock3}
-              onClick={onOpenHistory}
-            />
+          <div
+            className={cn(
+              "ff-sidebar-reveal min-w-0 flex-1 overflow-hidden",
+              expanded
+                ? "pointer-events-auto max-w-[180px] opacity-100"
+                : "pointer-events-none max-w-0 opacity-0"
+            )}
+          >
+            <p className="truncate font-display text-lg font-semibold">Fashion Feed</p>
+            <p className="truncate text-xs text-[#7b746a]">Recent threads and workspace</p>
           </div>
+        </div>
 
-          <div className="mt-auto flex flex-col items-center gap-3">
-            <button
-              type="button"
-              onClick={() => onExpandedChange(!expanded)}
-              className="flex h-10 w-10 items-center justify-center rounded-2xl text-[#6f685f] transition-colors hover:bg-[#ece6dc] hover:text-[#1f1c18]"
-              aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
-              title={expanded ? "Collapse sidebar" : "Expand sidebar"}
-            >
-              {expanded ? (
-                <PanelLeftClose className="h-4.5 w-4.5" />
-              ) : (
-                <PanelLeft className="h-4.5 w-4.5" />
-              )}
-            </button>
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d9d1c5] bg-white text-sm font-medium">
-              KF
-            </div>
-          </div>
+        <div className={cn("mt-6 flex", expanded ? "flex-col gap-1" : "flex-col items-center gap-2")}>
+          {expanded ? (
+            <>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "ff-motion-soft w-full justify-start rounded-2xl px-3 text-[#6f685f] hover:bg-[#ece6dc] hover:text-[#1f1c18]",
+                  (activePath === "/" || activePath.startsWith("/discover")) &&
+                    "bg-[#ece6dc] text-[#1f1c18]"
+                )}
+                onClick={onOpenDiscover}
+              >
+                <Compass className="h-4 w-4" />
+                Discover
+              </Button>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "ff-motion-soft w-full justify-start rounded-2xl px-3 text-[#6f685f] hover:bg-[#ece6dc] hover:text-[#1f1c18]",
+                  activePath === "/chat/new" && "bg-[#ece6dc] text-[#1f1c18]"
+                )}
+                onClick={onOpenNewChat}
+              >
+                <SquarePen className="h-4 w-4" />
+                New chat
+              </Button>
+            </>
+          ) : (
+            <>
+              <RailButton
+                active={activePath === "/" || activePath.startsWith("/discover")}
+                label="Discover"
+                icon={Compass}
+                onClick={onOpenDiscover}
+              />
+              <RailButton
+                active={activePath === "/chat/new"}
+                label="New chat"
+                icon={SquarePen}
+                onClick={onOpenNewChat}
+              />
+              <RailButton
+                active={activePath.startsWith("/chat/") && activePath !== "/chat/new"}
+                label="Search history"
+                icon={Search}
+                onClick={onOpenHistory}
+              />
+            </>
+          )}
         </div>
 
         <div
           className={cn(
-            "min-w-0 overflow-hidden border-l border-[#e4dccf]",
-            !expanded && "pointer-events-none"
+            "ff-sidebar-reveal min-h-0 overflow-hidden",
+            expanded
+              ? "pointer-events-auto mt-6 flex-1 opacity-100"
+              : "pointer-events-none mt-0 max-h-0 flex-none opacity-0"
           )}
         >
-          <div
-            className={cn(
-              "flex h-full flex-col px-4 py-4 transition-opacity duration-200",
-              expanded ? "opacity-100" : "opacity-0"
-            )}
-          >
-            <div className="border-b border-[#e4dccf] pb-4">
-              <p className="font-display text-xl font-semibold">Fashion Feed</p>
-              <p className="mt-1 text-sm text-[#7b746a]">Recent threads and workspace</p>
-            </div>
+          <div className="flex items-center gap-2 px-1 text-xs uppercase tracking-[0.24em] text-[#8b8479]">
+            <Search className="h-3.5 w-3.5" />
+            History
+          </div>
 
-            <div className="mt-5 flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-[#8b8479]">
-              <Clock3 className="h-3.5 w-3.5" />
-              Recent
-            </div>
+          <div className="mt-3">
+            <Input
+              value={historyQuery}
+              onChange={(event) => setHistoryQuery(event.target.value)}
+              placeholder="Search history..."
+              className="ff-motion-soft h-10 rounded-2xl border-[#ddd4c7] bg-white px-4 shadow-none"
+            />
+          </div>
 
-            <div className="mt-3 flex-1 space-y-2 overflow-y-auto pr-1">
-              {sessions.map((session) => (
+          <div className="mt-3 flex h-full min-h-0 flex-1 flex-col overflow-hidden pr-1">
+            <div className="flex-1 min-h-0 space-y-2 overflow-y-auto">
+              {filteredSessions.map((session) => (
                 <button
                   key={session.id}
                   type="button"
                   onClick={() => onSelectSession(session.id)}
                   className={cn(
-                    "w-full rounded-2xl border px-3 py-3 text-left transition-colors",
+                    "ff-motion-soft w-full rounded-2xl px-3 py-3 text-left",
                     activePath === `/chat/${session.id}`
-                      ? "border-[#1f1c18] bg-[#f0e9dc]"
-                      : "border-[#e4dccf] bg-white hover:border-[#cbbda6]"
+                      ? "bg-[#f0e9dc]"
+                      : "hover:bg-[#efe8dc]"
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -223,15 +264,26 @@ export default function AppSidebar({
                   </div>
                 </button>
               ))}
+              {filteredSessions.length === 0 && (
+                <div className="rounded-2xl bg-white px-3 py-4 text-sm text-[#7f776e]">
+                  No matching history.
+                </div>
+              )}
             </div>
+          </div>
 
-            <div className="mt-4 rounded-2xl border border-[#e4dccf] bg-white px-3 py-3">
-              <p className="text-xs uppercase tracking-[0.18em] text-[#8a8378]">Workspace</p>
-              <p className="mt-2 text-sm font-medium">Karl Fashion Feed</p>
-              <p className="mt-1 text-xs leading-relaxed text-[#7f776e]">
-                Feed-first intelligence workspace with chat and story follow-up.
-              </p>
-            </div>
+          <div className="mt-4 rounded-2xl bg-white px-3 py-3">
+            <p className="text-xs uppercase tracking-[0.18em] text-[#8a8378]">Workspace</p>
+            <p className="mt-2 text-sm font-medium">Karl Fashion Feed</p>
+            <p className="mt-1 text-xs leading-relaxed text-[#7f776e]">
+              Feed-first intelligence workspace with chat and story follow-up.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-auto flex flex-col items-center gap-3 pt-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d9d1c5] bg-white text-sm font-medium">
+            KF
           </div>
         </div>
       </div>
