@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Clock3, Compass, Search, SquarePen } from "lucide-react";
+import { Compass, Search, SquarePen } from "lucide-react";
 import type { AiSession } from "@/lib/ai-demo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,7 +74,7 @@ export default function AppSidebar({
   if (mobile) {
     return (
       <div className="flex h-full flex-col bg-[#f7f3eb] text-[#1f1c18]">
-        <div className="border-b border-[#e4dccf] px-4 py-4">
+        <div className="border-b border-[#e4dccf] px-4 py-4 pr-14">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#1f1c18] text-sm font-semibold text-[#f4efe5]">
               FF
@@ -86,33 +86,60 @@ export default function AppSidebar({
           </div>
         </div>
 
-        <div className="space-y-2 border-b border-[#e4dccf] px-4 py-4">
-          <Button variant="outline" className="w-full justify-start" onClick={onOpenDiscover}>
-            <Compass className="h-4 w-4" />
-            Discover
-          </Button>
-          <Button variant="outline" className="w-full justify-start" onClick={onOpenNewChat}>
-            <SquarePen className="h-4 w-4" />
-            New chat
-          </Button>
+        <div className="border-b border-[#e4dccf] px-4 py-4">
+          <div className="flex flex-col gap-1">
+            <Button
+              variant="ghost"
+              className={cn(
+                "ff-motion-soft w-full justify-start rounded-2xl px-3 text-[#6f685f] hover:bg-[#ece6dc] hover:text-[#1f1c18]",
+                (activePath === "/" || activePath.startsWith("/discover")) &&
+                  "bg-[#ece6dc] text-[#1f1c18]"
+              )}
+              onClick={onOpenDiscover}
+            >
+              <Compass className="h-4 w-4" />
+              Discover
+            </Button>
+            <Button
+              variant="ghost"
+              className={cn(
+                "ff-motion-soft w-full justify-start rounded-2xl px-3 text-[#6f685f] hover:bg-[#ece6dc] hover:text-[#1f1c18]",
+                activePath === "/chat/new" && "bg-[#ece6dc] text-[#1f1c18]"
+              )}
+              onClick={onOpenNewChat}
+            >
+              <SquarePen className="h-4 w-4" />
+              New chat
+            </Button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-4">
-          <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-[#8b8479]">
-            <Clock3 className="h-3.5 w-3.5" />
-            Recent
+          <div className="flex items-center gap-2 px-1 text-xs uppercase tracking-[0.24em] text-[#8b8479]">
+            <Search className="h-3.5 w-3.5" />
+            History
           </div>
-          <div className="space-y-2">
-            {sessions.map((session) => (
+
+          <div className="mt-3">
+            <Input
+              value={historyQuery}
+              onChange={(event) => setHistoryQuery(event.target.value)}
+              placeholder="Search history..."
+              className="ff-motion-soft h-10 rounded-2xl border-[#ddd4c7] bg-white px-4 shadow-none"
+            />
+          </div>
+
+          <div className="mt-4 space-y-2">
+            {filteredSessions.map((session) => (
               <button
                 key={session.id}
                 type="button"
                 onClick={() => onSelectSession(session.id)}
                 className={cn(
-                  "w-full rounded-2xl border px-3 py-3 text-left transition-colors",
+                  "ff-motion-soft w-full rounded-2xl px-3 py-3 text-left",
                   activePath === `/chat/${session.id}`
-                    ? "border-[#1f1c18] bg-[#f0e9dc]"
-                    : "border-[#e4dccf] bg-white hover:border-[#cbbda6]"
+                    ? "bg-[#f0e9dc]"
+                    : "bg-white hover:bg-[#efe8dc]"
                 )}
               >
                 <p className="truncate text-sm font-medium">{session.title}</p>
@@ -121,6 +148,11 @@ export default function AppSidebar({
                 </p>
               </button>
             ))}
+            {filteredSessions.length === 0 && (
+              <div className="rounded-2xl bg-white px-3 py-4 text-sm text-[#7f776e]">
+                No matching history.
+              </div>
+            )}
           </div>
         </div>
       </div>
