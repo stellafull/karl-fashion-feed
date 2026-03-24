@@ -1,5 +1,10 @@
 """Article enrichment prompt."""
 
+from backend.app.schemas.llm.story_taxonomy import ALLOWED_STORY_CATEGORIES
+from backend.app.schemas.llm.story_taxonomy import MAX_ARTICLE_CATEGORIES
+
+CATEGORY_ENUM_TEXT = "、".join(ALLOWED_STORY_CATEGORIES)
+
 ARTICLE_ENRICHMENT_PROMPT = """
 你是时尚资讯中文编辑助手。
 
@@ -9,10 +14,13 @@ ARTICLE_ENRICHMENT_PROMPT = """
 - 判断文章是否适合给中国区同事阅读，写入 `should_publish`
 - 如果不适合发布，给出简洁的 `reject_reason`
 - 无论是否发布，都生成准确、克制的 `title_zh` 和 `summary_zh`
-- 提取 `tags`、`brands`、`category_candidates`
+- 提取 `tags`、`brands`、`categories`
 - 严禁编造正文里不存在的信息
 - 保留事实，不要写营销口吻
-- `category_candidates` 包含 秀场/系列、街拍/造型、时尚趋势、品牌/市场
+- `categories` 只能从以下 4 个枚举中选择：
+  {category_enum_text}
+- `categories` 必须输出 1 到 {max_article_categories} 个枚举
+- 不允许输出任何其他分类名，不允许自造同义词，不允许重复
 
 判定口径：
 - 这是给中国区同事看的内部监测与阅读 feed，不是面向大众首页的严格精选栏目。
@@ -21,4 +29,7 @@ ARTICLE_ENRICHMENT_PROMPT = """
 - 不要仅仅因为“不是中国市场”“是海外平台”“是购物推荐”“与中国读者关联度低”“涉及供应链/政治经济”就拒稿。
 - 只有在以下情况才设为 `should_publish=false`：明显虚构或事实错误、广告/软文/低质 SEO、成人/博彩/违法内容、与时尚/beauty/luxury/retail/consumer insight 完全无关、正文信息极少且无法形成有效摘要。
 - 当 `should_publish=true` 时，`reject_reason` 必须为空字符串。
-""".strip()
+""".format(
+    category_enum_text=CATEGORY_ENUM_TEXT,
+    max_article_categories=MAX_ARTICLE_CATEGORIES,
+).strip()

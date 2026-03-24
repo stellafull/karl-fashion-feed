@@ -57,7 +57,7 @@ class RagTools:
                             {"type": "string", "enum": [REQUEST_IMAGE_TOOL_REF]},
                             {"type": "null"},
                         ],
-                        "description": "Use request_image to search with the uploaded image.",
+                        "description": "Use request_image to search with the uploaded request images.",
                     },
                 },
                 required=[],
@@ -75,7 +75,7 @@ class RagTools:
                             {"type": "string", "enum": [REQUEST_IMAGE_TOOL_REF]},
                             {"type": "null"},
                         ],
-                        "description": "Use request_image to include the uploaded image in fusion retrieval.",
+                        "description": "Use request_image to include the uploaded request images in fusion retrieval.",
                     },
                 },
                 required=["query"],
@@ -120,7 +120,10 @@ class RagTools:
             output_goal="reference_lookup",
             limit=self._request_context.limit,
         )
-        return self._query_service.execute(query_plan, request_image=self._request_context.request_image)
+        return self._query_service.execute(
+            query_plan,
+            request_images=self._request_context.request_images,
+        )
 
     def search_fashion_images(
         self,
@@ -141,7 +144,10 @@ class RagTools:
             output_goal="similarity_search" if image_query is not None else "inspiration",
             limit=self._request_context.limit,
         )
-        return self._query_service.execute(query_plan, request_image=self._request_context.request_image)
+        return self._query_service.execute(
+            query_plan,
+            request_images=self._request_context.request_images,
+        )
 
     def search_fashion_fusion(
         self,
@@ -158,7 +164,10 @@ class RagTools:
             output_goal="reference_lookup",
             limit=self._request_context.limit,
         )
-        return self._query_service.execute(query_plan, request_image=self._request_context.request_image)
+        return self._query_service.execute(
+            query_plan,
+            request_images=self._request_context.request_images,
+        )
 
     async def search_web(self, *, query: str) -> list[WebSearchResult]:
         """Search Brave for external evidence."""
@@ -181,8 +190,8 @@ class RagTools:
             return None
         if image_ref != REQUEST_IMAGE_TOOL_REF:
             raise ValueError(f"unsupported image_ref: {image_ref}")
-        if not self._request_context.has_request_image:
-            raise ValueError("image_ref=request_image requires an uploaded image")
+        if not self._request_context.has_request_images:
+            raise ValueError("image_ref=request_image requires uploaded request images")
         return REQUEST_IMAGE_REF
 
     @staticmethod

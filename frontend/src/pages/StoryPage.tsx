@@ -6,7 +6,7 @@ import ChatComposer from "@/components/ChatComposer";
 import type { Topic } from "@/hooks/useFeedData";
 import { getLangLabel } from "@/hooks/useFeedData";
 import { useImageAttachments } from "@/hooks/useImageAttachments";
-import type { AiAttachment } from "@/lib/ai-demo";
+import type { ChatUploadAttachment } from "@/lib/chat";
 import { formatChinaDateTimeShort } from "@/lib/time";
 
 interface StoryPageProps {
@@ -14,8 +14,8 @@ interface StoryPageProps {
   onStartStoryChat: (
     topic: Topic,
     question: string,
-    attachments?: AiAttachment[]
-  ) => string | null;
+    attachments?: ChatUploadAttachment[]
+  ) => Promise<string | null>;
 }
 
 function getUniqueSources(topic: Topic) {
@@ -65,8 +65,8 @@ export default function StoryPage({ topic, onStartStoryChat }: StoryPageProps) {
 
     try {
       setIsSubmitting(true);
-      const attachments = await buildOutgoingAttachments();
-      const sessionId = onStartStoryChat(topic, question, attachments);
+      const attachments = buildOutgoingAttachments();
+      const sessionId = await onStartStoryChat(topic, question, attachments);
       if (sessionId) {
         setLocation(`/chat/${sessionId}`);
       }

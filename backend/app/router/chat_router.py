@@ -2,20 +2,23 @@
 
 from __future__ import annotations
 
+import asyncio
+import json
 import os
+from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from backend.app.config.auth_config import auth_settings
 from backend.app.core.auth_dependencies import get_current_user
-from backend.app.core.database import get_db
+from backend.app.core.database import SessionLocal, get_db
 from backend.app.models.chat import ChatAttachment, ChatMessage, ChatSession
 from backend.app.models.user import User
 from backend.app.schemas.chat import (
@@ -25,7 +28,9 @@ from backend.app.schemas.chat import (
     MessageResponse,
     SessionListResponse,
     SessionResponse,
+    StreamMessageStartResponse,
 )
+from backend.app.service.chat_worker_service import ChatWorkerService
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -34,113 +39,120 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 async def create_message(
     chat_session_id: Annotated[str | None, Form()] = None,
     content_text: Annotated[str | None, Form()] = None,
-    image: Annotated[UploadFile | None, File()] = None,
+    images: Annotated[list[UploadFile] | None, File()] = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> CreateMessageResponse:
     """Create a new message in a chat session."""
     normalized_content_text = _normalize_optional_text(content_text)
+    normalized_images = images or []
 
-    # Validate: text and image cannot both be empty
-    if normalized_content_text is None and not image:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Either content_text or image must be provided",
-        )
-
-    # Validate: only one image per message
-    if image and not image.content_type:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Invalid image file",
-        )
-
-    if image and not image.content_type.startswith("image/"):
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Only image files are allowed",
-        )
-
-    # Get or create session
-    if chat_session_id:
-        session = db.get(ChatSession, chat_session_id)
-        if not session:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Chat session not found",
-            )
-        if session.user_id != current_user.user_id:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Access denied to this chat session",
-            )
-    else:
-        # Create new session
-        title = _generate_session_title(normalized_content_text, image is not None)
-        session = ChatSession(
-            user_id=current_user.user_id,
-            title=title,
-        )
-        db.add(session)
-        db.flush()
-
-    # Create user message
-    user_message = ChatMessage(
-        chat_session_id=session.chat_session_id,
-        role="user",
-        content_text=normalized_content_text or "",
-        status="done",
+    session, user_message, assistant_message = await _create_message_round(
+        db=db,
+        current_user=current_user,
+        chat_session_id=chat_session_id,
+        content_text=normalized_content_text,
+        images=normalized_images,
+        assistant_status="queued",
     )
-    db.add(user_message)
-    db.flush()
-
-    # Save image attachment if provided
-    if image:
-        attachment_id = str(uuid4())
-        file_ext = _get_file_extension(image.filename or "image.jpg")
-
-        # Storage path: YYYY-MM-DD/{message_id}/{attachment_id}.{ext}
-        date_str = datetime.now(UTC).strftime("%Y-%m-%d")
-        rel_path = f"{date_str}/{user_message.chat_message_id}/{attachment_id}{file_ext}"
-
-        # Save file to disk
-        full_path = Path(auth_settings.CHAT_ATTACHMENT_ROOT) / rel_path
-        full_path.parent.mkdir(parents=True, exist_ok=True)
-
-        content = await image.read()
-        full_path.write_bytes(content)
-
-        # Create attachment record
-        attachment = ChatAttachment(
-            chat_attachment_id=attachment_id,
-            chat_message_id=user_message.chat_message_id,
-            attachment_type="image",
-            mime_type=image.content_type,
-            original_filename=image.filename or "image.jpg",
-            storage_rel_path=rel_path,
-            size_bytes=len(content),
-        )
-        db.add(attachment)
-
-    # Create assistant placeholder message
-    assistant_message = ChatMessage(
-        chat_session_id=session.chat_session_id,
-        role="assistant",
-        content_text="",
-        status="queued",
-        reply_to_message_id=user_message.chat_message_id,
-    )
-    db.add(assistant_message)
-
-    # Update session timestamp
-    session.updated_at = datetime.now(UTC).replace(tzinfo=None)
-
-    db.commit()
 
     return CreateMessageResponse(
         chat_session_id=session.chat_session_id,
         user_message_id=user_message.chat_message_id,
         assistant_message_id=assistant_message.chat_message_id,
+    )
+
+
+@router.post("/messages/stream")
+async def create_message_stream(
+    chat_session_id: Annotated[str | None, Form()] = None,
+    content_text: Annotated[str | None, Form()] = None,
+    images: Annotated[list[UploadFile] | None, File()] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> StreamingResponse:
+    """Create a message and stream the assistant answer over SSE."""
+    normalized_content_text = _normalize_optional_text(content_text)
+    normalized_images = images or []
+    session, user_message, assistant_message = await _create_message_round(
+        db=db,
+        current_user=current_user,
+        chat_session_id=chat_session_id,
+        content_text=normalized_content_text,
+        images=normalized_images,
+        assistant_status="running",
+    )
+    assistant_message.started_at = datetime.now(UTC).replace(tzinfo=None)
+    db.commit()
+
+    start_payload = StreamMessageStartResponse(
+        chat_session_id=session.chat_session_id,
+        session_title=session.title,
+        session_updated_at=session.updated_at,
+        user_message=_build_message_response(db, user_message),
+        assistant_message=_build_message_response(db, assistant_message),
+    )
+
+    async def event_stream() -> AsyncIterator[str]:
+        queue: asyncio.Queue[tuple[str, dict] | None] = asyncio.Queue()
+        chat_worker_service = ChatWorkerService()
+
+        async def on_delta(delta: str) -> None:
+            await queue.put(
+                (
+                    "assistant_delta",
+                    {"delta": delta},
+                )
+            )
+
+        async def run_processing() -> None:
+            try:
+                final_message = await chat_worker_service.process_message_by_id(
+                    assistant_message.chat_message_id,
+                    on_delta=on_delta,
+                )
+                event_name = (
+                    "message_complete"
+                    if final_message.status == "done"
+                    else "message_error"
+                )
+                await queue.put(
+                    (
+                        event_name,
+                        final_message.model_dump(mode="json"),
+                    )
+                )
+            except Exception as error:
+                await queue.put(
+                    (
+                        "message_error",
+                        {"detail": f"{type(error).__name__}: {error}"},
+                    )
+                )
+            finally:
+                await queue.put(None)
+
+        processing_task = asyncio.create_task(run_processing())
+        yield _format_sse(
+            "message_start",
+            start_payload.model_dump(mode="json"),
+        )
+        while True:
+            event = await queue.get()
+            if event is None:
+                break
+            event_name, payload = event
+            yield _format_sse(event_name, payload)
+        await processing_task
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
     )
 
 
@@ -166,34 +178,7 @@ async def get_message(
             detail="Access denied to this message",
         )
 
-    # Load attachments
-    attachments = db.execute(
-        select(ChatAttachment).where(ChatAttachment.chat_message_id == message_id)
-    ).scalars().all()
-
-    attachment_responses = [
-        AttachmentResponse(
-            chat_attachment_id=att.chat_attachment_id,
-            attachment_type=att.attachment_type,
-            mime_type=att.mime_type,
-            original_filename=att.original_filename,
-            size_bytes=att.size_bytes,
-            content_url=f"/api/v1/chat/attachments/{att.chat_attachment_id}/content",
-        )
-        for att in attachments
-    ]
-
-    return MessageResponse(
-        chat_message_id=message.chat_message_id,
-        role=message.role,
-        content_text=message.content_text,
-        status=message.status,
-        response_json=message.response_json,
-        error_message=message.error_message,
-        attachments=attachment_responses,
-        created_at=message.created_at,
-        completed_at=message.completed_at,
-    )
+    return _build_message_response(db, message)
 
 
 @router.get("/sessions", response_model=SessionListResponse)
@@ -265,37 +250,7 @@ async def list_session_messages(
     # Load attachments for all messages
     message_responses = []
     for message in messages:
-        attachments = db.execute(
-            select(ChatAttachment).where(
-                ChatAttachment.chat_message_id == message.chat_message_id
-            )
-        ).scalars().all()
-
-        attachment_responses = [
-            AttachmentResponse(
-                chat_attachment_id=att.chat_attachment_id,
-                attachment_type=att.attachment_type,
-                mime_type=att.mime_type,
-                original_filename=att.original_filename,
-                size_bytes=att.size_bytes,
-                content_url=f"/api/v1/chat/attachments/{att.chat_attachment_id}/content",
-            )
-            for att in attachments
-        ]
-
-        message_responses.append(
-            MessageResponse(
-                chat_message_id=message.chat_message_id,
-                role=message.role,
-                content_text=message.content_text,
-                status=message.status,
-                response_json=message.response_json,
-                error_message=message.error_message,
-                attachments=attachment_responses,
-                created_at=message.created_at,
-                completed_at=message.completed_at,
-            )
-        )
+        message_responses.append(_build_message_response(db, message))
 
     return MessageListResponse(messages=message_responses)
 
@@ -365,3 +320,151 @@ def _normalize_optional_text(content_text: str | None) -> str | None:
         return None
     normalized_content_text = content_text.strip()
     return normalized_content_text or None
+
+
+def _format_sse(event: str, data: dict) -> str:
+    """Serialize one SSE event frame."""
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+def _validate_message_inputs(
+    content_text: str | None,
+    images: list[UploadFile],
+) -> None:
+    """Validate the chat message form input."""
+    if content_text is None and not images:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Either content_text or at least one image must be provided",
+        )
+
+    for image in images:
+        if not image.content_type:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid image file",
+            )
+        if not image.content_type.startswith("image/"):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Only image files are allowed",
+            )
+
+
+async def _create_message_round(
+    *,
+    db: Session,
+    current_user: User,
+    chat_session_id: str | None,
+    content_text: str | None,
+    images: list[UploadFile],
+    assistant_status: str,
+) -> tuple[ChatSession, ChatMessage, ChatMessage]:
+    """Persist one user message and one assistant placeholder."""
+    _validate_message_inputs(content_text, images)
+
+    if chat_session_id:
+        session = db.get(ChatSession, chat_session_id)
+        if not session:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Chat session not found",
+            )
+        if session.user_id != current_user.user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied to this chat session",
+            )
+    else:
+        session = ChatSession(
+            user_id=current_user.user_id,
+            title=_generate_session_title(content_text, bool(images)),
+        )
+        db.add(session)
+        db.flush()
+
+    user_message = ChatMessage(
+        chat_session_id=session.chat_session_id,
+        role="user",
+        content_text=content_text or "",
+        status="done",
+    )
+    db.add(user_message)
+    db.flush()
+
+    for image in images:
+        attachment_id = str(uuid4())
+        file_ext = _get_file_extension(image.filename or "image.jpg")
+        date_str = datetime.now(UTC).strftime("%Y-%m-%d")
+        rel_path = f"{date_str}/{user_message.chat_message_id}/{attachment_id}{file_ext}"
+        full_path = Path(auth_settings.CHAT_ATTACHMENT_ROOT) / rel_path
+        full_path.parent.mkdir(parents=True, exist_ok=True)
+
+        content = await image.read()
+        full_path.write_bytes(content)
+        db.add(
+            ChatAttachment(
+                chat_attachment_id=attachment_id,
+                chat_message_id=user_message.chat_message_id,
+                attachment_type="image",
+                mime_type=image.content_type,
+                original_filename=image.filename or "image.jpg",
+                storage_rel_path=rel_path,
+                size_bytes=len(content),
+            )
+        )
+
+    assistant_message = ChatMessage(
+        chat_session_id=session.chat_session_id,
+        role="assistant",
+        content_text="",
+        status=assistant_status,
+        reply_to_message_id=user_message.chat_message_id,
+    )
+    db.add(assistant_message)
+    session.updated_at = datetime.now(UTC).replace(tzinfo=None)
+    db.commit()
+    return session, user_message, assistant_message
+
+
+def _build_attachment_responses(
+    db: Session,
+    *,
+    chat_message_id: str,
+) -> list[AttachmentResponse]:
+    """Load attachment DTOs for one chat message."""
+    attachments = db.execute(
+        select(ChatAttachment).where(ChatAttachment.chat_message_id == chat_message_id)
+    ).scalars().all()
+    return [
+        AttachmentResponse(
+            chat_attachment_id=attachment.chat_attachment_id,
+            attachment_type=attachment.attachment_type,
+            mime_type=attachment.mime_type,
+            original_filename=attachment.original_filename,
+            size_bytes=attachment.size_bytes,
+            content_url=f"/api/v1/chat/attachments/{attachment.chat_attachment_id}/content",
+        )
+        for attachment in attachments
+    ]
+
+
+def _build_message_response(
+    db: Session,
+    message: ChatMessage,
+) -> MessageResponse:
+    """Serialize one chat message to the API shape."""
+    return MessageResponse(
+        chat_message_id=message.chat_message_id,
+        role=message.role,
+        content_text=message.content_text,
+        status=message.status,
+        response_json=message.response_json,
+        error_message=message.error_message,
+        attachments=_build_attachment_responses(
+            db,
+            chat_message_id=message.chat_message_id,
+        ),
+        created_at=message.created_at,
+        completed_at=message.completed_at,
+    )

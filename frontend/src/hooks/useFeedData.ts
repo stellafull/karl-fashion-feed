@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import apiClient from "@/lib/api-client";
 import { formatChinaDateTimeShort } from "@/lib/time";
 
 // ─── Data Types (v3: Topic-based, Luxury Brand Focus) ────────────────────
@@ -49,7 +50,6 @@ export type SortMode = "newest" | "oldest" | "most-sources";
 // ─── Hook ──────────────────────────────────────────────────────────────────
 
 export function useFeedData() {
-  const feedDataUrl = `${import.meta.env.BASE_URL}feed-data.json`;
   const [data, setData] = useState<FeedData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,10 +61,8 @@ export function useFeedData() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const resp = await fetch(feedDataUrl);
-        if (!resp.ok) throw new Error("Failed to load feed data");
-        const json: FeedData = await resp.json();
-        setData(json);
+        const response = await apiClient.get<FeedData>("/stories/feed");
+        setData(response.data);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Unknown error");
       } finally {
@@ -72,7 +70,7 @@ export function useFeedData() {
       }
     }
     fetchData();
-  }, [feedDataUrl]);
+  }, []);
 
   // Toggle a source in the filter
   const toggleSource = useCallback((source: string) => {

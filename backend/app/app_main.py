@@ -9,8 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.config.auth_config import auth_settings
 from backend.app.core.database import engine
-from backend.app.models import ensure_auth_chat_schema
-from backend.app.router import auth_router, chat_router, memory_router, rag_router
+from backend.app.models import ensure_article_storage_schema, ensure_auth_chat_schema
+from backend.app.router import auth_router, chat_router, memory_router, rag_router, story_router
 
 
 @asynccontextmanager
@@ -20,6 +20,7 @@ async def lifespan(app: FastAPI):
     if not auth_settings.AUTH_JWT_SECRET:
         raise RuntimeError("AUTH_JWT_SECRET is required but not set")
 
+    ensure_article_storage_schema(engine)
     ensure_auth_chat_schema(engine)
 
     yield
@@ -45,3 +46,4 @@ app.include_router(auth_router, prefix="/api/v1")
 app.include_router(chat_router, prefix="/api/v1")
 app.include_router(memory_router, prefix="/api/v1")
 app.include_router(rag_router, prefix="/api/v1")
+app.include_router(story_router, prefix="/api/v1")

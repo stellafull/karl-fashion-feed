@@ -29,7 +29,7 @@ def get_rag_answer_service() -> RagAnswerService:
 @router.post("/query")
 async def query_rag(
     query: Annotated[str | None, Form()] = None,
-    image: Annotated[UploadFile | None, File()] = None,
+    images: Annotated[list[UploadFile] | None, File()] = None,
     source_names: Annotated[list[str] | None, Form()] = None,
     categories: Annotated[list[str] | None, Form()] = None,
     brands: Annotated[list[str] | None, Form()] = None,
@@ -40,7 +40,7 @@ async def query_rag(
     rag_answer_service: RagAnswerService = Depends(get_rag_answer_service),
 ) -> RagAnswerResponse:
     """Answer one grounded RAG query from text, image, or both."""
-    request_image = await _read_request_image(image)
+    request_images = await _read_request_images(images)
     try:
         filters = _build_filters(
             source_names=source_names,
@@ -53,13 +53,16 @@ async def query_rag(
         request = RagQueryRequest(query=query, filters=filters, limit=limit)
     except (ValidationError, ValueError) as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
-    if request.query is None and request_image is None:
-        raise HTTPException(status_code=422, detail="rag query requires text query or uploaded image")
+    if request.query is None and not request_images:
+        raise HTTPException(
+            status_code=422,
+            detail="rag query requires text query or uploaded images",
+        )
 
     request_context = RagRequestContext(
         filters=filters,
         limit=limit,
-        request_image=request_image,
+        request_images=request_images,
     )
     return await rag_answer_service.answer(
         request=request,
@@ -108,17 +111,26 @@ def _parse_optional_datetime(value: str | None):
     return parsed.astimezone(UTC)
 
 
-async def _read_request_image(image: UploadFile | None) -> RequestImageInput | None:
-    if image is None:
-        return None
-    content = await image.read()
-    mime_type = (image.content_type or "").strip()
-    if not mime_type:
-        raise HTTPException(status_code=422, detail="uploaded image content_type must not be empty")
-    try:
-        return RequestImageInput(
-            mime_type=mime_type,
-            base64_data=encode_bytes_as_base64(content),
-        )
-    except ValueError as error:
-        raise HTTPException(status_code=422, detail=str(error)) from error
+async def _read_request_images(
+    images: list[UploadFile] | None,
+) -> list[RequestImageInput]:
+    request_images: list[RequestImageInput] = []
+    for image in images or []:
+        content = await image.read()
+        mime_type = (image.content_type or "").strip()
+        if not mime_type:
+            raise HTTPException(
+                status_code=422,
+                detail="uploaded image content_type must not be empty",
+            )
+        try:
+            request_images.append(
+                RequestImageInput(
+                    mime_type=mime_type,
+                    base64_data=encode_bytes_as_base64(content),
+                )
+            )
+        except ValueError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+
+    return request_images

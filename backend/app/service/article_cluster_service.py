@@ -13,8 +13,11 @@ from openai import AsyncOpenAI
 from sklearn.cluster import AgglomerativeClustering
 
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
-from backend.app.prompts.story_cluster_review_prompt import STORY_CLUSTER_REVIEW_PROMPT
+from backend.app.prompts.story_cluster_review_prompt import (
+    build_story_cluster_review_prompt,
+)
 from backend.app.schemas.llm.story_cluster_review import StoryClusterReviewSchema
+from backend.app.schemas.llm.story_taxonomy import StoryCategory
 from backend.app.service.article_enrichment_service import EnrichedArticle
 
 
@@ -41,7 +44,12 @@ class ArticleClusterService:
             else distance_threshold
         )
 
-    async def cluster_articles(self, articles: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
+    async def cluster_articles(
+        self,
+        articles: list[EmbeddedArticle],
+        *,
+        category: StoryCategory,
+    ) -> list[list[EmbeddedArticle]]:
         if not articles:
             return []
         if len(articles) == 1:
@@ -57,7 +65,10 @@ class ArticleClusterService:
             labels = model.fit_predict(_normalize_embeddings(articles))
         except Exception as exc:
             exc.add_note(
-                f"stage=semantic_cluster articles={len(articles)} distance_threshold={self._distance_threshold}"
+                "stage=semantic_cluster "
+                f"category={category} "
+                f"articles={len(articles)} "
+                f"distance_threshold={self._distance_threshold}"
             )
             raise
 
@@ -78,34 +89,43 @@ class ArticleClusterService:
                     return await self._client.beta.chat.completions.parse(
                         model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
                         temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
+                        response_format=StoryClusterReviewSchema,
                         messages=[
-                            {"role": "system", "content": STORY_CLUSTER_REVIEW_PROMPT},
+                            {
+                                "role": "system",
+                                "content": build_story_cluster_review_prompt(
+                                    category=category
+                                ),
+                            },
                             {
                                 "role": "user",
                                 "content": json.dumps(
-                                    [
-                                        {
-                                            "article_id": item.article.article_id,
-                                            "title_zh": item.article.title_zh,
-                                            "summary_zh": item.article.summary_zh,
-                                            "tags": item.article.tags,
-                                            "brands": item.article.brands,
-                                            "category_candidates": item.article.category_candidates,
-                                            "source_name": item.article.source_name,
-                                        }
-                                        for item in cluster
-                                    ],
+                                    {
+                                        "category": category,
+                                        "articles": [
+                                            {
+                                                "article_id": item.article.article_id,
+                                                "title_zh": item.article.title_zh,
+                                                "summary_zh": item.article.summary_zh,
+                                                "tags": item.article.tags,
+                                                "brands": item.article.brands,
+                                                "categories": item.article.categories,
+                                                "source_name": item.article.source_name,
+                                            }
+                                            for item in cluster
+                                        ],
+                                    },
                                     ensure_ascii=False,
                                     indent=2,
                                     sort_keys=True,
                                 ),
                             },
                         ],
-                        response_format=StoryClusterReviewSchema,
                     )
                 except Exception as exc:
                     exc.add_note(
                         "stage=cluster_review "
+                        f"category={category} "
                         f"cluster_index={cluster_index} "
                         f"cluster_size={len(cluster)} "
                         f"article_ids={[item.article.article_id for item in cluster]}"

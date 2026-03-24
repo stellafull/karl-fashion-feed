@@ -24,10 +24,15 @@ from backend.app.service.article_cluster_service import ArticleClusterService, E
 from backend.app.service.article_collection_service import ArticleCollectionService, CollectionResult
 from backend.app.service.article_enrichment_service import ArticleEnrichmentService, EnrichedArticle
 from backend.app.service.article_parse_service import ArticleParseService, ParseResult
+from backend.app.schemas.llm.story_taxonomy import ALLOWED_STORY_CATEGORIES, StoryCategory
 from backend.app.service.image_analysis_service import ImageAnalysisService
 from backend.app.service.RAG.article_rag_service import ArticleRagService, RagInsertResult
 from backend.app.service.RAG.embedding_service import generate_article_summary_embeddings
-from backend.app.service.story_generation_service import StoryDraft, StoryGenerationService
+from backend.app.service.story_generation_service import (
+    CategoryScopedCluster,
+    StoryDraft,
+    StoryGenerationService,
+)
 
 
 BEIJING_TIMEZONE = ZoneInfo("Asia/Shanghai")
@@ -89,6 +94,7 @@ class SchedulerService:
                 and bool((article.title_zh or "").strip())
                 and bool((article.summary_zh or "").strip())
                 and bool((article.cluster_text or "").strip())
+                and self._enrichment_service.has_valid_categories(article)
             ):
                 skipped_existing += 1
                 continue
@@ -187,7 +193,9 @@ class SchedulerService:
             raise
 
         try:
-            clusters = await self._cluster_service.cluster_articles(embedded_articles)
+            category_scoped_clusters = await self._cluster_publishable_articles(
+                embedded_articles
+            )
         except Exception as exc:
             exc.add_note(
                 f"stage=semantic_cluster publishable_records={len(publishable_records)}"
@@ -195,10 +203,12 @@ class SchedulerService:
             raise
 
         try:
-            story_drafts = await self._story_generation_service.generate_stories(clusters)
+            story_drafts = await self._story_generation_service.generate_stories(
+                category_scoped_clusters
+            )
         except Exception as exc:
             exc.add_note(
-                f"stage=story_generation clusters={len(clusters)}"
+                f"stage=story_generation clusters={len(category_scoped_clusters)}"
             )
             raise
         return tuple(publishable_records), watermark, tuple(story_drafts)
@@ -482,6 +492,36 @@ class SchedulerService:
             EmbeddedArticle(article=record, embedding=embedding)
             for record, embedding in zip(records, embeddings, strict=True)
         ]
+
+    async def _cluster_publishable_articles(
+        self,
+        embedded_articles: list[EmbeddedArticle],
+    ) -> list[CategoryScopedCluster]:
+        category_buckets: dict[StoryCategory, list[EmbeddedArticle]] = {
+            category: [] for category in ALLOWED_STORY_CATEGORIES
+        }
+        for embedded_article in embedded_articles:
+            for category in embedded_article.article.categories:
+                category_buckets[category].append(embedded_article)
+
+        category_scoped_clusters: list[CategoryScopedCluster] = []
+        for category in ALLOWED_STORY_CATEGORIES:
+            bucket_articles = category_buckets[category]
+            if not bucket_articles:
+                continue
+            clusters = await self._cluster_service.cluster_articles(
+                bucket_articles,
+                category=category,
+            )
+            category_scoped_clusters.extend(
+                CategoryScopedCluster(
+                    category=category,
+                    articles=tuple(cluster),
+                )
+                for cluster in clusters
+            )
+
+        return category_scoped_clusters
 
     def _load_publishable_records(
         self,

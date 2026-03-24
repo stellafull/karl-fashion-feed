@@ -114,7 +114,7 @@ class Article(Base):
     )
     tags_json: Mapped[list | None] = mapped_column(JSON, nullable=True, default=list)
     brands_json: Mapped[list | None] = mapped_column(JSON, nullable=True, default=list)
-    category_candidates_json: Mapped[list | None] = mapped_column(
+    categories_json: Mapped[list | None] = mapped_column(
         JSON,
         nullable=True,
         default=list,
@@ -215,8 +215,14 @@ def ensure_article_storage_schema(bind: Engine) -> None:
         missing_statements.append("ALTER TABLE article ADD COLUMN tags_json JSON")
     if "brands_json" not in existing_columns:
         missing_statements.append("ALTER TABLE article ADD COLUMN brands_json JSON")
-    if "category_candidates_json" not in existing_columns:
-        missing_statements.append("ALTER TABLE article ADD COLUMN category_candidates_json JSON")
+    if "category_candidates_json" in existing_columns and "categories_json" not in existing_columns:
+        missing_statements.append(
+            "ALTER TABLE article RENAME COLUMN category_candidates_json TO categories_json"
+        )
+        existing_columns.remove("category_candidates_json")
+        existing_columns.add("categories_json")
+    if "categories_json" not in existing_columns:
+        missing_statements.append("ALTER TABLE article ADD COLUMN categories_json JSON")
     if "cluster_text" not in existing_columns:
         missing_statements.append("ALTER TABLE article ADD COLUMN cluster_text TEXT")
     if "enrichment_status" not in existing_columns:

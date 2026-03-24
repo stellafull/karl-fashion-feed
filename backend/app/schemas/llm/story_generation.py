@@ -10,4 +10,3 @@ class StoryGenerationSchema(BaseModel):
     summary_zh: str = Field(min_length=1)
     key_points: list[str] = Field(default_factory=list)
     tags: list[str] = Field(default_factory=list)
-    category: str = Field(min_length=1)

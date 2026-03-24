@@ -2,12 +2,14 @@ import { useMemo, useState } from "react";
 import { AlertCircle, Menu } from "lucide-react";
 import { Route, Switch, useLocation } from "wouter";
 import AppSidebar from "@/components/AppSidebar";
+import LoginScreen from "@/components/LoginScreen";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import { useFeedData } from "@/hooks/useFeedData";
 import { useChatSessions } from "@/hooks/useChatSessions";
-import type { AiAttachment } from "@/lib/ai-demo";
+import type { ChatUploadAttachment } from "@/lib/chat";
 import DiscoverPage from "@/pages/DiscoverPage";
 import ChatPage from "@/pages/ChatPage";
 import StoryPage from "@/pages/StoryPage";
@@ -17,6 +19,15 @@ export default function AppShell() {
   const [location, setLocation] = useLocation();
   const [sidebarExpanded, setSidebarExpanded] = useState(() => location.startsWith("/chat"));
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const {
+    user,
+    hydrated: authHydrated,
+    isAuthenticated,
+    isSubmitting: authSubmitting,
+    error: authError,
+    login,
+    logout,
+  } = useAuth();
   const {
     data,
     loading,
@@ -34,14 +45,14 @@ export default function AppShell() {
     filteredTopics,
   } = useFeedData();
   const topics = data?.topics ?? [];
-  const meta = data?.meta ?? null;
   const {
     hydrated,
+    error: chatError,
     sessions,
     createSession,
     createStorySession,
     sendMessage,
-  } = useChatSessions(topics, meta);
+  } = useChatSessions();
 
   const currentTitle = useMemo(() => {
     if (location.startsWith("/chat")) {
@@ -53,19 +64,21 @@ export default function AppShell() {
     return "Discover";
   }, [location]);
 
-  const createSessionWithAttachments = (question: string, attachments: AiAttachment[] = []) =>
-    createSession(question, attachments);
+  const createSessionWithAttachments = async (
+    question: string,
+    attachments: ChatUploadAttachment[] = []
+  ) => createSession(question, attachments);
 
-  const sendMessageWithAttachments = (
+  const sendMessageWithAttachments = async (
     sessionId: string,
     question: string,
-    attachments: AiAttachment[] = []
+    attachments: ChatUploadAttachment[] = []
   ) => sendMessage(sessionId, question, attachments);
 
-  const createStorySessionWithAttachments = (
+  const createStorySessionWithAttachments = async (
     topic: (typeof topics)[number],
     question: string,
-    attachments: AiAttachment[] = []
+    attachments: ChatUploadAttachment[] = []
   ) => createStorySession(topic, question, attachments);
 
   const openDiscover = () => {
@@ -89,18 +102,32 @@ export default function AppShell() {
     setMobileSidebarOpen(false);
   };
 
+  if (!authHydrated) {
+    return <LoadingSkeleton />;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <LoginScreen
+        isSubmitting={authSubmitting}
+        error={authError}
+        onSubmit={login}
+      />
+    );
+  }
+
   if (loading || !hydrated) {
     return <LoadingSkeleton />;
   }
 
-  if (error || !data) {
+  if (error || chatError || !data) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f7f3eb] px-6">
         <div className="max-w-md space-y-4 text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-[#9f7d45]" />
           <h1 className="font-display text-4xl text-[#2b241d]">无法加载资讯</h1>
           <p className="text-base leading-7 text-[#665f56]">
-            {error || "数据加载失败，请稍后刷新页面重试。"}
+            {error || chatError || "数据加载失败，请稍后刷新页面重试。"}
           </p>
           <Button onClick={() => window.location.reload()}>刷新页面</Button>
         </div>
@@ -114,12 +141,14 @@ export default function AppShell() {
         <AppSidebar
           expanded={sidebarExpanded}
           sessions={sessions}
+          currentUserLabel={user?.display_name || user?.login_name || "Local User"}
           activePath={location}
           onExpandedChange={setSidebarExpanded}
           onOpenDiscover={openDiscover}
           onOpenNewChat={openNewChat}
           onOpenHistory={openHistory}
           onSelectSession={selectSession}
+          onLogout={logout}
         />
       </div>
 
@@ -129,12 +158,14 @@ export default function AppShell() {
             mobile
             expanded
             sessions={sessions}
+            currentUserLabel={user?.display_name || user?.login_name || "Local User"}
             activePath={location}
             onExpandedChange={setSidebarExpanded}
             onOpenDiscover={openDiscover}
             onOpenNewChat={openNewChat}
             onOpenHistory={openHistory}
             onSelectSession={selectSession}
+            onLogout={logout}
           />
         </SheetContent>
       </Sheet>

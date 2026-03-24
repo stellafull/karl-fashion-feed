@@ -7,9 +7,11 @@ from dataclasses import dataclass
 import json
 
 from openai import AsyncOpenAI
+
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
-from backend.app.prompts.story_generation_prompt import STORY_GENERATION_PROMPT
+from backend.app.prompts.story_generation_prompt import build_story_generation_prompt
 from backend.app.schemas.llm.story_generation import StoryGenerationSchema
+from backend.app.schemas.llm.story_taxonomy import StoryCategory
 from backend.app.service.article_cluster_service import EmbeddedArticle
 
 
@@ -19,10 +21,16 @@ class StoryDraft:
     summary_zh: str
     key_points: tuple[str, ...]
     tags: tuple[str, ...]
-    category: str
+    category: StoryCategory
     article_ids: tuple[str, ...]
     hero_image_url: str | None
     source_article_count: int
+
+
+@dataclass(frozen=True)
+class CategoryScopedCluster:
+    category: StoryCategory
+    articles: tuple[EmbeddedArticle, ...]
 
 
 class StoryGenerationService:
@@ -38,7 +46,7 @@ class StoryGenerationService:
 
     async def generate_story(
         self,
-        cluster: list[EmbeddedArticle],
+        cluster: CategoryScopedCluster,
         *,
         cluster_index: int | None = None,
     ) -> StoryDraft:
@@ -49,10 +57,10 @@ class StoryGenerationService:
                 "summary_zh": item.article.summary_zh,
                 "tags": item.article.tags,
                 "brands": item.article.brands,
-                "category_candidates": item.article.category_candidates,
+                "categories": item.article.categories,
                 "source_name": item.article.source_name,
             }
-            for item in cluster
+            for item in cluster.articles
         ]
         try:
             response = await self._client.beta.chat.completions.parse(
@@ -60,39 +68,53 @@ class StoryGenerationService:
                 temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
                 response_format=StoryGenerationSchema,
                 messages=[
-                    {"role": "system", "content": STORY_GENERATION_PROMPT},
+                    {
+                        "role": "system",
+                        "content": build_story_generation_prompt(
+                            category=cluster.category
+                        ),
+                    },
                     {
                         "role": "user",
-                        "content": json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True),
+                        "content": json.dumps(
+                            {
+                                "category": cluster.category,
+                                "articles": payload,
+                            },
+                            ensure_ascii=False,
+                            indent=2,
+                            sort_keys=True,
+                        ),
                     },
                 ],
             )
         except Exception as exc:
             exc.add_note(
                 "stage=story_generation_request "
+                f"category={cluster.category} "
                 f"cluster_index={cluster_index} "
-                f"cluster_size={len(cluster)} "
-                f"article_ids={[item.article.article_id for item in cluster]}"
+                f"cluster_size={len(cluster.articles)} "
+                f"article_ids={[item.article.article_id for item in cluster.articles]}"
             )
             raise
         result = response.choices[0].message.parsed
         if result is None:
             raise ValueError("story generation response missing parsed payload")
-        lead = cluster[0].article
+        lead = cluster.articles[0].article
         return StoryDraft(
             title_zh=result.title_zh.strip(),
             summary_zh=result.summary_zh.strip(),
             key_points=tuple(point.strip() for point in result.key_points if point.strip()),
             tags=tuple(tag.strip() for tag in result.tags if tag.strip()),
-            category=result.category.strip(),
-            article_ids=tuple(item.article.article_id for item in cluster),
+            category=cluster.category,
+            article_ids=tuple(item.article.article_id for item in cluster.articles),
             hero_image_url=lead.hero_image_url,
-            source_article_count=len(cluster),
+            source_article_count=len(cluster.articles),
         )
 
     async def generate_stories(
         self,
-        clusters: list[list[EmbeddedArticle]],
+        clusters: list[CategoryScopedCluster],
     ) -> list[StoryDraft]:
         if not clusters:
             return []

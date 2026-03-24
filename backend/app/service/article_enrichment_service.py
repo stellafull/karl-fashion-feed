@@ -13,6 +13,11 @@ from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
 from backend.app.models import Article
 from backend.app.prompts.article_enrichment_prompt import ARTICLE_ENRICHMENT_PROMPT
 from backend.app.schemas.llm.article_enrichment import ArticleEnrichmentSchema
+from backend.app.schemas.llm.story_taxonomy import (
+    MAX_ARTICLE_CATEGORIES,
+    StoryCategory,
+    sort_story_categories,
+)
 from backend.app.service.article_parse_service import ArticleMarkdownService
 
 MAX_ENRICHMENT_ATTEMPTS = 3
@@ -25,7 +30,7 @@ class EnrichedArticle:
     summary_zh: str
     tags: tuple[str, ...]
     brands: tuple[str, ...]
-    category_candidates: tuple[str, ...]
+    categories: tuple[StoryCategory, ...]
     cluster_text: str
     published_at: datetime | None
     ingested_at: datetime
@@ -48,6 +53,7 @@ class ArticleEnrichmentService:
             and bool((article.title_zh or "").strip())
             and bool((article.summary_zh or "").strip())
             and bool((article.cluster_text or "").strip())
+            and self.has_valid_categories(article)
         ):
             return False
         if article.enrichment_status == "abandoned":
@@ -123,17 +129,11 @@ class ArticleEnrichmentService:
                 seen_brands.add(lowered)
                 brands.append(value)
 
-            category_candidates: list[str] = []
-            seen_categories: set[str] = set()
-            for raw in result.category_candidates:
-                value = raw.strip()
-                if not value:
-                    continue
-                lowered = value.casefold()
-                if lowered in seen_categories:
-                    continue
-                seen_categories.add(lowered)
-                category_candidates.append(value)
+            categories = sort_story_categories(result.categories)
+            if not categories:
+                raise ValueError(
+                    f"article enrichment categories are empty: {article.article_id}"
+                )
             reject_reason = (result.reject_reason or "").strip()
 
             article.should_publish = result.should_publish
@@ -142,7 +142,7 @@ class ArticleEnrichmentService:
             article.summary_zh = summary_zh
             article.tags_json = tags
             article.brands_json = brands
-            article.category_candidates_json = category_candidates
+            article.categories_json = categories
             article.cluster_text = "\n".join(
                 part
                 for part in (
@@ -150,7 +150,7 @@ class ArticleEnrichmentService:
                     summary_zh,
                     " ".join(tags),
                     " ".join(brands),
-                    " ".join(category_candidates),
+                    " ".join(categories),
                     article.source_name.strip(),
                 )
                 if part
@@ -174,6 +174,24 @@ class ArticleEnrichmentService:
         return True
 
     @staticmethod
+    def has_valid_categories(article: Article) -> bool:
+        """Return whether the persisted article categories are valid."""
+        if not isinstance(article.categories_json, list):
+            return False
+
+        raw_categories = [
+            str(item).strip() for item in article.categories_json if str(item).strip()
+        ]
+        if not raw_categories:
+            return False
+
+        normalized_categories = sort_story_categories(raw_categories)
+        return (
+            len(normalized_categories) == len(raw_categories)
+            and len(normalized_categories) <= MAX_ARTICLE_CATEGORIES
+        )
+
+    @staticmethod
     def to_record(article: Article) -> EnrichedArticle:
         title_zh = (article.title_zh or "").strip()
         summary_zh = (article.summary_zh or "").strip()
@@ -193,11 +211,15 @@ class ArticleEnrichmentService:
         if isinstance(article.brands_json, list):
             brands = tuple(str(item).strip() for item in article.brands_json if str(item).strip())
 
-        category_candidates = ()
-        if isinstance(article.category_candidates_json, list):
-            category_candidates = tuple(
-                str(item).strip() for item in article.category_candidates_json if str(item).strip()
+        if not ArticleEnrichmentService.has_valid_categories(article):
+            raise ValueError(f"missing categories for enriched article: {article.article_id}")
+        categories = tuple(
+            sort_story_categories(
+                str(item).strip()
+                for item in article.categories_json
+                if str(item).strip()
             )
+        )
 
         return EnrichedArticle(
             article_id=article.article_id,
@@ -205,7 +227,7 @@ class ArticleEnrichmentService:
             summary_zh=summary_zh,
             tags=tags,
             brands=brands,
-            category_candidates=category_candidates,
+            categories=categories,
             cluster_text=cluster_text,
             published_at=article.published_at,
             ingested_at=article.ingested_at,

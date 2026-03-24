@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { nanoid } from "nanoid";
-import type { AiAttachment } from "@/lib/ai-demo";
+import type { ChatUploadAttachment } from "@/lib/chat";
 
 export interface PendingImageAttachment {
   id: string;
@@ -10,15 +10,6 @@ export interface PendingImageAttachment {
 
 function isImageFile(file: File) {
   return file.type.startsWith("image/");
-}
-
-function readFileAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
-    reader.onerror = () => reject(reader.error ?? new Error(`Failed to read ${file.name}`));
-    reader.readAsDataURL(file);
-  });
 }
 
 export function useImageAttachments() {
@@ -81,16 +72,15 @@ export function useImageAttachments() {
     });
   };
 
-  const buildOutgoingAttachments = async (): Promise<AiAttachment[]> => {
-    return Promise.all(
-      attachments.map(async (attachment) => ({
-        id: attachment.id,
-        name: attachment.file.name,
-        mimeType: attachment.file.type,
-        size: attachment.file.size,
-        dataUrl: await readFileAsDataUrl(attachment.file),
-      }))
-    );
+  const buildOutgoingAttachments = (): ChatUploadAttachment[] => {
+    return attachments.map((attachment) => ({
+      id: attachment.id,
+      file: attachment.file,
+      previewUrl: attachment.previewUrl,
+      name: attachment.file.name,
+      mimeType: attachment.file.type,
+      size: attachment.file.size,
+    }));
   };
 
   const resetAttachments = () => {

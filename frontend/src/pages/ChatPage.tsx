@@ -1,18 +1,25 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
 import { useLocation } from "wouter";
-import type { AiAttachment, AiSession } from "@/lib/ai-demo";
+import ChatAnswerContent from "@/components/ChatAnswerContent";
 import { Button } from "@/components/ui/button";
 import ChatComposer from "@/components/ChatComposer";
 import { useImageAttachments } from "@/hooks/useImageAttachments";
+import type { ChatSession, ChatUploadAttachment } from "@/lib/chat";
 import { cn } from "@/lib/utils";
 import { formatChinaDateTimeShort } from "@/lib/time";
 
 interface ChatPageProps {
   sessionId?: string;
-  sessions: AiSession[];
-  onCreateSession: (question: string, attachments?: AiAttachment[]) => string | null;
-  onSendMessage: (sessionId: string, question: string, attachments?: AiAttachment[]) => void;
+  sessions: ChatSession[];
+  onCreateSession: (
+    question: string,
+    attachments?: ChatUploadAttachment[]
+  ) => Promise<string | null>;
+  onSendMessage: (
+    sessionId: string,
+    question: string,
+    attachments?: ChatUploadAttachment[]
+  ) => Promise<void>;
 }
 
 export default function ChatPage({
@@ -53,10 +60,10 @@ export default function ChatPage({
 
     try {
       setIsSubmitting(true);
-      const attachments = await buildOutgoingAttachments();
+      const attachments = buildOutgoingAttachments();
 
       if (!sessionId) {
-        const nextSessionId = onCreateSession(question, attachments);
+        const nextSessionId = await onCreateSession(question, attachments);
         if (nextSessionId) {
           setLocation(`/chat/${nextSessionId}`);
         }
@@ -64,7 +71,7 @@ export default function ChatPage({
         return;
       }
 
-      onSendMessage(sessionId, question, attachments);
+      await onSendMessage(sessionId, question, attachments);
       resetComposer();
     } finally {
       setIsSubmitting(false);
@@ -95,14 +102,12 @@ export default function ChatPage({
             </p>
           </div>
           <div className="rounded-full border border-[#ddd4c7] bg-white px-3 py-1 text-xs text-[#7d766d]">
-            {session?.scope?.type === "story"
-              ? `Story context · ${session.scope.topicTitle}`
-              : "Fashion Feed Knowledge"}
+            {session ? "Persistent backend session" : "Fashion Feed Knowledge"}
           </div>
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-6 pb-44 md:px-8 md:pb-52">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-5 pb-40 md:px-8 md:pb-48">
         {!session && (
           <div className="flex min-h-full items-center justify-center py-12">
             <div className="w-full max-w-3xl text-center">
@@ -118,7 +123,7 @@ export default function ChatPage({
         )}
 
         {session && (
-          <div className="mx-auto w-full max-w-4xl space-y-10 py-4">
+          <div className="mx-auto w-full max-w-[56rem] space-y-6 py-3">
             {session.messages.map((message) => (
               <div
                 key={message.id}
@@ -128,23 +133,23 @@ export default function ChatPage({
                   className={cn(
                     "w-full max-w-3xl",
                     message.role === "user"
-                      ? "max-w-2xl rounded-[24px] bg-[#f1e8da] px-5 py-4 text-[#1f1c18]"
+                      ? "max-w-[46rem] rounded-[22px] bg-[#f1e8da] px-4 py-3.5 text-[#1f1c18]"
                       : "text-[#1f1c18]"
                   )}
                 >
-                  <div className="mb-3 text-[11px] uppercase tracking-[0.18em] text-[#8a8379]">
+                  <div className="mb-2 text-[11px] uppercase tracking-[0.18em] text-[#8a8379]">
                     {message.role === "user" ? "You" : "Fashion Feed AI"}
                   </div>
-                  <div className="whitespace-pre-line text-[15px] leading-8">
-                    {message.attachments && message.attachments.length > 0 && (
-                      <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  <div className={message.role === "assistant" ? "" : "whitespace-pre-line text-[15px] leading-7"}>
+                    {message.attachments.length > 0 && (
+                      <div className="mb-2.5 grid grid-cols-2 gap-2 sm:grid-cols-3">
                         {message.attachments.map((attachment) => (
                           <div
                             key={attachment.id}
-                            className="overflow-hidden rounded-2xl border border-black/10 bg-black/5"
+                            className="overflow-hidden rounded-[18px] border border-black/10 bg-black/5"
                           >
                             <img
-                              src={attachment.dataUrl}
+                              src={attachment.url}
                               alt={attachment.name}
                               className="aspect-square w-full object-cover"
                               loading="lazy"
@@ -154,44 +159,28 @@ export default function ChatPage({
                       </div>
                     )}
                     {message.content && (
-                      <div className="whitespace-pre-line text-[15px] leading-8">
-                        {message.content}
+                      message.role === "assistant" ? (
+                        <ChatAnswerContent
+                          content={message.content}
+                          citations={message.citations}
+                        />
+                      ) : (
+                        <div className="whitespace-pre-line text-[15px] leading-7">
+                          {message.content}
+                        </div>
+                      )
+                    )}
+                    {!message.content && message.role === "assistant" && (
+                      <div className="text-[15px] leading-7 text-[#6d655b]">
+                        {message.status === "failed"
+                          ? message.errorMessage || "回答失败，请稍后重试。"
+                          : "正在生成回答..."}
                       </div>
                     )}
                   </div>
-                  <div className="mt-3 text-xs text-[#8a8379]">
+                  <div className="mt-2.5 text-[11px] text-[#8a8379]">
                     {formatChinaDateTimeShort(message.createdAt)}
                   </div>
-                  {message.role === "assistant" &&
-                    message.citations &&
-                    message.citations.length > 0 && (
-                      <div className="mt-4 grid gap-2">
-                        {message.citations.map((citation) => (
-                          <a
-                            key={citation.id}
-                            href={citation.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-2xl border border-[#e4dccf] bg-[#faf7f1] px-4 py-3 transition-colors hover:border-[#c8b18a]"
-                          >
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <p className="text-xs font-medium text-[#1f1c18]">
-                                  {citation.topicTitle}
-                                </p>
-                                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[#6d655b]">
-                                  {citation.sourceTitle}
-                                </p>
-                                <p className="mt-2 text-[11px] text-[#8b8479]">
-                                  {citation.sourceName} · {citation.note}
-                                </p>
-                              </div>
-                              <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-[#9f7d45]" />
-                            </div>
-                          </a>
-                        ))}
-                      </div>
-                    )}
                 </div>
               </div>
             ))}
@@ -205,9 +194,7 @@ export default function ChatPage({
         onDraftChange={setDraft}
         onSubmit={handleSubmit}
         placeholder={
-          session?.scope?.type === "story"
-            ? `Continue asking about ${session.scope.topicTitle}...`
-            : "Ask anything about fashion trends, brands, or recent signals..."
+          "Ask anything about fashion trends, brands, or recent signals..."
         }
         statusLabel="Thinking"
         submitLabel="Send"

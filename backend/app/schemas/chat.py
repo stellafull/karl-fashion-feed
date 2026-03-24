@@ -15,6 +15,16 @@ class CreateMessageResponse(BaseModel):
     assistant_message_id: str
 
 
+class StreamMessageStartResponse(BaseModel):
+    """Initial payload emitted by the chat streaming endpoint."""
+
+    chat_session_id: str
+    session_title: str
+    session_updated_at: datetime
+    user_message: MessageResponse
+    assistant_message: MessageResponse
+
+
 class AttachmentResponse(BaseModel):
     """Attachment metadata response."""
 

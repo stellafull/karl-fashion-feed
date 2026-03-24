@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Callable
+import re
+from urllib.parse import urlparse
+from collections.abc import Awaitable, Callable
 from typing import Any
 
 from openai import AsyncOpenAI
@@ -22,6 +24,8 @@ from backend.app.schemas.rag_query import ArticlePackage, QueryResult, Retrieval
 from backend.app.service.RAG.rag_tools import RagTools, ToolExecutionResult
 
 MAX_TOOL_CALLS = 3
+CITATION_MARKER_PATTERN = re.compile(r"\[([A-Za-z]\d+)\]")
+AsyncDeltaHandler = Callable[[str], Awaitable[None]]
 
 
 class RagAnswerService:
@@ -62,48 +66,123 @@ class RagAnswerService:
 
         Args:
             request: RAG query request
-            request_context: Request context with filters and image
+            request_context: Request context with filters and uploaded images
             conversation_compact: Compressed conversation history (for chat worker)
             recent_messages: Recent 5 messages (for chat worker)
             user_memories: User's long-term memories (for chat worker)
         """
+        packages, query_plans, unique_web_results, citations = await self._collect_answer_materials(
+            request=request,
+            request_context=request_context,
+            conversation_compact=conversation_compact,
+            recent_messages=recent_messages,
+            user_memories=user_memories,
+        )
+        answer = await self._synthesize_answer(
+            request=request,
+            request_context=request_context,
+            packages=packages,
+            web_results=unique_web_results,
+            citations=citations,
+        )
+        answer = self._normalize_answer_citation_markers(answer, citations)
+        return RagAnswerResponse(
+            answer=answer,
+            citations=citations,
+            packages=packages,
+            query_plans=query_plans,
+            web_results=unique_web_results,
+        )
+
+    async def answer_stream(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        conversation_compact: str | None = None,
+        recent_messages: list[dict] | None = None,
+        user_memories: list[dict] | None = None,
+        on_delta: AsyncDeltaHandler,
+    ) -> RagAnswerResponse:
+        """Execute retrieval first, then stream answer synthesis deltas."""
+        packages, query_plans, unique_web_results, citations = await self._collect_answer_materials(
+            request=request,
+            request_context=request_context,
+            conversation_compact=conversation_compact,
+            recent_messages=recent_messages,
+            user_memories=user_memories,
+        )
+        answer = await self._synthesize_answer_stream(
+            request=request,
+            request_context=request_context,
+            packages=packages,
+            web_results=unique_web_results,
+            citations=citations,
+            on_delta=on_delta,
+        )
+        answer = self._normalize_answer_citation_markers(answer, citations)
+        return RagAnswerResponse(
+            answer=answer,
+            citations=citations,
+            packages=packages,
+            query_plans=query_plans,
+            web_results=unique_web_results,
+        )
+
+    async def _collect_answer_materials(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        conversation_compact: str | None,
+        recent_messages: list[dict] | None,
+        user_memories: list[dict] | None,
+    ) -> tuple[
+        list[ArticlePackage],
+        list[Any],
+        list[WebSearchResult],
+        list[AnswerCitation],
+    ]:
         rag_tools = self._tools_factory(request_context)
         messages = [
             {"role": "system", "content": RAG_TOOL_LOOP_PROMPT},
         ]
 
-        # Add conversation context if provided (for chat mode)
         if conversation_compact or recent_messages or user_memories:
             context_parts = []
             if conversation_compact:
                 context_parts.append(f"历史对话摘要：{conversation_compact}")
             if user_memories:
-                memories_text = "\n".join([
-                    f"- {mem['type']}/{mem['key']}: {mem['value']}"
-                    for mem in user_memories
-                ])
+                memories_text = "\n".join(
+                    [
+                        f"- {mem['type']}/{mem['key']}: {mem['value']}"
+                        for mem in user_memories
+                    ]
+                )
                 context_parts.append(f"用户记忆：\n{memories_text}")
             if recent_messages:
-                messages_text = "\n".join([
-                    f"{msg['role']}: {msg['content']}"
-                    for msg in recent_messages
-                ])
+                messages_text = "\n".join(
+                    [f"{msg['role']}: {msg['content']}" for msg in recent_messages]
+                )
                 context_parts.append(f"最近对话：\n{messages_text}")
 
             if context_parts:
-                messages.append({
-                    "role": "user",
-                    "content": "\n\n".join(context_parts)
-                })
+                messages.append(
+                    {
+                        "role": "user",
+                        "content": "\n\n".join(context_parts),
+                    }
+                )
 
-        # Add current user query
-        messages.append({
-            "role": "user",
-            "content": self._build_tool_loop_user_content(
-                request=request,
-                request_context=request_context,
-            ),
-        })
+        messages.append(
+            {
+                "role": "user",
+                "content": self._build_tool_loop_user_content(
+                    request=request,
+                    request_context=request_context,
+                ),
+            }
+        )
         rag_results: list[QueryResult] = []
         web_results: list[WebSearchResult] = []
         tool_call_count = 0
@@ -148,21 +227,11 @@ class RagAnswerService:
         packages = self._merge_rag_packages(rag_results)
         query_plans = [result.query_plan for result in rag_results]
         unique_web_results = self._deduplicate_web_results(web_results)
-        citations = self._build_citations(packages=packages, web_results=unique_web_results)
-        answer = await self._synthesize_answer(
-            request=request,
-            request_context=request_context,
+        citations = self._build_citations(
             packages=packages,
             web_results=unique_web_results,
-            citations=citations,
         )
-        return RagAnswerResponse(
-            answer=answer,
-            citations=citations,
-            packages=packages,
-            query_plans=query_plans,
-            web_results=unique_web_results,
-        )
+        return packages, query_plans, unique_web_results, citations
 
     def _build_tool_loop_user_content(
         self,
@@ -177,11 +246,11 @@ class RagAnswerService:
         content: list[dict[str, object]] = [
             {"type": "text", "text": "\n".join(text_parts)},
         ]
-        if request_context.request_image is not None:
+        for request_image in request_context.request_images:
             content.append(
                 {
                     "type": "image_url",
-                    "image_url": {"url": request_context.request_image.to_data_url()},
+                    "image_url": {"url": request_image.to_data_url()},
                 }
             )
         return content
@@ -328,12 +397,13 @@ class RagAnswerService:
                     rag_index += 1
 
         for index, web_result in enumerate(web_results, start=1):
+            parsed_url = urlparse(web_result.url)
             citations.append(
                 AnswerCitation(
                     marker=f"W{index}",
                     source_type="web",
                     title=web_result.title,
-                    source_name="Brave Search",
+                    source_name=parsed_url.netloc or web_result.url,
                     url=web_result.url,
                     snippet=web_result.snippet,
                 )
@@ -351,10 +421,20 @@ class RagAnswerService:
     ) -> str:
         synthesis_payload = {
             "user_query": request.query or "",
-            "has_request_image": request_context.has_request_image,
+            "has_request_images": request_context.has_request_images,
+            "request_image_count": len(request_context.request_images),
             "rag_packages": [package.model_dump() for package in packages],
             "web_results": [result.model_dump() for result in web_results],
-            "citations": [citation.model_dump() for citation in citations],
+            "citations": [
+                {
+                    "marker": citation.marker,
+                    "title": citation.title,
+                    "source_name": citation.source_name,
+                    "url": citation.url,
+                    "snippet": citation.snippet,
+                }
+                for citation in citations
+            ],
         }
         content: list[dict[str, object]] = [
             {
@@ -367,11 +447,11 @@ class RagAnswerService:
                 ),
             }
         ]
-        if request_context.request_image is not None:
+        for request_image in request_context.request_images:
             content.append(
                 {
                     "type": "image_url",
-                    "image_url": {"url": request_context.request_image.to_data_url()},
+                    "image_url": {"url": request_image.to_data_url()},
                 }
             )
 
@@ -387,6 +467,114 @@ class RagAnswerService:
         if not answer:
             raise ValueError("rag answer synthesis returned empty content")
         return answer
+
+    async def _synthesize_answer_stream(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        packages: list[ArticlePackage],
+        web_results: list[WebSearchResult],
+        citations: list[AnswerCitation],
+        on_delta: AsyncDeltaHandler,
+    ) -> str:
+        synthesis_payload = {
+            "user_query": request.query or "",
+            "has_request_images": request_context.has_request_images,
+            "request_image_count": len(request_context.request_images),
+            "rag_packages": [package.model_dump() for package in packages],
+            "web_results": [result.model_dump() for result in web_results],
+            "citations": [
+                {
+                    "marker": citation.marker,
+                    "title": citation.title,
+                    "source_name": citation.source_name,
+                    "url": citation.url,
+                    "snippet": citation.snippet,
+                }
+                for citation in citations
+            ],
+        }
+        content: list[dict[str, object]] = [
+            {
+                "type": "text",
+                "text": json.dumps(
+                    synthesis_payload,
+                    ensure_ascii=False,
+                    indent=2,
+                    sort_keys=True,
+                ),
+            }
+        ]
+        for request_image in request_context.request_images:
+            content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": request_image.to_data_url()},
+                }
+            )
+
+        stream = await self._client.chat.completions.create(
+            model=RAG_CHAT_MODEL_CONFIG.model_name,
+            temperature=RAG_CHAT_MODEL_CONFIG.temperature,
+            messages=[
+                {"role": "system", "content": RAG_ANSWER_SYNTHESIS_PROMPT},
+                {"role": "user", "content": content},
+            ],
+            stream=True,
+        )
+        answer_parts: list[str] = []
+        async for chunk in stream:
+            for choice in chunk.choices:
+                delta_text = choice.delta.content or ""
+                if not delta_text:
+                    continue
+                answer_parts.append(delta_text)
+                await on_delta(delta_text)
+
+        answer = "".join(answer_parts).strip()
+        if not answer:
+            raise ValueError("rag answer synthesis returned empty content")
+        return answer
+
+    def _normalize_answer_citation_markers(
+        self,
+        answer: str,
+        citations: list[AnswerCitation],
+    ) -> str:
+        if not answer or not citations:
+            return answer
+
+        marker_by_lower = {
+            citation.marker.casefold(): citation.marker
+            for citation in citations
+        }
+
+        normalized_parts: list[str] = []
+        last_index = 0
+        for match in CITATION_MARKER_PATTERN.finditer(answer):
+            normalized_parts.append(answer[last_index:match.start()])
+            marker = marker_by_lower.get(match.group(1).casefold())
+            if marker is not None:
+                normalized_parts.append(f"[{marker}]")
+            last_index = match.end()
+
+        normalized_parts.append(answer[last_index:])
+        normalized_answer = "".join(normalized_parts)
+
+        for citation in citations:
+            marker_token = f"[{citation.marker}]"
+            duplicate_pattern = re.compile(
+                rf"{re.escape(marker_token)}(?:\s*{re.escape(marker_token)})+"
+            )
+            normalized_answer = duplicate_pattern.sub(
+                marker_token,
+                normalized_answer,
+            )
+
+        normalized_answer = re.sub(r"[ \t]+\n", "\n", normalized_answer)
+        normalized_answer = re.sub(r"\n{3,}", "\n\n", normalized_answer)
+        return normalized_answer.strip()
 
     def _extract_message_content(self, content: Any) -> str:
         if isinstance(content, str):

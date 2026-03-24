@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 
 from qdrant_client.http import models
@@ -58,7 +58,7 @@ class QueryService:
         self,
         query_plan: QueryPlan,
         *,
-        request_image: RequestImageInput | None = None,
+        request_images: Sequence[RequestImageInput] | None = None,
     ) -> QueryResult:
         """Execute one retrieval plan and return structured evidence."""
         if query_plan.plan_type == "text_only":
@@ -73,7 +73,10 @@ class QueryService:
             )
 
         if query_plan.plan_type == "image_only":
-            image_results = self._execute_image_lane(query_plan, request_image=request_image)
+            image_results = self._execute_image_lane(
+                query_plan,
+                request_images=request_images,
+            )
             packages = self._build_packages(text_results=[], image_results=image_results)
             return QueryResult(
                 query_plan=query_plan,
@@ -89,7 +92,7 @@ class QueryService:
                 image_future = executor.submit(
                     self._execute_image_lane,
                     query_plan,
-                    request_image=request_image,
+                    request_images=request_images,
                 )
                 text_results = text_future.result()
                 image_results = image_future.result()
@@ -132,31 +135,26 @@ class QueryService:
         self,
         query_plan: QueryPlan,
         *,
-        request_image: RequestImageInput | None = None,
+        request_images: Sequence[RequestImageInput] | None = None,
     ) -> list[RetrievalHit]:
         image_query = query_plan.image_query
         text_query = query_plan.text_query
         metadata_filter = self._build_lane_filter(query_plan=query_plan, modality="image")
 
         if image_query is not None:
-            image_input = self._resolve_image_query_input(
+            image_inputs = self._resolve_image_query_inputs(
                 image_query=image_query,
-                request_image=request_image,
+                request_images=request_images,
             )
-            dense_vector = generate_dense_embedding(
-                [IMAGE_QUERY_EMBEDDING_TEXT],
-                image_inputs=[image_input],
-            )[0]
-            scored_points = self._qdrant_service.search_dense(
-                self._collection_name,
-                dense_vector,
-                limit=IMAGE_RECALL_LIMIT,
-                filters=metadata_filter,
+            dense_vectors = generate_dense_embedding(
+                [IMAGE_QUERY_EMBEDDING_TEXT] * len(image_inputs),
+                image_inputs=image_inputs,
             )
-            candidates = [
-                (point, float(point.score))
-                for point in scored_points[: query_plan.limit]
-            ]
+            candidates = self._search_request_image_candidates(
+                dense_vectors=dense_vectors,
+                metadata_filter=metadata_filter,
+                limit=query_plan.limit,
+            )
             return self._build_image_hits(candidates)
 
         if text_query is None:
@@ -180,21 +178,54 @@ class QueryService:
         )
         return self._build_image_hits(reranked_candidates[: query_plan.limit])
 
-    def _resolve_image_query_input(
+    def _resolve_image_query_inputs(
         self,
         *,
         image_query: str,
-        request_image: RequestImageInput | None,
-    ) -> str:
+        request_images: Sequence[RequestImageInput] | None,
+    ) -> list[str]:
         normalized_image_query = image_query.strip()
         if normalized_image_query == REQUEST_IMAGE_REF:
-            if request_image is None:
+            if not request_images:
                 raise ValueError("request_image query requires uploaded request image context")
-            return build_data_url(
-                mime_type=request_image.mime_type,
-                base64_data=request_image.base64_data,
+            return [
+                build_data_url(
+                    mime_type=request_image.mime_type,
+                    base64_data=request_image.base64_data,
+                )
+                for request_image in request_images
+            ]
+        return [normalized_image_query]
+
+    def _search_request_image_candidates(
+        self,
+        *,
+        dense_vectors: list[list[float]],
+        metadata_filter: models.Filter,
+        limit: int,
+    ) -> list[tuple[models.ScoredPoint, float]]:
+        merged_candidates: dict[str, tuple[models.ScoredPoint, float]] = {}
+
+        for dense_vector in dense_vectors:
+            scored_points = self._qdrant_service.search_dense(
+                self._collection_name,
+                dense_vector,
+                limit=IMAGE_RECALL_LIMIT,
+                filters=metadata_filter,
             )
-        return normalized_image_query
+            for point in scored_points:
+                payload = self._require_payload(point)
+                retrieval_unit_id = self._require_str(payload, "retrieval_unit_id")
+                score = float(point.score)
+                existing_candidate = merged_candidates.get(retrieval_unit_id)
+                if existing_candidate is None or score > existing_candidate[1]:
+                    merged_candidates[retrieval_unit_id] = (point, score)
+
+        return sorted(
+            merged_candidates.values(),
+            key=lambda candidate: candidate[1],
+            reverse=True,
+        )[:limit]
 
     def _build_lane_filter(self, *, query_plan: QueryPlan, modality: str) -> models.Filter:
         time_range = query_plan.filters.time_range

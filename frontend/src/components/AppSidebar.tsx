@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { Compass, Search, SquarePen } from "lucide-react";
-import type { AiSession } from "@/lib/ai-demo";
+import { Compass, LogOut, Search, SquarePen } from "lucide-react";
+import type { ChatSession } from "@/lib/chat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -9,13 +9,27 @@ import { formatChinaDateTimeShort } from "@/lib/time";
 interface AppSidebarProps {
   expanded: boolean;
   mobile?: boolean;
-  sessions: AiSession[];
+  sessions: ChatSession[];
+  currentUserLabel: string;
   activePath: string;
   onExpandedChange: (expanded: boolean) => void;
   onOpenDiscover: () => void;
   onOpenNewChat: () => void;
   onOpenHistory: () => void;
   onSelectSession: (sessionId: string) => void;
+  onLogout: () => void;
+}
+
+function getInitials(label: string) {
+  const parts = label.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) {
+    return "KF";
+  }
+
+  return parts
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
 }
 
 function RailButton({
@@ -51,14 +65,17 @@ export default function AppSidebar({
   expanded,
   mobile = false,
   sessions,
+  currentUserLabel,
   activePath,
   onExpandedChange,
   onOpenDiscover,
   onOpenNewChat,
   onOpenHistory,
   onSelectSession,
+  onLogout,
 }: AppSidebarProps) {
   const [historyQuery, setHistoryQuery] = useState("");
+  const userInitials = getInitials(currentUserLabel);
   const filteredSessions = useMemo(() => {
     const query = historyQuery.trim().toLowerCase();
     if (!query) {
@@ -153,6 +170,24 @@ export default function AppSidebar({
                 No matching history.
               </div>
             )}
+          </div>
+        </div>
+
+        <div className="border-t border-[#e4dccf] px-4 py-4">
+          <div className="flex items-center justify-between rounded-2xl bg-white px-3 py-3">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-[#1f1c18]">{currentUserLabel}</p>
+              <p className="text-xs text-[#7f776e]">JWT local session</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="rounded-full"
+              onClick={onLogout}
+              aria-label="Logout"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
@@ -313,9 +348,36 @@ export default function AppSidebar({
           </div>
         </div>
 
-        <div className="mt-auto flex flex-col items-center gap-3 pt-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d9d1c5] bg-white text-sm font-medium">
-            KF
+        <div className="mt-auto pt-4">
+          <div
+            className={cn(
+              "rounded-2xl border border-[#d9d1c5] bg-white",
+              expanded
+                ? "flex items-center justify-between gap-3 px-3 py-3"
+                : "flex flex-col items-center gap-2 px-0 py-2"
+            )}
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d9d1c5] bg-[#f7f3eb] text-sm font-medium">
+                {userInitials}
+              </div>
+              {expanded && (
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">{currentUserLabel}</p>
+                  <p className="text-xs text-[#7f776e]">JWT local session</p>
+                </div>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="rounded-full"
+              onClick={onLogout}
+              aria-label="Logout"
+              title="Logout"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>

@@ -57,12 +57,12 @@ class RagRequestContext(BaseModel):
 
     filters: QueryFilters = Field(default_factory=QueryFilters)
     limit: int = Field(default=10, ge=1, le=50)
-    request_image: RequestImageInput | None = None
+    request_images: list[RequestImageInput] = Field(default_factory=list)
 
     @property
-    def has_request_image(self) -> bool:
-        """Return whether the current request includes an uploaded image."""
-        return self.request_image is not None
+    def has_request_images(self) -> bool:
+        """Return whether the current request includes uploaded images."""
+        return bool(self.request_images)
 
 
 class WebSearchResult(BaseModel):
