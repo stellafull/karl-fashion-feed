@@ -36,7 +36,12 @@ class StoryGenerationService:
             timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
         )
 
-    async def generate_story(self, cluster: list[EmbeddedArticle]) -> StoryDraft:
+    async def generate_story(
+        self,
+        cluster: list[EmbeddedArticle],
+        *,
+        cluster_index: int | None = None,
+    ) -> StoryDraft:
         payload = [
             {
                 "article_id": item.article.article_id,
@@ -49,18 +54,27 @@ class StoryGenerationService:
             }
             for item in cluster
         ]
-        response = await self._client.beta.chat.completions.parse(
-            model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-            temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
-            response_format=StoryGenerationSchema,
-            messages=[
-                {"role": "system", "content": STORY_GENERATION_PROMPT},
-                {
-                    "role": "user",
-                    "content": json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True),
-                },
-            ],
-        )
+        try:
+            response = await self._client.beta.chat.completions.parse(
+                model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+                temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
+                response_format=StoryGenerationSchema,
+                messages=[
+                    {"role": "system", "content": STORY_GENERATION_PROMPT},
+                    {
+                        "role": "user",
+                        "content": json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True),
+                    },
+                ],
+            )
+        except Exception as exc:
+            exc.add_note(
+                "stage=story_generation_request "
+                f"cluster_index={cluster_index} "
+                f"cluster_size={len(cluster)} "
+                f"article_ids={[item.article.article_id for item in cluster]}"
+            )
+            raise
         result = response.choices[0].message.parsed
         if result is None:
             raise ValueError("story generation response missing parsed payload")
@@ -83,7 +97,10 @@ class StoryGenerationService:
         if not clusters:
             return []
         results = await asyncio.gather(
-            *(self.generate_story(cluster) for cluster in clusters),
+            *(
+                self.generate_story(cluster, cluster_index=index)
+                for index, cluster in enumerate(clusters)
+            ),
             return_exceptions=False,
         )
         return list(results)

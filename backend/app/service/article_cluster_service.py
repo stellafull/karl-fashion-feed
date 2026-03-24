@@ -18,6 +18,10 @@ from backend.app.schemas.llm.story_cluster_review import StoryClusterReviewSchem
 from backend.app.service.article_enrichment_service import EnrichedArticle
 
 
+CLUSTER_REVIEW_CONCURRENCY = 5
+DEFAULT_CLUSTER_DISTANCE_THRESHOLD = 0.18
+
+
 @dataclass(frozen=True)
 class EmbeddedArticle:
     article: EnrichedArticle
@@ -25,13 +29,17 @@ class EmbeddedArticle:
 
 
 class ArticleClusterService:
-    def __init__(self) -> None:
+    def __init__(self, *, distance_threshold: float | None = None) -> None:
         self._client = AsyncOpenAI(
             api_key=STORY_SUMMARIZATION_MODEL_CONFIG.api_key,
             base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
             timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
         )
-        self._distance_threshold = 0.18
+        self._distance_threshold = (
+            DEFAULT_CLUSTER_DISTANCE_THRESHOLD
+            if distance_threshold is None
+            else distance_threshold
+        )
 
     async def cluster_articles(self, articles: list[EmbeddedArticle]) -> list[list[EmbeddedArticle]]:
         if not articles:
@@ -39,13 +47,19 @@ class ArticleClusterService:
         if len(articles) == 1:
             return [[articles[0]]]
 
-        model = AgglomerativeClustering(
-            metric="cosine",
-            linkage="average",
-            distance_threshold=self._distance_threshold,
-            n_clusters=None,
-        )
-        labels = model.fit_predict(_normalize_embeddings(articles))
+        try:
+            model = AgglomerativeClustering(
+                metric="cosine",
+                linkage="average",
+                distance_threshold=self._distance_threshold,
+                n_clusters=None,
+            )
+            labels = model.fit_predict(_normalize_embeddings(articles))
+        except Exception as exc:
+            exc.add_note(
+                f"stage=semantic_cluster articles={len(articles)} distance_threshold={self._distance_threshold}"
+            )
+            raise
 
         grouped: dict[int, list[EmbeddedArticle]] = defaultdict(list)
         for label, article in zip(labels, articles, strict=True):
@@ -56,41 +70,54 @@ class ArticleClusterService:
         reviewed_clusters: list[list[EmbeddedArticle]] = []
         review_tasks = []
         review_targets: list[list[EmbeddedArticle]] = []
-        for cluster in semantic_clusters:
+        semaphore = asyncio.Semaphore(CLUSTER_REVIEW_CONCURRENCY)
+
+        async def review_cluster(cluster_index: int, cluster: list[EmbeddedArticle]):
+            async with semaphore:
+                try:
+                    return await self._client.beta.chat.completions.parse(
+                        model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+                        temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
+                        messages=[
+                            {"role": "system", "content": STORY_CLUSTER_REVIEW_PROMPT},
+                            {
+                                "role": "user",
+                                "content": json.dumps(
+                                    [
+                                        {
+                                            "article_id": item.article.article_id,
+                                            "title_zh": item.article.title_zh,
+                                            "summary_zh": item.article.summary_zh,
+                                            "tags": item.article.tags,
+                                            "brands": item.article.brands,
+                                            "category_candidates": item.article.category_candidates,
+                                            "source_name": item.article.source_name,
+                                        }
+                                        for item in cluster
+                                    ],
+                                    ensure_ascii=False,
+                                    indent=2,
+                                    sort_keys=True,
+                                ),
+                            },
+                        ],
+                        response_format=StoryClusterReviewSchema,
+                    )
+                except Exception as exc:
+                    exc.add_note(
+                        "stage=cluster_review "
+                        f"cluster_index={cluster_index} "
+                        f"cluster_size={len(cluster)} "
+                        f"article_ids={[item.article.article_id for item in cluster]}"
+                    )
+                    raise
+
+        for cluster_index, cluster in enumerate(semantic_clusters):
             if len(cluster) <= 1:
                 reviewed_clusters.append(cluster)
                 continue
             review_targets.append(cluster)
-            review_tasks.append(
-                self._client.beta.chat.completions.parse(
-                    model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-                    temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
-                    messages=[
-                        {"role": "system", "content": STORY_CLUSTER_REVIEW_PROMPT},
-                        {
-                            "role": "user",
-                            "content": json.dumps(
-                                [
-                                    {
-                                        "article_id": item.article.article_id,
-                                        "title_zh": item.article.title_zh,
-                                        "summary_zh": item.article.summary_zh,
-                                        "tags": item.article.tags,
-                                        "brands": item.article.brands,
-                                        "category_candidates": item.article.category_candidates,
-                                        "source_name": item.article.source_name,
-                                    }
-                                    for item in cluster
-                                ],
-                                ensure_ascii=False,
-                                indent=2,
-                                sort_keys=True,
-                            ),
-                        },
-                    ],
-                    response_format=StoryClusterReviewSchema,
-                )
-            )
+            review_tasks.append(review_cluster(cluster_index, cluster))
 
         responses = await asyncio.gather(*review_tasks)
         for cluster, response in zip(review_targets, responses, strict=True):

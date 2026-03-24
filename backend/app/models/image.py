@@ -79,6 +79,12 @@ class ArticleImage(Base):
         default="pending",
         comment="视觉分析状态",
     )
+    visual_attempts: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+        comment="视觉分析尝试次数",
+    )
 
     # Visual analysis outputs. Keep "observed" separate from contextual interpretation.
     observed_description: Mapped[str] = mapped_column(

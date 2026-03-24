@@ -38,15 +38,16 @@ IMAGE_ANALYSIS_MODEL_CONFIG = ModelConfig(
 )
 
 STORY_SUMMARIZATION_MODEL_CONFIG = ModelConfig(
-    model_name=os.getenv("STORY_SUMMARIZATION_MODEL", "qwen-plus"),
+    model_name=os.getenv("STORY_SUMMARIZATION_MODEL", "kimi-k2.5"),
     temperature=0.3,
-    api_key_env="DASHSCOPE_API_KEY",
+    api_key_env="OPENAI_API_KEY",
     base_url_env="OPENAI_BASE_URL",
+    timeout_seconds=int(os.getenv("STORY_SUMMARIZATION_TIMEOUT_SECONDS", "600")),
 )
 
 RAG_CHAT_MODEL_CONFIG = ModelConfig(
     model_name=os.getenv("RAG_CHAT_MODEL", "kimi-k2.5"),
     temperature=0.2,
-    api_key_env="DASHSCOPE_API_KEY",
+    api_key_env="OPENAI_API_KEY",
     base_url_env="OPENAI_BASE_URL",
 )

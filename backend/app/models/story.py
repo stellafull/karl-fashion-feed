@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from sqlalchemy import DateTime, ForeignKey, Integer, JSON, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.app.core.database import Base
-from backend.app.models.article import _utcnow_naive
+
+
+def _utcnow_naive() -> datetime:
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 class Story(Base):

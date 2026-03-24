@@ -1,11 +1,11 @@
-"""Article persistence models for metadata, markdown path, and image assets."""
+"""Article persistence model and storage schema bootstrap."""
 
 from __future__ import annotations
 
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, JSON, String, Text, inspect, text
+from sqlalchemy import Boolean, DateTime, Integer, JSON, String, Text, inspect, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -140,6 +140,12 @@ class Article(Base):
         nullable=True,
         comment="enrichment失败信息",
     )
+    enrichment_attempts: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+        comment="enrichment尝试次数",
+    )
     parse_status: Mapped[str] = mapped_column(
         String(32),
         nullable=False,
@@ -177,48 +183,10 @@ class Article(Base):
     )
 
 
-class ArticleImage(Base):
-    __tablename__ = "article_image"
-
-    image_id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-        default=lambda: str(uuid4()),
-    )
-    article_id: Mapped[str] = mapped_column(
-        String(36),
-        ForeignKey("article.article_id", ondelete="CASCADE"),
-        nullable=False,
-        index=True,
-    )
-    source_url: Mapped[str] = mapped_column(Text, nullable=False)
-    normalized_url: Mapped[str] = mapped_column(Text, nullable=False, index=True)
-    image_hash: Mapped[str | None] = mapped_column(String(16), nullable=True, index=True)
-    role: Mapped[str] = mapped_column(String(32), nullable=False, default="inline")
-    position: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    alt_text: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    caption_raw: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    credit_raw: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    source_kind: Mapped[str] = mapped_column(String(32), nullable=False, default="")
-    source_selector: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    context_snippet: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    fetch_status: Mapped[str] = mapped_column(String(32), nullable=False, default="discovered")
-    last_fetched_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    mime_type: Mapped[str] = mapped_column(String(128), nullable=False, default="")
-    width: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    height: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    visual_status: Mapped[str] = mapped_column(String(32), nullable=False, default="pending")
-    observed_description: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    ocr_text: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    visible_entities_json: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
-    style_signals_json: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
-    contextual_interpretation: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    analysis_metadata_json: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
-
-
 def ensure_article_storage_schema(bind: Engine) -> None:
     """Create new tables and add storage columns needed by the redesign."""
 
+    from backend.app.models.image import ArticleImage  # noqa: F401
     from backend.app.models.story import PipelineRun, Story, StoryArticle  # noqa: F401
 
     _recreate_story_read_model_tables(bind)
@@ -257,6 +225,10 @@ def ensure_article_storage_schema(bind: Engine) -> None:
         missing_statements.append("ALTER TABLE article ADD COLUMN enriched_at TIMESTAMP")
     if "enrichment_error" not in existing_columns:
         missing_statements.append("ALTER TABLE article ADD COLUMN enrichment_error TEXT")
+    if "enrichment_attempts" not in existing_columns:
+        missing_statements.append(
+            "ALTER TABLE article ADD COLUMN enrichment_attempts INTEGER DEFAULT 0 NOT NULL"
+        )
     if "parse_status" not in existing_columns:
         missing_statements.append(
             "ALTER TABLE article ADD COLUMN parse_status VARCHAR(32) DEFAULT 'pending' NOT NULL"
@@ -273,6 +245,10 @@ def ensure_article_storage_schema(bind: Engine) -> None:
         image_columns = {column["name"] for column in inspector.get_columns("article_image")}
         if "image_hash" not in image_columns:
             missing_statements.append("ALTER TABLE article_image ADD COLUMN image_hash VARCHAR(16)")
+        if "visual_attempts" not in image_columns:
+            missing_statements.append(
+                "ALTER TABLE article_image ADD COLUMN visual_attempts INTEGER DEFAULT 0 NOT NULL"
+            )
 
     _apply_schema_statements(bind, missing_statements)
 

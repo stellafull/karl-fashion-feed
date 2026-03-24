@@ -12,12 +12,14 @@ from sqlalchemy.orm import Session
 
 from backend.app.core.database import SessionLocal
 from backend.app.models import Article, ArticleImage
+from backend.app.schemas.rag_api import RequestImageInput
 from backend.app.schemas.rag_query import (
     ArticlePackage,
     CitationLocator,
     GroundingText,
     QueryPlan,
     QueryResult,
+    REQUEST_IMAGE_REF,
     RetrievalHit,
 )
 from backend.app.service.RAG.article_rag_service import (
@@ -25,6 +27,7 @@ from backend.app.service.RAG.article_rag_service import (
     build_image_retrieval_content,
 )
 from backend.app.service.RAG.embedding_service import (
+    build_data_url,
     generate_dense_embedding,
     generate_sparse_embedding,
 )
@@ -51,7 +54,12 @@ class QueryService:
         self._reranker_service = RerankerService()
         self._collection_name = RAG_COLLECTION_NAME
 
-    def execute(self, query_plan: QueryPlan) -> QueryResult:
+    def execute(
+        self,
+        query_plan: QueryPlan,
+        *,
+        request_image: RequestImageInput | None = None,
+    ) -> QueryResult:
         """Execute one retrieval plan and return structured evidence."""
         if query_plan.plan_type == "text_only":
             text_results = self._execute_text_lane(query_plan)
@@ -65,7 +73,7 @@ class QueryService:
             )
 
         if query_plan.plan_type == "image_only":
-            image_results = self._execute_image_lane(query_plan)
+            image_results = self._execute_image_lane(query_plan, request_image=request_image)
             packages = self._build_packages(text_results=[], image_results=image_results)
             return QueryResult(
                 query_plan=query_plan,
@@ -78,7 +86,11 @@ class QueryService:
         if query_plan.plan_type == "fusion":
             with ThreadPoolExecutor(max_workers=2) as executor:
                 text_future = executor.submit(self._execute_text_lane, query_plan)
-                image_future = executor.submit(self._execute_image_lane, query_plan)
+                image_future = executor.submit(
+                    self._execute_image_lane,
+                    query_plan,
+                    request_image=request_image,
+                )
                 text_results = text_future.result()
                 image_results = image_future.result()
             packages = self._build_packages(text_results=text_results, image_results=image_results)
@@ -116,15 +128,24 @@ class QueryService:
         )
         return self._build_text_hits(reranked_candidates[: query_plan.limit])
 
-    def _execute_image_lane(self, query_plan: QueryPlan) -> list[RetrievalHit]:
+    def _execute_image_lane(
+        self,
+        query_plan: QueryPlan,
+        *,
+        request_image: RequestImageInput | None = None,
+    ) -> list[RetrievalHit]:
         image_query = query_plan.image_query
         text_query = query_plan.text_query
         metadata_filter = self._build_lane_filter(query_plan=query_plan, modality="image")
 
         if image_query is not None:
+            image_input = self._resolve_image_query_input(
+                image_query=image_query,
+                request_image=request_image,
+            )
             dense_vector = generate_dense_embedding(
                 [IMAGE_QUERY_EMBEDDING_TEXT],
-                image_urls=[image_query],
+                image_inputs=[image_input],
             )[0]
             scored_points = self._qdrant_service.search_dense(
                 self._collection_name,
@@ -158,6 +179,22 @@ class QueryService:
             documents=documents,
         )
         return self._build_image_hits(reranked_candidates[: query_plan.limit])
+
+    def _resolve_image_query_input(
+        self,
+        *,
+        image_query: str,
+        request_image: RequestImageInput | None,
+    ) -> str:
+        normalized_image_query = image_query.strip()
+        if normalized_image_query == REQUEST_IMAGE_REF:
+            if request_image is None:
+                raise ValueError("request_image query requires uploaded request image context")
+            return build_data_url(
+                mime_type=request_image.mime_type,
+                base64_data=request_image.base64_data,
+            )
+        return normalized_image_query
 
     def _build_lane_filter(self, *, query_plan: QueryPlan, modality: str) -> models.Filter:
         time_range = query_plan.filters.time_range

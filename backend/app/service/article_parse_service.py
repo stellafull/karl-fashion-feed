@@ -15,11 +15,12 @@ from sqlalchemy.orm import Session
 
 from backend.app.config.storage_config import ARTICLE_MARKDOWN_ROOT
 from backend.app.core.database import SessionLocal
-from backend.app.models.article import Article, ArticleImage, ensure_article_storage_schema
+from backend.app.models import Article, ArticleImage, ensure_article_storage_schema
 from backend.app.service.article_contracts import MarkdownBlock, ParsedArticle
 from backend.app.service.news_collection_service import NewsCollectionService
 
 PARSE_BATCH_SIZE = 20
+MAX_PARSE_ATTEMPTS = 3
 
 
 @dataclass(frozen=True)
@@ -107,6 +108,7 @@ class ArticleParseService:
             query = (
                 select(Article)
                 .where(Article.parse_status.in_(("pending", "failed")))
+                .where(Article.parse_attempts < MAX_PARSE_ATTEMPTS)
                 .order_by(Article.discovered_at.asc(), Article.article_id.asc())
             )
             if article_ids:
@@ -217,9 +219,12 @@ class ArticleParseService:
                         if stored is None:
                             continue
 
-                        stored.parse_attempts += 1
                         if error is not None or parsed is None:
-                            stored.parse_status = "failed"
+                            stored.parse_attempts += 1
+                            if stored.parse_attempts >= MAX_PARSE_ATTEMPTS:
+                                stored.parse_status = "abandoned"
+                            else:
+                                stored.parse_status = "failed"
                             stored.parse_error = _format_error(error)
                             failed_count += 1
                             continue

@@ -12,6 +12,8 @@ from backend.app.models import Article, ArticleImage
 from backend.app.prompts.image_analysis_prompt import IMAGE_ANALYSIS_PROMPT
 from backend.app.schemas.llm.image_analysis import ImageAnalysisSchema
 
+MAX_IMAGE_ANALYSIS_ATTEMPTS = 3
+
 
 class ImageAnalysisService:
     def __init__(self) -> None:
@@ -27,13 +29,20 @@ class ImageAnalysisService:
     async def analyze_image(self, session: Session, *, article: Article, image: ArticleImage) -> bool:
         if self.is_complete(image):
             return False
+        if image.visual_status == "abandoned":
+            return False
+        if image.visual_attempts >= MAX_IMAGE_ANALYSIS_ATTEMPTS:
+            image.visual_status = "abandoned"
+            session.flush()
+            return False
 
         payload = self.build_input(article=article, image=image)
         try:
             result = await self.infer_payload(payload)
         except Exception as exc:
             self.apply_failure(image=image, error=exc)
-            raise
+            session.flush()
+            return False
 
         self.apply_result(image=image, result=result)
         session.flush()
@@ -80,6 +89,7 @@ class ImageAnalysisService:
     @staticmethod
     def apply_result(*, image: ArticleImage, result: ImageAnalysisSchema) -> None:
         image.visual_status = "done"
+        image.visual_attempts = 0
         image.observed_description = (result.observed_description or "").strip()
         image.ocr_text = (result.ocr_text or "").strip()
         image.visible_entities_json = list(result.visible_entities)
@@ -93,7 +103,11 @@ class ImageAnalysisService:
 
     @staticmethod
     def apply_failure(*, image: ArticleImage, error: Exception) -> None:
-        image.visual_status = "failed"
+        image.visual_attempts += 1
+        if image.visual_attempts >= MAX_IMAGE_ANALYSIS_ATTEMPTS:
+            image.visual_status = "abandoned"
+        else:
+            image.visual_status = "failed"
         image.analysis_metadata_json = {
             **dict(image.analysis_metadata_json or {}),
             "error": f"{error.__class__.__name__}: {error}",

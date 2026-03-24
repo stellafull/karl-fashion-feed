@@ -1,123 +1,237 @@
-"""Deterministic retrieval tools for the quick-query retrieval core."""
+"""LLM-facing retrieval tools for the RAG answer API."""
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
-from typing import Any
+import json
+from typing import Any, Literal
 
-from backend.app.schemas.rag_query import QueryFilters, QueryPlan, QueryResult, TimeRange
+from backend.app.schemas.rag_api import RagRequestContext, WebSearchResult
+from backend.app.schemas.rag_query import QueryPlan, QueryResult, REQUEST_IMAGE_REF
 from backend.app.service.RAG.query_service import QueryService
+from backend.app.service.RAG.web_search_service import WebSearchService
+
+ToolExecutionResult = QueryResult | list[WebSearchResult]
+REQUEST_IMAGE_TOOL_REF = "request_image"
 
 
 class RagTools:
-    """Build retrieval plans from tool arguments and execute them."""
+    """Expose deterministic retrieval tools to the answer-layer LLM."""
 
-    def __init__(self) -> None:
-        self._query_service = QueryService()
-
-    def search_fashion_articles(
+    def __init__(
         self,
         *,
-        query: str,
-        brands: list[str] | None = None,
-        categories: list[str] | None = None,
-        start_at: str | None = None,
-        end_at: str | None = None,
-        include_images: bool = False,
-        limit: int = 10,
-    ) -> QueryResult:
-        """Search fashion articles with an optional fused image lane."""
-        normalized_query = query.strip()
-        if not normalized_query:
-            raise ValueError("search_fashion_articles requires a non-empty query")
-
-        query_plan = QueryPlan(
-            plan_type="fusion" if include_images else "text_only",
-            text_query=normalized_query,
-            filters=self._build_filters(
-                categories=categories,
-                brands=brands,
-                start_at=start_at,
-                end_at=end_at,
-            ),
-            output_goal="reference_lookup",
-            limit=limit,
+        request_context: RagRequestContext,
+        query_service: QueryService | None = None,
+        web_search_service: WebSearchService | None = None,
+    ) -> None:
+        self._request_context = request_context
+        self._query_service = QueryService() if query_service is None else query_service
+        self._web_search_service = (
+            WebSearchService() if web_search_service is None else web_search_service
         )
-        return self._query_service.execute(query_plan)
+
+    def build_tool_definitions(self) -> list[dict[str, object]]:
+        """Return OpenAI-compatible tool definitions for the answer loop."""
+        return [
+            self._build_function_tool(
+                name="search_fashion_articles",
+                description="Search Chinese-grounded fashion articles and return text evidence.",
+                properties={
+                    "query": {
+                        "type": "string",
+                        "description": "The text query used for article retrieval.",
+                    }
+                },
+                required=["query"],
+            ),
+            self._build_function_tool(
+                name="search_fashion_images",
+                description="Search fashion images either by text or by the uploaded request image.",
+                properties={
+                    "text_query": {
+                        "anyOf": [{"type": "string"}, {"type": "null"}],
+                        "description": "Optional text query for text-to-image retrieval.",
+                    },
+                    "image_ref": {
+                        "anyOf": [
+                            {"type": "string", "enum": [REQUEST_IMAGE_TOOL_REF]},
+                            {"type": "null"},
+                        ],
+                        "description": "Use request_image to search with the uploaded image.",
+                    },
+                },
+                required=[],
+            ),
+            self._build_function_tool(
+                name="search_fashion_fusion",
+                description="Run text+image fusion retrieval over fashion evidence packages.",
+                properties={
+                    "query": {
+                        "type": "string",
+                        "description": "The text query used for fusion retrieval.",
+                    },
+                    "image_ref": {
+                        "anyOf": [
+                            {"type": "string", "enum": [REQUEST_IMAGE_TOOL_REF]},
+                            {"type": "null"},
+                        ],
+                        "description": "Use request_image to include the uploaded image in fusion retrieval.",
+                    },
+                },
+                required=["query"],
+            ),
+            self._build_function_tool(
+                name="search_web",
+                description="Search the external web for latest information when internal RAG is insufficient.",
+                properties={
+                    "query": {
+                        "type": "string",
+                        "description": "The external web search query.",
+                    }
+                },
+                required=["query"],
+            ),
+        ]
+
+    async def execute_tool(self, tool_name: str, arguments: dict[str, Any]) -> ToolExecutionResult:
+        """Dispatch one tool call with validated request-level constraints."""
+        if tool_name == "search_fashion_articles":
+            return self.search_fashion_articles(query=self._require_query(arguments, "query"))
+        if tool_name == "search_fashion_images":
+            return self.search_fashion_images(
+                text_query=self._normalize_optional_text(arguments.get("text_query")),
+                image_ref=self._normalize_optional_image_ref(arguments.get("image_ref")),
+            )
+        if tool_name == "search_fashion_fusion":
+            return self.search_fashion_fusion(
+                query=self._require_query(arguments, "query"),
+                image_ref=self._normalize_optional_image_ref(arguments.get("image_ref")),
+            )
+        if tool_name == "search_web":
+            return await self.search_web(query=self._require_query(arguments, "query"))
+        raise ValueError(f"unsupported tool: {tool_name}")
+
+    def search_fashion_articles(self, *, query: str) -> QueryResult:
+        """Run text-only article retrieval."""
+        query_plan = QueryPlan(
+            plan_type="text_only",
+            text_query=query,
+            filters=self._request_context.filters,
+            output_goal="reference_lookup",
+            limit=self._request_context.limit,
+        )
+        return self._query_service.execute(query_plan, request_image=self._request_context.request_image)
 
     def search_fashion_images(
         self,
         *,
         text_query: str | None = None,
-        image_url: str | None = None,
-        brands: list[str] | None = None,
-        categories: list[str] | None = None,
-        start_at: str | None = None,
-        end_at: str | None = None,
-        limit: int = 10,
+        image_ref: Literal["request_image"] | None = None,
     ) -> QueryResult:
-        """Search fashion images by text or by example image."""
-        normalized_text_query = (text_query or "").strip() or None
-        normalized_image_url = (image_url or "").strip() or None
-        if normalized_text_query is not None and normalized_image_url is not None:
-            raise ValueError("search_fashion_images accepts exactly one of text_query or image_url")
-        if normalized_text_query is None and normalized_image_url is None:
-            raise ValueError("search_fashion_images requires text_query or image_url")
+        """Run text-to-image or image-to-image retrieval."""
+        if (text_query is None) == (image_ref is None):
+            raise ValueError("search_fashion_images requires exactly one of text_query or image_ref")
 
+        image_query = self._resolve_image_ref(image_ref)
         query_plan = QueryPlan(
             plan_type="image_only",
-            text_query=normalized_text_query,
-            image_query=normalized_image_url,
-            filters=self._build_filters(
-                categories=categories,
-                brands=brands,
-                start_at=start_at,
-                end_at=end_at,
-            ),
-            output_goal="similarity_search" if normalized_image_url else "inspiration",
-            limit=limit,
+            text_query=text_query,
+            image_query=image_query,
+            filters=self._request_context.filters,
+            output_goal="similarity_search" if image_query is not None else "inspiration",
+            limit=self._request_context.limit,
         )
-        return self._query_service.execute(query_plan)
+        return self._query_service.execute(query_plan, request_image=self._request_context.request_image)
 
-    def execute_tool(self, tool_name: str, arguments: dict[str, Any]) -> QueryResult:
-        """Dispatch one named tool with validated arguments."""
-        if tool_name == "search_fashion_articles":
-            return self.search_fashion_articles(**arguments)
-        if tool_name == "search_fashion_images":
-            return self.search_fashion_images(**arguments)
-        raise ValueError(f"unsupported tool: {tool_name}")
-
-    def _build_filters(
+    def search_fashion_fusion(
         self,
         *,
-        categories: list[str] | None,
-        brands: list[str] | None,
-        start_at: str | None,
-        end_at: str | None,
-    ) -> QueryFilters:
-        time_range = None
-        parsed_start_at = self._parse_optional_datetime(start_at)
-        parsed_end_at = self._parse_optional_datetime(end_at)
-        if parsed_start_at is not None or parsed_end_at is not None:
-            time_range = TimeRange(start_at=parsed_start_at, end_at=parsed_end_at)
-        return QueryFilters(
-            categories=self._normalize_terms(categories),
-            brands=self._normalize_terms(brands),
-            time_range=time_range,
+        query: str,
+        image_ref: Literal["request_image"] | None = None,
+    ) -> QueryResult:
+        """Run fusion retrieval with text and an optional request image."""
+        query_plan = QueryPlan(
+            plan_type="fusion",
+            text_query=query,
+            image_query=self._resolve_image_ref(image_ref),
+            filters=self._request_context.filters,
+            output_goal="reference_lookup",
+            limit=self._request_context.limit,
+        )
+        return self._query_service.execute(query_plan, request_image=self._request_context.request_image)
+
+    async def search_web(self, *, query: str) -> list[WebSearchResult]:
+        """Search Brave for external evidence."""
+        return await self._web_search_service.search(query=query, limit=self._request_context.limit)
+
+    @staticmethod
+    def serialize_tool_result(result: ToolExecutionResult) -> str:
+        """Serialize one tool result for tool-call message playback."""
+        if isinstance(result, QueryResult):
+            return result.model_dump_json(indent=2)
+        return json.dumps(
+            [item.model_dump() for item in result],
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
         )
 
-    def _normalize_terms(self, value: list[str] | None) -> list[str]:
-        return [term.strip() for term in value or [] if term and term.strip()]
+    def _resolve_image_ref(self, image_ref: Literal["request_image"] | None) -> str | None:
+        if image_ref is None:
+            return None
+        if image_ref != REQUEST_IMAGE_TOOL_REF:
+            raise ValueError(f"unsupported image_ref: {image_ref}")
+        if not self._request_context.has_request_image:
+            raise ValueError("image_ref=request_image requires an uploaded image")
+        return REQUEST_IMAGE_REF
 
-    def _parse_optional_datetime(self, value: str | None) -> datetime | None:
+    @staticmethod
+    def _build_function_tool(
+        *,
+        name: str,
+        description: str,
+        properties: dict[str, object],
+        required: list[str],
+    ) -> dict[str, object]:
+        return {
+            "type": "function",
+            "function": {
+                "name": name,
+                "description": description,
+                "parameters": {
+                    "type": "object",
+                    "properties": properties,
+                    "required": required,
+                    "additionalProperties": False,
+                },
+            },
+        }
+
+    @staticmethod
+    def _require_query(arguments: dict[str, Any], field_name: str) -> str:
+        value = arguments.get(field_name)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"{field_name} must be a non-empty string")
+        return value.strip()
+
+    @staticmethod
+    def _normalize_optional_text(value: Any) -> str | None:
         if value is None:
             return None
+        if not isinstance(value, str):
+            raise ValueError("text_query must be a string or null")
+        normalized_value = value.strip()
+        return normalized_value or None
+
+    @staticmethod
+    def _normalize_optional_image_ref(value: Any) -> Literal["request_image"] | None:
+        if value is None:
+            return None
+        if not isinstance(value, str):
+            raise ValueError("image_ref must be a string or null")
         normalized_value = value.strip()
         if not normalized_value:
             return None
-        if normalized_value.endswith("Z"):
-            normalized_value = normalized_value[:-1] + "+00:00"
-        parsed = datetime.fromisoformat(normalized_value)
-        if parsed.tzinfo is None:
-            return parsed.replace(tzinfo=UTC)
-        return parsed.astimezone(UTC)
+        if normalized_value != REQUEST_IMAGE_TOOL_REF:
+            raise ValueError(f"unsupported image_ref: {normalized_value}")
+        return REQUEST_IMAGE_TOOL_REF

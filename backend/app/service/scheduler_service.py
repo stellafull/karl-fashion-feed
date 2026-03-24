@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import traceback
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -11,12 +12,21 @@ from sqlalchemy import Select, select
 from sqlalchemy.orm import Session
 
 from backend.app.core.database import Base, SessionLocal, engine
-from backend.app.models import Article, PipelineRun, Story, StoryArticle, ensure_article_storage_schema
+from backend.app.models import (
+    Article,
+    ArticleImage,
+    PipelineRun,
+    Story,
+    StoryArticle,
+    ensure_article_storage_schema,
+)
 from backend.app.service.article_cluster_service import ArticleClusterService, EmbeddedArticle
 from backend.app.service.article_collection_service import ArticleCollectionService, CollectionResult
 from backend.app.service.article_enrichment_service import ArticleEnrichmentService, EnrichedArticle
 from backend.app.service.article_parse_service import ArticleParseService, ParseResult
-from backend.app.service.RAG.embedding_service import generate_article_summary_embedding
+from backend.app.service.image_analysis_service import ImageAnalysisService
+from backend.app.service.RAG.article_rag_service import ArticleRagService, RagInsertResult
+from backend.app.service.RAG.embedding_service import generate_article_summary_embeddings
 from backend.app.service.story_generation_service import StoryDraft, StoryGenerationService
 
 
@@ -33,54 +43,131 @@ STAGE_STORY_EMBEDDING = "story_embedding"
 STAGE_SEMANTIC_CLUSTER = "semantic_cluster"
 STAGE_CLUSTER_REVIEW = "cluster_review"
 STAGE_STORY_GENERATION = "story_generation"
+STAGE_IMAGE_ANALYSIS = "image_analysis"
+STAGE_RAG_INGEST = "rag_ingest"
 STAGE_STORY_PERSIST = "story_persist"
+ENRICHMENT_CONCURRENCY = 10
+IMAGE_ANALYSIS_CONCURRENCY = 5
 STORY_DRAFT_STAGES = (
     STAGE_STORY_EMBEDDING,
     STAGE_SEMANTIC_CLUSTER,
     STAGE_CLUSTER_REVIEW,
     STAGE_STORY_GENERATION,
 )
-WORKFLOW_STAGES = (STAGE_ENRICHMENT, *STORY_DRAFT_STAGES)
+POST_DRAFT_STAGES = (STAGE_IMAGE_ANALYSIS, STAGE_RAG_INGEST)
+WORKFLOW_STAGES = (STAGE_ENRICHMENT, *STORY_DRAFT_STAGES, *POST_DRAFT_STAGES)
 
 
 class SchedulerService:
     """Schedule and run the daily story pipeline at a fixed Beijing local time."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, cluster_distance_threshold: float | None = None) -> None:
         self._collection_service = ArticleCollectionService()
         self._parse_service = ArticleParseService()
         self._enrichment_service = ArticleEnrichmentService()
         self._embedding_service = None
-        self._cluster_service = ArticleClusterService()
+        self._cluster_service = ArticleClusterService(
+            distance_threshold=cluster_distance_threshold
+        )
         self._story_generation_service = StoryGenerationService()
+        self._image_analysis_service = ImageAnalysisService()
+        self._article_rag_service = ArticleRagService()
 
     async def enrich_articles(self, article_ids: list[str]) -> tuple[int, int]:
         """Run enrichment for the provided article ids and persist results."""
-        enriched_count = 0
-        skipped_existing = 0
         with SessionLocal() as session:
             articles = session.scalars(
                 select(Article)
                 .where(Article.article_id.in_(article_ids))
                 .order_by(Article.ingested_at.asc(), Article.article_id.asc())
             ).all()
-            for article in articles:
-                if (
-                    article.enrichment_status == "done"
-                    and bool((article.title_zh or "").strip())
-                    and bool((article.summary_zh or "").strip())
-                    and bool((article.cluster_text or "").strip())
-                ):
-                    skipped_existing += 1
-                    continue
-                try:
-                    if await self._enrichment_service.enrich_article(session, article):
-                        enriched_count += 1
-                except Exception:
-                    session.commit()
-                    raise
-            session.commit()
+        pending_article_ids: list[str] = []
+        skipped_existing = 0
+        for article in articles:
+            if (
+                article.enrichment_status == "done"
+                and bool((article.title_zh or "").strip())
+                and bool((article.summary_zh or "").strip())
+                and bool((article.cluster_text or "").strip())
+            ):
+                skipped_existing += 1
+                continue
+            if article.enrichment_status == "abandoned":
+                skipped_existing += 1
+                continue
+            pending_article_ids.append(article.article_id)
+
+        if not pending_article_ids:
+            return 0, skipped_existing
+
+        semaphore = asyncio.Semaphore(ENRICHMENT_CONCURRENCY)
+
+        async def enrich_one(article_id: str) -> bool:
+            async with semaphore:
+                with SessionLocal() as worker_session:
+                    article = worker_session.get(Article, article_id)
+                    if article is None:
+                        return False
+                    enriched = await self._enrichment_service.enrich_article(
+                        worker_session,
+                        article,
+                    )
+                    worker_session.commit()
+                    return enriched
+
+        results = await asyncio.gather(*(enrich_one(article_id) for article_id in pending_article_ids))
+        enriched_count = sum(1 for result in results if result)
         return enriched_count, skipped_existing
+
+    async def analyze_article_images(self, publishable_article_ids: list[str]) -> tuple[int, int]:
+        """Analyze images belonging to publishable articles with bounded concurrency."""
+        if not publishable_article_ids:
+            return 0, 0
+
+        with SessionLocal() as session:
+            image_ids = session.scalars(
+                select(ArticleImage.image_id)
+                .join(Article, Article.article_id == ArticleImage.article_id)
+                .where(
+                    Article.article_id.in_(publishable_article_ids),
+                    Article.should_publish.is_(True),
+                    Article.enrichment_status == "done",
+                )
+                .order_by(
+                    Article.ingested_at.asc(),
+                    Article.article_id.asc(),
+                    ArticleImage.position.asc(),
+                    ArticleImage.image_id.asc(),
+                )
+            ).all()
+
+        semaphore = asyncio.Semaphore(IMAGE_ANALYSIS_CONCURRENCY)
+
+        async def analyze_one(image_id: str) -> bool:
+            async with semaphore:
+                with SessionLocal() as worker_session:
+                    image = worker_session.get(ArticleImage, image_id)
+                    if image is None:
+                        return False
+                    article = worker_session.get(Article, image.article_id)
+                    if article is None:
+                        return False
+                    analyzed = await self._image_analysis_service.analyze_image(
+                        worker_session,
+                        article=article,
+                        image=image,
+                    )
+                    worker_session.commit()
+                    return analyzed
+
+        results = await asyncio.gather(*(analyze_one(image_id) for image_id in image_ids))
+        analyzed_count = sum(1 for result in results if result)
+        skipped_existing = len(results) - analyzed_count
+        return analyzed_count, skipped_existing
+
+    def ingest_articles_to_rag(self, article_ids: list[str]) -> RagInsertResult:
+        """Upsert publishable article retrieval units into Qdrant."""
+        return self._article_rag_service.upsert_articles(article_ids)
 
     async def build_story_drafts(
         self,
@@ -91,9 +178,29 @@ class SchedulerService:
         if not publishable_records:
             return tuple(), watermark, tuple()
 
-        embedded_articles = self._embed_articles(publishable_records)
-        clusters = await self._cluster_service.cluster_articles(embedded_articles)
-        story_drafts = await self._story_generation_service.generate_stories(clusters)
+        try:
+            embedded_articles = self._embed_articles(publishable_records)
+        except Exception as exc:
+            exc.add_note(
+                f"stage=story_embedding publishable_records={len(publishable_records)}"
+            )
+            raise
+
+        try:
+            clusters = await self._cluster_service.cluster_articles(embedded_articles)
+        except Exception as exc:
+            exc.add_note(
+                f"stage=semantic_cluster publishable_records={len(publishable_records)}"
+            )
+            raise
+
+        try:
+            story_drafts = await self._story_generation_service.generate_stories(clusters)
+        except Exception as exc:
+            exc.add_note(
+                f"stage=story_generation clusters={len(clusters)}"
+            )
+            raise
         return tuple(publishable_records), watermark, tuple(story_drafts)
 
     async def run_story_workflow(self, article_ids: list[str]) -> dict[str, Any]:
@@ -116,7 +223,38 @@ class SchedulerService:
             "publishable_records": publishable_records,
             "watermark_ingested_at": watermark_ingested_at,
             "story_drafts": story_drafts,
-            "stages_completed": WORKFLOW_STAGES,
+            "stages_completed": (STAGE_ENRICHMENT, *STORY_DRAFT_STAGES),
+            "stages_skipped": tuple(),
+        }
+
+    async def run_post_story_workflow(
+        self,
+        publishable_article_ids: list[str],
+    ) -> dict[str, Any]:
+        """Run post-story stages that should not block story persistence."""
+        if not publishable_article_ids:
+            return {
+                "analyzed_images": 0,
+                "skipped_existing_image_analysis": 0,
+                "rag_result": RagInsertResult(
+                    publishable_articles=0,
+                    text_units=0,
+                    image_units=0,
+                    upserted_units=0,
+                ),
+                "stages_completed": tuple(),
+                "stages_skipped": POST_DRAFT_STAGES,
+            }
+
+        analyzed_images, skipped_existing_image_analysis = await self.analyze_article_images(
+            publishable_article_ids
+        )
+        rag_result = self.ingest_articles_to_rag(publishable_article_ids)
+        return {
+            "analyzed_images": analyzed_images,
+            "skipped_existing_image_analysis": skipped_existing_image_analysis,
+            "rag_result": rag_result,
+            "stages_completed": POST_DRAFT_STAGES,
             "stages_skipped": tuple(),
         }
 
@@ -175,6 +313,16 @@ class SchedulerService:
                         "collected": collection_result.inserted if collection_result else 0,
                         "parsed": parse_result.parsed if parse_result else 0,
                         "parse_failed": parse_result.failed if parse_result else 0,
+                        "image_analysis": {
+                            "analyzed": 0,
+                            "skipped_existing": 0,
+                        },
+                        "rag_ingest": {
+                            "publishable_articles": 0,
+                            "text_units": 0,
+                            "image_units": 0,
+                            "upserted_units": 0,
+                        },
                         "story_date": None,
                         "story_grouping_mode": STORY_GROUPING_INCREMENTAL,
                         "stages_completed": stages_completed,
@@ -192,6 +340,9 @@ class SchedulerService:
                     "stages_completed": tuple(stages_completed),
                     "stages_skipped": tuple(stages_skipped),
                     "skipped_existing_enrichment": 0,
+                    "analyzed_images": 0,
+                    "skipped_existing_image_analysis": 0,
+                    "rag_upserted_units": 0,
                 }
 
             candidate_ids = [article.article_id for article in candidate_articles]
@@ -201,9 +352,20 @@ class SchedulerService:
             if STAGE_STORY_PERSIST not in stages_completed:
                 stages_completed.append(STAGE_STORY_PERSIST)
 
-            self._persist_stories(
+            self._persist_story_rows(
                 run_id=run_id,
                 story_drafts=list(workflow_result["story_drafts"]),
+            )
+
+            publishable_article_ids = [
+                record.article_id for record in workflow_result["publishable_records"]
+            ]
+            post_result = await self.run_post_story_workflow(publishable_article_ids)
+            stages_completed.extend(post_result["stages_completed"])
+            stages_skipped.extend(post_result["stages_skipped"])
+
+            self._mark_success(
+                run_id,
                 watermark_ingested_at=workflow_result["watermark_ingested_at"],
                 metadata={
                     "candidates": len(candidate_ids),
@@ -213,6 +375,16 @@ class SchedulerService:
                     "collected": collection_result.inserted if collection_result else 0,
                     "parsed": parse_result.parsed if parse_result else 0,
                     "parse_failed": parse_result.failed if parse_result else 0,
+                    "image_analysis": {
+                        "analyzed": post_result["analyzed_images"],
+                        "skipped_existing": post_result["skipped_existing_image_analysis"],
+                    },
+                    "rag_ingest": {
+                        "publishable_articles": post_result["rag_result"].publishable_articles,
+                        "text_units": post_result["rag_result"].text_units,
+                        "image_units": post_result["rag_result"].image_units,
+                        "upserted_units": post_result["rag_result"].upserted_units,
+                    },
                     "story_date": None,
                     "story_grouping_mode": STORY_GROUPING_INCREMENTAL,
                     "stages_completed": stages_completed,
@@ -230,6 +402,11 @@ class SchedulerService:
                 "stages_completed": tuple(stages_completed),
                 "stages_skipped": tuple(stages_skipped),
                 "skipped_existing_enrichment": workflow_result["skipped_existing_enrichment"],
+                "analyzed_images": post_result["analyzed_images"],
+                "skipped_existing_image_analysis": post_result[
+                    "skipped_existing_image_analysis"
+                ],
+                "rag_upserted_units": post_result["rag_result"].upserted_units,
             }
         except Exception as exc:
             self._mark_failed(run_id, exc)
@@ -290,13 +467,17 @@ class SchedulerService:
         if self._embedding_service is not None:
             return list(self._embedding_service.embed_articles(records))
 
-        embeddings: list[tuple[float, ...]] = []
+        cluster_texts: list[str] = []
         for record in records:
             cluster_text = record.cluster_text.strip()
             if not cluster_text:
                 raise ValueError(f"cluster_text is required for story embedding: {record.article_id}")
-            embedding = generate_article_summary_embedding(cluster_text)
-            embeddings.append(tuple(float(value) for value in embedding))
+            cluster_texts.append(cluster_text)
+
+        embeddings = [
+            tuple(float(value) for value in embedding)
+            for embedding in generate_article_summary_embeddings(cluster_texts)
+        ]
         return [
             EmbeddedArticle(article=record, embedding=embedding)
             for record, embedding in zip(records, embeddings, strict=True)
@@ -379,6 +560,22 @@ class SchedulerService:
         watermark_ingested_at: datetime | None,
         metadata: dict[str, Any],
     ) -> None:
+        self._persist_story_rows(
+            run_id=run_id,
+            story_drafts=story_drafts,
+        )
+        self._mark_success(
+            run_id,
+            watermark_ingested_at=watermark_ingested_at,
+            metadata=metadata,
+        )
+
+    def _persist_story_rows(
+        self,
+        *,
+        run_id: str,
+        story_drafts: list[StoryDraft],
+    ) -> None:
         with SessionLocal() as session:
             run = session.get(PipelineRun, run_id)
             if run is None:
@@ -400,12 +597,6 @@ class SchedulerService:
 
                 for rank, article_id in enumerate(draft.article_ids, start=1):
                     session.add(StoryArticle(story_key=story.story_key, article_id=article_id, rank=rank))
-
-            run.status = "success"
-            run.finished_at = datetime.now(UTC).replace(tzinfo=None)
-            run.watermark_ingested_at = watermark_ingested_at
-            run.metadata_json = metadata
-            run.error_message = None
             session.commit()
 
     def _mark_success(
@@ -433,5 +624,7 @@ class SchedulerService:
                 return
             run.status = "failed"
             run.finished_at = datetime.now(UTC).replace(tzinfo=None)
-            run.error_message = f"{exc.__class__.__name__}: {exc}"
+            run.error_message = "".join(
+                traceback.format_exception(type(exc), exc, exc.__traceback__)
+            ).strip()
             session.commit()

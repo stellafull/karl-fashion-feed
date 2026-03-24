@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 PlanType = Literal["text_only", "image_only", "fusion"]
+REQUEST_IMAGE_REF = "request_image"
 
 
 class TimeRange(BaseModel):
@@ -71,8 +72,6 @@ class QueryPlan(BaseModel):
         if self.plan_type == "fusion":
             if not has_text_query:
                 raise ValueError("fusion plan requires non-empty text_query")
-            if has_image_query:
-                raise ValueError("fusion plan does not accept image_query in retrieval-core v1")
 
         return self
 

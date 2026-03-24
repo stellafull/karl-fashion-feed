@@ -5,8 +5,8 @@
 当前代码处于一次模型边界迁移过程中：
 
 - `Article` 仍定义在 [article.py](/root/karl-fashion-feed/backend/app/models/article.py)
-- `ArticleImage` 已开始迁移到 [image.py](/root/karl-fashion-feed/backend/app/models/image.py)
-- 部分引用和 schema bootstrap 逻辑仍在旧位置，后续应继续收敛
+- `ArticleImage` 现在只定义在 [image.py](/root/karl-fashion-feed/backend/app/models/image.py)
+- `article.py` 仅保留 `Article` 和 article storage schema bootstrap
 
 后续维护以本文件描述的目标边界为准，而不是以当前临时实现位置为准。
 
@@ -174,8 +174,7 @@
 
 当前推荐迁移顺序：
 
-1. 让 [image.py](/root/karl-fashion-feed/backend/app/models/image.py) 成为 `ArticleImage` 的唯一来源
-2. 所有 service / tests 改为从 [image.py](/root/karl-fashion-feed/backend/app/models/image.py) 引用 `ArticleImage`
-3. 再把 schema bootstrap 从 [article.py](/root/karl-fashion-feed/backend/app/models/article.py) 逐步抽到更中性的 storage/schema 模块
+1. 所有 service / tests 统一通过 [__init__.py](/root/karl-fashion-feed/backend/app/models/__init__.py) 或 [image.py](/root/karl-fashion-feed/backend/app/models/image.py) 引用 `ArticleImage`
+2. 再把 schema bootstrap 从 [article.py](/root/karl-fashion-feed/backend/app/models/article.py) 逐步抽到更中性的 storage/schema 模块
 
 在完成上述步骤前，代码可以临时兼容，但后续维护应持续朝这个方向收敛。

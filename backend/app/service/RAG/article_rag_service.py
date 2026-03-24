@@ -74,16 +74,28 @@ class ArticleRagService:
         self._qdrant_service = QdrantService()
         self._collection_name = RAG_COLLECTION_NAME
 
-    def upsert_articles(self, articles: list[Article]) -> RagInsertResult:
+    def upsert_articles(self, article_ids: list[str]) -> RagInsertResult:
         """Upsert retrieval units for publishable articles into Qdrant."""
-        publishable_articles = sorted(
-            [
-                article
-                for article in articles
-                if article.should_publish is True and article.enrichment_status == "done"
-            ],
-            key=lambda article: (article.ingested_at, article.article_id),
-        )
+        if not article_ids:
+            return RagInsertResult(
+                publishable_articles=0,
+                text_units=0,
+                image_units=0,
+                upserted_units=0,
+            )
+
+        with SessionLocal() as session:
+            articles = session.scalars(
+                select(Article)
+                .where(Article.article_id.in_(article_ids))
+                .order_by(Article.ingested_at.asc(), Article.article_id.asc())
+            ).all()
+
+        publishable_articles = [
+            article
+            for article in articles
+            if article.should_publish is True and article.enrichment_status == "done"
+        ]
         if not publishable_articles:
             return RagInsertResult(
                 publishable_articles=0,

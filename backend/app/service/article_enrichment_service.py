@@ -15,6 +15,8 @@ from backend.app.prompts.article_enrichment_prompt import ARTICLE_ENRICHMENT_PRO
 from backend.app.schemas.llm.article_enrichment import ArticleEnrichmentSchema
 from backend.app.service.article_parse_service import ArticleMarkdownService
 
+MAX_ENRICHMENT_ATTEMPTS = 3
+
 
 @dataclass(frozen=True)
 class EnrichedArticle:
@@ -47,6 +49,12 @@ class ArticleEnrichmentService:
             and bool((article.summary_zh or "").strip())
             and bool((article.cluster_text or "").strip())
         ):
+            return False
+        if article.enrichment_status == "abandoned":
+            return False
+        if article.enrichment_attempts >= MAX_ENRICHMENT_ATTEMPTS:
+            article.enrichment_status = "abandoned"
+            session.flush()
             return False
 
         markdown = ""
@@ -148,15 +156,20 @@ class ArticleEnrichmentService:
                 if part
             )
             article.enrichment_status = "done"
+            article.enrichment_attempts = 0
             article.enriched_at = datetime.now(UTC).replace(tzinfo=None)
             article.enrichment_error = None
             session.flush()
         except Exception as exc:
-            article.enrichment_status = "failed"
+            article.enrichment_attempts += 1
+            if article.enrichment_attempts >= MAX_ENRICHMENT_ATTEMPTS:
+                article.enrichment_status = "abandoned"
+            else:
+                article.enrichment_status = "failed"
             article.enriched_at = datetime.now(UTC).replace(tzinfo=None)
             article.enrichment_error = f"{exc.__class__.__name__}: {exc}"
             session.flush()
-            raise
+            return False
 
         return True
 
