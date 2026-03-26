@@ -301,8 +301,19 @@ class ArticleParseService:
                                 delete(ArticleImage).where(ArticleImage.image_id.in_(obsolete_image_ids))
                             )
 
+                        stored.title_raw = parsed.title
+                        stored.summary_raw = parsed.summary
+                        stored.character_count = _compute_character_count(
+                            title=parsed.title,
+                            blocks=parsed.markdown_blocks,
+                        )
+                        stored.published_at = parsed.published_at or stored.published_at
                         stored.markdown_rel_path = relative_path
                         stored.hero_image_id = _select_hero_image_id(parsed.images, image_ids_by_index)
+                        stored.metadata_json = {
+                            **dict(stored.metadata_json or {}),
+                            **dict(parsed.metadata),
+                        }
                         stored.parse_status = "done"
                         stored.parse_updated_at = datetime.now(UTC).replace(tzinfo=None)
                         stored.parse_error = None

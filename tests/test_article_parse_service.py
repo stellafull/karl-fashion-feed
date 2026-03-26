@@ -122,7 +122,7 @@ class ArticleParseServiceTest(unittest.TestCase):
         self.assertGreater(stored.parse_updated_at, old_parse_updated_at)
 
     def test_parse_article_updates_parse_updated_at_instead_of_story_era_fields(self) -> None:
-        article_id, _ingested_at, old_parse_updated_at = self._insert_article(article_id="article-1")
+        article_id, ingested_at, old_parse_updated_at = self._insert_article(article_id="article-1")
         service = ArticleParseService()
         service._markdown_service = ArticleMarkdownService(Path(self.temp_dir.name))
 
@@ -150,11 +150,15 @@ class ArticleParseServiceTest(unittest.TestCase):
         self.assertEqual(stored.parse_status, "done")
         self.assertGreater(stored.parse_updated_at, old_parse_updated_at)
 
-        # Parse stage should not rewrite truth-source fields that belong to collection.
-        self.assertEqual(stored.title_raw, "Original title")
-        self.assertEqual(stored.summary_raw, "Original summary")
-        self.assertIsNone(stored.published_at)
-        self.assertEqual(stored.metadata_json, {})
+        # Parse stage should persist truth-source article detail extracted from the page.
+        self.assertEqual(stored.title_raw, "Parsed title")
+        self.assertEqual(stored.summary_raw, "Parsed summary")
+        self.assertEqual(stored.published_at, parsed.published_at)
+        self.assertEqual(stored.metadata_json, {"parser": "unit-test"})
+        self.assertEqual(stored.character_count, len("Parsed title\nBody text"))
+
+        # Parse stage must not rewrite collection timestamps.
+        self.assertEqual(stored.ingested_at, ingested_at)
 
     def test_parse_failure_abandons_after_third_attempt(self) -> None:
         article_id, _ingested_at, _old_parse_updated_at = self._insert_article(
