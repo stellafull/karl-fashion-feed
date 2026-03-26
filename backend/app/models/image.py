@@ -72,12 +72,12 @@ class ArticleImage(Base):
     width: Mapped[int | None] = mapped_column(Integer, nullable=True, comment="图片宽度")
     height: Mapped[int | None] = mapped_column(Integer, nullable=True, comment="图片高度")
 
-    # Visual analysis workflow state.
+    # Optional visual analysis workflow state.
     visual_status: Mapped[str] = mapped_column(
         String(32),
         nullable=False,
         default="pending",
-        comment="视觉分析状态",
+        comment="视觉分析状态；不是 digest runtime 的前置条件",
     )
     visual_attempts: Mapped[int] = mapped_column(
         Integer,
@@ -86,7 +86,7 @@ class ArticleImage(Base):
         comment="视觉分析尝试次数",
     )
 
-    # Visual analysis outputs. Keep "observed" separate from contextual interpretation.
+    # Optional visual analysis outputs. Source-provided text remains the durable truth.
     observed_description: Mapped[str] = mapped_column(
         Text,
         nullable=False,

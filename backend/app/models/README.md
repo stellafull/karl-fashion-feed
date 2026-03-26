@@ -2,24 +2,25 @@
 
 本目录维护 ORM 实体的长期设计说明。
 
-当前代码处于一次模型边界迁移过程中：
+当前目标已经从旧 `story` 阅读模型切换到新的
+`article -> article_event_frame -> strict_story -> digest` 链路。
 
-- `Article` 仍定义在 [article.py](/root/karl-fashion-feed/backend/app/models/article.py)
-- `ArticleImage` 现在只定义在 [image.py](/root/karl-fashion-feed/backend/app/models/image.py)
-- `article.py` 仅保留 `Article` 和 article storage schema bootstrap
+后续维护以本文件描述的 digest runtime contract 为准。
 
-后续维护以本文件描述的目标边界为准，而不是以当前临时实现位置为准。
-
-## 目标边界
+## 当前边界
 
 - [article.py](/root/karl-fashion-feed/backend/app/models/article.py)
-  只承载 article 主实体
+  article 真相源，以及 digest runtime schema bootstrap 入口
 - [image.py](/root/karl-fashion-feed/backend/app/models/image.py)
-  承载 image 相关实体，作为独立 image domain 的 ORM 入口
-- [story.py](/root/karl-fashion-feed/backend/app/models/story.py)
-  承载 story / story_article / pipeline_run
-- [retrieval.py](/root/karl-fashion-feed/backend/app/models/retrieval.py)
-  承载 retrieval bridge 层
+  article_image 真相源，保留图片来源文本和可选视觉分析结果
+- [runtime.py](/root/karl-fashion-feed/backend/app/models/runtime.py)
+  pipeline_run / source_run_state 运行态
+- [event_frame.py](/root/karl-fashion-feed/backend/app/models/event_frame.py)
+  article_event_frame 结构化事件帧
+- [strict_story.py](/root/karl-fashion-feed/backend/app/models/strict_story.py)
+  strict_story 及其 frame/article bridge
+- [digest.py](/root/karl-fashion-feed/backend/app/models/digest.py)
+  digest 及其 strict_story/article bridge
 
 ## Image ORM
 
@@ -27,17 +28,14 @@
 
 `ArticleImage` 不再只是 article 的附属字段表，而是 image domain 的事实真相层。
 
-它后续要支撑：
+它当前要支撑：
 
 - article 与 image 的归属关系
 - image asset 基础元数据
-- visual analysis 结果
+- source-provided text truth
+- optional visual analysis 结果
 - image retrieval / RAG collection 的时间与过滤条件
 - 后续可能的 moderation / storage / embedding 状态
-
-### 当前建议模型
-
-`ArticleImage` 当前保留如下字段，后续如需改名或拆 metadata，也应围绕这组语义演进。
 
 #### 1. 身份与归属
 
@@ -69,7 +67,7 @@
 - `credit_raw`
   图片署名、来源说明、摄影师、供图方等原文。
 - `context_snippet`
-  图片附近抽取到的上下文文本片段，供 visual analysis 和 retrieval 使用。
+  图片附近抽取到的上下文文本片段，供 retrieval 和可选 visual analysis 使用。
 
 #### 5. 抽取来源信息
 
@@ -109,8 +107,9 @@
 
 #### 7. Visual Analysis 状态
 
-- `visual_status`
-  visual LLM 处理状态，如 `pending`、`done`、`failed`。
+- `visual_status` / `visual_attempts`
+  图片视觉分析的可选运行态。
+  这不是 digest 主链路的前置条件。
 
 #### 8. Visual Analysis 结果
 
@@ -126,6 +125,42 @@
   结合 article 上下文得到的解释，可包含有限语义推断。
 - `analysis_metadata_json`
   附加分析信息容器，当前可承载 `context_used`、`confidence` 等非主字段结果。
+
+## Digest Runtime Contract
+
+### Article
+
+`article` 是事实真相源，不承载 story-era publish/runtime contract。
+
+必须保留：
+
+- 原始来源字段和 `markdown_rel_path`
+- `parse_*`
+- `normalization_*`
+- `event_frame_*`
+- `title_zh`
+- `summary_zh`
+- `body_zh_rel_path`
+
+不再把 `should_publish`、`reject_reason`、`cluster_text`、`enrichment_*` 视为当前模型契约。
+
+### Pipeline Runtime
+
+`pipeline_run` 只保留 run 级批处理状态，并显式建模两段 batch stage：
+
+- `strict_story_*`
+- `digest_*`
+
+`source_run_state` 负责每个 source 在一次 run 内的采集状态。
+
+### Read Model Replacement
+
+旧 `story` / `story_article` 阅读模型不再是 schema bootstrap 的一部分。
+当前对外导出的聚合链路是：
+
+- `article_event_frame`
+- `strict_story`
+- `digest`
 
 ## 设计原则
 
@@ -170,11 +205,8 @@
 
 当前目标仍然是单 shared collection + `modality` 过滤；只有在 retrieval 架构再次 redesign 时，才考虑重新拆成独立 image collection。
 
-## 后续迁移建议
+## 迁移约束
 
-当前推荐迁移顺序：
-
-1. 所有 service / tests 统一通过 [__init__.py](/root/karl-fashion-feed/backend/app/models/__init__.py) 或 [image.py](/root/karl-fashion-feed/backend/app/models/image.py) 引用 `ArticleImage`
-2. 再把 schema bootstrap 从 [article.py](/root/karl-fashion-feed/backend/app/models/article.py) 逐步抽到更中性的 storage/schema 模块
-
-在完成上述步骤前，代码可以临时兼容，但后续维护应持续朝这个方向收敛。
+- Postgres 是唯一业务真相。
+- Redis 仅做协调态，不承载核心真相。
+- 新 schema bootstrap 走 replacement-only，不保留 story-era 双轨逻辑。
