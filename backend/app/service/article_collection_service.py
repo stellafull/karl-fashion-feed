@@ -69,7 +69,7 @@ class ArticleCollectionService:
         if state.attempts >= SOURCE_RUN_MAX_ATTEMPTS:
             state.status = "abandoned"
             state.updated_at = _utcnow_naive()
-            session.flush()
+            session.commit()
             raise RuntimeError(f"source already exhausted retries: {source_name}")
 
         try:
@@ -90,7 +90,7 @@ class ArticleCollectionService:
             state.status = "abandoned" if state.attempts >= SOURCE_RUN_MAX_ATTEMPTS else "failed"
             state.error = f"{exc.__class__.__name__}: {exc}"
             state.updated_at = _utcnow_naive()
-            session.flush()
+            session.commit()
             raise
 
         state.status = "done"
@@ -98,7 +98,7 @@ class ArticleCollectionService:
         state.discovered_count = result.total_collected
         state.inserted_count = result.inserted
         state.updated_at = _utcnow_naive()
-        session.flush()
+        session.commit()
         return result
 
     def store_articles(

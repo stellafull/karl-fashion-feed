@@ -52,12 +52,14 @@ class SourceCollectionServiceTest(unittest.TestCase):
                     source_name="Vogue",
                 )
             )
+            session.rollback()
 
-            state = session.get(
+        with self.session_factory() as verification_session:
+            state = verification_session.get(
                 SourceRunState,
                 {"run_id": "run-1", "source_name": "Vogue"},
             )
-            inserted_articles = session.scalar(select(func.count()).select_from(Article))
+            inserted_articles = verification_session.scalar(select(func.count()).select_from(Article))
 
         self.assertEqual(result.inserted, 2)
         self.assertEqual(inserted_articles, 2)
@@ -116,8 +118,10 @@ class SourceCollectionServiceTest(unittest.TestCase):
                         source_name="Vogue",
                     )
                 )
+            session.rollback()
 
-            refreshed = session.get(
+        with self.session_factory() as verification_session:
+            refreshed = verification_session.get(
                 SourceRunState,
                 {"run_id": "run-1", "source_name": "Vogue"},
             )
