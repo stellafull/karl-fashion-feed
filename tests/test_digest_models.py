@@ -1,7 +1,12 @@
 """Contract tests for the digest runtime ORM bootstrap."""
 
+import importlib
+import sys
 import unittest
 
+from sqlalchemy import create_engine, text
+
+from backend.app.models.article import ensure_article_storage_schema
 from backend.app.models import (
     Article,
     ArticleEventFrame,
@@ -58,3 +63,63 @@ class DigestModelContractTest(unittest.TestCase):
         self.assertEqual(StrictStoryFrame.__tablename__, "strict_story_frame")
         self.assertEqual(DigestArticle.__tablename__, "digest_article")
         self.assertEqual(SourceRunState.__tablename__, "source_run_state")
+
+    def test_app_main_imports_without_story_route_wiring(self) -> None:
+        sys.modules.pop("backend.app.app_main", None)
+        module = importlib.import_module("backend.app.app_main")
+        self.assertEqual(module.app.title, "KARL Fashion Feed Backend")
+
+    def test_scheduler_service_module_still_imports(self) -> None:
+        sys.modules.pop("backend.app.service.scheduler_service", None)
+        module = importlib.import_module("backend.app.service.scheduler_service")
+        self.assertEqual(module.__name__, "backend.app.service.scheduler_service")
+
+    def test_legacy_pipeline_run_requires_runtime_reset_instead_of_not_null_backfill(self) -> None:
+        engine = create_engine("sqlite:///:memory:")
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE pipeline_run (
+                        run_id VARCHAR(36) PRIMARY KEY,
+                        run_type VARCHAR(64) NOT NULL,
+                        status VARCHAR(32) NOT NULL,
+                        started_at TIMESTAMP NOT NULL,
+                        finished_at TIMESTAMP NULL,
+                        watermark_ingested_at TIMESTAMP NULL,
+                        error_message TEXT NULL,
+                        metadata_json JSON NOT NULL
+                    )
+                    """
+                )
+            )
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO pipeline_run (
+                        run_id,
+                        run_type,
+                        status,
+                        started_at,
+                        finished_at,
+                        watermark_ingested_at,
+                        error_message,
+                        metadata_json
+                    ) VALUES (
+                        'run-1',
+                        'daily_story',
+                        'success',
+                        '2026-03-26 08:00:00',
+                        NULL,
+                        NULL,
+                        NULL,
+                        '{}'
+                    )
+                    """
+                )
+            )
+
+        with self.assertRaises(RuntimeError) as context:
+            ensure_article_storage_schema(engine)
+
+        self.assertIn("reset", str(context.exception).lower())

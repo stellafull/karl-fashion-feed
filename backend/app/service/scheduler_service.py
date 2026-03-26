@@ -12,14 +12,8 @@ from sqlalchemy import Select, select
 from sqlalchemy.orm import Session
 
 from backend.app.core.database import Base, SessionLocal, engine
-from backend.app.models import (
-    Article,
-    ArticleImage,
-    PipelineRun,
-    Story,
-    StoryArticle,
-    ensure_article_storage_schema,
-)
+from backend.app.models import Article, ArticleImage, PipelineRun, ensure_article_storage_schema
+from backend.app.models.story import Story, StoryArticle
 from backend.app.service.article_cluster_service import ArticleClusterService, EmbeddedArticle
 from backend.app.service.article_collection_service import ArticleCollectionService, CollectionResult
 from backend.app.service.article_enrichment_service import ArticleEnrichmentService, EnrichedArticle

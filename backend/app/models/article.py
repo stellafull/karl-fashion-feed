@@ -161,6 +161,7 @@ def ensure_article_storage_schema(bind: Engine) -> None:
     from backend.app.models.strict_story import StrictStory, StrictStoryArticle, StrictStoryFrame
 
     _drop_story_tables(bind)
+    _reset_legacy_pipeline_run_table(bind)
     Base.metadata.create_all(
         bind=bind,
         tables=[
@@ -271,10 +272,13 @@ def _ensure_pipeline_run_columns(bind: Engine) -> None:
         return
 
     existing_columns = {column["name"] for column in inspector.get_columns("pipeline_run")}
+    if "business_date" not in existing_columns:
+        raise RuntimeError(
+            "pipeline_run is in a legacy story-era shape; reset local runtime DB state before bootstrap"
+        )
+
     statements: list[str] = []
 
-    if "business_date" not in existing_columns:
-        statements.append("ALTER TABLE pipeline_run ADD COLUMN business_date DATE NOT NULL")
     if "strict_story_status" not in existing_columns:
         statements.append(
             "ALTER TABLE pipeline_run ADD COLUMN strict_story_status VARCHAR(32) DEFAULT 'pending' NOT NULL"
@@ -305,3 +309,23 @@ def _ensure_pipeline_run_columns(bind: Engine) -> None:
         )
 
     _apply_schema_statements(bind, statements)
+
+
+def _reset_legacy_pipeline_run_table(bind: Engine) -> None:
+    inspector = inspect(bind)
+    if "pipeline_run" not in inspector.get_table_names():
+        return
+
+    existing_columns = {column["name"] for column in inspector.get_columns("pipeline_run")}
+    if "business_date" in existing_columns:
+        return
+
+    with bind.begin() as connection:
+        row_count = connection.execute(text("SELECT COUNT(*) FROM pipeline_run")).scalar_one()
+        if row_count > 0:
+            raise RuntimeError(
+                "pipeline_run contains legacy story-era runtime rows; reset local runtime DB state before bootstrap"
+            )
+        if "source_run_state" in inspector.get_table_names():
+            connection.execute(text("DROP TABLE source_run_state"))
+        connection.execute(text("DROP TABLE pipeline_run"))

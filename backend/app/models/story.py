@@ -1,4 +1,4 @@
-"""Story and pipeline read models."""
+"""Legacy story read models kept only for transitional imports."""
 
 from __future__ import annotations
 
@@ -53,20 +53,3 @@ class StoryArticle(Base):
         primary_key=True,
     )
     rank: Mapped[int] = mapped_column(Integer, nullable=False)
-
-
-class PipelineRun(Base):
-    __tablename__ = "pipeline_run"
-
-    run_id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-        default=lambda: str(uuid4()),
-    )
-    run_type: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
-    status: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
-    started_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=_utcnow_naive)
-    finished_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    watermark_ingested_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
-    metadata_json: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
