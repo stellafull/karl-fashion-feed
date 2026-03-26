@@ -17,7 +17,7 @@ def _utcnow_naive() -> datetime:
 
 
 class Article(Base):
-    """Truth-source article persisted before downstream normalization and digesting."""
+    """Truth-source article persisted before downstream event framing and digesting."""
 
     __tablename__ = "article"
 
@@ -108,23 +108,6 @@ class Article(Base):
         default=_utcnow_naive,
     )
 
-    normalization_status: Mapped[str] = mapped_column(
-        String(32),
-        nullable=False,
-        default="pending",
-    )
-    normalization_attempts: Mapped[int] = mapped_column(
-        Integer,
-        nullable=False,
-        default=0,
-    )
-    normalization_error: Mapped[str | None] = mapped_column(Text, nullable=True)
-    normalization_updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        nullable=False,
-        default=_utcnow_naive,
-    )
-
     event_frame_status: Mapped[str] = mapped_column(
         String(32),
         nullable=False,
@@ -140,14 +123,6 @@ class Article(Base):
         DateTime,
         nullable=False,
         default=_utcnow_naive,
-    )
-
-    title_zh: Mapped[str | None] = mapped_column(Text, nullable=True, comment="中文标题")
-    summary_zh: Mapped[str | None] = mapped_column(Text, nullable=True, comment="中文摘要")
-    body_zh_rel_path: Mapped[str | None] = mapped_column(
-        Text,
-        nullable=True,
-        comment="中文规范化正文Markdown相对路径",
     )
 
 
@@ -227,20 +202,6 @@ def _ensure_article_columns(bind: Engine) -> None:
         statements.append(
             "ALTER TABLE article ADD COLUMN parse_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL"
         )
-    if "normalization_status" not in existing_columns:
-        statements.append(
-            "ALTER TABLE article ADD COLUMN normalization_status VARCHAR(32) DEFAULT 'pending' NOT NULL"
-        )
-    if "normalization_attempts" not in existing_columns:
-        statements.append(
-            "ALTER TABLE article ADD COLUMN normalization_attempts INTEGER DEFAULT 0 NOT NULL"
-        )
-    if "normalization_error" not in existing_columns:
-        statements.append("ALTER TABLE article ADD COLUMN normalization_error TEXT")
-    if "normalization_updated_at" not in existing_columns:
-        statements.append(
-            "ALTER TABLE article ADD COLUMN normalization_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL"
-        )
     if "event_frame_status" not in existing_columns:
         statements.append(
             "ALTER TABLE article ADD COLUMN event_frame_status VARCHAR(32) DEFAULT 'pending' NOT NULL"
@@ -255,13 +216,6 @@ def _ensure_article_columns(bind: Engine) -> None:
         statements.append(
             "ALTER TABLE article ADD COLUMN event_frame_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL"
         )
-    if "title_zh" not in existing_columns:
-        statements.append("ALTER TABLE article ADD COLUMN title_zh TEXT")
-    if "summary_zh" not in existing_columns:
-        statements.append("ALTER TABLE article ADD COLUMN summary_zh TEXT")
-    if "body_zh_rel_path" not in existing_columns:
-        statements.append("ALTER TABLE article ADD COLUMN body_zh_rel_path TEXT")
-
     _apply_schema_statements(bind, statements)
 
 

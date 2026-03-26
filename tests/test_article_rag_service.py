@@ -42,14 +42,14 @@ class ArticleRagServiceTest(unittest.TestCase):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp_dir.cleanup)
 
-    def test_upsert_articles_uses_normalized_body_and_source_text_image_projection(self) -> None:
+    def test_upsert_articles_uses_parsed_source_markdown_and_source_text_image_projection(self) -> None:
         eligible_article_id = str(uuid4())
         skipped_article_id = str(uuid4())
         markdown_service = ArticleMarkdownService(Path(self.temp_dir.name))
-        body_path = "normalized/2026-03-26/article-1.md"
+        markdown_path = "2026-03-26/article-1.md"
         markdown_service.write_markdown(
-            relative_path=body_path,
-            content="# 标题\n\n第一段。\n\n第二段。\n",
+            relative_path=markdown_path,
+            content="# Source title\n\nFirst paragraph.\n\nSecond paragraph.\n",
         )
 
         with self.session_factory() as session:
@@ -68,10 +68,7 @@ class ArticleRagServiceTest(unittest.TestCase):
                     ingested_at=datetime(2026, 3, 26, 7, 5, tzinfo=UTC).replace(tzinfo=None),
                     metadata_json={},
                     parse_status="done",
-                    normalization_status="done",
-                    body_zh_rel_path=body_path,
-                    title_zh="中文标题",
-                    summary_zh="中文摘要",
+                    markdown_rel_path=markdown_path,
                 )
             )
             session.add(
@@ -88,9 +85,8 @@ class ArticleRagServiceTest(unittest.TestCase):
                     discovered_at=datetime(2026, 3, 26, 7, 0, tzinfo=UTC).replace(tzinfo=None),
                     ingested_at=datetime(2026, 3, 26, 7, 10, tzinfo=UTC).replace(tzinfo=None),
                     metadata_json={},
-                    parse_status="done",
-                    normalization_status="pending",
-                    body_zh_rel_path=body_path,
+                    parse_status="pending",
+                    markdown_rel_path=markdown_path,
                 )
             )
             session.add(
@@ -129,8 +125,14 @@ class ArticleRagServiceTest(unittest.TestCase):
         self.assertGreaterEqual(result.text_units, 1)
         self.assertEqual(result.image_units, 1)
         self.assertEqual(result.upserted_units, len(fake_qdrant.records))
+        self.assertTrue(all(record["article_id"] == eligible_article_id for record in fake_qdrant.records))
+        text_records = [record for record in fake_qdrant.records if record["modality"] == "text"]
+        self.assertGreaterEqual(len(text_records), 1)
+        self.assertTrue(any("First paragraph." in str(record["content"]) for record in text_records))
         image_records = [record for record in fake_qdrant.records if record["modality"] == "image"]
         self.assertEqual(len(image_records), 1)
         self.assertIn("Look 1 backstage", image_records[0]["content"])
+        self.assertIn("Raw title", image_records[0]["content"])
+        self.assertIn("Raw summary", image_records[0]["content"])
         self.assertEqual(image_records[0]["tags_json"], [])
         self.assertEqual(image_records[0]["brands_json"], [])

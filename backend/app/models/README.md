@@ -136,13 +136,12 @@
 
 - 原始来源字段和 `markdown_rel_path`
 - `parse_*`
-- `normalization_*`
 - `event_frame_*`
-- `title_zh`
-- `summary_zh`
-- `body_zh_rel_path`
 
 不再把 `should_publish`、`reject_reason`、`cluster_text`、`enrichment_*` 视为当前模型契约。
+
+不再持久化 article 级 normalization 中间态，也不持久化 article 级中文标题、摘要、正文。
+任何中文生成都应延后到各自下游 prompt，例如 event frame extraction 或最终 digest generation。
 
 ### Pipeline Runtime
 

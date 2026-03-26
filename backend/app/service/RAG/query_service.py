@@ -287,8 +287,8 @@ class QueryService:
                     content=content,
                     score=score,
                     citation_locator=locator,
-                    title_zh=article.title_zh,
-                    summary_zh=article.summary_zh,
+                    title_zh=article.title_raw or None,
+                    summary_zh=article.summary_raw or None,
                 )
             )
         return hits
@@ -334,8 +334,8 @@ class QueryService:
                     ocr_text=image.ocr_text or None,
                     observed_description=image.observed_description or None,
                     contextual_interpretation=image.contextual_interpretation or None,
-                    title_zh=article.title_zh,
-                    summary_zh=article.summary_zh,
+                    title_zh=article.title_raw or None,
+                    summary_zh=article.summary_raw or None,
                     grounding_texts=self._load_grounding_texts(article),
                 )
             )

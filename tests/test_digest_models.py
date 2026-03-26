@@ -26,23 +26,21 @@ class DigestModelContractTest(unittest.TestCase):
 
     def test_article_stage_columns_match_digest_runtime_contract(self) -> None:
         expected = {
+            "markdown_rel_path",
             "parse_status",
             "parse_attempts",
             "parse_error",
             "parse_updated_at",
-            "normalization_status",
-            "normalization_attempts",
-            "normalization_error",
-            "normalization_updated_at",
             "event_frame_status",
             "event_frame_attempts",
             "event_frame_error",
             "event_frame_updated_at",
-            "title_zh",
-            "summary_zh",
-            "body_zh_rel_path",
         }
         self.assertTrue(expected.issubset(Article.__table__.columns.keys()))
+        self.assertNotIn("normalization_status", Article.__table__.columns.keys())
+        self.assertNotIn("title_zh", Article.__table__.columns.keys())
+        self.assertNotIn("summary_zh", Article.__table__.columns.keys())
+        self.assertNotIn("body_zh_rel_path", Article.__table__.columns.keys())
 
     def test_pipeline_run_owns_explicit_batch_stage_columns(self) -> None:
         expected = {

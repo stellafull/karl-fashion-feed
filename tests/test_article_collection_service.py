@@ -54,5 +54,5 @@ class ArticleCollectionServiceTest(unittest.TestCase):
         self.assertEqual(article.parse_status, "pending")
         self.assertEqual(article.parse_attempts, 0)
         self.assertIsNone(article.markdown_rel_path)
-        self.assertIsNone(article.body_zh_rel_path)
+        self.assertFalse(hasattr(article, "body_zh_rel_path"))
         self.assertEqual(article.metadata_json["feed"], "runway")

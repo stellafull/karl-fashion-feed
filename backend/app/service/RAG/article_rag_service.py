@@ -1,4 +1,4 @@
-"""Insert normalized article text and source-text image units into Qdrant."""
+"""Insert parsed article text and source-text image units into Qdrant."""
 
 from __future__ import annotations
 
@@ -34,8 +34,8 @@ def build_image_retrieval_content(article: Article, image: ArticleImage) -> str:
         image.alt_text,
         image.credit_raw,
         image.context_snippet,
-        article.title_zh,
-        article.summary_zh,
+        article.title_raw,
+        article.summary_raw,
     ]
     normalized_parts = [part.strip() for part in parts if isinstance(part, str) and part.strip()]
     return "\n".join(normalized_parts)
@@ -61,7 +61,7 @@ class ArticleRagService:
         self._collection_name = RAG_COLLECTION_NAME
 
     def upsert_articles(self, article_ids: list[str]) -> RagInsertResult:
-        """Upsert retrieval units for parse+normalization-complete articles into Qdrant."""
+        """Upsert retrieval units for parse-complete articles into Qdrant."""
         if not article_ids:
             return RagInsertResult(
                 eligible_articles=0,
@@ -80,7 +80,7 @@ class ArticleRagService:
         eligible_articles = [
             article
             for article in articles
-            if article.parse_status == "done" and article.normalization_status == "done"
+            if article.parse_status == "done"
         ]
         if not eligible_articles:
             return RagInsertResult(
@@ -126,10 +126,10 @@ class ArticleRagService:
     def _build_text_records(self, articles: list[Article]) -> list[dict[str, object]]:
         records: list[dict[str, object]] = []
         for article in articles:
-            if not article.body_zh_rel_path:
-                raise ValueError(f"body_zh_rel_path is required for RAG text lane: {article.article_id}")
+            if not article.markdown_rel_path:
+                raise ValueError(f"markdown_rel_path is required for RAG text lane: {article.article_id}")
 
-            markdown = self._markdown_service.read_markdown(relative_path=article.body_zh_rel_path)
+            markdown = self._markdown_service.read_markdown(relative_path=article.markdown_rel_path)
             chunks = split_markdown_into_text_chunks(markdown, source_id=article.article_id)
             if not chunks:
                 raise ValueError(f"no text chunks generated for article: {article.article_id}")
