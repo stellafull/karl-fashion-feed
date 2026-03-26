@@ -59,6 +59,9 @@ This spec does not cover:
 - `article` no longer owns the primary publish decision for the new pipeline.
 - `article` no longer directly represents a reader-facing story unit.
 
+For replay and same-day rerun determinism, the normalized article materials used by downstream extraction and digest writing must be durable.
+They may live on `article` itself or in a companion storage layer, but they must not exist only as transient prompt inputs.
+
 ### `article_event_frame`
 
 `article_event_frame` is the new minimum orchestration unit.
@@ -175,6 +178,7 @@ The pipeline should:
 - overwrite the current stored state for that business day
 
 No version history or snapshot lineage is required in this redesign.
+Objects from an earlier same-day run that are not produced by the rerun should be removed from current state rather than retained as inactive historical rows.
 
 ## Data Model
 
@@ -292,6 +296,7 @@ Responsibilities:
 
 This stage is not the primary publish gate.
 Legacy `article.should_publish` must not remain the main decision point in the redesigned pipeline.
+The output of this stage must be persisted or otherwise made deterministically reproducible for replay and same-day reruns.
 
 ### Stage 3: Event Frame Extraction
 
@@ -355,6 +360,9 @@ Responsibilities:
 - bind one facet per digest
 - choose whether a strict story should be published at all
 - generate a full reader-facing Chinese article body
+
+Facet assignment happens at digest generation time.
+`strict_story` does not require any precomputed facet identity in order to participate in digest generation.
 
 Rules:
 
