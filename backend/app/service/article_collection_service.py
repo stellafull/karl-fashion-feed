@@ -60,12 +60,15 @@ class ArticleCollectionService:
         run_id: str,
         source_name: str,
     ) -> CollectionResult:
+        self._assert_session_is_clean(session)
         ensure_article_storage_schema(session.get_bind())
         state = self._get_or_create_source_state(
             session,
             run_id=run_id,
             source_name=source_name,
         )
+        if state.status == "done":
+            raise RuntimeError(f"source already collected: {source_name}")
         if state.attempts >= SOURCE_RUN_MAX_ATTEMPTS:
             state.status = "abandoned"
             state.updated_at = _utcnow_naive()
@@ -206,3 +209,8 @@ class ArticleCollectionService:
         session.add(state)
         session.flush()
         return state
+
+    @staticmethod
+    def _assert_session_is_clean(session: Session) -> None:
+        if session.new or session.dirty or session.deleted:
+            raise RuntimeError("collect_source requires a clean session")

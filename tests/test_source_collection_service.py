@@ -129,6 +129,83 @@ class SourceCollectionServiceTest(unittest.TestCase):
         self.assertIsNotNone(refreshed)
         self.assertEqual(refreshed.status, "abandoned")
 
+    def test_collect_source_rejects_dirty_caller_session(self) -> None:
+        service = ArticleCollectionService()
+        collector = AsyncMock(return_value=[self._build_article("https://example.com/a")])
+        service._collector = SimpleNamespace(collect_articles=collector)
+
+        with self.session_factory() as session:
+            self._add_pipeline_run(session)
+            session.add(
+                PipelineRun(
+                    run_id="run-2",
+                    business_date=date(2026, 3, 27),
+                )
+            )
+
+            with self.assertRaises(RuntimeError):
+                asyncio.run(
+                    service.collect_source(
+                        session,
+                        run_id="run-1",
+                        source_name="Vogue",
+                    )
+                )
+            session.rollback()
+
+        with self.session_factory() as verification_session:
+            unrelated_run = verification_session.get(PipelineRun, "run-2")
+            state = verification_session.get(
+                SourceRunState,
+                {"run_id": "run-1", "source_name": "Vogue"},
+            )
+            inserted_articles = verification_session.scalar(select(func.count()).select_from(Article))
+
+        self.assertEqual(collector.await_count, 0)
+        self.assertIsNone(unrelated_run)
+        self.assertIsNone(state)
+        self.assertEqual(inserted_articles, 0)
+
+    def test_collect_source_rejects_source_already_marked_done(self) -> None:
+        service = ArticleCollectionService()
+        collector = AsyncMock(return_value=[self._build_article("https://example.com/a")])
+        service._collector = SimpleNamespace(collect_articles=collector)
+
+        with self.session_factory() as session:
+            self._add_pipeline_run(session)
+            session.add(
+                SourceRunState(
+                    run_id="run-1",
+                    source_name="Vogue",
+                    status="done",
+                    discovered_count=5,
+                    inserted_count=2,
+                )
+            )
+            session.commit()
+
+            with self.assertRaises(RuntimeError):
+                asyncio.run(
+                    service.collect_source(
+                        session,
+                        run_id="run-1",
+                        source_name="Vogue",
+                    )
+                )
+            session.rollback()
+
+        with self.session_factory() as verification_session:
+            state = verification_session.get(
+                SourceRunState,
+                {"run_id": "run-1", "source_name": "Vogue"},
+            )
+
+        self.assertEqual(collector.await_count, 0)
+        self.assertIsNotNone(state)
+        self.assertEqual(state.status, "done")
+        self.assertEqual(state.discovered_count, 5)
+        self.assertEqual(state.inserted_count, 2)
+
     def _add_pipeline_run(self, session) -> None:
         session.add(
             PipelineRun(
