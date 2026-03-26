@@ -10,6 +10,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.app.core.database import Base
 
+SOURCE_RUN_MAX_ATTEMPTS = 3
+
 
 def _utcnow_naive() -> datetime:
     return datetime.now(UTC).replace(tzinfo=None)

@@ -8,9 +8,11 @@ from typing import Iterable
 from uuid import uuid4
 
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from backend.app.core.database import SessionLocal
 from backend.app.models.article import Article, ensure_article_storage_schema
+from backend.app.models.runtime import SOURCE_RUN_MAX_ATTEMPTS, SourceRunState, _utcnow_naive
 from backend.app.service.article_contracts import CollectedArticle
 from backend.app.service.news_collection_service import NewsCollectionService
 
@@ -51,7 +53,60 @@ class ArticleCollectionService:
         )
         return self.store_articles(articles)
 
-    def store_articles(self, articles: Iterable[CollectedArticle]) -> CollectionResult:
+    async def collect_source(
+        self,
+        session: Session,
+        *,
+        run_id: str,
+        source_name: str,
+    ) -> CollectionResult:
+        ensure_article_storage_schema(session.get_bind())
+        state = self._get_or_create_source_state(
+            session,
+            run_id=run_id,
+            source_name=source_name,
+        )
+        if state.attempts >= SOURCE_RUN_MAX_ATTEMPTS:
+            state.status = "abandoned"
+            state.updated_at = _utcnow_naive()
+            session.flush()
+            raise RuntimeError(f"source already exhausted retries: {source_name}")
+
+        try:
+            collected = await self._collector.collect_articles(
+                source_names=[source_name],
+                limit_sources=1,
+            )
+            result = self.store_articles(collected, session=session)
+        except Exception as exc:
+            if session.in_transaction():
+                session.rollback()
+            state = self._get_or_create_source_state(
+                session,
+                run_id=run_id,
+                source_name=source_name,
+            )
+            state.attempts += 1
+            state.status = "abandoned" if state.attempts >= SOURCE_RUN_MAX_ATTEMPTS else "failed"
+            state.error = f"{exc.__class__.__name__}: {exc}"
+            state.updated_at = _utcnow_naive()
+            session.flush()
+            raise
+
+        state.status = "done"
+        state.error = None
+        state.discovered_count = result.total_collected
+        state.inserted_count = result.inserted
+        state.updated_at = _utcnow_naive()
+        session.flush()
+        return result
+
+    def store_articles(
+        self,
+        articles: Iterable[CollectedArticle],
+        *,
+        session: Session | None = None,
+    ) -> CollectionResult:
         materialized = list(articles)
         deduped: list[CollectedArticle] = []
         seen_urls: set[str] = set()
@@ -64,13 +119,16 @@ class ArticleCollectionService:
             seen_urls.add(article.canonical_url)
             deduped.append(article)
 
-        session = SessionLocal()
+        owns_session = session is None
+        if session is None:
+            session = SessionLocal()
         inserted = 0
         skipped_existing = 0
         inserted_article_ids: list[str] = []
         try:
             bind = session.get_bind()
-            ensure_article_storage_schema(bind)
+            if owns_session:
+                ensure_article_storage_schema(bind)
 
             for batch_start in range(0, len(deduped), INSERT_BATCH_SIZE):
                 batch = deduped[batch_start : batch_start + INSERT_BATCH_SIZE]
@@ -106,7 +164,10 @@ class ArticleCollectionService:
                     )
                     inserted += 1
                     inserted_article_ids.append(article_id)
-                session.commit()
+                if owns_session:
+                    session.commit()
+                else:
+                    session.flush()
 
             return CollectionResult(
                 total_collected=len(materialized),
@@ -117,7 +178,31 @@ class ArticleCollectionService:
                 inserted_article_ids=tuple(inserted_article_ids),
             )
         except Exception:
-            session.rollback()
+            if owns_session:
+                session.rollback()
             raise
         finally:
-            session.close()
+            if owns_session:
+                session.close()
+
+    @staticmethod
+    def _get_or_create_source_state(
+        session: Session,
+        *,
+        run_id: str,
+        source_name: str,
+    ) -> SourceRunState:
+        state = session.get(
+            SourceRunState,
+            {"run_id": run_id, "source_name": source_name},
+        )
+        if state is not None:
+            return state
+
+        state = SourceRunState(
+            run_id=run_id,
+            source_name=source_name,
+        )
+        session.add(state)
+        session.flush()
+        return state
