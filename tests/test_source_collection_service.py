@@ -8,7 +8,7 @@ from datetime import date
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from sqlalchemy import create_engine, func, select
+from sqlalchemy import create_engine, func, select, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -205,6 +205,76 @@ class SourceCollectionServiceTest(unittest.TestCase):
         self.assertEqual(state.status, "done")
         self.assertEqual(state.discovered_count, 5)
         self.assertEqual(state.inserted_count, 2)
+
+    def test_collect_source_rejects_open_transaction_with_raw_sql_write(self) -> None:
+        service = ArticleCollectionService()
+        collector = AsyncMock(return_value=[self._build_article("https://example.com/a")])
+        service._collector = SimpleNamespace(collect_articles=collector)
+
+        with self.session_factory() as session:
+            self._add_pipeline_run(session)
+            session.execute(
+                text(
+                    """
+                    INSERT INTO pipeline_run (
+                        run_id,
+                        business_date,
+                        run_type,
+                        status,
+                        strict_story_status,
+                        strict_story_attempts,
+                        strict_story_error,
+                        strict_story_updated_at,
+                        digest_status,
+                        digest_attempts,
+                        digest_error,
+                        digest_updated_at,
+                        started_at,
+                        finished_at,
+                        metadata_json
+                    ) VALUES (
+                        'run-2',
+                        '2026-03-27',
+                        'digest_daily',
+                        'pending',
+                        'pending',
+                        0,
+                        NULL,
+                        '2026-03-27 08:00:00',
+                        'pending',
+                        0,
+                        NULL,
+                        '2026-03-27 08:00:00',
+                        '2026-03-27 08:00:00',
+                        NULL,
+                        '{}'
+                    )
+                    """
+                )
+            )
+
+            with self.assertRaises(RuntimeError):
+                asyncio.run(
+                    service.collect_source(
+                        session,
+                        run_id="run-1",
+                        source_name="Vogue",
+                    )
+                )
+            session.rollback()
+
+        with self.session_factory() as verification_session:
+            unrelated_run = verification_session.get(PipelineRun, "run-2")
+            state = verification_session.get(
+                SourceRunState,
+                {"run_id": "run-1", "source_name": "Vogue"},
+            )
+            inserted_articles = verification_session.scalar(select(func.count()).select_from(Article))
+
+        self.assertEqual(collector.await_count, 0)
+        self.assertIsNone(unrelated_run)
+        self.assertIsNone(state)
+        self.assertEqual(inserted_articles, 0)
 
     def _add_pipeline_run(self, session) -> None:
         session.add(

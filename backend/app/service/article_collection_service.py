@@ -212,5 +212,5 @@ class ArticleCollectionService:
 
     @staticmethod
     def _assert_session_is_clean(session: Session) -> None:
-        if session.new or session.dirty or session.deleted:
-            raise RuntimeError("collect_source requires a clean session")
+        if session.in_transaction() or session.new or session.dirty or session.deleted:
+            raise RuntimeError("collect_source requires a clean session without an active transaction")
