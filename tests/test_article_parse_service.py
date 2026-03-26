@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import tempfile
 import unittest
 from datetime import UTC, datetime
@@ -36,10 +37,11 @@ class ArticleParseServiceTest(unittest.TestCase):
     def _insert_article(
         self,
         *,
+        article_id: str | None = None,
         parse_attempts: int = 0,
         parse_status: str = "pending",
     ) -> tuple[str, datetime, datetime]:
-        article_id = str(uuid4())
+        article_id = article_id or str(uuid4())
         ingested_at = datetime(2026, 3, 26, 7, 0, tzinfo=UTC).replace(tzinfo=None)
         parse_updated_at = datetime(2026, 3, 26, 6, 0, tzinfo=UTC).replace(tzinfo=None)
         with self.session_factory() as session:
@@ -118,3 +120,58 @@ class ArticleParseServiceTest(unittest.TestCase):
         self.assertEqual(stored.parse_attempts, 1)
         self.assertEqual(stored.parse_error, "RuntimeError: boom")
         self.assertGreater(stored.parse_updated_at, old_parse_updated_at)
+
+    def test_parse_article_updates_parse_updated_at_instead_of_story_era_fields(self) -> None:
+        article_id, _ingested_at, old_parse_updated_at = self._insert_article(article_id="article-1")
+        service = ArticleParseService()
+        service._markdown_service = ArticleMarkdownService(Path(self.temp_dir.name))
+
+        parsed = ParsedArticle(
+            title="Parsed title",
+            summary="Parsed summary",
+            markdown_blocks=(MarkdownBlock(kind="paragraph", text="Body text"),),
+            images=(),
+            published_at=datetime(2026, 3, 26, 8, 0, tzinfo=UTC).replace(tzinfo=None),
+            metadata={"parser": "unit-test"},
+        )
+
+        async def _fake_parse(_candidates: list[Article]):
+            return [(article_id, parsed, None)]
+
+        with patch("backend.app.service.article_parse_service.SessionLocal", self.session_factory):
+            with patch.object(service, "_parse_batches_with_http_session", side_effect=_fake_parse):
+                result = asyncio.run(service.parse_articles(article_ids=[article_id]))
+
+        self.assertEqual(result.parsed, 1)
+
+        with self.session_factory() as session:
+            stored = session.get(Article, article_id)
+
+        self.assertEqual(stored.parse_status, "done")
+        self.assertGreater(stored.parse_updated_at, old_parse_updated_at)
+
+        # Parse stage should not rewrite truth-source fields that belong to collection.
+        self.assertEqual(stored.title_raw, "Original title")
+        self.assertEqual(stored.summary_raw, "Original summary")
+        self.assertIsNone(stored.published_at)
+        self.assertEqual(stored.metadata_json, {})
+
+    def test_parse_failure_abandons_after_third_attempt(self) -> None:
+        article_id, _ingested_at, _old_parse_updated_at = self._insert_article(
+            article_id="article-1",
+            parse_status="failed",
+            parse_attempts=2,
+        )
+        service = ArticleParseService()
+        service._markdown_service = ArticleMarkdownService(Path(self.temp_dir.name))
+
+        with patch("backend.app.service.article_parse_service.SessionLocal", self.session_factory):
+            result = service._persist_outcomes([(article_id, None, RuntimeError("parse boom"))])
+
+        self.assertEqual(result.failed, 1)
+
+        with self.session_factory() as session:
+            stored = session.get(Article, article_id)
+
+        self.assertEqual(stored.parse_status, "abandoned")
+        self.assertEqual(stored.parse_attempts, 3)
