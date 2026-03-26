@@ -69,10 +69,17 @@ class DigestModelContractTest(unittest.TestCase):
         module = importlib.import_module("backend.app.app_main")
         self.assertEqual(module.app.title, "KARL Fashion Feed Backend")
 
-    def test_scheduler_service_module_still_imports(self) -> None:
+    def test_story_era_modules_are_removed(self) -> None:
+        sys.modules.pop("backend.app.models.story", None)
+        sys.modules.pop("backend.app.router.story_router", None)
         sys.modules.pop("backend.app.service.scheduler_service", None)
-        module = importlib.import_module("backend.app.service.scheduler_service")
-        self.assertEqual(module.__name__, "backend.app.service.scheduler_service")
+
+        with self.assertRaises(ModuleNotFoundError):
+            importlib.import_module("backend.app.models.story")
+        with self.assertRaises(ModuleNotFoundError):
+            importlib.import_module("backend.app.router.story_router")
+        with self.assertRaises(ModuleNotFoundError):
+            importlib.import_module("backend.app.service.scheduler_service")
 
     def test_legacy_pipeline_run_requires_runtime_reset_instead_of_not_null_backfill(self) -> None:
         engine = create_engine("sqlite:///:memory:")
