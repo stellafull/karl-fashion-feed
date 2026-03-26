@@ -11,6 +11,16 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.app.core.database import Base
 
+LEGACY_ARTICLE_COLUMNS = {
+    "normalization_status",
+    "normalization_attempts",
+    "normalization_error",
+    "normalization_updated_at",
+    "title_zh",
+    "summary_zh",
+    "body_zh_rel_path",
+}
+
 
 def _utcnow_naive() -> datetime:
     return datetime.now(UTC).replace(tzinfo=None)
@@ -182,6 +192,13 @@ def _ensure_article_columns(bind: Engine) -> None:
         return
 
     existing_columns = {column["name"] for column in inspector.get_columns("article")}
+    legacy_columns = sorted(existing_columns & LEGACY_ARTICLE_COLUMNS)
+    if legacy_columns:
+        raise RuntimeError(
+            "article table contains legacy normalization-era columns "
+            f"{legacy_columns}; reset local runtime DB state before bootstrap"
+        )
+
     statements: list[str] = []
 
     if "character_count" not in existing_columns:

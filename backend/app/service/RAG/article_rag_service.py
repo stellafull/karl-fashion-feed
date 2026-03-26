@@ -27,15 +27,13 @@ class RagInsertResult:
     upserted_units: int
 
 
-def build_image_retrieval_content(article: Article, image: ArticleImage) -> str:
+def build_image_retrieval_content(_article: Article, image: ArticleImage) -> str:
     """Build image-lane retrieval content from source-provided text signals."""
     parts = [
         image.caption_raw,
         image.alt_text,
         image.credit_raw,
         image.context_snippet,
-        article.title_raw,
-        article.summary_raw,
     ]
     normalized_parts = [part.strip() for part in parts if isinstance(part, str) and part.strip()]
     return "\n".join(normalized_parts)

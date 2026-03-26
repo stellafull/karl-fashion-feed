@@ -157,6 +157,47 @@ class DigestModelContractTest(unittest.TestCase):
         self.assertIn("story", str(context.exception).lower())
         self.assertIn("reset", str(context.exception).lower())
 
+    def test_legacy_article_normalization_columns_require_runtime_reset(self) -> None:
+        engine = create_engine("sqlite:///:memory:")
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE article (
+                        article_id VARCHAR(36) PRIMARY KEY,
+                        source_name VARCHAR(120) NOT NULL,
+                        source_type VARCHAR(16) NOT NULL,
+                        source_lang VARCHAR(16) NOT NULL,
+                        category VARCHAR(64) NOT NULL,
+                        canonical_url TEXT NOT NULL,
+                        original_url TEXT NOT NULL,
+                        title_raw TEXT NOT NULL,
+                        summary_raw TEXT NOT NULL,
+                        markdown_rel_path TEXT NULL,
+                        normalization_status VARCHAR(32) NOT NULL,
+                        normalization_attempts INTEGER NOT NULL,
+                        normalization_error TEXT NULL,
+                        normalization_updated_at TIMESTAMP NOT NULL,
+                        title_zh TEXT NULL,
+                        summary_zh TEXT NULL,
+                        body_zh_rel_path TEXT NULL,
+                        published_at TIMESTAMP NULL,
+                        discovered_at TIMESTAMP NOT NULL,
+                        ingested_at TIMESTAMP NOT NULL,
+                        metadata_json JSON NOT NULL
+                    )
+                    """
+                )
+            )
+
+        with self.assertRaises(RuntimeError) as context:
+            ensure_article_storage_schema(engine)
+
+        message = str(context.exception).lower()
+        self.assertIn("article", message)
+        self.assertIn("reset", message)
+        self.assertIn("normalization", message)
+
     def test_legacy_article_image_table_gets_required_columns_repaired(self) -> None:
         engine = create_engine("sqlite:///:memory:")
         with engine.begin() as connection:

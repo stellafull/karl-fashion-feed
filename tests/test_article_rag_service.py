@@ -132,7 +132,8 @@ class ArticleRagServiceTest(unittest.TestCase):
         image_records = [record for record in fake_qdrant.records if record["modality"] == "image"]
         self.assertEqual(len(image_records), 1)
         self.assertIn("Look 1 backstage", image_records[0]["content"])
-        self.assertIn("Raw title", image_records[0]["content"])
-        self.assertIn("Raw summary", image_records[0]["content"])
+        self.assertIn("Model detail", image_records[0]["content"])
+        self.assertNotIn("Raw title", image_records[0]["content"])
+        self.assertNotIn("Raw summary", image_records[0]["content"])
         self.assertEqual(image_records[0]["tags_json"], [])
         self.assertEqual(image_records[0]["brands_json"], [])
