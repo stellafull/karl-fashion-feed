@@ -1,0 +1,136 @@
+"""Tests for article RAG ingestion under the digest runtime contract."""
+
+from __future__ import annotations
+
+import tempfile
+import unittest
+from datetime import UTC, datetime
+from pathlib import Path
+from uuid import uuid4
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
+from unittest.mock import patch
+
+from backend.app.core.database import Base
+from backend.app.models import Article, ArticleImage
+from backend.app.service.RAG.article_rag_service import ArticleRagService
+from backend.app.service.article_parse_service import ArticleMarkdownService
+
+
+class _FakeQdrantService:
+    def __init__(self) -> None:
+        self.records: list[dict[str, object]] = []
+
+    def upsert_data(self, collection_name: str, records: list[dict[str, object]]) -> int:
+        self.records = list(records)
+        return len(records)
+
+
+class ArticleRagServiceTest(unittest.TestCase):
+    """Verify RAG indexing follows the new article/digest contract."""
+
+    def setUp(self) -> None:
+        self.engine = create_engine(
+            "sqlite://",
+            connect_args={"check_same_thread": False},
+            poolclass=StaticPool,
+        )
+        self.session_factory = sessionmaker(bind=self.engine)
+        Base.metadata.create_all(self.engine)
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp_dir.cleanup)
+
+    def test_upsert_articles_uses_normalized_body_and_source_text_image_projection(self) -> None:
+        eligible_article_id = str(uuid4())
+        skipped_article_id = str(uuid4())
+        markdown_service = ArticleMarkdownService(Path(self.temp_dir.name))
+        body_path = "normalized/2026-03-26/article-1.md"
+        markdown_service.write_markdown(
+            relative_path=body_path,
+            content="# 标题\n\n第一段。\n\n第二段。\n",
+        )
+
+        with self.session_factory() as session:
+            session.add(
+                Article(
+                    article_id=eligible_article_id,
+                    source_name="Vogue Runway",
+                    source_type="rss",
+                    source_lang="en",
+                    category="fashion",
+                    canonical_url=f"https://example.com/{eligible_article_id}",
+                    original_url=f"https://example.com/original/{eligible_article_id}",
+                    title_raw="Raw title",
+                    summary_raw="Raw summary",
+                    discovered_at=datetime(2026, 3, 26, 7, 0, tzinfo=UTC).replace(tzinfo=None),
+                    ingested_at=datetime(2026, 3, 26, 7, 5, tzinfo=UTC).replace(tzinfo=None),
+                    metadata_json={},
+                    parse_status="done",
+                    normalization_status="done",
+                    body_zh_rel_path=body_path,
+                    title_zh="中文标题",
+                    summary_zh="中文摘要",
+                )
+            )
+            session.add(
+                Article(
+                    article_id=skipped_article_id,
+                    source_name="WWD",
+                    source_type="rss",
+                    source_lang="en",
+                    category="fashion",
+                    canonical_url=f"https://example.com/{skipped_article_id}",
+                    original_url=f"https://example.com/original/{skipped_article_id}",
+                    title_raw="Skip title",
+                    summary_raw="Skip summary",
+                    discovered_at=datetime(2026, 3, 26, 7, 0, tzinfo=UTC).replace(tzinfo=None),
+                    ingested_at=datetime(2026, 3, 26, 7, 10, tzinfo=UTC).replace(tzinfo=None),
+                    metadata_json={},
+                    parse_status="done",
+                    normalization_status="pending",
+                    body_zh_rel_path=body_path,
+                )
+            )
+            session.add(
+                ArticleImage(
+                    image_id=str(uuid4()),
+                    article_id=eligible_article_id,
+                    source_url="https://example.com/image.jpg",
+                    normalized_url="https://example.com/image.jpg",
+                    caption_raw="Look 1 backstage",
+                    alt_text="Model detail",
+                    credit_raw="Photo: Karl",
+                    context_snippet="Backstage fitting notes",
+                    visual_status="pending",
+                )
+            )
+            session.commit()
+
+        fake_qdrant = _FakeQdrantService()
+        with (
+            patch("backend.app.service.RAG.article_rag_service.SessionLocal", self.session_factory),
+            patch("backend.app.service.RAG.article_rag_service.QdrantService", return_value=fake_qdrant),
+            patch(
+                "backend.app.service.RAG.article_rag_service.generate_dense_embedding",
+                side_effect=lambda texts, image_urls=None: [[1.0, 0.0] for _ in texts],
+            ),
+            patch(
+                "backend.app.service.RAG.article_rag_service.generate_sparse_embedding",
+                side_effect=lambda texts: [{0: 1.0} for _ in texts],
+            ),
+        ):
+            service = ArticleRagService()
+            service._markdown_service = markdown_service
+            result = service.upsert_articles([eligible_article_id, skipped_article_id])
+
+        self.assertEqual(result.eligible_articles, 1)
+        self.assertGreaterEqual(result.text_units, 1)
+        self.assertEqual(result.image_units, 1)
+        self.assertEqual(result.upserted_units, len(fake_qdrant.records))
+        image_records = [record for record in fake_qdrant.records if record["modality"] == "image"]
+        self.assertEqual(len(image_records), 1)
+        self.assertIn("Look 1 backstage", image_records[0]["content"])
+        self.assertEqual(image_records[0]["tags_json"], [])
+        self.assertEqual(image_records[0]["brands_json"], [])

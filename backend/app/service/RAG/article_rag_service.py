@@ -1,4 +1,4 @@
-"""Insert publishable article text and image units into Qdrant."""
+"""Insert normalized article text and source-text image units into Qdrant."""
 
 from __future__ import annotations
 
@@ -21,49 +21,35 @@ RAG_COLLECTION_NAME = "kff_retrieval"
 
 @dataclass(frozen=True)
 class RagInsertResult:
-    publishable_articles: int
+    eligible_articles: int
     text_units: int
     image_units: int
     upserted_units: int
 
 
 def build_image_retrieval_content(article: Article, image: ArticleImage) -> str:
-    """Build the canonical image-lane retrieval content from truth sources."""
+    """Build image-lane retrieval content from source-provided text signals."""
     parts = [
         image.caption_raw,
         image.alt_text,
         image.credit_raw,
         image.context_snippet,
-        image.ocr_text,
-        image.observed_description,
-        image.contextual_interpretation,
         article.title_zh,
         article.summary_zh,
-        _join_terms(article.tags_json),
-        _join_terms(article.brands_json),
     ]
     normalized_parts = [part.strip() for part in parts if isinstance(part, str) and part.strip()]
     return "\n".join(normalized_parts)
 
 
 def has_image_text_projection(image: ArticleImage) -> bool:
-    """Return whether an image has at least one retrieval text projection signal."""
+    """Return whether an image has source-provided retrieval text."""
     projection_fields = (
         image.alt_text,
         image.caption_raw,
         image.credit_raw,
         image.context_snippet,
-        image.ocr_text,
-        image.observed_description,
-        image.contextual_interpretation,
     )
     return any(isinstance(field, str) and field.strip() for field in projection_fields)
-
-
-def _join_terms(value: object) -> str:
-    if not isinstance(value, list):
-        return ""
-    return " ".join(str(item).strip() for item in value if str(item).strip())
 
 
 class ArticleRagService:
@@ -75,10 +61,10 @@ class ArticleRagService:
         self._collection_name = RAG_COLLECTION_NAME
 
     def upsert_articles(self, article_ids: list[str]) -> RagInsertResult:
-        """Upsert retrieval units for publishable articles into Qdrant."""
+        """Upsert retrieval units for parse+normalization-complete articles into Qdrant."""
         if not article_ids:
             return RagInsertResult(
-                publishable_articles=0,
+                eligible_articles=0,
                 text_units=0,
                 image_units=0,
                 upserted_units=0,
@@ -91,25 +77,25 @@ class ArticleRagService:
                 .order_by(Article.ingested_at.asc(), Article.article_id.asc())
             ).all()
 
-        publishable_articles = [
+        eligible_articles = [
             article
             for article in articles
-            if article.should_publish is True and article.enrichment_status == "done"
+            if article.parse_status == "done" and article.normalization_status == "done"
         ]
-        if not publishable_articles:
+        if not eligible_articles:
             return RagInsertResult(
-                publishable_articles=0,
+                eligible_articles=0,
                 text_units=0,
                 image_units=0,
                 upserted_units=0,
             )
 
-        text_records = self._build_text_records(publishable_articles)
-        image_records = self._build_image_records(publishable_articles)
+        text_records = self._build_text_records(eligible_articles)
+        image_records = self._build_image_records(eligible_articles)
         records = text_records + image_records
         if not records:
             return RagInsertResult(
-                publishable_articles=len(publishable_articles),
+                eligible_articles=len(eligible_articles),
                 text_units=0,
                 image_units=0,
                 upserted_units=0,
@@ -131,7 +117,7 @@ class ArticleRagService:
 
         upserted_units = self._qdrant_service.upsert_data(self._collection_name, records)
         return RagInsertResult(
-            publishable_articles=len(publishable_articles),
+            eligible_articles=len(eligible_articles),
             text_units=len(text_records),
             image_units=len(image_records),
             upserted_units=upserted_units,
@@ -140,10 +126,10 @@ class ArticleRagService:
     def _build_text_records(self, articles: list[Article]) -> list[dict[str, object]]:
         records: list[dict[str, object]] = []
         for article in articles:
-            if not article.markdown_rel_path:
-                raise ValueError(f"markdown_rel_path is required for RAG text lane: {article.article_id}")
+            if not article.body_zh_rel_path:
+                raise ValueError(f"body_zh_rel_path is required for RAG text lane: {article.article_id}")
 
-            markdown = self._markdown_service.read_markdown(relative_path=article.markdown_rel_path)
+            markdown = self._markdown_service.read_markdown(relative_path=article.body_zh_rel_path)
             chunks = split_markdown_into_text_chunks(markdown, source_id=article.article_id)
             if not chunks:
                 raise ValueError(f"no text chunks generated for article: {article.article_id}")
@@ -160,8 +146,8 @@ class ArticleRagService:
                         "modality": "text",
                         "source_name": article.source_name,
                         "category": article.category,
-                        "tags_json": list(article.tags_json or []),
-                        "brands_json": list(article.brands_json or []),
+                        "tags_json": [],
+                        "brands_json": [],
                         "ingested_at": article.ingested_at,
                         "dense_vector": [],
                         "sparse_vector": {},
@@ -187,7 +173,7 @@ class ArticleRagService:
         records: list[dict[str, object]] = []
         for image in images:
             article = article_by_id.get(image.article_id)
-            if article is None or image.visual_status != "done":
+            if article is None:
                 continue
             if not has_image_text_projection(image):
                 continue
@@ -206,8 +192,8 @@ class ArticleRagService:
                     "modality": "image",
                     "source_name": article.source_name,
                     "category": article.category,
-                    "tags_json": list(article.tags_json or []),
-                    "brands_json": list(article.brands_json or []),
+                    "tags_json": [],
+                    "brands_json": [],
                     "ingested_at": article.ingested_at,
                     "dense_vector": [],
                     "sparse_vector": {},

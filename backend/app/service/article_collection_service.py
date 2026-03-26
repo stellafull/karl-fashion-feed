@@ -101,8 +101,6 @@ class ArticleCollectionService:
                             metadata_json=dict(article.metadata),
                             markdown_rel_path=None,
                             hero_image_id=None,
-                            content_raw="",
-                            image_url=None,
                             parse_status="pending",
                         )
                     )

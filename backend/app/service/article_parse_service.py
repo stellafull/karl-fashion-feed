@@ -226,6 +226,7 @@ class ArticleParseService:
                             else:
                                 stored.parse_status = "failed"
                             stored.parse_error = _format_error(error)
+                            stored.parse_updated_at = datetime.now(UTC).replace(tzinfo=None)
                             failed_count += 1
                             continue
 
@@ -309,15 +310,13 @@ class ArticleParseService:
                         stored.published_at = parsed.published_at or stored.published_at
                         stored.markdown_rel_path = relative_path
                         stored.hero_image_id = _select_hero_image_id(parsed.images, image_ids_by_index)
-                        stored.image_url = _select_hero_image_url(parsed.images)
                         stored.metadata_json = {
                             **dict(stored.metadata_json or {}),
                             **dict(parsed.metadata),
                         }
                         stored.parse_status = "done"
-                        stored.parsed_at = datetime.now(UTC).replace(tzinfo=None)
+                        stored.parse_updated_at = datetime.now(UTC).replace(tzinfo=None)
                         stored.parse_error = None
-                        stored.ingested_at = stored.parsed_at
                         parsed_count += 1
                         parsed_article_ids.append(stored.article_id)
 
@@ -350,15 +349,6 @@ def _select_hero_image_id(images, image_ids_by_index: dict[int, str]) -> str | N
             return image_ids_by_index[index]
     if images:
         return image_ids_by_index[0]
-    return None
-
-
-def _select_hero_image_url(images) -> str | None:
-    for image in images:
-        if image.role == "hero":
-            return image.source_url
-    if images:
-        return images[0].source_url
     return None
 
 

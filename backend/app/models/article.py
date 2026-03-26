@@ -160,7 +160,7 @@ def ensure_article_storage_schema(bind: Engine) -> None:
     from backend.app.models.runtime import PipelineRun, SourceRunState
     from backend.app.models.strict_story import StrictStory, StrictStoryArticle, StrictStoryFrame
 
-    _drop_story_tables(bind)
+    _fail_on_legacy_story_tables(bind)
     _reset_legacy_pipeline_run_table(bind)
     Base.metadata.create_all(
         bind=bind,
@@ -179,6 +179,7 @@ def ensure_article_storage_schema(bind: Engine) -> None:
         ],
     )
     _ensure_article_columns(bind)
+    _ensure_article_image_columns(bind)
     _ensure_pipeline_run_columns(bind)
 
 
@@ -191,15 +192,13 @@ def _apply_schema_statements(bind: Engine, statements: list[str]) -> None:
             connection.execute(text(statement))
 
 
-def _drop_story_tables(bind: Engine) -> None:
+def _fail_on_legacy_story_tables(bind: Engine) -> None:
     inspector = inspect(bind)
     table_names = set(inspector.get_table_names())
-    drop_statements: list[str] = []
-    if "story_article" in table_names:
-        drop_statements.append("DROP TABLE story_article")
-    if "story" in table_names:
-        drop_statements.append("DROP TABLE story")
-    _apply_schema_statements(bind, drop_statements)
+    if "story" in table_names or "story_article" in table_names:
+        raise RuntimeError(
+            "story-era tables are still present; reset local runtime DB state before bootstrap"
+        )
 
 
 def _ensure_article_columns(bind: Engine) -> None:
@@ -306,6 +305,23 @@ def _ensure_pipeline_run_columns(bind: Engine) -> None:
     if "digest_updated_at" not in existing_columns:
         statements.append(
             "ALTER TABLE pipeline_run ADD COLUMN digest_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL"
+        )
+
+    _apply_schema_statements(bind, statements)
+
+
+def _ensure_article_image_columns(bind: Engine) -> None:
+    inspector = inspect(bind)
+    if "article_image" not in inspector.get_table_names():
+        return
+
+    existing_columns = {column["name"] for column in inspector.get_columns("article_image")}
+    statements: list[str] = []
+    if "image_hash" not in existing_columns:
+        statements.append("ALTER TABLE article_image ADD COLUMN image_hash VARCHAR(16)")
+    if "visual_attempts" not in existing_columns:
+        statements.append(
+            "ALTER TABLE article_image ADD COLUMN visual_attempts INTEGER DEFAULT 0 NOT NULL"
         )
 
     _apply_schema_statements(bind, statements)

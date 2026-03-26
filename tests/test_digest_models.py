@@ -130,3 +130,79 @@ class DigestModelContractTest(unittest.TestCase):
             ensure_article_storage_schema(engine)
 
         self.assertIn("reset", str(context.exception).lower())
+
+    def test_legacy_story_tables_require_runtime_reset_instead_of_silent_drop(self) -> None:
+        engine = create_engine("sqlite:///:memory:")
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE story (
+                        story_key VARCHAR(36) PRIMARY KEY,
+                        created_run_id VARCHAR(36) NOT NULL,
+                        title_zh TEXT NOT NULL,
+                        summary_zh TEXT NOT NULL,
+                        key_points_json JSON NOT NULL,
+                        tags_json JSON NOT NULL,
+                        category VARCHAR(64) NOT NULL,
+                        hero_image_url TEXT NULL,
+                        source_article_count INTEGER NOT NULL,
+                        created_at TIMESTAMP NOT NULL
+                    )
+                    """
+                )
+            )
+
+        with self.assertRaises(RuntimeError) as context:
+            ensure_article_storage_schema(engine)
+
+        self.assertIn("story", str(context.exception).lower())
+        self.assertIn("reset", str(context.exception).lower())
+
+    def test_legacy_article_image_table_gets_required_columns_repaired(self) -> None:
+        engine = create_engine("sqlite:///:memory:")
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE article (
+                        article_id VARCHAR(36) PRIMARY KEY,
+                        source_name VARCHAR(120) NOT NULL,
+                        source_type VARCHAR(16) NOT NULL,
+                        source_lang VARCHAR(16) NOT NULL,
+                        category VARCHAR(64) NOT NULL,
+                        canonical_url TEXT NOT NULL,
+                        original_url TEXT NOT NULL,
+                        title_raw TEXT NOT NULL,
+                        summary_raw TEXT NOT NULL,
+                        published_at TIMESTAMP NULL,
+                        discovered_at TIMESTAMP NOT NULL,
+                        ingested_at TIMESTAMP NOT NULL,
+                        metadata_json JSON NOT NULL
+                    )
+                    """
+                )
+            )
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE article_image (
+                        image_id VARCHAR(36) PRIMARY KEY,
+                        article_id VARCHAR(36) NOT NULL,
+                        source_url TEXT NOT NULL,
+                        normalized_url TEXT NOT NULL
+                    )
+                    """
+                )
+            )
+
+        ensure_article_storage_schema(engine)
+
+        with engine.connect() as connection:
+            columns = {
+                row[1]
+                for row in connection.execute(text("PRAGMA table_info('article_image')")).fetchall()
+            }
+
+        self.assertIn("image_hash", columns)
+        self.assertIn("visual_attempts", columns)
