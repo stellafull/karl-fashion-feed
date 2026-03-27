@@ -349,6 +349,12 @@ def _backfill_strict_story_frame_membership(bind: Engine) -> None:
         return
 
     with bind.begin() as connection:
+        story_keys = [
+            row[0]
+            for row in connection.execute(
+                text("SELECT strict_story_key FROM strict_story ORDER BY strict_story_key ASC")
+            ).fetchall()
+        ]
         rows = connection.execute(
             text(
                 """
@@ -363,14 +369,14 @@ def _backfill_strict_story_frame_membership(bind: Engine) -> None:
         for strict_story_key, event_frame_id in rows:
             membership_by_story.setdefault(strict_story_key, []).append(event_frame_id)
 
-        for strict_story_key, frame_ids in membership_by_story.items():
+        for strict_story_key in story_keys:
+            frame_ids = membership_by_story.get(strict_story_key, [])
             connection.execute(
                 text(
                     """
                     UPDATE strict_story
                     SET frame_membership_json = :membership_json
                     WHERE strict_story_key = :strict_story_key
-                      AND (frame_membership_json IS NULL OR frame_membership_json = '[]')
                     """
                 ),
                 {

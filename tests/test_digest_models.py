@@ -422,7 +422,7 @@ class DigestModelContractTest(unittest.TestCase):
         self.assertEqual(row[4], 0)
         self.assertIsNotNone(row[5])
 
-    def test_runtime_shaped_strict_story_backfills_frame_membership_from_existing_rows(self) -> None:
+    def test_runtime_shaped_strict_story_rebuilds_stale_frame_membership_from_existing_rows(self) -> None:
         engine = create_engine("sqlite:///:memory:")
         with engine.begin() as connection:
             connection.execute(
@@ -477,6 +477,7 @@ class DigestModelContractTest(unittest.TestCase):
                         business_date DATE NOT NULL,
                         synopsis_zh TEXT NOT NULL,
                         signature_json JSON NOT NULL,
+                        frame_membership_json JSON NOT NULL,
                         created_run_id VARCHAR(36) NOT NULL,
                         packing_status VARCHAR(32) NOT NULL,
                         packing_error TEXT NULL,
@@ -493,6 +494,7 @@ class DigestModelContractTest(unittest.TestCase):
                         business_date,
                         synopsis_zh,
                         signature_json,
+                        frame_membership_json,
                         created_run_id,
                         packing_status,
                         packing_error,
@@ -502,6 +504,7 @@ class DigestModelContractTest(unittest.TestCase):
                         '2026-03-27',
                         'old story',
                         '{}',
+                        '["stale-frame"]',
                         'run-1',
                         'done',
                         NULL,

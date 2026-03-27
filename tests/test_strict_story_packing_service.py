@@ -428,6 +428,13 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
         )
         self.assertEqual(choice.synopsis_zh, "Gucci 任命 Demna 出任创意总监")
 
+    def test_tie_break_choice_accepts_long_latin_brand_token(self) -> None:
+        choice = StrictStoryTieBreakChoice(
+            reuse_strict_story_key="old-b",
+            synopsis_zh="MaisonMargiela 发布高定系列动态",
+        )
+        self.assertEqual(choice.synopsis_zh, "MaisonMargiela 发布高定系列动态")
+
     def test_rerun_keeps_digest_membership_when_key_is_reused(self) -> None:
         with self.session_factory() as session:
             first = asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))
