@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from uuid import uuid4
 
@@ -257,6 +258,7 @@ def _ensure_pipeline_run_columns(bind: Engine) -> None:
         )
 
     statements: list[str] = []
+    fill_statements: list[str] = []
 
     if "strict_story_status" not in existing_columns:
         statements.append(
@@ -269,9 +271,17 @@ def _ensure_pipeline_run_columns(bind: Engine) -> None:
     if "strict_story_error" not in existing_columns:
         statements.append("ALTER TABLE pipeline_run ADD COLUMN strict_story_error TEXT")
     if "strict_story_updated_at" not in existing_columns:
-        statements.append(
-            "ALTER TABLE pipeline_run ADD COLUMN strict_story_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL"
-        )
+        if bind.dialect.name == "sqlite":
+            statements.append("ALTER TABLE pipeline_run ADD COLUMN strict_story_updated_at TIMESTAMP")
+            fill_statements.append(
+                "UPDATE pipeline_run SET strict_story_updated_at = CURRENT_TIMESTAMP "
+                "WHERE strict_story_updated_at IS NULL"
+            )
+        else:
+            statements.append(
+                "ALTER TABLE pipeline_run ADD COLUMN strict_story_updated_at TIMESTAMP "
+                "DEFAULT CURRENT_TIMESTAMP NOT NULL"
+            )
     if "digest_status" not in existing_columns:
         statements.append(
             "ALTER TABLE pipeline_run ADD COLUMN digest_status VARCHAR(32) DEFAULT 'pending' NOT NULL"
@@ -283,11 +293,20 @@ def _ensure_pipeline_run_columns(bind: Engine) -> None:
     if "digest_error" not in existing_columns:
         statements.append("ALTER TABLE pipeline_run ADD COLUMN digest_error TEXT")
     if "digest_updated_at" not in existing_columns:
-        statements.append(
-            "ALTER TABLE pipeline_run ADD COLUMN digest_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL"
-        )
+        if bind.dialect.name == "sqlite":
+            statements.append("ALTER TABLE pipeline_run ADD COLUMN digest_updated_at TIMESTAMP")
+            fill_statements.append(
+                "UPDATE pipeline_run SET digest_updated_at = CURRENT_TIMESTAMP "
+                "WHERE digest_updated_at IS NULL"
+            )
+        else:
+            statements.append(
+                "ALTER TABLE pipeline_run ADD COLUMN digest_updated_at TIMESTAMP "
+                "DEFAULT CURRENT_TIMESTAMP NOT NULL"
+            )
 
     _apply_schema_statements(bind, statements)
+    _apply_schema_statements(bind, fill_statements)
 
 
 def _ensure_article_image_columns(bind: Engine) -> None:
@@ -320,6 +339,45 @@ def _ensure_strict_story_columns(bind: Engine) -> None:
         )
 
     _apply_schema_statements(bind, statements)
+    _backfill_strict_story_frame_membership(bind)
+
+
+def _backfill_strict_story_frame_membership(bind: Engine) -> None:
+    inspector = inspect(bind)
+    table_names = set(inspector.get_table_names())
+    if "strict_story" not in table_names or "strict_story_frame" not in table_names:
+        return
+
+    with bind.begin() as connection:
+        rows = connection.execute(
+            text(
+                """
+                SELECT strict_story_key, event_frame_id
+                FROM strict_story_frame
+                ORDER BY strict_story_key ASC, rank ASC, event_frame_id ASC
+                """
+            )
+        ).fetchall()
+
+        membership_by_story: dict[str, list[str]] = {}
+        for strict_story_key, event_frame_id in rows:
+            membership_by_story.setdefault(strict_story_key, []).append(event_frame_id)
+
+        for strict_story_key, frame_ids in membership_by_story.items():
+            connection.execute(
+                text(
+                    """
+                    UPDATE strict_story
+                    SET frame_membership_json = :membership_json
+                    WHERE strict_story_key = :strict_story_key
+                      AND (frame_membership_json IS NULL OR frame_membership_json = '[]')
+                    """
+                ),
+                {
+                    "membership_json": json.dumps(frame_ids, ensure_ascii=False),
+                    "strict_story_key": strict_story_key,
+                },
+            )
 
 
 def _reset_legacy_pipeline_run_table(bind: Engine) -> None:

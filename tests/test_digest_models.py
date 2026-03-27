@@ -337,3 +337,212 @@ class DigestModelContractTest(unittest.TestCase):
                 for row in connection.execute(text("PRAGMA table_info('strict_story')")).fetchall()
             }
         self.assertIn("frame_membership_json", columns)
+
+    def test_runtime_shaped_pipeline_run_with_rows_repairs_stage_columns_on_sqlite(self) -> None:
+        engine = create_engine("sqlite:///:memory:")
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE pipeline_run (
+                        run_id VARCHAR(36) PRIMARY KEY,
+                        business_date DATE NOT NULL,
+                        run_type VARCHAR(64) NOT NULL,
+                        status VARCHAR(32) NOT NULL,
+                        started_at TIMESTAMP NOT NULL,
+                        finished_at TIMESTAMP NULL,
+                        watermark_ingested_at TIMESTAMP NULL,
+                        error_message TEXT NULL,
+                        metadata_json JSON NOT NULL
+                    )
+                    """
+                )
+            )
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO pipeline_run (
+                        run_id,
+                        business_date,
+                        run_type,
+                        status,
+                        started_at,
+                        finished_at,
+                        watermark_ingested_at,
+                        error_message,
+                        metadata_json
+                    ) VALUES (
+                        'run-1',
+                        '2026-03-27',
+                        'digest_daily',
+                        'success',
+                        '2026-03-27 08:00:00',
+                        NULL,
+                        NULL,
+                        NULL,
+                        '{}'
+                    )
+                    """
+                )
+            )
+
+        ensure_article_storage_schema(engine)
+
+        with engine.connect() as connection:
+            columns = {
+                row[1]
+                for row in connection.execute(text("PRAGMA table_info('pipeline_run')")).fetchall()
+            }
+            row = connection.execute(
+                text(
+                    """
+                    SELECT
+                        strict_story_status,
+                        strict_story_attempts,
+                        strict_story_updated_at,
+                        digest_status,
+                        digest_attempts,
+                        digest_updated_at
+                    FROM pipeline_run
+                    WHERE run_id = 'run-1'
+                    """
+                )
+            ).one()
+
+        self.assertIn("strict_story_status", columns)
+        self.assertIn("strict_story_attempts", columns)
+        self.assertIn("strict_story_updated_at", columns)
+        self.assertIn("digest_status", columns)
+        self.assertIn("digest_attempts", columns)
+        self.assertIn("digest_updated_at", columns)
+        self.assertEqual(row[0], "pending")
+        self.assertEqual(row[1], 0)
+        self.assertIsNotNone(row[2])
+        self.assertEqual(row[3], "pending")
+        self.assertEqual(row[4], 0)
+        self.assertIsNotNone(row[5])
+
+    def test_runtime_shaped_strict_story_backfills_frame_membership_from_existing_rows(self) -> None:
+        engine = create_engine("sqlite:///:memory:")
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE pipeline_run (
+                        run_id VARCHAR(36) PRIMARY KEY,
+                        business_date DATE NOT NULL,
+                        run_type VARCHAR(64) NOT NULL,
+                        status VARCHAR(32) NOT NULL,
+                        started_at TIMESTAMP NOT NULL,
+                        finished_at TIMESTAMP NULL,
+                        watermark_ingested_at TIMESTAMP NULL,
+                        error_message TEXT NULL,
+                        metadata_json JSON NOT NULL
+                    )
+                    """
+                )
+            )
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO pipeline_run (
+                        run_id,
+                        business_date,
+                        run_type,
+                        status,
+                        started_at,
+                        finished_at,
+                        watermark_ingested_at,
+                        error_message,
+                        metadata_json
+                    ) VALUES (
+                        'run-1',
+                        '2026-03-27',
+                        'digest_daily',
+                        'success',
+                        '2026-03-27 08:00:00',
+                        NULL,
+                        NULL,
+                        NULL,
+                        '{}'
+                    )
+                    """
+                )
+            )
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE strict_story (
+                        strict_story_key VARCHAR(36) PRIMARY KEY,
+                        business_date DATE NOT NULL,
+                        synopsis_zh TEXT NOT NULL,
+                        signature_json JSON NOT NULL,
+                        created_run_id VARCHAR(36) NOT NULL,
+                        packing_status VARCHAR(32) NOT NULL,
+                        packing_error TEXT NULL,
+                        created_at TIMESTAMP NOT NULL
+                    )
+                    """
+                )
+            )
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO strict_story (
+                        strict_story_key,
+                        business_date,
+                        synopsis_zh,
+                        signature_json,
+                        created_run_id,
+                        packing_status,
+                        packing_error,
+                        created_at
+                    ) VALUES (
+                        'story-1',
+                        '2026-03-27',
+                        'old story',
+                        '{}',
+                        'run-1',
+                        'done',
+                        NULL,
+                        '2026-03-27 08:00:00'
+                    )
+                    """
+                )
+            )
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE strict_story_frame (
+                        strict_story_key VARCHAR(36) NOT NULL,
+                        event_frame_id VARCHAR(36) NOT NULL,
+                        rank INTEGER NOT NULL,
+                        PRIMARY KEY (strict_story_key, event_frame_id)
+                    )
+                    """
+                )
+            )
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO strict_story_frame (strict_story_key, event_frame_id, rank)
+                    VALUES
+                        ('story-1', 'frame-b', 1),
+                        ('story-1', 'frame-a', 0)
+                    """
+                )
+            )
+
+        ensure_article_storage_schema(engine)
+
+        with engine.connect() as connection:
+            membership = connection.execute(
+                text(
+                    """
+                    SELECT frame_membership_json
+                    FROM strict_story
+                    WHERE strict_story_key = 'story-1'
+                    """
+                )
+            ).scalar_one()
+        self.assertEqual(membership, '["frame-a", "frame-b"]')
