@@ -59,6 +59,7 @@ class StrictStoryFrame(Base):
     event_frame_id: Mapped[str] = mapped_column(
         ForeignKey("article_event_frame.event_frame_id", ondelete="CASCADE"),
         primary_key=True,
+        unique=True,
     )
     rank: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
