@@ -5,6 +5,8 @@ from __future__ import annotations
 import asyncio
 import json
 import unittest
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import UTC, date, datetime
 
 from sqlalchemy import create_engine, delete, event, select
@@ -67,6 +69,13 @@ class _FakeChat:
 class _FakeClient:
     def __init__(self, content: str) -> None:
         self.chat = _FakeChat(content)
+
+
+class _NoOpRateLimiter:
+    @contextmanager
+    def lease(self, bucket: str) -> Iterator[None]:
+        self.last_bucket = bucket
+        yield
 
 
 class StrictStoryPackingServiceTest(unittest.TestCase):
@@ -304,7 +313,10 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
             },
             ensure_ascii=False,
         )
-        service = StrictStoryPackingService(client=_FakeClient(invalid_payload))
+        service = StrictStoryPackingService(
+            client=_FakeClient(invalid_payload),
+            rate_limiter=_NoOpRateLimiter(),
+        )
         with self.session_factory() as session:
             now = datetime(2026, 3, 27, 7, 30, tzinfo=UTC).replace(tzinfo=None)
             session.add(
@@ -361,7 +373,10 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
             },
             ensure_ascii=False,
         )
-        service = StrictStoryPackingService(client=_FakeClient(invalid_payload))
+        service = StrictStoryPackingService(
+            client=_FakeClient(invalid_payload),
+            rate_limiter=_NoOpRateLimiter(),
+        )
         with self.session_factory() as session:
             now = datetime(2026, 3, 27, 7, 31, tzinfo=UTC).replace(tzinfo=None)
             session.add(

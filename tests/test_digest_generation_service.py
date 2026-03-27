@@ -5,6 +5,8 @@ from __future__ import annotations
 import asyncio
 import json
 import unittest
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import UTC, date, datetime
 from unittest.mock import patch
 
@@ -92,6 +94,13 @@ class _FakeChat:
 class _FakeClient:
     def __init__(self, content: str) -> None:
         self.chat = _FakeChat(content)
+
+
+class _NoOpRateLimiter:
+    @contextmanager
+    def lease(self, bucket: str) -> Iterator[None]:
+        self.last_bucket = bucket
+        yield
 
 
 class DigestGenerationServiceTest(unittest.TestCase):
@@ -284,7 +293,10 @@ class DigestGenerationServiceTest(unittest.TestCase):
             ensure_ascii=False,
         )
         fake_client = _FakeClient(llm_content)
-        service = DigestGenerationService(client=fake_client)  # type: ignore[arg-type]
+        service = DigestGenerationService(
+            client=fake_client,
+            rate_limiter=_NoOpRateLimiter(),
+        )  # type: ignore[arg-type]
         strict_stories = [
             _StrictStoryInput(
                 strict_story_key="strict-story-1",
