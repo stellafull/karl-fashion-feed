@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import unittest
+from datetime import date
 from datetime import UTC, datetime
 from uuid import uuid4
 
@@ -52,9 +53,15 @@ class EventFrameExtractionServiceTest(unittest.TestCase):
         parse_status: str = "done",
         event_frame_attempts: int = 0,
         event_frame_status: str = "pending",
+        published_at: datetime | None = None,
+        discovered_at: datetime | None = None,
+        ingested_at: datetime | None = None,
     ) -> str:
         article_id = str(uuid4())
         now = datetime(2026, 3, 27, 8, 0, tzinfo=UTC).replace(tzinfo=None)
+        published_at = now if published_at is None else published_at
+        discovered_at = now if discovered_at is None else discovered_at
+        ingested_at = now if ingested_at is None else ingested_at
         with self.session_factory() as session:
             session.add(
                 Article(
@@ -68,9 +75,9 @@ class EventFrameExtractionServiceTest(unittest.TestCase):
                     title_raw="Original title",
                     summary_raw="Original summary",
                     markdown_rel_path="2026-03-27/article.md",
-                    published_at=now,
-                    discovered_at=now,
-                    ingested_at=now,
+                    published_at=published_at,
+                    discovered_at=discovered_at,
+                    ingested_at=ingested_at,
                     metadata_json={},
                     parse_status=parse_status,
                     parse_attempts=1,
@@ -113,6 +120,31 @@ class EventFrameExtractionServiceTest(unittest.TestCase):
 
         self.assertEqual(len(stored_frames), 3)
         self.assertEqual(article.event_frame_status, "done")
+
+    def test_extract_event_frames_uses_asia_shanghai_business_date_from_ingested_at(self) -> None:
+        payload = EventFrameExtractionSchema(
+            frames=[
+                ExtractedEventFrame(event_type="brand_appointment", extraction_confidence=0.99),
+            ]
+        )
+        service = StubEventFrameExtractionService(payload)
+        article_id = self._insert_article(
+            published_at=datetime(2026, 3, 26, 12, 0, tzinfo=UTC).replace(tzinfo=None),
+            discovered_at=datetime(2026, 3, 26, 12, 30, tzinfo=UTC).replace(tzinfo=None),
+            ingested_at=datetime(2026, 3, 26, 16, 30, tzinfo=UTC).replace(tzinfo=None),
+        )
+
+        with self.session_factory() as session:
+            article = session.get(Article, article_id)
+            asyncio.run(service.extract_frames(session, article))
+            session.commit()
+
+        with self.session_factory() as session:
+            stored_frame = session.scalars(
+                select(ArticleEventFrame).where(ArticleEventFrame.article_id == article_id)
+            ).one()
+
+        self.assertEqual(stored_frame.business_date, date(2026, 3, 27))
 
     def test_zero_frames_is_a_valid_done_state(self) -> None:
         service = StubEventFrameExtractionService(EventFrameExtractionSchema(frames=[]))

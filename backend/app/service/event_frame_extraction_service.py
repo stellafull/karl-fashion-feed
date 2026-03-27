@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime, date
 from typing import TYPE_CHECKING
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
@@ -20,6 +22,8 @@ from backend.app.service.article_parse_service import ArticleMarkdownService
 
 if TYPE_CHECKING:
     from openai import AsyncOpenAI
+
+ASIA_SHANGHAI = ZoneInfo("Asia/Shanghai")
 
 
 class EventFrameExtractionService:
@@ -129,10 +133,9 @@ class EventFrameExtractionService:
         article: Article,
         frame: ExtractedEventFrame,
     ) -> ArticleEventFrame:
-        business_time = article.published_at or article.discovered_at
         return ArticleEventFrame(
             article_id=article.article_id,
-            business_date=business_time.date(),
+            business_date=self._resolve_business_date(article),
             event_type=frame.event_type.strip(),
             subject_json=dict(frame.subject_json),
             action_text=frame.action_text.strip(),
@@ -153,3 +156,9 @@ class EventFrameExtractionService:
             return ""
         normalized = value.strip()
         return normalized
+
+    def _resolve_business_date(self, article: Article) -> date:
+        ingested_at = article.ingested_at
+        if ingested_at.tzinfo is None:
+            ingested_at = ingested_at.replace(tzinfo=UTC)
+        return ingested_at.astimezone(ASIA_SHANGHAI).date()
