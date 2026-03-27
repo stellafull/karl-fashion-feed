@@ -46,7 +46,7 @@ class ArticleRagServiceTest(unittest.TestCase):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp_dir.cleanup)
 
-    def test_upsert_articles_indexes_normalized_articles_not_publishable_subset(self) -> None:
+    def test_upsert_articles_indexes_parse_complete_articles(self) -> None:
         article_1_id = str(uuid4())
         article_2_id = str(uuid4())
         markdown_service = ArticleMarkdownService(Path(self.temp_dir.name))

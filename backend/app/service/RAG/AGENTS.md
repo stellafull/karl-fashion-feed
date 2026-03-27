@@ -104,7 +104,7 @@ shared collection 的 nullability 规则固定如下：
 ### 3.1 索引对象
 
 - shared collection 只收录可直接回源到 Markdown / `article_image` 的可检索叶子单元。
-- `story`、未完成解析的 article、Qdrant 回写结果都不进入 shared collection。
+- `digest`、未完成解析的 article、Qdrant 回写结果都不进入 shared collection。
 - 图片不进入 canonical Markdown；image lane 只从 `article_image` 派生。
 
 ### 3.2 Text 单元规则
@@ -268,7 +268,7 @@ shared collection 的 nullability 规则固定如下：
   - 保留排序最高的 image hits 作为视觉证据
   - 同一 article 的 text 与 image 证据聚合为一个 article-level evidence package
 
-retrieval 层不尝试把多个 article 再聚成 story/topic 级 bundle。
+retrieval 层不尝试把多个 article 再聚成 digest/topic 级 bundle。
 
 ### 5.6 Retrieval 输出契约
 
