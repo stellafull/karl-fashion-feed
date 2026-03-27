@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from typing import Any
+from urllib.parse import quote
 
 
 def build_celery_broker_url() -> str:
@@ -11,7 +12,7 @@ def build_celery_broker_url() -> str:
     host = os.getenv("REDIS_HOST", "localhost")
     port = int(os.getenv("REDIS_PORT", "6379"))
     password = os.getenv("REDIS_PASSWORD", "")
-    auth = f":{password}@" if password else ""
+    auth = f":{quote(password, safe='')}@" if password else ""
     return f"redis://{auth}{host}:{port}/0"
 
 

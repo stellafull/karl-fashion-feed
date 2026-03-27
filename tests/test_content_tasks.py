@@ -15,6 +15,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from backend.app.config.celery_config import build_celery_broker_url
 from backend.app.core.database import Base
 from backend.app.models import Article
 from backend.app.service.article_contracts import MarkdownBlock, ParsedArticle
@@ -97,6 +98,20 @@ class ContentTasksTest(unittest.TestCase):
             ],
         )
 
+    def test_build_celery_broker_url_encodes_reserved_password_characters(self) -> None:
+        with patch.dict(
+            "os.environ",
+            {
+                "REDIS_HOST": "redis.internal",
+                "REDIS_PORT": "6380",
+                "REDIS_PASSWORD": "pa/ss?#word",
+            },
+            clear=False,
+        ):
+            broker_url = build_celery_broker_url()
+
+        self.assertEqual(broker_url, "redis://:pa%2Fss%3F%23word@redis.internal:6380/0")
+
     def test_parse_task_marks_article_done_in_eager_mode(self) -> None:
         self._insert_article(article_id="article-1")
         celery_app = self._load_fresh_celery_app()
@@ -141,6 +156,76 @@ class ContentTasksTest(unittest.TestCase):
 
         self.assertIsNotNone(article)
         self.assertEqual(article.parse_status, "done")
+
+    def test_collect_source_task_runs_in_eager_mode(self) -> None:
+        celery_app = self._load_fresh_celery_app()
+        celery_app.loader.import_default_modules()
+        collect_task = celery_app.tasks["content.collect_source"]
+        original_eager = celery_app.conf.task_always_eager
+        observed: dict[str, object] = {}
+
+        async def fake_collect_source(self, session, *, run_id: str, source_name: str):  # type: ignore[no-untyped-def]
+            del self
+            observed["session"] = session
+            observed["run_id"] = run_id
+            observed["source_name"] = source_name
+            return None
+
+        try:
+            celery_app.conf.task_always_eager = True
+            with patch("backend.app.tasks.content_tasks.SessionLocal", self.session_factory):
+                with patch(
+                    "backend.app.service.article_collection_service.ArticleCollectionService.collect_source",
+                    new=fake_collect_source,
+                ):
+                    collect_task.delay("vogue-runway", "run-collect-1")
+        finally:
+            celery_app.conf.task_always_eager = original_eager
+
+        self.assertEqual(observed["run_id"], "run-collect-1")
+        self.assertEqual(observed["source_name"], "vogue-runway")
+        self.assertIsNotNone(observed["session"])
+
+    def test_extract_event_frames_task_marks_article_done_in_eager_mode(self) -> None:
+        article_id = self._insert_article(
+            article_id="article-extract-1",
+            markdown_rel_path="2026-03-27/article-extract-1.md",
+        )
+        celery_app = self._load_fresh_celery_app()
+        celery_app.loader.import_default_modules()
+        extract_task = celery_app.tasks["content.extract_event_frames"]
+        original_eager = celery_app.conf.task_always_eager
+
+        async def fake_extract_frames(self, session, article):  # type: ignore[no-untyped-def]
+            del self
+            article.event_frame_status = "done"
+            article.event_frame_error = None
+            article.event_frame_updated_at = datetime(2026, 3, 27, 9, 30, tzinfo=UTC).replace(
+                tzinfo=None
+            )
+            session.flush()
+            return ()
+
+        try:
+            celery_app.conf.task_always_eager = True
+            with patch("backend.app.service.event_frame_extraction_service.SessionLocal", self.session_factory):
+                with patch(
+                    "backend.app.service.event_frame_extraction_service.ensure_article_storage_schema",
+                    return_value=None,
+                ):
+                    with patch(
+                        "backend.app.service.event_frame_extraction_service.EventFrameExtractionService.extract_frames",
+                        new=fake_extract_frames,
+                    ):
+                        extract_task.delay(article_id)
+        finally:
+            celery_app.conf.task_always_eager = original_eager
+
+        with self.session_factory() as session:
+            article = session.get(Article, article_id)
+
+        self.assertIsNotNone(article)
+        self.assertEqual(article.event_frame_status, "done")
 
     def test_custom_client_path_still_builds_redis_rate_limiter(self) -> None:
         fake_client = _FakeClient('{"frames": []}')
