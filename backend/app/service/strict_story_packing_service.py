@@ -18,7 +18,7 @@ from backend.app.schemas.llm.strict_story_tiebreak import (
     StrictStoryTieBreakSchema,
     normalize_readable_synopsis_zh,
 )
-from backend.app.service.llm_rate_limiter import LlmRateLimiter, PassThroughLlmRateLimiter
+from backend.app.service.llm_rate_limiter import LlmRateLimiter
 
 if TYPE_CHECKING:
     from openai import AsyncOpenAI
@@ -60,9 +60,7 @@ class StrictStoryPackingService:
         rate_limiter: LlmRateLimiter | None = None,
     ) -> None:
         self._client = client
-        self._rate_limiter = rate_limiter or (
-            PassThroughLlmRateLimiter() if client is not None else LlmRateLimiter()
-        )
+        self._rate_limiter = rate_limiter or LlmRateLimiter()
 
     async def pack_business_day(
         self,

@@ -21,7 +21,7 @@ from backend.app.schemas.llm.event_frame_extraction import (
     ExtractedEventFrame,
 )
 from backend.app.service.article_parse_service import ArticleMarkdownService
-from backend.app.service.llm_rate_limiter import LlmRateLimiter, PassThroughLlmRateLimiter
+from backend.app.service.llm_rate_limiter import LlmRateLimiter
 
 if TYPE_CHECKING:
     from openai import AsyncOpenAI
@@ -41,9 +41,7 @@ class EventFrameExtractionService:
     ) -> None:
         self._client = client
         self._markdown_service = markdown_service or ArticleMarkdownService()
-        self._rate_limiter = rate_limiter or (
-            PassThroughLlmRateLimiter() if client is not None else LlmRateLimiter()
-        )
+        self._rate_limiter = rate_limiter or LlmRateLimiter()
 
     async def extract_frames(self, session: Session, article: Article) -> tuple[ArticleEventFrame, ...]:
         """Extract sparse event frames and persist them for one parsed article."""

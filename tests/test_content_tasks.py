@@ -3,42 +3,23 @@
 from __future__ import annotations
 
 import asyncio
+import importlib
+import sys
 import tempfile
 import unittest
-from collections.abc import Iterator
-from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import patch
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from backend.app.core.database import Base
 from backend.app.models import Article
-from backend.app.schemas.llm.event_frame_extraction import (
-    EventFrameExtractionSchema,
-    ExtractedEventFrame,
-)
 from backend.app.service.article_contracts import MarkdownBlock, ParsedArticle
 from backend.app.service.event_frame_extraction_service import EventFrameExtractionService
-from backend.app.tasks import content_tasks
-from backend.app.tasks.celery_app import celery_app
-
-
-class _FakeLimiter:
-    def __init__(self, *, block_first_n: int = 0) -> None:
-        self._remaining_blocks = block_first_n
-        self.calls = 0
-
-    @contextmanager
-    def lease(self, bucket: str) -> Iterator[None]:
-        self.calls += 1
-        self.last_bucket = bucket
-        while self._remaining_blocks > 0:
-            self._remaining_blocks -= 1
-        yield
+from backend.app.service.llm_rate_limiter import LlmRateLimiter
 
 
 class _FakeCompletionResponse:
@@ -67,6 +48,27 @@ class _FakeClient:
         self.chat = _FakeChat(content)
 
 
+class _FakeRedisClient:
+    def __init__(self, *, block_first_n: int) -> None:
+        self._remaining_blocks = block_first_n
+        self.set_call_count = 0
+        self.eval_call_count = 0
+        self.last_eval_args: tuple[object, ...] | None = None
+
+    def set(self, key: str, token: str, *, nx: bool, ex: int) -> bool | None:
+        del key, token, nx, ex
+        self.set_call_count += 1
+        if self._remaining_blocks > 0:
+            self._remaining_blocks -= 1
+            return None
+        return True
+
+    def eval(self, script: str, keys_count: int, key: str, token: str) -> int:
+        self.eval_call_count += 1
+        self.last_eval_args = (script, keys_count, key, token)
+        return 1
+
+
 class ContentTasksTest(unittest.TestCase):
     def setUp(self) -> None:
         self.engine = create_engine(
@@ -80,6 +82,12 @@ class ContentTasksTest(unittest.TestCase):
         self.addCleanup(self.temp_dir.cleanup)
 
     def test_all_content_tasks_are_registered(self) -> None:
+        celery_app = self._load_fresh_celery_app()
+        self.assertNotIn("backend.app.tasks.content_tasks", sys.modules)
+
+        celery_app.loader.import_default_modules()
+
+        self.assertIn("backend.app.tasks.content_tasks", sys.modules)
         self.assertEqual(
             sorted(name for name in celery_app.tasks if name.startswith("content.")),
             [
@@ -91,6 +99,9 @@ class ContentTasksTest(unittest.TestCase):
 
     def test_parse_task_marks_article_done_in_eager_mode(self) -> None:
         self._insert_article(article_id="article-1")
+        celery_app = self._load_fresh_celery_app()
+        celery_app.loader.import_default_modules()
+
         parsed = ParsedArticle(
             title="Parsed title",
             summary="Parsed summary",
@@ -100,6 +111,7 @@ class ContentTasksTest(unittest.TestCase):
             metadata={"parser": "unit-test"},
         )
         original_eager = celery_app.conf.task_always_eager
+        parse_task = celery_app.tasks["content.parse_article"]
 
         async def fake_parse_batches(self, candidates: list[Article]):  # type: ignore[no-untyped-def]
             del self, candidates
@@ -109,22 +121,18 @@ class ContentTasksTest(unittest.TestCase):
             celery_app.conf.task_always_eager = True
             with patch("backend.app.service.article_parse_service.SessionLocal", self.session_factory):
                 with patch(
-                    "backend.app.tasks.content_tasks.SessionLocal",
-                    self.session_factory,
+                    "backend.app.service.article_parse_service.ARTICLE_MARKDOWN_ROOT",
+                    Path(self.temp_dir.name),
                 ):
                     with patch(
-                        "backend.app.service.article_parse_service.ARTICLE_MARKDOWN_ROOT",
-                        Path(self.temp_dir.name),
+                        "backend.app.service.article_parse_service.ArticleMarkdownService.write_markdown",
+                        return_value=Path(self.temp_dir.name) / "article-1.md",
                     ):
                         with patch(
-                            "backend.app.service.article_parse_service.ArticleMarkdownService.write_markdown",
-                            return_value=Path(self.temp_dir.name) / "article-1.md",
+                            "backend.app.service.article_parse_service.ArticleParseService._parse_batches_with_http_session",
+                            new=fake_parse_batches,
                         ):
-                            with patch(
-                                "backend.app.service.article_parse_service.ArticleParseService._parse_batches_with_http_session",
-                                new=fake_parse_batches,
-                            ):
-                                content_tasks.parse_article.delay("article-1")
+                            parse_task.delay("article-1")
         finally:
             celery_app.conf.task_always_eager = original_eager
 
@@ -134,12 +142,29 @@ class ContentTasksTest(unittest.TestCase):
         self.assertIsNotNone(article)
         self.assertEqual(article.parse_status, "done")
 
-    def test_rate_limit_wait_does_not_increment_attempts(self) -> None:
+    def test_custom_client_path_still_builds_redis_rate_limiter(self) -> None:
+        fake_client = _FakeClient('{"frames": []}')
+        fake_limiter = object()
+
+        with patch(
+            "backend.app.service.event_frame_extraction_service.LlmRateLimiter",
+            return_value=fake_limiter,
+        ) as limiter_factory:
+            service = EventFrameExtractionService(client=fake_client)
+
+        self.assertIs(service._rate_limiter, fake_limiter)
+        limiter_factory.assert_called_once_with()
+
+    def test_rate_limit_wait_retries_without_incrementing_attempts(self) -> None:
         article_id = self._insert_article(
             article_id="article-rate-limit",
             markdown_rel_path="2026-03-27/article-rate-limit.md",
         )
-        limiter = _FakeLimiter(block_first_n=2)
+        fake_redis = _FakeRedisClient(block_first_n=2)
+        limiter = LlmRateLimiter(
+            redis_client=fake_redis,
+            poll_interval_seconds=0.01,
+        )
         service = EventFrameExtractionService(
             client=_FakeClient(
                 """
@@ -157,23 +182,28 @@ class ContentTasksTest(unittest.TestCase):
             rate_limiter=limiter,
         )
 
-        with patch.object(
-            service._markdown_service,
-            "read_markdown",
-            return_value="# Title\n\nBody",
-        ):
-            with self.session_factory() as session:
-                article = session.get(Article, article_id)
-                asyncio.run(service.extract_frames(session, article))
-                session.commit()
+        with patch("backend.app.service.llm_rate_limiter.time.sleep") as sleep_mock:
+            with patch.object(
+                service._markdown_service,
+                "read_markdown",
+                return_value="# Title\n\nBody",
+            ):
+                with self.session_factory() as session:
+                    article = session.get(Article, article_id)
+                    asyncio.run(service.extract_frames(session, article))
+                    session.commit()
 
         with self.session_factory() as session:
             article = session.get(Article, article_id)
 
         self.assertEqual(article.event_frame_attempts, 0)
         self.assertEqual(article.event_frame_status, "done")
-        self.assertEqual(limiter.calls, 1)
-        self.assertEqual(limiter.last_bucket, "event_frame_extraction")
+        self.assertEqual(fake_redis.set_call_count, 3)
+        self.assertEqual(fake_redis.eval_call_count, 1)
+        self.assertEqual(sleep_mock.call_count, 2)
+        self.assertIsNotNone(fake_redis.last_eval_args)
+        self.assertEqual(fake_redis.last_eval_args[1], 1)
+        self.assertIn("llm-rate-limit:event_frame_extraction", str(fake_redis.last_eval_args[2]))
 
     def _insert_article(
         self,
@@ -211,6 +241,15 @@ class ContentTasksTest(unittest.TestCase):
             )
             session.commit()
         return article_id
+
+    def _load_fresh_celery_app(self):
+        for module_name in (
+            "backend.app.tasks.content_tasks",
+            "backend.app.tasks.celery_app",
+            "backend.app.tasks",
+        ):
+            sys.modules.pop(module_name, None)
+        return importlib.import_module("backend.app.tasks.celery_app").celery_app
 
 
 if __name__ == "__main__":

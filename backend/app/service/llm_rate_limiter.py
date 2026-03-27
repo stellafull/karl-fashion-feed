@@ -13,17 +13,6 @@ import redis
 from backend.app.config.celery_config import build_celery_broker_url
 
 
-class PassThroughLlmRateLimiter:
-    """Test-friendly limiter that immediately yields without external coordination."""
-
-    @contextmanager
-    def lease(self, bucket: str) -> Iterator[None]:
-        """Yield immediately for callers that inject their own fake clients."""
-        if not bucket.strip():
-            raise ValueError("bucket cannot be blank")
-        yield
-
-
 class LlmRateLimiter:
     """Coordinate one shared Redis lease per LLM bucket across workers."""
 
