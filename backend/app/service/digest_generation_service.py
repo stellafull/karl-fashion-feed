@@ -133,17 +133,37 @@ class DigestGenerationService:
     ) -> list[_ResolvedPlan]:
         story_by_key = {item.strict_story_key: item for item in strict_stories}
         resolved: list[_ResolvedPlan] = []
-        for plan in schema.digests:
+        assigned_story_to_digest: dict[str, int] = {}
+        for digest_index, plan in enumerate(schema.digests):
             facet = plan.facet.strip()
             if not facet:
-                continue
-            strict_story_keys = tuple(
-                key
-                for key in sorted(set(plan.strict_story_keys))
-                if key in story_by_key
-            )
-            if not strict_story_keys:
-                continue
+                raise ValueError(f"digest[{digest_index}] facet cannot be blank")
+            title_zh = plan.title_zh.strip()
+            if not title_zh:
+                raise ValueError(f"digest[{digest_index}] title_zh cannot be blank")
+            body_markdown = plan.body_markdown.strip()
+            if not body_markdown:
+                raise ValueError(f"digest[{digest_index}] body_markdown cannot be blank")
+
+            plan_story_keys = [key.strip() for key in plan.strict_story_keys]
+            if any(not key for key in plan_story_keys):
+                raise ValueError(f"digest[{digest_index}] strict_story_keys contains blank value")
+            if len(set(plan_story_keys)) != len(plan_story_keys):
+                raise ValueError(f"digest[{digest_index}] strict_story_keys contains duplicates")
+            unknown_story_keys = sorted(key for key in plan_story_keys if key not in story_by_key)
+            if unknown_story_keys:
+                raise ValueError(
+                    f"digest[{digest_index}] unknown strict_story_key(s): {', '.join(unknown_story_keys)}"
+                )
+            for strict_story_key in plan_story_keys:
+                if strict_story_key in assigned_story_to_digest:
+                    previous_digest_index = assigned_story_to_digest[strict_story_key]
+                    raise ValueError(
+                        "strict_story_key assigned more than once across digests: "
+                        f"{strict_story_key} (digest[{previous_digest_index}] and digest[{digest_index}])"
+                    )
+                assigned_story_to_digest[strict_story_key] = digest_index
+            strict_story_keys = tuple(sorted(plan_story_keys))
 
             ordered_articles: list[str] = []
             seen_articles: set[str] = set()
@@ -157,15 +177,11 @@ class DigestGenerationService:
                     seen_articles.add(article_id)
                     ordered_articles.append(article_id)
 
-            body_markdown = plan.body_markdown.strip()
-            if not body_markdown:
-                continue
-
             resolved.append(
                 _ResolvedPlan(
                     facet=facet,
                     strict_story_keys=strict_story_keys,
-                    title_zh=plan.title_zh.strip(),
+                    title_zh=title_zh,
                     dek_zh=plan.dek_zh.strip(),
                     body_markdown=body_markdown,
                     article_ids=tuple(ordered_articles),
@@ -263,23 +279,6 @@ class DigestGenerationService:
         for digest in digests:
             session.expunge(digest)
         return digests
-
-    def _facet_from_event_type(self, event_type: str) -> str:
-        return {
-            "runway_show": "runway",
-            "brand_appointment": "brand",
-            "campaign_launch": "campaign",
-            "store_opening": "retail",
-        }.get(event_type, "general")
-
-    def _facet_label(self, facet: str) -> str:
-        return {
-            "runway": "秀场",
-            "brand": "品牌",
-            "campaign": "企划",
-            "retail": "零售",
-            "general": "行业",
-        }.get(facet, facet)
 
     def _build_user_message(self, strict_stories: list[_StrictStoryInput]) -> str:
         payload = {

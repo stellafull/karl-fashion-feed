@@ -53,6 +53,20 @@ class StubDigestGenerationService(DigestGenerationService):
         )
 
 
+class _SchemaStubDigestGenerationService(DigestGenerationService):
+    """Test double that returns a fixed schema payload."""
+
+    def __init__(self, schema: DigestGenerationSchema) -> None:
+        super().__init__()
+        self._schema = schema
+
+    async def _select_digest_plans(
+        self, strict_stories: list[object]
+    ) -> DigestGenerationSchema:  # type: ignore[override]
+        del strict_stories
+        return self._schema
+
+
 class _FakeCompletionResponse:
     def __init__(self, content: str) -> None:
         message = type("Message", (), {"content": content})
@@ -317,6 +331,87 @@ class DigestGenerationServiceTest(unittest.TestCase):
             ["strict-story-1", "strict-story-2", "strict-story-3"],
         )
 
+    def test_generate_digests_fails_fast_on_malformed_plan_before_replacement(self) -> None:
+        with self.session_factory() as session:
+            baseline = asyncio.run(self.service.generate_for_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+        baseline_keys = [item.digest_key for item in baseline]
+
+        service = _SchemaStubDigestGenerationService(
+            DigestGenerationSchema(
+                digests=[
+                    DigestPlan(
+                        facet="runway",
+                        strict_story_keys=["strict-story-1"],
+                        title_zh="   ",
+                        dek_zh="bad",
+                        body_markdown="## body",
+                    )
+                ]
+            )
+        )
+        with self.session_factory() as session:
+            with self.assertRaisesRegex(ValueError, "title_zh"):
+                asyncio.run(service.generate_for_day(session, self.business_day, run_id="run-1"))
+            session.rollback()
+
+        with self.session_factory() as session:
+            persisted = list(
+                session.scalars(
+                    select(Digest)
+                    .where(Digest.business_date == self.business_day)
+                    .order_by(Digest.digest_key.asc())
+                ).all()
+            )
+        self.assertEqual([item.digest_key for item in persisted], sorted(baseline_keys))
+
+    def test_generate_digests_fails_when_unknown_strict_story_key_present(self) -> None:
+        service = _SchemaStubDigestGenerationService(
+            DigestGenerationSchema(
+                digests=[
+                    DigestPlan(
+                        facet="runway",
+                        strict_story_keys=["strict-story-unknown"],
+                        title_zh="坏计划",
+                        dek_zh="bad",
+                        body_markdown="## body",
+                    )
+                ]
+            )
+        )
+
+        with self.session_factory() as session:
+            with self.assertRaisesRegex(ValueError, "unknown strict_story_key"):
+                asyncio.run(service.generate_for_day(session, self.business_day, run_id="run-1"))
+            session.rollback()
+
+    def test_generate_digests_fails_when_strict_story_assigned_multiple_times(self) -> None:
+        service = _SchemaStubDigestGenerationService(
+            DigestGenerationSchema(
+                digests=[
+                    DigestPlan(
+                        facet="runway",
+                        strict_story_keys=["strict-story-1"],
+                        title_zh="计划一",
+                        dek_zh="a",
+                        body_markdown="## A",
+                    ),
+                    DigestPlan(
+                        facet="brand",
+                        strict_story_keys=["strict-story-1"],
+                        title_zh="计划二",
+                        dek_zh="b",
+                        body_markdown="## B",
+                    ),
+                ]
+            )
+        )
+
+        with self.session_factory() as session:
+            with self.assertRaisesRegex(ValueError, "assigned more than once"):
+                asyncio.run(service.generate_for_day(session, self.business_day, run_id="run-1"))
+            session.rollback()
+
     def test_generate_digests_reuses_digest_key_for_same_facet_and_members(self) -> None:
         with self.session_factory() as session:
             first = asyncio.run(self.service.generate_for_day(session, self.business_day, run_id="run-1"))
@@ -337,8 +432,25 @@ class DigestGenerationServiceTest(unittest.TestCase):
             self._delete_one_digest_candidate(session, self.business_day)
             session.commit()
 
+        rerun_service = StubDigestGenerationService()
+
+        async def plans_for_current_strict_stories(strict_stories: list[_StrictStoryInput]) -> DigestGenerationSchema:
+            return DigestGenerationSchema(
+                digests=[
+                    DigestPlan(
+                        facet="runway",
+                        strict_story_keys=[story.strict_story_key],
+                        title_zh=f"{story.strict_story_key} 要闻",
+                        dek_zh=story.synopsis_zh,
+                        body_markdown=f"## {story.strict_story_key}",
+                    )
+                    for story in strict_stories
+                ]
+            )
+
+        rerun_service._select_digest_plans = plans_for_current_strict_stories  # type: ignore[method-assign]
         with self.session_factory() as session:
-            second = asyncio.run(self.service.generate_for_day(session, self.business_day, run_id="run-1"))
+            second = asyncio.run(rerun_service.generate_for_day(session, self.business_day, run_id="run-1"))
             session.commit()
 
         self.assertLess(len(second), len(first))
