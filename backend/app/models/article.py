@@ -146,6 +146,7 @@ def ensure_article_storage_schema(bind: Engine) -> None:
     from backend.app.models.strict_story import StrictStory, StrictStoryArticle, StrictStoryFrame
 
     _fail_on_legacy_story_tables(bind)
+    _fail_on_legacy_article_columns(bind)
     _reset_legacy_pipeline_run_table(bind)
     Base.metadata.create_all(
         bind=bind,
@@ -192,13 +193,6 @@ def _ensure_article_columns(bind: Engine) -> None:
         return
 
     existing_columns = {column["name"] for column in inspector.get_columns("article")}
-    legacy_columns = sorted(existing_columns & LEGACY_ARTICLE_COLUMNS)
-    if legacy_columns:
-        raise RuntimeError(
-            "article table contains legacy normalization-era columns "
-            f"{legacy_columns}; reset local runtime DB state before bootstrap"
-        )
-
     statements: list[str] = []
 
     if "character_count" not in existing_columns:
@@ -234,6 +228,20 @@ def _ensure_article_columns(bind: Engine) -> None:
             "ALTER TABLE article ADD COLUMN event_frame_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL"
         )
     _apply_schema_statements(bind, statements)
+
+
+def _fail_on_legacy_article_columns(bind: Engine) -> None:
+    inspector = inspect(bind)
+    if "article" not in inspector.get_table_names():
+        return
+
+    existing_columns = {column["name"] for column in inspector.get_columns("article")}
+    legacy_columns = sorted(existing_columns & LEGACY_ARTICLE_COLUMNS)
+    if legacy_columns:
+        raise RuntimeError(
+            "article table contains legacy normalization-era columns "
+            f"{legacy_columns}; reset local runtime DB state before bootstrap"
+        )
 
 
 def _ensure_pipeline_run_columns(bind: Engine) -> None:
