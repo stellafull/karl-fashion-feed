@@ -119,21 +119,11 @@ class StrictStoryPackingService:
         if not stories:
             return []
 
-        story_keys = [story.strict_story_key for story in stories]
-        frame_rows = session.execute(
-            select(StrictStoryFrame.strict_story_key, StrictStoryFrame.event_frame_id).where(
-                StrictStoryFrame.strict_story_key.in_(story_keys)
-            )
-        ).all()
-        frame_map: dict[str, list[str]] = {key: [] for key in story_keys}
-        for strict_story_key, event_frame_id in frame_rows:
-            frame_map[strict_story_key].append(event_frame_id)
-
         existing = [
             _ExistingStory(
                 strict_story_key=story.strict_story_key,
                 signature_json=dict(story.signature_json or {}),
-                frame_ids=tuple(sorted(frame_map[story.strict_story_key])),
+                frame_ids=tuple(sorted(str(item) for item in story.frame_membership_json)),
                 signature_token=self._signature_token(dict(story.signature_json or {})),
             )
             for story in stories
@@ -225,6 +215,7 @@ class StrictStoryPackingService:
                 persisted.business_date = business_day
                 persisted.synopsis_zh = story.synopsis_zh
                 persisted.signature_json = story.signature_json
+                persisted.frame_membership_json = list(story.frame_ids)
                 persisted.created_run_id = run_id
                 persisted.packing_status = "done"
                 persisted.packing_error = None
@@ -234,6 +225,7 @@ class StrictStoryPackingService:
                     business_date=business_day,
                     synopsis_zh=story.synopsis_zh,
                     signature_json=story.signature_json,
+                    frame_membership_json=list(story.frame_ids),
                     created_run_id=run_id,
                     packing_status="done",
                     packing_error=None,

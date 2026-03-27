@@ -28,6 +28,7 @@ class StrictStory(Base):
     business_date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
     synopsis_zh: Mapped[str] = mapped_column(Text, nullable=False)
     signature_json: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    frame_membership_json: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     created_run_id: Mapped[str] = mapped_column(
         String(36),
         ForeignKey("pipeline_run.run_id", ondelete="RESTRICT"),

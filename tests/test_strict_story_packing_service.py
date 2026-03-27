@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import unittest
 from datetime import UTC, date, datetime
 
 from sqlalchemy import create_engine, delete, event, select
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
+from pydantic import ValidationError
 
 from backend.app.core.database import Base
 from backend.app.models import (
@@ -39,6 +41,32 @@ class StubTieBreakPackingService(StrictStoryPackingService):
         del group, candidates
         self.tie_break_calls += 1
         return self.tie_break_schema
+
+
+class _FakeCompletionResponse:
+    def __init__(self, content: str) -> None:
+        message = type("Message", (), {"content": content})
+        choice = type("Choice", (), {"message": message()})
+        self.choices = [choice()]
+
+
+class _FakeCompletions:
+    def __init__(self, content: str) -> None:
+        self._content = content
+
+    async def create(self, **kwargs: object) -> _FakeCompletionResponse:
+        del kwargs
+        return _FakeCompletionResponse(self._content)
+
+
+class _FakeChat:
+    def __init__(self, content: str) -> None:
+        self.completions = _FakeCompletions(content)
+
+
+class _FakeClient:
+    def __init__(self, content: str) -> None:
+        self.chat = _FakeChat(content)
 
 
 class StrictStoryPackingServiceTest(unittest.TestCase):
@@ -204,6 +232,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                         business_date=self.business_day,
                         synopsis_zh="old-a",
                         signature_json=signature,
+                        frame_membership_json=["frame-1"],
                         created_run_id="run-old",
                         packing_status="done",
                     ),
@@ -212,6 +241,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                         business_date=self.business_day,
                         synopsis_zh="old-b",
                         signature_json=signature,
+                        frame_membership_json=["frame-2"],
                         created_run_id="run-old",
                         packing_status="done",
                     ),
@@ -231,6 +261,159 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
         self.assertEqual(runway_story.strict_story_key, "old-b")
         self.assertEqual(runway_story.synopsis_zh, "模型复核：沿用 old-b")
         self.assertEqual(service.tie_break_calls, 1)
+
+    def test_task5_frame_replacement_uses_historical_membership_for_overlap(self) -> None:
+        with self.session_factory() as session:
+            first = asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+        first_runway_key = next(
+            story.strict_story_key for story in first if story.signature_json.get("event_type") == "runway_show"
+        )
+
+        with self.session_factory() as session:
+            session.execute(delete(ArticleEventFrame).where(ArticleEventFrame.event_frame_id == "frame-2"))
+            session.add(
+                ArticleEventFrame(
+                    event_frame_id="frame-4",
+                    article_id="article-3",
+                    business_date=self.business_day,
+                    event_type="runway_show",
+                    action_text="show update",
+                    signature_json={"brand": "brand-a", "season": "fw26"},
+                    extraction_confidence=0.92,
+                )
+            )
+            session.commit()
+
+        with self.session_factory() as session:
+            second = asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+        second_runway_key = next(
+            story.strict_story_key for story in second if story.signature_json.get("event_type") == "runway_show"
+        )
+
+        self.assertNotEqual(first_runway_key, second_runway_key)
+
+    def test_tie_break_rejects_invalid_non_chinese_synopsis(self) -> None:
+        invalid_payload = json.dumps(
+            {
+                "choice": {
+                    "reuse_strict_story_key": "old-b",
+                    "synopsis_zh": "invalid synopsis only english",
+                }
+            },
+            ensure_ascii=False,
+        )
+        service = StrictStoryPackingService(client=_FakeClient(invalid_payload))
+        with self.session_factory() as session:
+            now = datetime(2026, 3, 27, 7, 30, tzinfo=UTC).replace(tzinfo=None)
+            session.add(
+                PipelineRun(
+                    run_id="run-old-invalid",
+                    business_date=self.business_day,
+                    run_type="digest_daily",
+                    status="success",
+                    metadata_json={},
+                    started_at=now,
+                )
+            )
+            signature = {
+                "event_type": "runway_show",
+                "signature_json": {"brand": "brand-a", "season": "fw26"},
+            }
+            session.add_all(
+                [
+                    StrictStory(
+                        strict_story_key="old-a",
+                        business_date=self.business_day,
+                        synopsis_zh="old-a",
+                        signature_json=signature,
+                        frame_membership_json=["frame-1"],
+                        created_run_id="run-old-invalid",
+                        packing_status="done",
+                    ),
+                    StrictStory(
+                        strict_story_key="old-b",
+                        business_date=self.business_day,
+                        synopsis_zh="old-b",
+                        signature_json=signature,
+                        frame_membership_json=["frame-2"],
+                        created_run_id="run-old-invalid",
+                        packing_status="done",
+                    ),
+                    StrictStoryFrame(strict_story_key="old-a", event_frame_id="frame-1", rank=0),
+                    StrictStoryFrame(strict_story_key="old-b", event_frame_id="frame-2", rank=0),
+                ]
+            )
+            session.commit()
+
+        with self.session_factory() as session:
+            with self.assertRaises(ValidationError):
+                asyncio.run(service.pack_business_day(session, self.business_day, run_id="run-1"))
+
+    def test_tie_break_rejects_json_like_synopsis_noise(self) -> None:
+        invalid_payload = json.dumps(
+            {
+                "choice": {
+                    "reuse_strict_story_key": "old-b",
+                    "synopsis_zh": '{"事件":"品牌动态","summary":"这是噪声"}',
+                }
+            },
+            ensure_ascii=False,
+        )
+        service = StrictStoryPackingService(client=_FakeClient(invalid_payload))
+        with self.session_factory() as session:
+            now = datetime(2026, 3, 27, 7, 31, tzinfo=UTC).replace(tzinfo=None)
+            session.add(
+                PipelineRun(
+                    run_id="run-old-invalid-json",
+                    business_date=self.business_day,
+                    run_type="digest_daily",
+                    status="success",
+                    metadata_json={},
+                    started_at=now,
+                )
+            )
+            signature = {
+                "event_type": "runway_show",
+                "signature_json": {"brand": "brand-a", "season": "fw26"},
+            }
+            session.add_all(
+                [
+                    StrictStory(
+                        strict_story_key="old-a",
+                        business_date=self.business_day,
+                        synopsis_zh="old-a",
+                        signature_json=signature,
+                        frame_membership_json=["frame-1"],
+                        created_run_id="run-old-invalid-json",
+                        packing_status="done",
+                    ),
+                    StrictStory(
+                        strict_story_key="old-b",
+                        business_date=self.business_day,
+                        synopsis_zh="old-b",
+                        signature_json=signature,
+                        frame_membership_json=["frame-2"],
+                        created_run_id="run-old-invalid-json",
+                        packing_status="done",
+                    ),
+                    StrictStoryFrame(strict_story_key="old-a", event_frame_id="frame-1", rank=0),
+                    StrictStoryFrame(strict_story_key="old-b", event_frame_id="frame-2", rank=0),
+                ]
+            )
+            session.commit()
+
+        with self.session_factory() as session:
+            with self.assertRaises(ValidationError):
+                asyncio.run(service.pack_business_day(session, self.business_day, run_id="run-1"))
+
+    def test_tie_break_choice_rejects_garbled_mixed_synopsis(self) -> None:
+        with self.assertRaises(ValidationError):
+            StrictStoryTieBreakChoice(
+                reuse_strict_story_key="old-b",
+                synopsis_zh="总结ab12cd34ef56gh78",
+            )
 
     def test_rerun_keeps_digest_membership_when_key_is_reused(self) -> None:
         with self.session_factory() as session:
@@ -284,6 +467,75 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
             links = session.scalars(select(DigestStrictStory.strict_story_key)).all()
         self.assertEqual(links, [runway_key])
 
+    def test_rerun_with_membership_change_reuses_key_and_keeps_digest_link(self) -> None:
+        with self.session_factory() as session:
+            first = asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+        runway_key = next(
+            story.strict_story_key for story in first if story.signature_json.get("event_type") == "runway_show"
+        )
+
+        with self.session_factory() as session:
+            now = datetime(2026, 3, 27, 10, 1, tzinfo=UTC).replace(tzinfo=None)
+            session.add(
+                PipelineRun(
+                    run_id="run-digest-rerun",
+                    business_date=self.business_day,
+                    run_type="digest_daily",
+                    status="success",
+                    metadata_json={},
+                    started_at=now,
+                )
+            )
+            session.commit()
+
+        with self.session_factory() as session:
+            session.add(
+                Digest(
+                    digest_key="digest-2",
+                    business_date=self.business_day,
+                    facet="top",
+                    title_zh="复跑摘要",
+                    dek_zh="导语",
+                    body_markdown="正文",
+                    created_run_id="run-digest-rerun",
+                    generation_status="done",
+                )
+            )
+            session.add(DigestStrictStory(digest_key="digest-2", strict_story_key=runway_key, rank=0))
+            session.add(
+                ArticleEventFrame(
+                    event_frame_id="frame-4",
+                    article_id="article-3",
+                    business_date=self.business_day,
+                    event_type="runway_show",
+                    action_text="show follow-up",
+                    signature_json={"brand": "brand-a", "season": "fw26"},
+                    extraction_confidence=0.9,
+                )
+            )
+            session.commit()
+
+        with self.session_factory() as session:
+            second = asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+        second_runway_key = next(
+            story.strict_story_key for story in second if story.signature_json.get("event_type") == "runway_show"
+        )
+        self.assertEqual(second_runway_key, runway_key)
+
+        with self.session_factory() as session:
+            links = session.scalars(
+                select(DigestStrictStory.strict_story_key).where(DigestStrictStory.digest_key == "digest-2")
+            ).all()
+            frame_ids = session.scalars(
+                select(StrictStoryFrame.event_frame_id)
+                .where(StrictStoryFrame.strict_story_key == runway_key)
+                .order_by(StrictStoryFrame.rank.asc())
+            ).all()
+        self.assertEqual(links, [runway_key])
+        self.assertEqual(frame_ids, ["frame-1", "frame-2", "frame-4"])
+
     def test_mints_new_key_when_overlap_ratio_is_below_half(self) -> None:
         with self.session_factory() as session:
             now = datetime(2026, 3, 27, 7, 35, tzinfo=UTC).replace(tzinfo=None)
@@ -307,6 +559,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                     business_date=self.business_day,
                     synopsis_zh="旧故事",
                     signature_json=signature,
+                    frame_membership_json=["frame-1", "frame-3"],
                     created_run_id="run-old-low-overlap",
                     packing_status="done",
                 )
@@ -350,6 +603,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                     business_date=self.business_day,
                     synopsis_zh="旧不兼容故事",
                     signature_json=signature,
+                    frame_membership_json=["frame-1"],
                     created_run_id="run-old-incompatible",
                     packing_status="done",
                 )
