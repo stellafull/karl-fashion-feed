@@ -32,15 +32,15 @@ class FakeQueryService:
     """Capture QueryPlan execution requests."""
 
     def __init__(self) -> None:
-        self.calls: list[tuple[QueryPlan, RequestImageInput | None]] = []
+        self.calls: list[tuple[QueryPlan, list[RequestImageInput] | None]] = []
 
     def execute(
         self,
         query_plan: QueryPlan,
         *,
-        request_image: RequestImageInput | None = None,
+        request_images: list[RequestImageInput] | None = None,
     ) -> QueryResult:
-        self.calls.append((query_plan, request_image))
+        self.calls.append((query_plan, request_images))
         return QueryResult(query_plan=query_plan)
 
 
@@ -121,7 +121,7 @@ class RagToolsTests(unittest.TestCase):
         self.request_context = RagRequestContext(
             filters=QueryFilters(brands=["Dior"]),
             limit=7,
-            request_image=self.request_image,
+            request_images=[self.request_image],
         )
 
     def test_tool_definitions_do_not_expose_filters_limit_or_image_base64(self) -> None:
@@ -141,7 +141,7 @@ class RagToolsTests(unittest.TestCase):
             query_service=FakeQueryService(),
             web_search_service=FakeWebSearchService(),
         )
-        with self.assertRaisesRegex(ValueError, "requires an uploaded image"):
+        with self.assertRaisesRegex(ValueError, "uploaded request images"):
             tools.search_fashion_images(image_ref="request_image")
 
     def test_search_fashion_fusion_injects_request_constraints(self) -> None:
@@ -155,11 +155,11 @@ class RagToolsTests(unittest.TestCase):
         result = tools.search_fashion_fusion(query="巴黎时装周", image_ref="request_image")
 
         self.assertEqual(result.query_plan.plan_type, "fusion")
-        [(query_plan, request_image)] = fake_query_service.calls
+        [(query_plan, request_images)] = fake_query_service.calls
         self.assertEqual(query_plan.image_query, REQUEST_IMAGE_REF)
         self.assertEqual(query_plan.filters.brands, ["Dior"])
         self.assertEqual(query_plan.limit, 7)
-        self.assertIs(request_image, self.request_image)
+        self.assertEqual(request_images, [self.request_image])
 
 
 class QueryServiceRequestImageTests(unittest.TestCase):
@@ -197,7 +197,7 @@ class QueryServiceRequestImageTests(unittest.TestCase):
             return [[0.1, 0.2]]
 
         with patch.object(query_module, "generate_dense_embedding", fake_generate_dense_embedding):
-            hits = service._execute_image_lane(query_plan, request_image=request_image)
+            hits = service._execute_image_lane(query_plan, request_images=[request_image])
 
         self.assertEqual(hits, [])
         self.assertEqual(captured_inputs["texts"], ["image query"])
@@ -205,7 +205,6 @@ class QueryServiceRequestImageTests(unittest.TestCase):
             captured_inputs["image_inputs"],
             ["data:image/png;base64,aGVsbG8="],
         )
-
 
 class RagAnswerServiceTests(unittest.IsolatedAsyncioTestCase):
     """Cover the answer-loop orchestration constraints."""
@@ -341,14 +340,13 @@ class RagRouterTests(unittest.TestCase):
         response = client.post(
             "/api/v1/rag/query",
             data={"query": "red dress"},
-            files={"image": ("dress.png", b"binary-image", "image/png")},
+            files=[("images", ("dress.png", b"binary-image", "image/png"))],
         )
 
         self.assertEqual(response.status_code, 200)
         [request_context] = captured_contexts
-        self.assertIsNotNone(request_context.request_image)
-        assert request_context.request_image is not None
-        self.assertEqual(request_context.request_image.mime_type, "image/png")
+        self.assertEqual(len(request_context.request_images), 1)
+        self.assertEqual(request_context.request_images[0].mime_type, "image/png")
 
 
 if __name__ == "__main__":

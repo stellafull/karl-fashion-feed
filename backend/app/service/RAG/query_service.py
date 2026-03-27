@@ -287,8 +287,8 @@ class QueryService:
                     content=content,
                     score=score,
                     citation_locator=locator,
-                    title_zh=None,
-                    summary_zh=None,
+                    title=article.title_raw or None,
+                    summary=article.summary_raw or None,
                 )
             )
         return hits
@@ -331,11 +331,8 @@ class QueryService:
                     alt_text=image.alt_text or None,
                     credit_raw=image.credit_raw or None,
                     context_snippet=image.context_snippet or None,
-                    ocr_text=None,
-                    observed_description=None,
-                    contextual_interpretation=None,
-                    title_zh=None,
-                    summary_zh=None,
+                    title=article.title_raw or None,
+                    summary=article.summary_raw or None,
                     grounding_texts=self._load_grounding_texts(article),
                 )
             )
@@ -452,22 +449,22 @@ class QueryService:
         for article_id in article_ids:
             article_hits = grouped_text_hits.get(article_id, [])
             image_hits_for_article = grouped_image_hits.get(article_id, [])
-            title_zh = None
-            summary_zh = None
+            title = None
+            summary = None
             combined_score = 0.0
             if article_hits:
-                title_zh = article_hits[0].title_zh
-                summary_zh = article_hits[0].summary_zh
+                title = article_hits[0].title
+                summary = article_hits[0].summary
                 combined_score = max(combined_score, max(hit.score for hit in article_hits))
             if image_hits_for_article:
-                title_zh = title_zh or image_hits_for_article[0].title_zh
-                summary_zh = summary_zh or image_hits_for_article[0].summary_zh
+                title = title or image_hits_for_article[0].title
+                summary = summary or image_hits_for_article[0].summary
                 combined_score = max(combined_score, max(hit.score for hit in image_hits_for_article))
             packages.append(
                 ArticlePackage(
                     article_id=article_id,
-                    title_zh=title_zh,
-                    summary_zh=summary_zh,
+                    title=title,
+                    summary=summary,
                     text_hits=article_hits,
                     image_hits=image_hits_for_article,
                     combined_score=combined_score,

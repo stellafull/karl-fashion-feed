@@ -314,8 +314,8 @@ class RagAnswerService:
                     existing_package.combined_score,
                     package.combined_score,
                 )
-                existing_package.title_zh = existing_package.title_zh or package.title_zh
-                existing_package.summary_zh = existing_package.summary_zh or package.summary_zh
+                existing_package.title = existing_package.title or package.title
+                existing_package.summary = existing_package.summary or package.summary
         return sorted(
             merged_by_article_id.values(),
             key=lambda package: package.combined_score,
@@ -364,7 +364,7 @@ class RagAnswerService:
                     AnswerCitation(
                         marker=f"C{rag_index}",
                         source_type="rag",
-                        title=package.title_zh,
+                        title=package.title,
                         source_name=hit.citation_locator.source_name,
                         url=hit.citation_locator.canonical_url,
                         article_id=hit.citation_locator.article_id,
@@ -386,7 +386,7 @@ class RagAnswerService:
                         AnswerCitation(
                             marker=f"C{rag_index}",
                             source_type="rag",
-                            title=package.title_zh,
+                            title=package.title,
                             source_name=grounding_text.citation_locator.source_name,
                             url=grounding_text.citation_locator.canonical_url,
                             article_id=grounding_text.citation_locator.article_id,

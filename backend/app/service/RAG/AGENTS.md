@@ -32,7 +32,7 @@
 - `article_image` 是图片事实真相源与文章归属关系真相源。
 - `story` 只服务阅读，不进入 RAG collection 真相层。
 - Qdrant 永远只是检索副本，可以重建，不承载业务真相。
-- 只有 `should_publish=true` 的文章和其关联图片允许进入 shared collection。
+- shared collection 只收录 parse-complete 的 Markdown text unit，以及具有 source-text image signals 的 image unit。
 - 引用和回溯必须回到 `article` / Markdown / `article_image`，不得直接把 Qdrant 命中结果当作引用真相。
 - Qdrant 物理上只保留一个 shared collection，通过 `modality` 区分 `text` / `image`。
 - 物理上是单 collection，但逻辑上仍保留 `text_only`、`image_only`、`fusion` 三种 query plan。
@@ -44,13 +44,13 @@
 ### 2.1 真相层职责
 
 - `article`
-  - 保存来源、发布时间、中文 enrichment、分类标签、Markdown 路径。
+  - 保存来源、发布时间、原始标题/摘要、Markdown 路径与最小检索 metadata。
   - 是文本内容、来源信息、读者可引用事实的根记录。
 - canonical Markdown
   - 是 article 正文的 canonical 表示。
   - 只保存纯文本正文，不保存图片占位和视觉分析结果。
 - `article_image`
-  - 保存图片 URL、位置、caption、OCR、视觉分析结果。
+  - 保存图片 URL、位置以及 source-provided text signals（如 `caption_raw`、`alt_text`、`credit_raw`、`context_snippet`）。
   - `article_image.article_id` 是图片归属到文章的唯一真相关系。
 
 ### 2.2 检索主键规则
@@ -103,7 +103,7 @@ shared collection 的 nullability 规则固定如下：
 
 ### 3.1 索引对象
 
-- shared collection 只收录 `should_publish=true` 的可检索叶子单元。
+- shared collection 只收录可直接回源到 Markdown / `article_image` 的可检索叶子单元。
 - `story`、未发布 article、Qdrant 回写结果都不进入 shared collection。
 - 图片不进入 canonical Markdown；image lane 只从 `article_image` 派生。
 
@@ -124,11 +124,10 @@ shared collection 的 nullability 规则固定如下：
 
 - image 单元来自 `article_image` 派生的 `image_asset`。
 - 只有满足以下条件的图片允许进入 shared collection：
-  - 父 article 的 `should_publish=true`
   - `article_image` 已存在稳定 `image_id`
-  - 图片存在至少一类文本投影信号：`alt_text`、`caption_raw`、`credit_raw`、`context_snippet`、`ocr_text`、`observed_description`、`contextual_interpretation` 之一
+  - 图片存在至少一类 source-text 信号：`alt_text`、`caption_raw`、`credit_raw`、`context_snippet` 之一
 - image 单元的 `content` 生成规则固定为：
-  - `caption_raw + alt_text + ocr_text + observed_description + contextual_interpretation + context_snippet + 父 article 标题/摘要/标签/品牌`
+  - `caption_raw + alt_text + credit_raw + context_snippet`
 - image 单元命中时，返回的是 image evidence，本体是图片和 `content`，而不是 image2text 文本。
 
 ## 4. Qdrant 副本与重建策略
@@ -144,7 +143,7 @@ shared collection 的 nullability 规则固定如下：
 写入顺序固定如下：
 
 1. article / canonical Markdown / article_image 落事实真相。
-2. enrichment、图片分析完成后，直接生成检索主键与检索文本。
+2. 直接基于 Markdown text chunk 和图片 source-text signals 生成检索主键与检索文本。
 3. 生成 dense/sparse 表示并写入 Qdrant shared collection。
 
 ### 4.3 重建规则

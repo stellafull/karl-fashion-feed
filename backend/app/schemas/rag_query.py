@@ -109,11 +109,8 @@ class RetrievalHit(BaseModel):
     alt_text: str | None = None
     credit_raw: str | None = None
     context_snippet: str | None = None
-    ocr_text: str | None = None
-    observed_description: str | None = None
-    contextual_interpretation: str | None = None
-    title_zh: str | None = None
-    summary_zh: str | None = None
+    title: str | None = None
+    summary: str | None = None
     grounding_texts: list[GroundingText] = Field(default_factory=list)
 
 
@@ -121,8 +118,8 @@ class ArticlePackage(BaseModel):
     """Article-level aggregation of text and image evidence."""
 
     article_id: str
-    title_zh: str | None = None
-    summary_zh: str | None = None
+    title: str | None = None
+    summary: str | None = None
     text_hits: list[RetrievalHit] = Field(default_factory=list)
     image_hits: list[RetrievalHit] = Field(default_factory=list)
     combined_score: float
