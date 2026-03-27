@@ -57,16 +57,12 @@ class EventFrameExtractionService:
             session.add_all(frames)
             article.event_frame_status = "done"
             article.event_frame_error = None
-        except Exception as exc:
-            article.event_frame_attempts += 1
-            article.event_frame_status = "abandoned" if article.event_frame_attempts >= 3 else "failed"
-            article.event_frame_error = f"{exc.__class__.__name__}: {exc}"
             article.event_frame_updated_at = _utcnow_naive()
             session.flush()
+        except Exception as exc:
+            self._persist_failure_state(session, article, exc)
             return ()
 
-        article.event_frame_updated_at = _utcnow_naive()
-        session.flush()
         return frames
 
     async def _infer_frames(self, article: Article) -> EventFrameExtractionSchema:
@@ -162,3 +158,18 @@ class EventFrameExtractionService:
         if ingested_at.tzinfo is None:
             ingested_at = ingested_at.replace(tzinfo=UTC)
         return ingested_at.astimezone(ASIA_SHANGHAI).date()
+
+    def _persist_failure_state(self, session: Session, article: Article, exc: Exception) -> Article:
+        session.rollback()
+        stored_article = session.get(Article, article.article_id)
+        if stored_article is None:
+            raise RuntimeError(f"article disappeared during frame extraction failure handling: {article.article_id}")
+
+        stored_article.event_frame_attempts += 1
+        stored_article.event_frame_status = (
+            "abandoned" if stored_article.event_frame_attempts >= 3 else "failed"
+        )
+        stored_article.event_frame_error = f"{exc.__class__.__name__}: {exc}"
+        stored_article.event_frame_updated_at = _utcnow_naive()
+        session.flush()
+        return stored_article

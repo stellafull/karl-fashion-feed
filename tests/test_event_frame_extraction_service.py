@@ -6,11 +6,14 @@ import asyncio
 import unittest
 from datetime import date
 from datetime import UTC, datetime
+from unittest.mock import patch
 from uuid import uuid4
 
 from sqlalchemy import create_engine, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+from pydantic import ValidationError
 
 from backend.app.core.database import Base
 from backend.app.models import Article, ArticleEventFrame
@@ -145,6 +148,53 @@ class EventFrameExtractionServiceTest(unittest.TestCase):
             ).one()
 
         self.assertEqual(stored_frame.business_date, date(2026, 3, 27))
+
+    def test_persistence_failure_after_frame_build_marks_article_failed(self) -> None:
+        payload = EventFrameExtractionSchema(
+            frames=[
+                ExtractedEventFrame(event_type="brand_appointment", extraction_confidence=0.99),
+            ]
+        )
+        service = StubEventFrameExtractionService(payload)
+        article_id = self._insert_article()
+
+        with self.session_factory() as session:
+            article = session.get(Article, article_id)
+            original_flush = session.flush
+            flush_calls = {"count": 0}
+
+            def flaky_flush(*args, **kwargs):
+                flush_calls["count"] += 1
+                if flush_calls["count"] == 2:
+                    raise IntegrityError("insert into article_event_frame", {}, Exception("boom"))
+                return original_flush(*args, **kwargs)
+
+            with patch.object(session, "flush", side_effect=flaky_flush):
+                result = asyncio.run(service.extract_frames(session, article))
+            session.commit()
+
+        self.assertEqual(result, ())
+
+        with self.session_factory() as session:
+            article = session.get(Article, article_id)
+            stored_frames = session.scalars(
+                select(ArticleEventFrame).where(ArticleEventFrame.article_id == article_id)
+            ).all()
+
+        self.assertEqual(stored_frames, [])
+        self.assertEqual(article.event_frame_attempts, 1)
+        self.assertEqual(article.event_frame_status, "failed")
+        self.assertIn("IntegrityError", article.event_frame_error)
+
+    def test_invalid_frame_payload_is_rejected_by_schema(self) -> None:
+        with self.assertRaises(ValidationError):
+            ExtractedEventFrame(event_type="   ", extraction_confidence=0.9)
+
+        with self.assertRaises(ValidationError):
+            ExtractedEventFrame(event_type="brand_appointment", extraction_confidence=-0.1)
+
+        with self.assertRaises(ValidationError):
+            ExtractedEventFrame(event_type="brand_appointment", extraction_confidence=1.1)
 
     def test_zero_frames_is_a_valid_done_state(self) -> None:
         service = StubEventFrameExtractionService(EventFrameExtractionSchema(frames=[]))

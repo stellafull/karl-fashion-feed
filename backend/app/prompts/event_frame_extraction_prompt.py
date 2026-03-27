@@ -17,6 +17,7 @@ def build_event_frame_extraction_prompt() -> str:
 - `subject_json`、`evidence_json`、`signature_json` 必须是 JSON 对象或数组
 - `evidence_json` 里的每一项应尽量包含原文片段或定位依据
 - `extraction_confidence` 使用 0 到 1 的浮点数
+- `event_type` 不能为空或空白字符串
 - `event_type` 使用简洁稳定的英文 snake_case 或 kebab-free 标识
 
 输出要求：
