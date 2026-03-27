@@ -11,7 +11,9 @@ from sqlalchemy import delete
 from sqlalchemy.orm import Session
 
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
+from backend.app.core.database import SessionLocal
 from backend.app.models import Article, ArticleEventFrame
+from backend.app.models import ensure_article_storage_schema
 from backend.app.models.article import _utcnow_naive
 from backend.app.prompts.event_frame_extraction_prompt import build_event_frame_extraction_prompt
 from backend.app.schemas.llm.event_frame_extraction import (
@@ -19,6 +21,7 @@ from backend.app.schemas.llm.event_frame_extraction import (
     ExtractedEventFrame,
 )
 from backend.app.service.article_parse_service import ArticleMarkdownService
+from backend.app.service.llm_rate_limiter import LlmRateLimiter, PassThroughLlmRateLimiter
 
 if TYPE_CHECKING:
     from openai import AsyncOpenAI
@@ -34,9 +37,13 @@ class EventFrameExtractionService:
         *,
         client: AsyncOpenAI | None = None,
         markdown_service: ArticleMarkdownService | None = None,
+        rate_limiter: LlmRateLimiter | None = None,
     ) -> None:
         self._client = client
         self._markdown_service = markdown_service or ArticleMarkdownService()
+        self._rate_limiter = rate_limiter or (
+            PassThroughLlmRateLimiter() if client is not None else LlmRateLimiter()
+        )
 
     async def extract_frames(self, session: Session, article: Article) -> tuple[ArticleEventFrame, ...]:
         """Extract sparse event frames and persist them for one parsed article."""
@@ -75,21 +82,22 @@ class EventFrameExtractionService:
             raise ValueError(f"markdown is empty for frame extraction: {article.article_id}")
 
         client = self._get_client()
-        response = await client.chat.completions.create(
-            model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-            temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
-            messages=[
-                {
-                    "role": "system",
-                    "content": build_event_frame_extraction_prompt(),
-                },
-                {
-                    "role": "user",
-                    "content": self._build_user_message(article=article, markdown=markdown),
-                },
-            ],
-            response_format={"type": "json_object"},
-        )
+        with self._rate_limiter.lease("event_frame_extraction"):
+            response = await client.chat.completions.create(
+                model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+                temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": build_event_frame_extraction_prompt(),
+                    },
+                    {
+                        "role": "user",
+                        "content": self._build_user_message(article=article, markdown=markdown),
+                    },
+                ],
+                response_format={"type": "json_object"},
+            )
         raw_content = response.choices[0].message.content or "{}"
         return EventFrameExtractionSchema.model_validate_json(raw_content)
 
@@ -173,3 +181,25 @@ class EventFrameExtractionService:
         stored_article.event_frame_updated_at = _utcnow_naive()
         session.flush()
         return stored_article
+
+
+def run_extract_event_frames(*, article_id: str) -> tuple[ArticleEventFrame, ...]:
+    """Run event-frame extraction for one article and fail fast on non-done status."""
+    service = EventFrameExtractionService()
+    with SessionLocal() as session:
+        ensure_article_storage_schema(session.get_bind())
+        article = session.get(Article, article_id)
+        if article is None:
+            raise RuntimeError(f"article not found for frame extraction: {article_id}")
+
+        frames = asyncio.run(service.extract_frames(session, article))
+        session.commit()
+
+        refreshed = session.get(Article, article_id)
+        if refreshed is None:
+            raise RuntimeError(f"article disappeared after frame extraction: {article_id}")
+        if refreshed.event_frame_status != "done":
+            raise RuntimeError(
+                f"frame extraction did not complete for article {article_id}: {refreshed.event_frame_status}"
+            )
+        return frames

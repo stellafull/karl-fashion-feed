@@ -411,3 +411,15 @@ def _reuse_duplicate_image(*, existing_image: ArticleImage, session: Session) ->
         **dict(duplicate.analysis_metadata_json or {}),
         **dict(existing_image.analysis_metadata_json or {}),
     }
+
+
+def run_parse_article(*, article_id: str) -> ParseResult:
+    """Run parse for one article and fail fast if it does not finish successfully."""
+    result = asyncio.run(ArticleParseService().parse_articles(article_ids=[article_id], limit=1))
+    if result.candidates != 1:
+        raise RuntimeError(f"parse candidate not found or not eligible: {article_id}")
+    if result.failed:
+        raise RuntimeError(f"parse failed for article: {article_id}")
+    if result.parsed != 1:
+        raise RuntimeError(f"parse did not complete for article: {article_id}")
+    return result

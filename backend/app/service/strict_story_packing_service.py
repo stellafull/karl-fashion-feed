@@ -18,6 +18,7 @@ from backend.app.schemas.llm.strict_story_tiebreak import (
     StrictStoryTieBreakSchema,
     normalize_readable_synopsis_zh,
 )
+from backend.app.service.llm_rate_limiter import LlmRateLimiter, PassThroughLlmRateLimiter
 
 if TYPE_CHECKING:
     from openai import AsyncOpenAI
@@ -52,8 +53,16 @@ class _ResolvedStory:
 class StrictStoryPackingService:
     """Pack one business-day event-frame set into immutable strict stories."""
 
-    def __init__(self, *, client: AsyncOpenAI | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        client: AsyncOpenAI | None = None,
+        rate_limiter: LlmRateLimiter | None = None,
+    ) -> None:
         self._client = client
+        self._rate_limiter = rate_limiter or (
+            PassThroughLlmRateLimiter() if client is not None else LlmRateLimiter()
+        )
 
     async def pack_business_day(
         self,
@@ -299,15 +308,16 @@ class StrictStoryPackingService:
                 for item in candidates
             ],
         }
-        response = await client.chat.completions.create(
-            model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-            temperature=0,
-            messages=[
-                {"role": "system", "content": build_strict_story_tiebreak_prompt()},
-                {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
-            ],
-            response_format={"type": "json_object"},
-        )
+        with self._rate_limiter.lease("strict_story_tie_break"):
+            response = await client.chat.completions.create(
+                model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+                temperature=0,
+                messages=[
+                    {"role": "system", "content": build_strict_story_tiebreak_prompt()},
+                    {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+                ],
+                response_format={"type": "json_object"},
+            )
         raw_content = response.choices[0].message.content or "{}"
         return StrictStoryTieBreakSchema.model_validate_json(raw_content)
 
