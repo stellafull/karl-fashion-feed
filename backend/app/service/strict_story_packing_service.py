@@ -200,22 +200,36 @@ class StrictStoryPackingService:
         run_id: str,
         resolved: list[_ResolvedStory],
     ) -> list[StrictStory]:
-        old_keys = list(
-            session.scalars(
-                select(StrictStory.strict_story_key).where(StrictStory.business_date == business_day)
-            ).all()
+        existing_rows = list(
+            session.scalars(select(StrictStory).where(StrictStory.business_date == business_day)).all()
         )
-        if old_keys:
-            session.execute(delete(StrictStoryFrame).where(StrictStoryFrame.strict_story_key.in_(old_keys)))
-            session.execute(delete(StrictStoryArticle).where(StrictStoryArticle.strict_story_key.in_(old_keys)))
-            session.execute(delete(StrictStory).where(StrictStory.strict_story_key.in_(old_keys)))
+        existing_by_key = {item.strict_story_key: item for item in existing_rows}
+        existing_keys = set(existing_by_key.keys())
+        resolved_keys = {item.strict_story_key for item in resolved}
+        reused_keys = existing_keys & resolved_keys
+        obsolete_keys = existing_keys - resolved_keys
 
-        stories: list[StrictStory] = []
+        if reused_keys:
+            session.execute(delete(StrictStoryFrame).where(StrictStoryFrame.strict_story_key.in_(reused_keys)))
+            session.execute(delete(StrictStoryArticle).where(StrictStoryArticle.strict_story_key.in_(reused_keys)))
+
+        if obsolete_keys:
+            session.execute(delete(StrictStory).where(StrictStory.strict_story_key.in_(obsolete_keys)))
+
+        stories_in_order: list[StrictStory] = []
         frame_rows: list[StrictStoryFrame] = []
         article_rows: list[StrictStoryArticle] = []
         for story in resolved:
-            stories.append(
-                StrictStory(
+            if story.strict_story_key in existing_by_key:
+                persisted = existing_by_key[story.strict_story_key]
+                persisted.business_date = business_day
+                persisted.synopsis_zh = story.synopsis_zh
+                persisted.signature_json = story.signature_json
+                persisted.created_run_id = run_id
+                persisted.packing_status = "done"
+                persisted.packing_error = None
+            else:
+                persisted = StrictStory(
                     strict_story_key=story.strict_story_key,
                     business_date=business_day,
                     synopsis_zh=story.synopsis_zh,
@@ -224,11 +238,13 @@ class StrictStoryPackingService:
                     packing_status="done",
                     packing_error=None,
                 )
-            )
+                session.add(persisted)
+
+            stories_in_order.append(persisted)
             frame_rows.extend(
                 [
                     StrictStoryFrame(
-                        strict_story_key=story.strict_story_key,
+                        strict_story_key=persisted.strict_story_key,
                         event_frame_id=frame_id,
                         rank=rank,
                     )
@@ -238,7 +254,7 @@ class StrictStoryPackingService:
             article_rows.extend(
                 [
                     StrictStoryArticle(
-                        strict_story_key=story.strict_story_key,
+                        strict_story_key=persisted.strict_story_key,
                         article_id=article_id,
                         rank=rank,
                     )
@@ -246,13 +262,12 @@ class StrictStoryPackingService:
                 ]
             )
 
-        session.add_all(stories)
         session.add_all(frame_rows)
         session.add_all(article_rows)
         session.flush()
-        for story in stories:
+        for story in stories_in_order:
             session.expunge(story)
-        return stories
+        return stories_in_order
 
     def _signature_token(self, signature_payload: dict) -> str:
         return json.dumps(signature_payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
@@ -320,8 +335,23 @@ class StrictStoryPackingService:
         subject = signature_json.get("signature_json", {})
         if not isinstance(subject, dict):
             subject = {}
-        if event_type and subject:
-            return f"{event_type}：{json.dumps(subject, ensure_ascii=False, sort_keys=True)}"
-        if event_type:
-            return event_type
-        return "同日事件聚合"
+        event_type_label = {
+            "runway_show": "时装秀动态",
+            "brand_appointment": "品牌任命动态",
+            "campaign_launch": "品牌企划动态",
+            "store_opening": "门店拓展动态",
+        }.get(event_type, "时尚事件动态")
+        details: list[str] = []
+        if subject.get("brand"):
+            details.append(f"品牌{subject['brand']}")
+        if subject.get("person"):
+            details.append(f"人物{subject['person']}")
+        if subject.get("season"):
+            details.append(f"季别{subject['season']}")
+        if subject.get("collection"):
+            details.append(f"系列{subject['collection']}")
+        if subject.get("place"):
+            details.append(f"地点{subject['place']}")
+        if details:
+            return f"{event_type_label}：" + "，".join(str(item) for item in details)
+        return event_type_label

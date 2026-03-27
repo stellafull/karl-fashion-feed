@@ -6,13 +6,15 @@ import asyncio
 import unittest
 from datetime import UTC, date, datetime
 
-from sqlalchemy import create_engine, delete, select
+from sqlalchemy import create_engine, delete, event, select
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from backend.app.core.database import Base
 from backend.app.models import (
     Article,
+    Digest,
+    DigestStrictStory,
     ArticleEventFrame,
     PipelineRun,
     StrictStory,
@@ -48,11 +50,18 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
             connect_args={"check_same_thread": False},
             poolclass=StaticPool,
         )
+        event.listen(self.engine, "connect", self._enable_foreign_keys)
         self.session_factory = sessionmaker(bind=self.engine)
         Base.metadata.create_all(self.engine)
         self.service = StrictStoryPackingService()
         self.business_day = date(2026, 3, 27)
         self._seed_day_data(run_id="run-1")
+
+    def _enable_foreign_keys(self, dbapi_connection: object, connection_record: object) -> None:
+        del connection_record
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
 
     def _seed_day_data(self, *, run_id: str) -> None:
         now = datetime(2026, 3, 27, 8, 0, tzinfo=UTC).replace(tzinfo=None)
@@ -222,6 +231,153 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
         self.assertEqual(runway_story.strict_story_key, "old-b")
         self.assertEqual(runway_story.synopsis_zh, "模型复核：沿用 old-b")
         self.assertEqual(service.tie_break_calls, 1)
+
+    def test_rerun_keeps_digest_membership_when_key_is_reused(self) -> None:
+        with self.session_factory() as session:
+            first = asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+        runway_key = next(
+            story.strict_story_key for story in first if story.signature_json.get("event_type") == "runway_show"
+        )
+
+        with self.session_factory() as session:
+            now = datetime(2026, 3, 27, 10, 0, tzinfo=UTC).replace(tzinfo=None)
+            session.add(
+                PipelineRun(
+                    run_id="run-digest",
+                    business_date=self.business_day,
+                    run_type="digest_daily",
+                    status="success",
+                    metadata_json={},
+                    started_at=now,
+                )
+            )
+            session.commit()
+
+        with self.session_factory() as session:
+            session.add(
+                Digest(
+                    digest_key="digest-1",
+                    business_date=self.business_day,
+                    facet="top",
+                    title_zh="今日摘要",
+                    dek_zh="导语",
+                    body_markdown="正文",
+                    created_run_id="run-digest",
+                    generation_status="done",
+                )
+            )
+            session.add(
+                DigestStrictStory(
+                    digest_key="digest-1",
+                    strict_story_key=runway_key,
+                    rank=0,
+                )
+            )
+            session.commit()
+
+        with self.session_factory() as session:
+            asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+
+        with self.session_factory() as session:
+            links = session.scalars(select(DigestStrictStory.strict_story_key)).all()
+        self.assertEqual(links, [runway_key])
+
+    def test_mints_new_key_when_overlap_ratio_is_below_half(self) -> None:
+        with self.session_factory() as session:
+            now = datetime(2026, 3, 27, 7, 35, tzinfo=UTC).replace(tzinfo=None)
+            session.add(
+                PipelineRun(
+                    run_id="run-old-low-overlap",
+                    business_date=self.business_day,
+                    run_type="digest_daily",
+                    status="success",
+                    metadata_json={},
+                    started_at=now,
+                )
+            )
+            signature = {
+                "event_type": "runway_show",
+                "signature_json": {"brand": "brand-a", "season": "fw26"},
+            }
+            session.add(
+                StrictStory(
+                    strict_story_key="old-low-overlap",
+                    business_date=self.business_day,
+                    synopsis_zh="旧故事",
+                    signature_json=signature,
+                    created_run_id="run-old-low-overlap",
+                    packing_status="done",
+                )
+            )
+            session.add_all(
+                [
+                    StrictStoryFrame(strict_story_key="old-low-overlap", event_frame_id="frame-1", rank=0),
+                    StrictStoryFrame(strict_story_key="old-low-overlap", event_frame_id="frame-3", rank=1),
+                ]
+            )
+            session.commit()
+
+        with self.session_factory() as session:
+            stories = asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+        runway_story = next(
+            story for story in stories if story.signature_json.get("event_type") == "runway_show"
+        )
+        self.assertNotEqual(runway_story.strict_story_key, "old-low-overlap")
+
+    def test_incompatible_signatures_do_not_reuse_existing_key(self) -> None:
+        with self.session_factory() as session:
+            now = datetime(2026, 3, 27, 7, 45, tzinfo=UTC).replace(tzinfo=None)
+            session.add(
+                PipelineRun(
+                    run_id="run-old-incompatible",
+                    business_date=self.business_day,
+                    run_type="digest_daily",
+                    status="success",
+                    metadata_json={},
+                    started_at=now,
+                )
+            )
+            signature = {
+                "event_type": "brand_appointment",
+                "signature_json": {"brand": "brand-a", "season": "fw26"},
+            }
+            session.add(
+                StrictStory(
+                    strict_story_key="old-incompatible",
+                    business_date=self.business_day,
+                    synopsis_zh="旧不兼容故事",
+                    signature_json=signature,
+                    created_run_id="run-old-incompatible",
+                    packing_status="done",
+                )
+            )
+            session.add(StrictStoryFrame(strict_story_key="old-incompatible", event_frame_id="frame-1", rank=0))
+            session.commit()
+
+        with self.session_factory() as session:
+            stories = asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+
+        runway_story = next(
+            story for story in stories if story.signature_json.get("event_type") == "runway_show"
+        )
+        self.assertNotEqual(runway_story.strict_story_key, "old-incompatible")
+
+    def test_default_synopsis_is_chinese_readable_text(self) -> None:
+        with self.session_factory() as session:
+            stories = asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+
+        runway_story = next(
+            story for story in stories if story.signature_json.get("event_type") == "runway_show"
+        )
+        self.assertNotIn("{", runway_story.synopsis_zh)
+        self.assertNotIn("}", runway_story.synopsis_zh)
+        self.assertNotIn("runway_show", runway_story.synopsis_zh)
+        self.assertTrue(any("\u4e00" <= char <= "\u9fff" for char in runway_story.synopsis_zh))
 
     def _delete_one_frame(self, session: Session) -> None:
         session.execute(
