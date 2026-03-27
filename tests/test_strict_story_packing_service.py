@@ -415,6 +415,19 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                 synopsis_zh="总结ab12cd34ef56gh78",
             )
 
+    def test_tie_break_choice_accepts_chinese_led_mixed_fashion_synopsis(self) -> None:
+        choice = StrictStoryTieBreakChoice(
+            reuse_strict_story_key="old-b",
+            synopsis_zh="Louis Vuitton FW26 秀场动态",
+        )
+        self.assertEqual(choice.synopsis_zh, "Louis Vuitton FW26 秀场动态")
+
+        choice = StrictStoryTieBreakChoice(
+            reuse_strict_story_key="old-b",
+            synopsis_zh="Gucci 任命 Demna 出任创意总监",
+        )
+        self.assertEqual(choice.synopsis_zh, "Gucci 任命 Demna 出任创意总监")
+
     def test_rerun_keeps_digest_membership_when_key_is_reused(self) -> None:
         with self.session_factory() as session:
             first = asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))

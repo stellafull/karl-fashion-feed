@@ -22,9 +22,8 @@ def normalize_readable_synopsis_zh(value: str) -> str:
     if chinese_count < 4:
         raise ValueError("synopsis_zh must contain enough readable Chinese text")
 
-    ascii_alnum_count = sum(1 for char in normalized if char.isascii() and char.isalnum())
-    if ascii_alnum_count > chinese_count:
-        raise ValueError("synopsis_zh contains too much non-Chinese noise")
+    if re.search(r"[A-Za-z0-9]{12,}", normalized):
+        raise ValueError("synopsis_zh contains unreadable alnum noise")
 
     compact = re.sub(r"\s+", "", normalized)
     if len(compact) < 6 or len(compact) > 80:
