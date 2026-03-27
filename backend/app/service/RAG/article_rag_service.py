@@ -99,19 +99,8 @@ class ArticleRagService:
                 upserted_units=0,
             )
 
-        texts = [str(record["content"]) for record in records]
-        image_urls = [record.get("image_url") for record in records]
-        dense_vectors = generate_dense_embedding(texts, image_urls)
-        sparse_vectors = generate_sparse_embedding(texts)
-
-        for record, dense_vector, sparse_vector in zip(
-            records,
-            dense_vectors,
-            sparse_vectors,
-            strict=True,
-        ):
-            record["dense_vector"] = dense_vector
-            record["sparse_vector"] = sparse_vector
+        self._attach_vectors(text_records)
+        self._attach_vectors(image_records)
 
         upserted_units = self._qdrant_service.upsert_data(self._collection_name, records)
         return RagInsertResult(
@@ -150,9 +139,22 @@ class ArticleRagService:
                         "dense_vector": [],
                         "sparse_vector": {},
                         "image_url": None,
-                    }
-                )
+                }
+            )
         return records
+
+    def _attach_vectors(self, records: list[dict[str, object]]) -> None:
+        """Attach dense and sparse vectors to a homogeneous retrieval record batch."""
+        if not records:
+            return
+
+        texts = [str(record["content"]) for record in records]
+        dense_vectors = generate_dense_embedding(texts)
+        sparse_vectors = generate_sparse_embedding(texts)
+
+        for record, dense_vector, sparse_vector in zip(records, dense_vectors, sparse_vectors, strict=True):
+            record["dense_vector"] = dense_vector
+            record["sparse_vector"] = sparse_vector
 
     def _build_image_records(self, articles: list[Article]) -> list[dict[str, object]]:
         article_by_id = {article.article_id: article for article in articles}

@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
 from sqlalchemy import create_engine
@@ -45,6 +46,7 @@ class ArticleRagServiceTest(unittest.TestCase):
     def test_upsert_articles_uses_parsed_source_markdown_and_source_text_image_projection(self) -> None:
         eligible_article_id = str(uuid4())
         skipped_article_id = str(uuid4())
+        captured_dense_calls: list[dict[str, Any]] = []
         markdown_service = ArticleMarkdownService(Path(self.temp_dir.name))
         markdown_path = "2026-03-26/article-1.md"
         markdown_service.write_markdown(
@@ -110,7 +112,11 @@ class ArticleRagServiceTest(unittest.TestCase):
             patch("backend.app.service.RAG.article_rag_service.QdrantService", return_value=fake_qdrant),
             patch(
                 "backend.app.service.RAG.article_rag_service.generate_dense_embedding",
-                side_effect=lambda texts, image_urls=None: [[1.0, 0.0] for _ in texts],
+                side_effect=lambda texts, image_inputs=None: _capture_dense_embedding_call(
+                    captured_dense_calls,
+                    texts,
+                    image_inputs,
+                ),
             ),
             patch(
                 "backend.app.service.RAG.article_rag_service.generate_sparse_embedding",
@@ -137,3 +143,23 @@ class ArticleRagServiceTest(unittest.TestCase):
         self.assertNotIn("Raw summary", image_records[0]["content"])
         self.assertEqual(image_records[0]["tags_json"], [])
         self.assertEqual(image_records[0]["brands_json"], [])
+        image_dense_call = next(
+            call
+            for call in captured_dense_calls
+            if str(image_records[0]["content"]) in call["texts"]
+        )
+        self.assertIsNone(image_dense_call["image_inputs"])
+
+
+def _capture_dense_embedding_call(
+    captured_dense_calls: list[dict[str, Any]],
+    texts: list[str],
+    image_inputs: list[str | None] | None,
+) -> list[list[float]]:
+    captured_dense_calls.append(
+        {
+            "texts": list(texts),
+            "image_inputs": None if image_inputs is None else list(image_inputs),
+        }
+    )
+    return [[1.0, 0.0] for _ in texts]
