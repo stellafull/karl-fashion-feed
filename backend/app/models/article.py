@@ -27,7 +27,7 @@ def _utcnow_naive() -> datetime:
 
 
 class Article(Base):
-    """Truth-source article persisted before downstream event framing and digesting."""
+    """Truth-source article persisted before sparse event framing and downstream digesting."""
 
     __tablename__ = "article"
 

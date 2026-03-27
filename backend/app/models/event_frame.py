@@ -12,7 +12,7 @@ from backend.app.core.database import Base
 
 
 class ArticleEventFrame(Base):
-    """Structured event extracted from one normalized article."""
+    """Structured event extracted directly from one parsed truth-source article."""
 
     __tablename__ = "article_event_frame"
 
