@@ -305,7 +305,7 @@ RAG agent 必须再回源读取 article Markdown 或 `article_image`，不能直
 - `ArticleEnrichmentService`
 - dense embedding
 - `ArticleClusterService`
-- `StoryGenerationService`
+- `DigestGenerationService`
 - `DailyPipelineService`
 
 当前尚未落地、但本文已固定为目标规范的部分：
