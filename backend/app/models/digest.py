@@ -32,7 +32,7 @@ class Digest(Base):
     body_markdown: Mapped[str] = mapped_column(Text, nullable=False, default="")
     hero_image_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     source_article_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    source_names_json: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    source_names_json: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
     created_run_id: Mapped[str] = mapped_column(
         String(36),
         ForeignKey("pipeline_run.run_id", ondelete="RESTRICT"),

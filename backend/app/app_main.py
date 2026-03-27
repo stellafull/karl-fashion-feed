@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.app.config.auth_config import auth_settings
 from backend.app.core.database import engine
 from backend.app.models import ensure_article_storage_schema, ensure_auth_chat_schema
-from backend.app.router import auth_router, chat_router, memory_router, rag_router
+from backend.app.router import auth_router, chat_router, digest_router, memory_router, rag_router
 
 
 @asynccontextmanager
@@ -46,3 +46,4 @@ app.include_router(auth_router, prefix="/api/v1")
 app.include_router(chat_router, prefix="/api/v1")
 app.include_router(memory_router, prefix="/api/v1")
 app.include_router(rag_router, prefix="/api/v1")
+app.include_router(digest_router, prefix="/api/v1")
