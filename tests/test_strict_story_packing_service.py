@@ -633,6 +633,29 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
         self.assertNotIn("runway_show", runway_story.synopsis_zh)
         self.assertTrue(any("\u4e00" <= char <= "\u9fff" for char in runway_story.synopsis_zh))
 
+    def test_default_synopsis_falls_back_to_clean_chinese_label_when_signature_is_noisy(self) -> None:
+        with self.session_factory() as session:
+            for frame_id in ("frame-1", "frame-2"):
+                frame = session.scalar(
+                    select(ArticleEventFrame).where(ArticleEventFrame.event_frame_id == frame_id)
+                )
+                assert frame is not None
+                frame.signature_json = {
+                    "brand": "{brand}`abc1234567890`",
+                    "season": "[FW26]SS27",
+                }
+            session.commit()
+
+        with self.session_factory() as session:
+            stories = asyncio.run(self.service.pack_business_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+
+        runway_story = next(
+            story for story in stories if story.signature_json.get("event_type") == "runway_show"
+        )
+        self.assertEqual(runway_story.synopsis_zh, "时装秀事件动态")
+        StrictStoryTieBreakChoice(synopsis_zh=runway_story.synopsis_zh)
+
     def _delete_one_frame(self, session: Session) -> None:
         session.execute(
             delete(ArticleEventFrame).where(

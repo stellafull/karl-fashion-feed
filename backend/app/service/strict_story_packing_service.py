@@ -14,7 +14,10 @@ from sqlalchemy.orm import Session
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
 from backend.app.models import ArticleEventFrame, StrictStory, StrictStoryArticle, StrictStoryFrame
 from backend.app.prompts.strict_story_tiebreak_prompt import build_strict_story_tiebreak_prompt
-from backend.app.schemas.llm.strict_story_tiebreak import StrictStoryTieBreakSchema
+from backend.app.schemas.llm.strict_story_tiebreak import (
+    StrictStoryTieBreakSchema,
+    normalize_readable_synopsis_zh,
+)
 
 if TYPE_CHECKING:
     from openai import AsyncOpenAI
@@ -328,11 +331,11 @@ class StrictStoryPackingService:
         if not isinstance(subject, dict):
             subject = {}
         event_type_label = {
-            "runway_show": "时装秀动态",
-            "brand_appointment": "品牌任命动态",
-            "campaign_launch": "品牌企划动态",
-            "store_opening": "门店拓展动态",
-        }.get(event_type, "时尚事件动态")
+            "runway_show": "时装秀事件动态",
+            "brand_appointment": "品牌任命事件动态",
+            "campaign_launch": "品牌企划事件动态",
+            "store_opening": "门店拓展事件动态",
+        }.get(event_type, "时尚行业事件动态")
         details: list[str] = []
         if subject.get("brand"):
             details.append(f"品牌{subject['brand']}")
@@ -345,5 +348,9 @@ class StrictStoryPackingService:
         if subject.get("place"):
             details.append(f"地点{subject['place']}")
         if details:
-            return f"{event_type_label}：" + "，".join(str(item) for item in details)
+            candidate = f"{event_type_label}：" + "，".join(str(item) for item in details)
+            try:
+                return normalize_readable_synopsis_zh(candidate)
+            except ValueError:
+                return event_type_label
         return event_type_label

@@ -166,6 +166,7 @@ def ensure_article_storage_schema(bind: Engine) -> None:
     )
     _ensure_article_columns(bind)
     _ensure_article_image_columns(bind)
+    _ensure_strict_story_columns(bind)
     _ensure_pipeline_run_columns(bind)
 
 
@@ -301,6 +302,21 @@ def _ensure_article_image_columns(bind: Engine) -> None:
     if "visual_attempts" not in existing_columns:
         statements.append(
             "ALTER TABLE article_image ADD COLUMN visual_attempts INTEGER DEFAULT 0 NOT NULL"
+        )
+
+    _apply_schema_statements(bind, statements)
+
+
+def _ensure_strict_story_columns(bind: Engine) -> None:
+    inspector = inspect(bind)
+    if "strict_story" not in inspector.get_table_names():
+        return
+
+    existing_columns = {column["name"] for column in inspector.get_columns("strict_story")}
+    statements: list[str] = []
+    if "frame_membership_json" not in existing_columns:
+        statements.append(
+            "ALTER TABLE strict_story ADD COLUMN frame_membership_json JSON DEFAULT '[]' NOT NULL"
         )
 
     _apply_schema_statements(bind, statements)

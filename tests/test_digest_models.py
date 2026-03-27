@@ -291,3 +291,49 @@ class DigestModelContractTest(unittest.TestCase):
 
         self.assertIn("image_hash", columns)
         self.assertIn("visual_attempts", columns)
+
+    def test_legacy_strict_story_table_gets_frame_membership_column_repaired(self) -> None:
+        engine = create_engine("sqlite:///:memory:")
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE pipeline_run (
+                        run_id VARCHAR(36) PRIMARY KEY,
+                        business_date DATE NOT NULL,
+                        run_type VARCHAR(64) NOT NULL,
+                        status VARCHAR(32) NOT NULL,
+                        started_at TIMESTAMP NOT NULL,
+                        finished_at TIMESTAMP NULL,
+                        watermark_ingested_at TIMESTAMP NULL,
+                        error_message TEXT NULL,
+                        metadata_json JSON NOT NULL
+                    )
+                    """
+                )
+            )
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE strict_story (
+                        strict_story_key VARCHAR(36) PRIMARY KEY,
+                        business_date DATE NOT NULL,
+                        synopsis_zh TEXT NOT NULL,
+                        signature_json JSON NOT NULL,
+                        created_run_id VARCHAR(36) NOT NULL,
+                        packing_status VARCHAR(32) NOT NULL,
+                        packing_error TEXT NULL,
+                        created_at TIMESTAMP NOT NULL
+                    )
+                    """
+                )
+            )
+
+        ensure_article_storage_schema(engine)
+
+        with engine.connect() as connection:
+            columns = {
+                row[1]
+                for row in connection.execute(text("PRAGMA table_info('strict_story')")).fetchall()
+            }
+        self.assertIn("frame_membership_json", columns)
