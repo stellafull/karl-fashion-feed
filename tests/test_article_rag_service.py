@@ -101,6 +101,9 @@ class ArticleRagServiceTest(unittest.TestCase):
                     alt_text="Model detail",
                     credit_raw="Photo: Karl",
                     context_snippet="Backstage fitting notes",
+                    ocr_text="LOOK 1",
+                    observed_description="A model standing backstage.",
+                    contextual_interpretation="Backstage mood before the show.",
                     visual_status="pending",
                 )
             )
@@ -141,6 +144,9 @@ class ArticleRagServiceTest(unittest.TestCase):
         self.assertIn("Model detail", image_records[0]["content"])
         self.assertNotIn("Raw title", image_records[0]["content"])
         self.assertNotIn("Raw summary", image_records[0]["content"])
+        self.assertNotIn("LOOK 1", image_records[0]["content"])
+        self.assertNotIn("A model standing backstage.", image_records[0]["content"])
+        self.assertNotIn("Backstage mood before the show.", image_records[0]["content"])
         self.assertEqual(image_records[0]["tags_json"], [])
         self.assertEqual(image_records[0]["brands_json"], [])
         image_dense_call = next(
@@ -148,7 +154,7 @@ class ArticleRagServiceTest(unittest.TestCase):
             for call in captured_dense_calls
             if str(image_records[0]["content"]) in call["texts"]
         )
-        self.assertIsNone(image_dense_call["image_inputs"])
+        self.assertEqual(image_dense_call["image_inputs"], ["https://example.com/image.jpg"])
 
 
 def _capture_dense_embedding_call(
