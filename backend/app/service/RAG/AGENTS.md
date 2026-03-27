@@ -30,9 +30,9 @@
 
 - `article` 和 canonical Markdown 是文本事实真相源。
 - `article_image` 是图片事实真相源与文章归属关系真相源。
-- `story` 只服务阅读，不进入 RAG collection 真相层。
+- `digest` 只服务阅读，不进入 RAG 真相层。
 - Qdrant 永远只是检索副本，可以重建，不承载业务真相。
-- shared collection 只收录 parse-complete 的 Markdown text unit，以及具有 source-text image signals 的 image unit。
+- shared collection 只收录 `parse_status=done` 的 article 文本单元，以及具有 source-text image signals 的 image 单元。
 - 引用和回溯必须回到 `article` / Markdown / `article_image`，不得直接把 Qdrant 命中结果当作引用真相。
 - Qdrant 物理上只保留一个 shared collection，通过 `modality` 区分 `text` / `image`。
 - 物理上是单 collection，但逻辑上仍保留 `text_only`、`image_only`、`fusion` 三种 query plan。
@@ -128,6 +128,8 @@ shared collection 的 nullability 规则固定如下：
   - 图片存在至少一类 source-text 信号：`alt_text`、`caption_raw`、`credit_raw`、`context_snippet` 之一
 - image 单元的 `content` 生成规则固定为：
   - `caption_raw + alt_text + credit_raw + context_snippet`
+- image lane 的 retrieval content 只使用 source-provided text，不依赖 image2text。
+- image lane 的 dense embedding 保留多模态 image embedding（`text + image_url`）。
 - image 单元命中时，返回的是 image evidence，本体是图片和 `content`，而不是 image2text 文本。
 
 ## 4. Qdrant 副本与重建策略
