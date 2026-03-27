@@ -104,7 +104,7 @@ shared collection 的 nullability 规则固定如下：
 ### 3.1 索引对象
 
 - shared collection 只收录可直接回源到 Markdown / `article_image` 的可检索叶子单元。
-- `story`、未发布 article、Qdrant 回写结果都不进入 shared collection。
+- `story`、未完成解析的 article、Qdrant 回写结果都不进入 shared collection。
 - 图片不进入 canonical Markdown；image lane 只从 `article_image` 派生。
 
 ### 3.2 Text 单元规则
