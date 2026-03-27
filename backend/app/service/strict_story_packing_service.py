@@ -169,11 +169,12 @@ class StrictStoryPackingService:
                         pick_key = top_candidates[0].strict_story_key
                     else:
                         tie = await self._run_tie_break(group, top_candidates)
-                        if tie.reuse_strict_story_key is not None:
+                        choice = tie.choice
+                        if choice.reuse_strict_story_key is not None:
                             candidate_keys = {item.strict_story_key for item in top_candidates}
-                            if tie.reuse_strict_story_key in candidate_keys:
-                                pick_key = tie.reuse_strict_story_key
-                        synopsis = tie.synopsis_zh.strip() or synopsis
+                            if choice.reuse_strict_story_key in candidate_keys:
+                                pick_key = choice.reuse_strict_story_key
+                        synopsis = choice.synopsis_zh.strip() or synopsis
 
             if pick_key in {item.strict_story_key for item in compatible}:
                 used_existing_keys.add(pick_key)

@@ -11,8 +11,32 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from backend.app.core.database import Base
-from backend.app.models import Article, ArticleEventFrame, PipelineRun, StrictStory, StrictStoryFrame
+from backend.app.models import (
+    Article,
+    ArticleEventFrame,
+    PipelineRun,
+    StrictStory,
+    StrictStoryFrame,
+)
+from backend.app.schemas.llm.strict_story_tiebreak import (
+    StrictStoryTieBreakChoice,
+    StrictStoryTieBreakSchema,
+)
 from backend.app.service.strict_story_packing_service import StrictStoryPackingService
+
+
+class StubTieBreakPackingService(StrictStoryPackingService):
+    """Test double that bypasses external LLM calls for tie-break resolution."""
+
+    def __init__(self, tie_break_schema: StrictStoryTieBreakSchema) -> None:
+        super().__init__()
+        self.tie_break_schema = tie_break_schema
+        self.tie_break_calls = 0
+
+    async def _run_tie_break(self, group: object, candidates: object) -> StrictStoryTieBreakSchema:
+        del group, candidates
+        self.tie_break_calls += 1
+        return self.tie_break_schema
 
 
 class StrictStoryPackingServiceTest(unittest.TestCase):
@@ -139,6 +163,66 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
         with self.session_factory() as session:
             self.assertTrue(self._no_stale_strict_story_rows_remain(session))
 
+    def test_tie_break_reads_choice_payload_and_reuses_selected_key(self) -> None:
+        service = StubTieBreakPackingService(
+            StrictStoryTieBreakSchema(
+                choice=StrictStoryTieBreakChoice(
+                    reuse_strict_story_key="old-b",
+                    synopsis_zh="模型复核：沿用 old-b",
+                )
+            )
+        )
+        with self.session_factory() as session:
+            now = datetime(2026, 3, 27, 7, 30, tzinfo=UTC).replace(tzinfo=None)
+            session.add(
+                PipelineRun(
+                    run_id="run-old",
+                    business_date=self.business_day,
+                    run_type="digest_daily",
+                    status="success",
+                    metadata_json={},
+                    started_at=now,
+                )
+            )
+            signature = {
+                "event_type": "runway_show",
+                "signature_json": {"brand": "brand-a", "season": "fw26"},
+            }
+            session.add_all(
+                [
+                    StrictStory(
+                        strict_story_key="old-a",
+                        business_date=self.business_day,
+                        synopsis_zh="old-a",
+                        signature_json=signature,
+                        created_run_id="run-old",
+                        packing_status="done",
+                    ),
+                    StrictStory(
+                        strict_story_key="old-b",
+                        business_date=self.business_day,
+                        synopsis_zh="old-b",
+                        signature_json=signature,
+                        created_run_id="run-old",
+                        packing_status="done",
+                    ),
+                    StrictStoryFrame(strict_story_key="old-a", event_frame_id="frame-1", rank=0),
+                    StrictStoryFrame(strict_story_key="old-b", event_frame_id="frame-2", rank=0),
+                ]
+            )
+            session.commit()
+
+        with self.session_factory() as session:
+            stories = asyncio.run(service.pack_business_day(session, self.business_day, run_id="run-1"))
+            session.commit()
+
+        runway_story = next(
+            story for story in stories if story.signature_json.get("event_type") == "runway_show"
+        )
+        self.assertEqual(runway_story.strict_story_key, "old-b")
+        self.assertEqual(runway_story.synopsis_zh, "模型复核：沿用 old-b")
+        self.assertEqual(service.tie_break_calls, 1)
+
     def _delete_one_frame(self, session: Session) -> None:
         session.execute(
             delete(ArticleEventFrame).where(
@@ -161,4 +245,3 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
             select(ArticleEventFrame.event_frame_id).where(ArticleEventFrame.business_date == self.business_day)
         ).all()
         return sorted(mapped_frame_ids) == sorted(current_frame_ids)
-
