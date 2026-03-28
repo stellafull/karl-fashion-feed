@@ -72,7 +72,7 @@ class ChatRouterValidationTests(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
         self.assertEqual(
             response.json()["detail"],
-            "Either content_text or image must be provided",
+            "Either content_text or at least one image must be provided",
         )
 
 
@@ -167,9 +167,8 @@ class ChatWorkerServiceTests(unittest.TestCase):
 
             self.assertTrue(processed)
             [request_context] = captured_contexts
-            self.assertIsNotNone(request_context.request_image)
-            assert request_context.request_image is not None
-            self.assertEqual(request_context.request_image.mime_type, "image/png")
+            self.assertEqual(len(request_context.request_images), 1)
+            self.assertEqual(request_context.request_images[0].mime_type, "image/png")
 
             with self.session_local() as session:
                 assistant_message = session.get(ChatMessage, "assistant-message")

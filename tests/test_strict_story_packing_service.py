@@ -219,17 +219,6 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
             )
         )
         with self.session_factory() as session:
-            now = datetime(2026, 3, 27, 7, 30, tzinfo=UTC).replace(tzinfo=None)
-            session.add(
-                PipelineRun(
-                    run_id="run-old",
-                    business_date=self.business_day,
-                    run_type="digest_daily",
-                    status="success",
-                    metadata_json={},
-                    started_at=now,
-                )
-            )
             signature = {
                 "event_type": "runway_show",
                 "signature_json": {"brand": "brand-a", "season": "fw26"},
@@ -242,7 +231,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                         synopsis_zh="old-a",
                         signature_json=signature,
                         frame_membership_json=["frame-1"],
-                        created_run_id="run-old",
+                        created_run_id="run-1",
                         packing_status="done",
                     ),
                     StrictStory(
@@ -251,7 +240,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                         synopsis_zh="old-b",
                         signature_json=signature,
                         frame_membership_json=["frame-2"],
-                        created_run_id="run-old",
+                        created_run_id="run-1",
                         packing_status="done",
                     ),
                     StrictStoryFrame(strict_story_key="old-a", event_frame_id="frame-1", rank=0),
@@ -318,17 +307,6 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
             rate_limiter=_NoOpRateLimiter(),
         )
         with self.session_factory() as session:
-            now = datetime(2026, 3, 27, 7, 30, tzinfo=UTC).replace(tzinfo=None)
-            session.add(
-                PipelineRun(
-                    run_id="run-old-invalid",
-                    business_date=self.business_day,
-                    run_type="digest_daily",
-                    status="success",
-                    metadata_json={},
-                    started_at=now,
-                )
-            )
             signature = {
                 "event_type": "runway_show",
                 "signature_json": {"brand": "brand-a", "season": "fw26"},
@@ -341,7 +319,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                         synopsis_zh="old-a",
                         signature_json=signature,
                         frame_membership_json=["frame-1"],
-                        created_run_id="run-old-invalid",
+                        created_run_id="run-1",
                         packing_status="done",
                     ),
                     StrictStory(
@@ -350,7 +328,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                         synopsis_zh="old-b",
                         signature_json=signature,
                         frame_membership_json=["frame-2"],
-                        created_run_id="run-old-invalid",
+                        created_run_id="run-1",
                         packing_status="done",
                     ),
                     StrictStoryFrame(strict_story_key="old-a", event_frame_id="frame-1", rank=0),
@@ -378,17 +356,6 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
             rate_limiter=_NoOpRateLimiter(),
         )
         with self.session_factory() as session:
-            now = datetime(2026, 3, 27, 7, 31, tzinfo=UTC).replace(tzinfo=None)
-            session.add(
-                PipelineRun(
-                    run_id="run-old-invalid-json",
-                    business_date=self.business_day,
-                    run_type="digest_daily",
-                    status="success",
-                    metadata_json={},
-                    started_at=now,
-                )
-            )
             signature = {
                 "event_type": "runway_show",
                 "signature_json": {"brand": "brand-a", "season": "fw26"},
@@ -401,7 +368,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                         synopsis_zh="old-a",
                         signature_json=signature,
                         frame_membership_json=["frame-1"],
-                        created_run_id="run-old-invalid-json",
+                        created_run_id="run-1",
                         packing_status="done",
                     ),
                     StrictStory(
@@ -410,7 +377,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                         synopsis_zh="old-b",
                         signature_json=signature,
                         frame_membership_json=["frame-2"],
-                        created_run_id="run-old-invalid-json",
+                        created_run_id="run-1",
                         packing_status="done",
                     ),
                     StrictStoryFrame(strict_story_key="old-a", event_frame_id="frame-1", rank=0),
@@ -459,20 +426,6 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
         )
 
         with self.session_factory() as session:
-            now = datetime(2026, 3, 27, 10, 0, tzinfo=UTC).replace(tzinfo=None)
-            session.add(
-                PipelineRun(
-                    run_id="run-digest",
-                    business_date=self.business_day,
-                    run_type="digest_daily",
-                    status="success",
-                    metadata_json={},
-                    started_at=now,
-                )
-            )
-            session.commit()
-
-        with self.session_factory() as session:
             session.add(
                 Digest(
                     digest_key="digest-1",
@@ -481,7 +434,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                     title_zh="今日摘要",
                     dek_zh="导语",
                     body_markdown="正文",
-                    created_run_id="run-digest",
+                    created_run_id="run-1",
                     generation_status="done",
                 )
             )
@@ -511,20 +464,6 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
         )
 
         with self.session_factory() as session:
-            now = datetime(2026, 3, 27, 10, 1, tzinfo=UTC).replace(tzinfo=None)
-            session.add(
-                PipelineRun(
-                    run_id="run-digest-rerun",
-                    business_date=self.business_day,
-                    run_type="digest_daily",
-                    status="success",
-                    metadata_json={},
-                    started_at=now,
-                )
-            )
-            session.commit()
-
-        with self.session_factory() as session:
             session.add(
                 Digest(
                     digest_key="digest-2",
@@ -533,7 +472,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                     title_zh="复跑摘要",
                     dek_zh="导语",
                     body_markdown="正文",
-                    created_run_id="run-digest-rerun",
+                    created_run_id="run-1",
                     generation_status="done",
                 )
             )
@@ -573,17 +512,6 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
 
     def test_mints_new_key_when_overlap_ratio_is_below_half(self) -> None:
         with self.session_factory() as session:
-            now = datetime(2026, 3, 27, 7, 35, tzinfo=UTC).replace(tzinfo=None)
-            session.add(
-                PipelineRun(
-                    run_id="run-old-low-overlap",
-                    business_date=self.business_day,
-                    run_type="digest_daily",
-                    status="success",
-                    metadata_json={},
-                    started_at=now,
-                )
-            )
             signature = {
                 "event_type": "runway_show",
                 "signature_json": {"brand": "brand-a", "season": "fw26"},
@@ -595,7 +523,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                     synopsis_zh="旧故事",
                     signature_json=signature,
                     frame_membership_json=["frame-1", "frame-3"],
-                    created_run_id="run-old-low-overlap",
+                    created_run_id="run-1",
                     packing_status="done",
                 )
             )
@@ -617,17 +545,6 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
 
     def test_incompatible_signatures_do_not_reuse_existing_key(self) -> None:
         with self.session_factory() as session:
-            now = datetime(2026, 3, 27, 7, 45, tzinfo=UTC).replace(tzinfo=None)
-            session.add(
-                PipelineRun(
-                    run_id="run-old-incompatible",
-                    business_date=self.business_day,
-                    run_type="digest_daily",
-                    status="success",
-                    metadata_json={},
-                    started_at=now,
-                )
-            )
             signature = {
                 "event_type": "brand_appointment",
                 "signature_json": {"brand": "brand-a", "season": "fw26"},
@@ -639,7 +556,7 @@ class StrictStoryPackingServiceTest(unittest.TestCase):
                     synopsis_zh="旧不兼容故事",
                     signature_json=signature,
                     frame_membership_json=["frame-1"],
-                    created_run_id="run-old-incompatible",
+                    created_run_id="run-1",
                     packing_status="done",
                 )
             )
