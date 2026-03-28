@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from datetime import date
 
+from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from backend.app.core.database import SessionLocal
@@ -20,67 +21,78 @@ from backend.app.tasks.celery_app import celery_app
 
 
 @celery_app.task(name="aggregation.pack_strict_stories_for_day")
-def pack_strict_stories_for_day(business_day_iso: str, run_id: str) -> None:
+def pack_strict_stories_for_day(business_day_iso: str, run_id: str, ownership_token: int) -> None:
     """Pack strict stories for one business day and update pipeline_run state."""
     business_day = date.fromisoformat(business_day_iso)
     service = StrictStoryPackingService()
     with SessionLocal() as session:
         ensure_article_storage_schema(session.get_bind())
-        run = _load_run(session=session, run_id=run_id, business_day=business_day)
-        run.strict_story_status = "running"
-        run.strict_story_updated_at = _utcnow_naive()
-        session.commit()
+        _claim_batch_stage(
+            session=session,
+            run_id=run_id,
+            business_day=business_day,
+            stage="strict_story",
+            ownership_token=ownership_token,
+        )
 
         try:
             asyncio.run(service.pack_business_day(session, business_day, run_id=run_id))
-            run = _load_run(session=session, run_id=run_id, business_day=business_day)
-            run.strict_story_status = "done"
-            run.strict_story_error = None
-            run.strict_story_updated_at = _utcnow_naive()
+            _finalize_batch_stage_success(
+                session=session,
+                run_id=run_id,
+                business_day=business_day,
+                stage="strict_story",
+                ownership_token=ownership_token,
+            )
             session.commit()
         except Exception as exc:
             session.rollback()
-            run = _load_run(session=session, run_id=run_id, business_day=business_day)
-            run.strict_story_attempts += 1
-            run.strict_story_status = (
-                "abandoned" if run.strict_story_attempts >= BATCH_STAGE_MAX_ATTEMPTS else "failed"
+            _finalize_batch_stage_failure(
+                session=session,
+                run_id=run_id,
+                business_day=business_day,
+                stage="strict_story",
+                ownership_token=ownership_token,
+                exc=exc,
             )
-            run.strict_story_error = f"{exc.__class__.__name__}: {exc}"
-            run.strict_story_updated_at = _utcnow_naive()
-            session.commit()
             raise
 
 
 @celery_app.task(name="aggregation.generate_digests_for_day")
-def generate_digests_for_day(business_day_iso: str, run_id: str) -> None:
+def generate_digests_for_day(business_day_iso: str, run_id: str, ownership_token: int) -> None:
     """Generate digests for one business day and update pipeline_run state."""
     business_day = date.fromisoformat(business_day_iso)
     service = DigestGenerationService()
     with SessionLocal() as session:
         ensure_article_storage_schema(session.get_bind())
-        run = _load_run(session=session, run_id=run_id, business_day=business_day)
-        run.digest_status = "running"
-        run.digest_updated_at = _utcnow_naive()
-        session.commit()
+        _claim_batch_stage(
+            session=session,
+            run_id=run_id,
+            business_day=business_day,
+            stage="digest",
+            ownership_token=ownership_token,
+        )
 
         try:
             asyncio.run(service.generate_for_day(session, business_day, run_id=run_id))
-            run = _load_run(session=session, run_id=run_id, business_day=business_day)
-            run.digest_status = "done"
-            run.digest_error = None
-            run.digest_updated_at = _utcnow_naive()
-            run.status = "done"
-            run.finished_at = _utcnow_naive()
+            _finalize_batch_stage_success(
+                session=session,
+                run_id=run_id,
+                business_day=business_day,
+                stage="digest",
+                ownership_token=ownership_token,
+            )
             session.commit()
         except Exception as exc:
             session.rollback()
-            run = _load_run(session=session, run_id=run_id, business_day=business_day)
-            run.digest_attempts += 1
-            run.digest_status = "abandoned" if run.digest_attempts >= BATCH_STAGE_MAX_ATTEMPTS else "failed"
-            run.digest_error = f"{exc.__class__.__name__}: {exc}"
-            run.digest_updated_at = _utcnow_naive()
-            run.status = "failed" if run.digest_status == "abandoned" else "running"
-            session.commit()
+            _finalize_batch_stage_failure(
+                session=session,
+                run_id=run_id,
+                business_day=business_day,
+                stage="digest",
+                ownership_token=ownership_token,
+                exc=exc,
+            )
             raise
 
 
@@ -94,3 +106,104 @@ def _load_run(*, session: Session, run_id: str, business_day: date) -> PipelineR
             f"{run_id} expected {business_day.isoformat()} got {run.business_date.isoformat()}"
         )
     return run
+
+
+def _claim_batch_stage(
+    *,
+    session: Session,
+    run_id: str,
+    business_day: date,
+    stage: str,
+    ownership_token: int,
+) -> None:
+    _load_run(session=session, run_id=run_id, business_day=business_day)
+    status_field = getattr(PipelineRun, f"{stage}_status")
+    updated_at_field = getattr(PipelineRun, f"{stage}_updated_at")
+    token_field = getattr(PipelineRun, f"{stage}_token")
+    claim_result = session.execute(
+        update(PipelineRun)
+        .where(
+            PipelineRun.run_id == run_id,
+            PipelineRun.business_date == business_day,
+            token_field == ownership_token,
+            status_field == "queued",
+        )
+        .values(
+            {
+                f"{stage}_status": "running",
+                f"{stage}_updated_at": _utcnow_naive(),
+            }
+        )
+    )
+    if claim_result.rowcount != 1:
+        session.rollback()
+        raise RuntimeError(
+            f"batch stage ownership lost before start: {stage} run={run_id} token={ownership_token}"
+        )
+    session.commit()
+
+
+def _finalize_batch_stage_success(
+    *,
+    session: Session,
+    run_id: str,
+    business_day: date,
+    stage: str,
+    ownership_token: int,
+) -> None:
+    values = {
+        f"{stage}_status": "done",
+        f"{stage}_error": None,
+        f"{stage}_updated_at": _utcnow_naive(),
+    }
+    if stage == "digest":
+        values["status"] = "done"
+        values["finished_at"] = _utcnow_naive()
+
+    complete_result = session.execute(
+        update(PipelineRun)
+        .where(
+            PipelineRun.run_id == run_id,
+            PipelineRun.business_date == business_day,
+            getattr(PipelineRun, f"{stage}_token") == ownership_token,
+            getattr(PipelineRun, f"{stage}_status") == "running",
+        )
+        .values(values)
+    )
+    if complete_result.rowcount != 1:
+        raise RuntimeError(
+            f"batch stage ownership lost before finalize: {stage} run={run_id} token={ownership_token}"
+        )
+
+
+def _finalize_batch_stage_failure(
+    *,
+    session: Session,
+    run_id: str,
+    business_day: date,
+    stage: str,
+    ownership_token: int,
+    exc: Exception,
+) -> None:
+    run = _load_run(session=session, run_id=run_id, business_day=business_day)
+    if getattr(run, f"{stage}_token") != ownership_token or getattr(run, f"{stage}_status") != "running":
+        raise RuntimeError(
+            f"batch stage ownership lost before failure finalize: {stage} run={run_id} token={ownership_token}"
+        )
+
+    attempts_field = f"{stage}_attempts"
+    status_field = f"{stage}_status"
+    error_field = f"{stage}_error"
+    updated_at_field = f"{stage}_updated_at"
+    attempts = int(getattr(run, attempts_field)) + 1
+    setattr(run, attempts_field, attempts)
+    setattr(run, status_field, "abandoned" if attempts >= BATCH_STAGE_MAX_ATTEMPTS else "failed")
+    setattr(run, error_field, f"{exc.__class__.__name__}: {exc}")
+    setattr(run, updated_at_field, _utcnow_naive())
+    if stage == "strict_story":
+        run.status = "failed" if run.strict_story_status == "abandoned" else "running"
+        run.finished_at = _utcnow_naive() if run.strict_story_status == "abandoned" else None
+    if stage == "digest":
+        run.status = "failed" if run.digest_status == "abandoned" else "running"
+        run.finished_at = _utcnow_naive() if run.digest_status == "abandoned" else None
+    session.commit()

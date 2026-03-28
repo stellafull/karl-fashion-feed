@@ -10,7 +10,7 @@ from typing import Awaitable, Callable, Iterable
 from uuid import uuid4
 
 import aiohttp
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
 from backend.app.config.storage_config import ARTICLE_MARKDOWN_ROOT
@@ -90,8 +90,13 @@ class ArticleParseService:
         *,
         article_ids: list[str] | None = None,
         limit: int | None = None,
+        require_running_claim: bool = False,
     ) -> ParseResult:
-        candidates = self._load_candidates(article_ids=article_ids, limit=limit)
+        candidates = self._load_candidates(
+            article_ids=article_ids,
+            limit=limit,
+            require_running_claim=require_running_claim,
+        )
         if not candidates:
             return ParseResult(candidates=0, parsed=0, failed=0, parsed_article_ids=tuple())
 
@@ -103,10 +108,14 @@ class ArticleParseService:
         *,
         article_ids: list[str] | None,
         limit: int | None,
+        require_running_claim: bool,
     ) -> list[Article]:
-        eligible_statuses = (
-            ("pending", "failed", "queued", "running") if article_ids else ("pending", "failed")
-        )
+        if require_running_claim:
+            eligible_statuses = ("running",)
+        elif article_ids:
+            eligible_statuses = ("pending", "failed", "queued")
+        else:
+            eligible_statuses = ("pending", "failed")
         with SessionLocal() as session:
             query = (
                 select(Article)
@@ -419,7 +428,13 @@ def _reuse_duplicate_image(*, existing_image: ArticleImage, session: Session) ->
 def run_parse_article(*, article_id: str) -> ParseResult:
     """Run parse for one article and fail fast if it does not finish successfully."""
     _claim_article_for_parse(article_id=article_id)
-    result = asyncio.run(ArticleParseService().parse_articles(article_ids=[article_id], limit=1))
+    result = asyncio.run(
+        ArticleParseService().parse_articles(
+            article_ids=[article_id],
+            limit=1,
+            require_running_claim=True,
+        )
+    )
     if result.candidates != 1:
         raise RuntimeError(f"parse candidate not found or not eligible: {article_id}")
     if result.failed:
@@ -432,15 +447,30 @@ def run_parse_article(*, article_id: str) -> ParseResult:
 def _claim_article_for_parse(*, article_id: str) -> None:
     with SessionLocal() as session:
         ensure_article_storage_schema(session.get_bind())
+        claim_now = datetime.now(UTC).replace(tzinfo=None)
+        claim_result = session.execute(
+            update(Article)
+            .where(
+                Article.article_id == article_id,
+                Article.parse_status.in_(("pending", "failed", "queued")),
+                Article.parse_attempts < MAX_PARSE_ATTEMPTS,
+            )
+            .values(
+                parse_status="running",
+                parse_error=None,
+                parse_updated_at=claim_now,
+            )
+        )
+        if claim_result.rowcount == 1:
+            session.commit()
+            return
+
+        session.rollback()
         article = session.get(Article, article_id)
         if article is None:
             raise RuntimeError(f"article not found for parse: {article_id}")
-        if article.parse_status not in {"pending", "failed", "queued", "running"}:
+        if article.parse_status not in {"pending", "failed", "queued"}:
             raise RuntimeError(f"article is not runnable for parse: {article_id} ({article.parse_status})")
         if article.parse_attempts >= MAX_PARSE_ATTEMPTS:
             raise RuntimeError(f"article already exhausted parse retries: {article_id}")
-
-        article.parse_status = "running"
-        article.parse_error = None
-        article.parse_updated_at = datetime.now(UTC).replace(tzinfo=None)
-        session.commit()
+        raise RuntimeError(f"article is not runnable for parse: {article_id} ({article.parse_status})")

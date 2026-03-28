@@ -248,6 +248,24 @@ class DailyRunCoordinatorServiceTest(unittest.TestCase):
         self.assertEqual(self.queued_task_names[0], "aggregation.pack_strict_stories_for_day")
         self.assertEqual(self.queued_task_names[-1], "aggregation.generate_digests_for_day")
 
+    def test_tick_does_not_enqueue_digest_when_front_stage_reopens(self) -> None:
+        coordinator = DailyRunCoordinatorService(session_factory=self.session_factory)
+        self._insert_article(
+            article_id="article-parse-reopened",
+            ingested_at=datetime(2026, 3, 25, 18, 22, tzinfo=UTC).replace(tzinfo=None),
+            parse_status="failed",
+            parse_attempts=1,
+        )
+        self._insert_pipeline_run(
+            strict_story_status="done",
+            digest_status="failed",
+        )
+
+        with self._patch_queue_calls():
+            coordinator.tick(now=self.fixed_now)
+
+        self.assertEqual(self.queued_task_names, ["content.parse_article"])
+
     def test_clean_celery_worker_loads_content_and_aggregation_tasks(self) -> None:
         registered_task_names = self._load_task_names_in_clean_python()
         self.assertIn("content.collect_source", registered_task_names)

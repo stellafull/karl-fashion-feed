@@ -8,7 +8,7 @@ from datetime import UTC, datetime, date
 from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import delete
+from sqlalchemy import delete, update
 from sqlalchemy.orm import Session
 
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
@@ -187,6 +187,24 @@ def run_extract_event_frames(*, article_id: str) -> tuple[ArticleEventFrame, ...
     service = EventFrameExtractionService()
     with SessionLocal() as session:
         ensure_article_storage_schema(session.get_bind())
+        claim_now = _utcnow_naive()
+        claim_result = session.execute(
+            update(Article)
+            .where(
+                Article.article_id == article_id,
+                Article.parse_status == "done",
+                Article.event_frame_status.in_(("pending", "failed", "queued")),
+                Article.event_frame_attempts < 3,
+            )
+            .values(
+                event_frame_status="running",
+                event_frame_error=None,
+                event_frame_updated_at=claim_now,
+            )
+        )
+        if claim_result.rowcount == 1:
+            session.commit()
+
         article = session.get(Article, article_id)
         if article is None:
             raise RuntimeError(f"article not found for frame extraction: {article_id}")
@@ -194,18 +212,10 @@ def run_extract_event_frames(*, article_id: str) -> tuple[ArticleEventFrame, ...
             raise RuntimeError(f"parse must be done before frame extraction: {article_id}")
         if article.event_frame_attempts >= 3:
             raise RuntimeError(f"article already exhausted frame extraction retries: {article_id}")
-        if article.event_frame_status not in {"pending", "failed", "queued", "running"}:
+        if article.event_frame_status != "running":
             raise RuntimeError(
                 f"article is not runnable for frame extraction: {article_id} ({article.event_frame_status})"
             )
-
-        article.event_frame_status = "running"
-        article.event_frame_error = None
-        article.event_frame_updated_at = _utcnow_naive()
-        session.commit()
-        article = session.get(Article, article_id)
-        if article is None:
-            raise RuntimeError(f"article disappeared before frame extraction: {article_id}")
 
         frames = asyncio.run(service.extract_frames(session, article))
         session.commit()

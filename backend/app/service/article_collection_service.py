@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Iterable
 from uuid import uuid4
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from backend.app.core.database import SessionLocal
@@ -74,12 +74,29 @@ class ArticleCollectionService:
             state.updated_at = _utcnow_naive()
             session.commit()
             raise RuntimeError(f"source already exhausted retries: {source_name}")
-        if state.status not in {"pending", "failed", "queued", "running"}:
-            raise RuntimeError(f"source is not runnable: {source_name} ({state.status})")
-
-        state.status = "running"
-        state.error = None
-        state.updated_at = _utcnow_naive()
+        claim_now = _utcnow_naive()
+        claim_result = session.execute(
+            update(SourceRunState)
+            .where(
+                SourceRunState.run_id == run_id,
+                SourceRunState.source_name == source_name,
+                SourceRunState.status.in_(("pending", "failed", "queued")),
+                SourceRunState.attempts < SOURCE_RUN_MAX_ATTEMPTS,
+            )
+            .values(
+                status="running",
+                error=None,
+                updated_at=claim_now,
+            )
+        )
+        if claim_result.rowcount != 1:
+            session.rollback()
+            current_state = self._get_or_create_source_state(
+                session,
+                run_id=run_id,
+                source_name=source_name,
+            )
+            raise RuntimeError(f"source is not runnable: {source_name} ({current_state.status})")
         session.commit()
 
         try:

@@ -6,7 +6,7 @@ from datetime import UTC, date, datetime, time, timedelta
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, JSON, String, Text
+from sqlalchemy import Date, DateTime, ForeignKey, Index, Integer, JSON, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.app.core.database import Base
@@ -49,6 +49,14 @@ class PipelineRun(Base):
     """Batch execution state for one business-date digest run."""
 
     __tablename__ = "pipeline_run"
+    __table_args__ = (
+        Index(
+            "uq_pipeline_run_business_date_run_type",
+            "business_date",
+            "run_type",
+            unique=True,
+        ),
+    )
 
     run_id: Mapped[str] = mapped_column(
         String(36),
@@ -84,6 +92,11 @@ class PipelineRun(Base):
         nullable=False,
         default=_utcnow_naive,
     )
+    strict_story_token: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
     digest_status: Mapped[str] = mapped_column(
         String(32),
         nullable=False,
@@ -99,6 +112,11 @@ class PipelineRun(Base):
         DateTime,
         nullable=False,
         default=_utcnow_naive,
+    )
+    digest_token: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
     )
     started_at: Mapped[datetime] = mapped_column(
         DateTime,

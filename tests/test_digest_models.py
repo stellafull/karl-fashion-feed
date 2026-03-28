@@ -5,6 +5,8 @@ import sys
 import unittest
 
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy import inspect
 
 from backend.app.models.article import ensure_article_storage_schema
 from backend.app.models import (
@@ -49,12 +51,141 @@ class DigestModelContractTest(unittest.TestCase):
             "strict_story_attempts",
             "strict_story_error",
             "strict_story_updated_at",
+            "strict_story_token",
             "digest_status",
             "digest_attempts",
             "digest_error",
             "digest_updated_at",
+            "digest_token",
         }
         self.assertTrue(expected.issubset(PipelineRun.__table__.columns.keys()))
+
+    def test_pipeline_run_enforces_one_run_per_business_date_and_type(self) -> None:
+        engine = create_engine("sqlite:///:memory:")
+        ensure_article_storage_schema(engine)
+
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO pipeline_run (
+                        run_id,
+                        business_date,
+                        run_type,
+                        status,
+                        strict_story_status,
+                        strict_story_attempts,
+                        strict_story_error,
+                        strict_story_updated_at,
+                        strict_story_token,
+                        digest_status,
+                        digest_attempts,
+                        digest_error,
+                        digest_updated_at,
+                        digest_token,
+                        started_at,
+                        finished_at,
+                        metadata_json
+                    ) VALUES (
+                        'run-1',
+                        '2026-03-27',
+                        'digest_daily',
+                        'running',
+                        'pending',
+                        0,
+                        NULL,
+                        '2026-03-27 08:00:00',
+                        0,
+                        'pending',
+                        0,
+                        NULL,
+                        '2026-03-27 08:00:00',
+                        0,
+                        '2026-03-27 08:00:00',
+                        NULL,
+                        '{}'
+                    )
+                    """
+                )
+            )
+
+        with self.assertRaises(IntegrityError):
+            with engine.begin() as connection:
+                connection.execute(
+                    text(
+                        """
+                        INSERT INTO pipeline_run (
+                            run_id,
+                            business_date,
+                            run_type,
+                            status,
+                            strict_story_status,
+                            strict_story_attempts,
+                            strict_story_error,
+                            strict_story_updated_at,
+                            strict_story_token,
+                            digest_status,
+                            digest_attempts,
+                            digest_error,
+                            digest_updated_at,
+                            digest_token,
+                            started_at,
+                            finished_at,
+                            metadata_json
+                        ) VALUES (
+                            'run-2',
+                            '2026-03-27',
+                            'digest_daily',
+                            'running',
+                            'pending',
+                            0,
+                            NULL,
+                            '2026-03-27 08:05:00',
+                            0,
+                            'pending',
+                            0,
+                            NULL,
+                            '2026-03-27 08:05:00',
+                            0,
+                            '2026-03-27 08:05:00',
+                            NULL,
+                            '{}'
+                        )
+                        """
+                    )
+                )
+
+    def test_runtime_shaped_pipeline_run_repairs_unique_index_on_sqlite(self) -> None:
+        engine = create_engine("sqlite:///:memory:")
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE pipeline_run (
+                        run_id VARCHAR(36) PRIMARY KEY,
+                        business_date DATE NOT NULL,
+                        run_type VARCHAR(64) NOT NULL,
+                        status VARCHAR(32) NOT NULL,
+                        started_at TIMESTAMP NOT NULL,
+                        finished_at TIMESTAMP NULL,
+                        watermark_ingested_at TIMESTAMP NULL,
+                        error_message TEXT NULL,
+                        metadata_json JSON NOT NULL
+                    )
+                    """
+                )
+            )
+
+        ensure_article_storage_schema(engine)
+
+        inspector = inspect(engine)
+        unique_indexes = {
+            index["name"]
+            for index in inspector.get_indexes("pipeline_run")
+            if index.get("unique")
+        }
+
+        self.assertIn("uq_pipeline_run_business_date_run_type", unique_indexes)
 
     def test_new_digest_runtime_tables_replace_story_read_model(self) -> None:
         self.assertEqual(ArticleEventFrame.__tablename__, "article_event_frame")

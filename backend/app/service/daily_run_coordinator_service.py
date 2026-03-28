@@ -7,6 +7,7 @@ from collections.abc import Callable, Sequence
 from datetime import UTC, date, datetime, timedelta
 
 from sqlalchemy import and_, or_, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from backend.app.config.source_config import load_source_configs
@@ -125,11 +126,27 @@ class DailyRunCoordinatorService:
             status="running",
             started_at=observed_at,
             strict_story_updated_at=observed_at,
+            strict_story_token=0,
             digest_updated_at=observed_at,
+            digest_token=0,
             metadata_json={},
         )
         session.add(run)
-        session.flush()
+        try:
+            session.flush()
+        except IntegrityError:
+            session.rollback()
+            existing_run = session.scalar(
+                select(PipelineRun).where(
+                    PipelineRun.business_date == business_day,
+                    PipelineRun.run_type == RUN_TYPE_DAILY_DIGEST,
+                )
+            )
+            if existing_run is None:
+                raise
+            if existing_run.status == "pending":
+                existing_run.status = "running"
+            return existing_run
         return run
 
     def _reclaim_stale_source_states(
@@ -356,9 +373,15 @@ class DailyRunCoordinatorService:
         *,
         dispatches: list[Dispatch],
     ) -> None:
-        if self._front_stages_drained(session, run.run_id, run.business_date, source_names):
+        front_stages_drained = self._front_stages_drained(
+            session,
+            run.run_id,
+            run.business_date,
+            source_names,
+        )
+        if front_stages_drained:
             self._enqueue_unique_pack(session, run, observed_at, dispatches=dispatches)
-        if run.strict_story_status == "done" and run.digest_status in {"pending", "failed"}:
+        if front_stages_drained and run.strict_story_status == "done" and run.digest_status in {"pending", "failed"}:
             self._enqueue_unique_digest(session, run, observed_at, dispatches=dispatches)
 
     def _enqueue_unique_pack(
@@ -377,11 +400,16 @@ class DailyRunCoordinatorService:
 
         run.strict_story_status = "queued"
         run.strict_story_updated_at = observed_at
+        run.strict_story_token += 1
+        ownership_token = run.strict_story_token
         session.flush()
         dispatches.append(
-            lambda business_day_iso=run.business_date.isoformat(), run_id=run.run_id: pack_strict_stories_for_day.delay(
+            lambda business_day_iso=run.business_date.isoformat(),
+            run_id=run.run_id,
+            ownership_token=ownership_token: pack_strict_stories_for_day.delay(
                 business_day_iso,
                 run_id,
+                ownership_token,
             )
         )
 
@@ -399,11 +427,16 @@ class DailyRunCoordinatorService:
 
         run.digest_status = "queued"
         run.digest_updated_at = observed_at
+        run.digest_token += 1
+        ownership_token = run.digest_token
         session.flush()
         dispatches.append(
-            lambda business_day_iso=run.business_date.isoformat(), run_id=run.run_id: generate_digests_for_day.delay(
+            lambda business_day_iso=run.business_date.isoformat(),
+            run_id=run.run_id,
+            ownership_token=ownership_token: generate_digests_for_day.delay(
                 business_day_iso,
                 run_id,
+                ownership_token,
             )
         )
 

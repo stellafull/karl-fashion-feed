@@ -231,6 +231,35 @@ class SourceCollectionServiceTest(unittest.TestCase):
         self.assertEqual(state.discovered_count, 5)
         self.assertEqual(state.inserted_count, 2)
 
+    def test_collect_source_rejects_already_running_source_claim(self) -> None:
+        service = ArticleCollectionService()
+        collector = AsyncMock(return_value=[self._build_article("https://example.com/a")])
+        service._collector = SimpleNamespace(collect_articles=collector)
+
+        with self.session_factory() as session:
+            self._add_pipeline_run(session)
+            session.add(
+                SourceRunState(
+                    run_id="run-1",
+                    source_name="Vogue",
+                    status="running",
+                    attempts=1,
+                )
+            )
+            session.commit()
+
+            with self.assertRaises(RuntimeError):
+                asyncio.run(
+                    service.collect_source(
+                        session,
+                        run_id="run-1",
+                        source_name="Vogue",
+                    )
+                )
+            session.rollback()
+
+        self.assertEqual(collector.await_count, 0)
+
     def test_collect_source_rejects_open_transaction_with_raw_sql_write(self) -> None:
         service = ArticleCollectionService()
         collector = AsyncMock(return_value=[self._build_article("https://example.com/a")])
@@ -250,10 +279,12 @@ class SourceCollectionServiceTest(unittest.TestCase):
                         strict_story_attempts,
                         strict_story_error,
                         strict_story_updated_at,
+                        strict_story_token,
                         digest_status,
                         digest_attempts,
                         digest_error,
                         digest_updated_at,
+                        digest_token,
                         started_at,
                         finished_at,
                         metadata_json
@@ -266,10 +297,12 @@ class SourceCollectionServiceTest(unittest.TestCase):
                         0,
                         NULL,
                         '2026-03-27 08:00:00',
+                        0,
                         'pending',
                         0,
                         NULL,
                         '2026-03-27 08:00:00',
+                        0,
                         '2026-03-27 08:00:00',
                         NULL,
                         '{}'

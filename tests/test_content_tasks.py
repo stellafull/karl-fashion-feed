@@ -17,10 +17,11 @@ from sqlalchemy.pool import StaticPool
 
 from backend.app.config.celery_config import build_celery_broker_url, build_celery_settings
 from backend.app.core.database import Base
-from backend.app.models import Article
+from backend.app.models import Article, Digest, PipelineRun, StrictStory, ensure_article_storage_schema
 from backend.app.service.article_contracts import MarkdownBlock, ParsedArticle
 from backend.app.service.event_frame_extraction_service import EventFrameExtractionService
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
+from backend.app.tasks.aggregation_tasks import generate_digests_for_day, pack_strict_stories_for_day
 
 
 class _FakeCompletionResponse:
@@ -79,6 +80,7 @@ class ContentTasksTest(unittest.TestCase):
         )
         self.session_factory = sessionmaker(bind=self.engine)
         Base.metadata.create_all(self.engine)
+        ensure_article_storage_schema(self.engine)
         self.temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp_dir.cleanup)
 
@@ -261,6 +263,24 @@ class ContentTasksTest(unittest.TestCase):
         self.assertIsNotNone(article)
         self.assertEqual(article.parse_status, "done")
 
+    def test_parse_task_rejects_already_running_article_claim(self) -> None:
+        self._insert_article(article_id="article-running-claimed", parse_status="running")
+        celery_app = self._load_fresh_celery_app()
+        celery_app.loader.import_default_modules()
+        parse_task = celery_app.tasks["content.parse_article"]
+        original_eager = celery_app.conf.task_always_eager
+        original_propagates = celery_app.conf.task_eager_propagates
+
+        try:
+            celery_app.conf.task_always_eager = True
+            celery_app.conf.task_eager_propagates = True
+            with patch("backend.app.service.article_parse_service.SessionLocal", self.session_factory):
+                with self.assertRaises(RuntimeError):
+                    parse_task.delay("article-running-claimed")
+        finally:
+            celery_app.conf.task_always_eager = original_eager
+            celery_app.conf.task_eager_propagates = original_propagates
+
     def test_collect_source_task_runs_in_eager_mode(self) -> None:
         celery_app = self._load_fresh_celery_app()
         celery_app.loader.import_default_modules()
@@ -375,6 +395,204 @@ class ContentTasksTest(unittest.TestCase):
         self.assertIsNotNone(article)
         self.assertEqual(article.event_frame_status, "done")
 
+    def test_extract_event_frames_task_rejects_already_running_article_claim(self) -> None:
+        article_id = self._insert_article(
+            article_id="article-extract-claimed",
+            markdown_rel_path="2026-03-27/article-extract-claimed.md",
+        )
+        with self.session_factory() as session:
+            article = session.get(Article, article_id)
+            article.event_frame_status = "running"
+            article.event_frame_attempts = 1
+            session.commit()
+
+        celery_app = self._load_fresh_celery_app()
+        celery_app.loader.import_default_modules()
+        extract_task = celery_app.tasks["content.extract_event_frames"]
+        original_eager = celery_app.conf.task_always_eager
+        original_propagates = celery_app.conf.task_eager_propagates
+
+        try:
+            celery_app.conf.task_always_eager = True
+            celery_app.conf.task_eager_propagates = True
+            with patch("backend.app.service.event_frame_extraction_service.SessionLocal", self.session_factory):
+                with patch(
+                    "backend.app.service.event_frame_extraction_service.ensure_article_storage_schema",
+                    return_value=None,
+                ):
+                    with self.assertRaises(RuntimeError):
+                        extract_task.delay(article_id)
+        finally:
+            celery_app.conf.task_always_eager = original_eager
+            celery_app.conf.task_eager_propagates = original_propagates
+
+    def test_pack_task_rejects_superseded_token_before_work_starts(self) -> None:
+        session_factory = self._build_file_session_factory("pack-superseded-before-start.db")
+        self._insert_pipeline_run(
+            session_factory,
+            run_id="run-pack-before-start",
+            business_date_value=datetime(2026, 3, 27, 0, 0, tzinfo=UTC).date(),
+            strict_story_status="queued",
+            strict_story_token=2,
+        )
+
+        with patch("backend.app.tasks.aggregation_tasks.SessionLocal", session_factory):
+            with patch("backend.app.tasks.aggregation_tasks.ensure_article_storage_schema", return_value=None):
+                with patch(
+                    "backend.app.tasks.aggregation_tasks.StrictStoryPackingService.pack_business_day"
+                ) as pack_mock:
+                    with self.assertRaises(RuntimeError):
+                        pack_strict_stories_for_day("2026-03-27", "run-pack-before-start", 1)
+
+        pack_mock.assert_not_called()
+
+    def test_pack_task_rolls_back_output_after_losing_ownership(self) -> None:
+        session_factory = self._build_file_session_factory("pack-ownership-loss.db")
+        business_day = datetime(2026, 3, 27, 0, 0, tzinfo=UTC).date()
+        self._insert_pipeline_run(
+            session_factory,
+            run_id="run-pack-ownership-loss",
+            business_date_value=business_day,
+            strict_story_status="queued",
+            strict_story_token=1,
+        )
+
+        async def fake_pack(self, session, business_day, *, run_id):  # type: ignore[no-untyped-def]
+            del self
+            session.add(
+                StrictStory(
+                    strict_story_key="story-old-owner",
+                    business_date=business_day,
+                    synopsis_zh="old owner output",
+                    signature_json={"event_type": "show"},
+                    frame_membership_json=[],
+                    created_run_id=run_id,
+                    packing_status="done",
+                    packing_error=None,
+                )
+            )
+            with session_factory() as competing_session:
+                competing_run = competing_session.get(PipelineRun, run_id)
+                competing_run.strict_story_status = "queued"
+                competing_run.strict_story_token = 2
+                competing_run.strict_story_updated_at = datetime(2026, 3, 27, 9, 1, tzinfo=UTC).replace(
+                    tzinfo=None
+                )
+                competing_session.commit()
+            return []
+
+        with patch("backend.app.tasks.aggregation_tasks.SessionLocal", session_factory):
+            with patch("backend.app.tasks.aggregation_tasks.ensure_article_storage_schema", return_value=None):
+                with patch(
+                    "backend.app.tasks.aggregation_tasks.StrictStoryPackingService.pack_business_day",
+                    new=fake_pack,
+                ):
+                    with self.assertRaises(RuntimeError):
+                        pack_strict_stories_for_day("2026-03-27", "run-pack-ownership-loss", 1)
+
+        with session_factory() as session:
+            run = session.get(PipelineRun, "run-pack-ownership-loss")
+            stories = session.query(StrictStory).all()
+
+        self.assertIsNotNone(run)
+        self.assertEqual(run.strict_story_status, "queued")
+        self.assertEqual(run.strict_story_token, 2)
+        self.assertEqual(stories, [])
+
+    def test_pack_task_marks_run_failed_immediately_when_stage_becomes_abandoned(self) -> None:
+        session_factory = self._build_file_session_factory("pack-abandoned-terminal.db")
+        business_day = datetime(2026, 3, 27, 0, 0, tzinfo=UTC).date()
+        self._insert_pipeline_run(
+            session_factory,
+            run_id="run-pack-abandoned",
+            business_date_value=business_day,
+            strict_story_status="queued",
+            strict_story_token=1,
+        )
+        with session_factory() as session:
+            run = session.get(PipelineRun, "run-pack-abandoned")
+            run.strict_story_attempts = 2
+            session.commit()
+
+        async def fake_pack(self, session, business_day, *, run_id):  # type: ignore[no-untyped-def]
+            del self, session, business_day, run_id
+            raise RuntimeError("pack boom")
+
+        with patch("backend.app.tasks.aggregation_tasks.SessionLocal", session_factory):
+            with patch("backend.app.tasks.aggregation_tasks.ensure_article_storage_schema", return_value=None):
+                with patch(
+                    "backend.app.tasks.aggregation_tasks.StrictStoryPackingService.pack_business_day",
+                    new=fake_pack,
+                ):
+                    with self.assertRaises(RuntimeError):
+                        pack_strict_stories_for_day("2026-03-27", "run-pack-abandoned", 1)
+
+        with session_factory() as session:
+            run = session.get(PipelineRun, "run-pack-abandoned")
+
+        self.assertIsNotNone(run)
+        self.assertEqual(run.strict_story_status, "abandoned")
+        self.assertEqual(run.strict_story_attempts, 3)
+        self.assertEqual(run.status, "failed")
+        self.assertIsNotNone(run.finished_at)
+
+    def test_digest_task_rolls_back_output_after_losing_ownership(self) -> None:
+        session_factory = self._build_file_session_factory("digest-ownership-loss.db")
+        business_day = datetime(2026, 3, 27, 0, 0, tzinfo=UTC).date()
+        self._insert_pipeline_run(
+            session_factory,
+            run_id="run-digest-ownership-loss",
+            business_date_value=business_day,
+            strict_story_status="done",
+            digest_status="queued",
+            digest_token=1,
+        )
+
+        async def fake_generate(self, session, business_day, *, run_id):  # type: ignore[no-untyped-def]
+            del self
+            session.add(
+                Digest(
+                    digest_key="digest-old-owner",
+                    business_date=business_day,
+                    facet="market",
+                    title_zh="old owner digest",
+                    dek_zh="dek",
+                    body_markdown="body",
+                    source_article_count=0,
+                    source_names_json=[],
+                    created_run_id=run_id,
+                    generation_status="done",
+                    generation_error=None,
+                )
+            )
+            with session_factory() as competing_session:
+                competing_run = competing_session.get(PipelineRun, run_id)
+                competing_run.digest_status = "queued"
+                competing_run.digest_token = 2
+                competing_run.digest_updated_at = datetime(2026, 3, 27, 9, 2, tzinfo=UTC).replace(
+                    tzinfo=None
+                )
+                competing_session.commit()
+            return []
+
+        with patch("backend.app.tasks.aggregation_tasks.SessionLocal", session_factory):
+            with patch("backend.app.tasks.aggregation_tasks.ensure_article_storage_schema", return_value=None):
+                with patch(
+                    "backend.app.tasks.aggregation_tasks.DigestGenerationService.generate_for_day",
+                    new=fake_generate,
+                ):
+                    with self.assertRaises(RuntimeError):
+                        generate_digests_for_day("2026-03-27", "run-digest-ownership-loss", 1)
+
+        with session_factory() as session:
+            run = session.get(PipelineRun, "run-digest-ownership-loss")
+            digests = session.query(Digest).all()
+
+        self.assertIsNotNone(run)
+        self.assertEqual(run.digest_status, "queued")
+        self.assertEqual(run.digest_token, 2)
+        self.assertEqual(digests, [])
+
     def test_custom_client_path_still_builds_redis_rate_limiter(self) -> None:
         fake_client = _FakeClient('{"frames": []}')
         fake_limiter = object()
@@ -485,6 +703,48 @@ class ContentTasksTest(unittest.TestCase):
         ):
             sys.modules.pop(module_name, None)
         return importlib.import_module("backend.app.tasks.celery_app").celery_app
+
+    def _build_file_session_factory(self, filename: str):
+        database_path = Path(self.temp_dir.name) / filename
+        engine = create_engine(f"sqlite:///{database_path}")
+        Base.metadata.create_all(engine)
+        ensure_article_storage_schema(engine)
+        return sessionmaker(bind=engine)
+
+    @staticmethod
+    def _insert_pipeline_run(
+        session_factory,
+        *,
+        run_id: str,
+        business_date_value,
+        strict_story_status: str = "pending",
+        strict_story_token: int = 0,
+        digest_status: str = "pending",
+        digest_token: int = 0,
+    ) -> None:
+        observed_at = datetime(2026, 3, 27, 8, 0, tzinfo=UTC).replace(tzinfo=None)
+        with session_factory() as session:
+            session.add(
+                PipelineRun(
+                    run_id=run_id,
+                    business_date=business_date_value,
+                    run_type="digest_daily",
+                    status="running",
+                    strict_story_status=strict_story_status,
+                    strict_story_attempts=0,
+                    strict_story_error=None,
+                    strict_story_updated_at=observed_at,
+                    strict_story_token=strict_story_token,
+                    digest_status=digest_status,
+                    digest_attempts=0,
+                    digest_error=None,
+                    digest_updated_at=observed_at,
+                    digest_token=digest_token,
+                    started_at=observed_at,
+                    metadata_json={},
+                )
+            )
+            session.commit()
 
 
 if __name__ == "__main__":
