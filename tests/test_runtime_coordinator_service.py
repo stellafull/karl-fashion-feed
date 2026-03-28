@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import json
+import subprocess
+import sys
 import unittest
 from contextlib import ExitStack, contextmanager
 from datetime import UTC, date, datetime, timedelta
@@ -115,6 +118,14 @@ class DailyRunCoordinatorServiceTest(unittest.TestCase):
         self.assertEqual(self.queued_task_names[0], "aggregation.pack_strict_stories_for_day")
         self.assertEqual(self.queued_task_names[-1], "aggregation.generate_digests_for_day")
 
+    def test_clean_celery_worker_loads_content_and_aggregation_tasks(self) -> None:
+        registered_task_names = self._load_task_names_in_clean_python()
+        self.assertIn("content.collect_source", registered_task_names)
+        self.assertIn("content.parse_article", registered_task_names)
+        self.assertIn("content.extract_event_frames", registered_task_names)
+        self.assertIn("aggregation.pack_strict_stories_for_day", registered_task_names)
+        self.assertIn("aggregation.generate_digests_for_day", registered_task_names)
+
     def _insert_article(
         self,
         *,
@@ -210,6 +221,25 @@ class DailyRunCoordinatorServiceTest(unittest.TestCase):
             self.queued_task_names.append(task_name)
 
         return _delay
+
+    @staticmethod
+    def _load_task_names_in_clean_python() -> set[str]:
+        command = """
+import importlib
+import json
+
+celery_app = importlib.import_module("backend.app.tasks.celery_app").celery_app
+celery_app.loader.import_default_modules()
+task_names = sorted(name for name in celery_app.tasks if "." in name)
+print(json.dumps(task_names))
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", command],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return set(json.loads(result.stdout))
 
 
 if __name__ == "__main__":
