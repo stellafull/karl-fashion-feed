@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type Ref } from "react";
 import { Plus, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +18,7 @@ interface ChatComposerProps {
   onAppendFiles: (files: File[]) => void;
   onRemoveAttachment: (attachmentId: string) => void;
   onResetFileInput?: () => void;
+  containerRef?: Ref<HTMLDivElement>;
   className?: string;
   shellClassName?: string;
   submitButtonClassName?: string;
@@ -36,6 +37,7 @@ export default function ChatComposer({
   onAppendFiles,
   onRemoveAttachment,
   onResetFileInput,
+  containerRef,
   className,
   shellClassName,
   submitButtonClassName,
@@ -55,7 +57,10 @@ export default function ChatComposer({
   };
 
   return (
-    <div className={cn("pointer-events-none absolute inset-x-0 bottom-0 z-20 px-4 pb-5 pt-2 md:px-8", className)}>
+    <div
+      ref={containerRef}
+      className={cn("pointer-events-none absolute inset-x-0 bottom-0 z-20 px-4 pb-5 pt-2 md:px-8", className)}
+    >
       <div className="mx-auto max-w-4xl pointer-events-auto">
         <div
           className={cn(

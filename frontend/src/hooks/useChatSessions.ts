@@ -6,7 +6,6 @@ import type { Topic } from "@/hooks/useFeedData";
 import apiClient, {
   apiBaseUrl,
   getStoredAuthToken,
-  resolveApiUrl,
 } from "@/lib/api-client";
 import {
   buildSessionDescription,
@@ -17,6 +16,8 @@ import {
   type ChatSession,
   type ChatUploadAttachment,
 } from "@/lib/chat";
+import { mapAttachmentResponse } from "@/lib/chat-attachments";
+import { appendAssistantDeltaToSessions } from "@/lib/chat-stream";
 
 interface AttachmentResponse {
   chat_attachment_id: string;
@@ -110,16 +111,6 @@ function normalizeMessageStatus(
   return "done";
 }
 
-function mapAttachment(attachment: AttachmentResponse): ChatAttachment {
-  return {
-    id: attachment.chat_attachment_id,
-    name: attachment.original_filename,
-    mimeType: attachment.mime_type,
-    size: attachment.size_bytes,
-    url: resolveApiUrl(attachment.content_url),
-  };
-}
-
 function mapCitations(responseJson: Record<string, unknown> | null): ChatCitation[] {
   const rawCitations = responseJson?.citations;
   if (!Array.isArray(rawCitations)) {
@@ -166,7 +157,7 @@ function mapCitations(responseJson: Record<string, unknown> | null): ChatCitatio
   });
 }
 
-function mapMessage(message: MessageResponse): ChatMessage {
+async function mapMessage(message: MessageResponse): Promise<ChatMessage> {
   return {
     id: message.chat_message_id,
     role: message.role === "assistant" ? "assistant" : "user",
@@ -175,7 +166,7 @@ function mapMessage(message: MessageResponse): ChatMessage {
     status: normalizeMessageStatus(message.status),
     errorMessage: message.error_message,
     citations: mapCitations(message.response_json),
-    attachments: message.attachments.map(mapAttachment),
+    attachments: await Promise.all(message.attachments.map(mapAttachmentResponse)),
   };
 }
 
@@ -348,7 +339,7 @@ export function useChatSessions() {
     const response = await apiClient.get<MessageListResponse>(
       `/chat/sessions/${sessionId}/messages`
     );
-    return response.data.messages.map(mapMessage);
+    return Promise.all(response.data.messages.map(mapMessage));
   };
 
   const loadSessionSnapshot = async (sessionId: string) => {
@@ -479,6 +470,8 @@ export function useChatSessions() {
     }
 
     return new Promise<string | null>((resolve, reject) => {
+      let streamSessionId = chatSessionId ?? null;
+      let streamAssistantMessageId: string | null = null;
       let didResolve = false;
 
       const resolveOnce = (value: string | null) => {
@@ -504,9 +497,11 @@ export function useChatSessions() {
 
             if (sseEvent.event === "message_start") {
               const payload = sseEvent.data as unknown as StreamMessageStartResponse;
-              const userMessage = mapMessage(payload.user_message);
-              const assistantMessage = mapMessage(payload.assistant_message);
+              const userMessage = await mapMessage(payload.user_message);
+              const assistantMessage = await mapMessage(payload.assistant_message);
               const nextSessionId = payload.chat_session_id;
+              streamSessionId = nextSessionId;
+              streamAssistantMessageId = assistantMessage.id;
               const nextSession: ChatSession = {
                 id: nextSessionId,
                 title: payload.session_title,
@@ -550,52 +545,23 @@ export function useChatSessions() {
               const delta = typeof sseEvent.data.delta === "string"
                 ? sseEvent.data.delta
                 : "";
-              const assistantMessageId = (() => {
-                const sessionsSnapshot = sessions ?? [];
-                const targetSession = chatSessionId
-                  ? sessionsSnapshot.find((session) => session.id === chatSessionId)
-                  : sessionsSnapshot[0];
-                const lastAssistant = targetSession?.messages
-                  .slice()
-                  .reverse()
-                  .find((message) => message.role === "assistant");
-                return lastAssistant?.id;
-              })();
-              if (!assistantMessageId) {
+              if (!streamSessionId || !streamAssistantMessageId || !delta) {
                 continue;
               }
+              const targetSessionId = streamSessionId;
+              const targetAssistantMessageId = streamAssistantMessageId;
 
               setSessions((current) => {
                 if (!current) {
                   return current;
                 }
 
-                return current.map((session) => {
-                  if (
-                    session.id !== (chatSessionId ?? session.id)
-                    && session.id !== sseEvent.data.chat_session_id
-                  ) {
-                    return session;
-                  }
-
-                  const nextMessages = session.messages.map((message) => {
-                    if (message.id !== assistantMessageId) {
-                      return message;
-                    }
-
-                    return {
-                      ...message,
-                      status: "running" as const,
-                      content: `${message.content}${delta}`,
-                    };
-                  });
-
-                  return {
-                    ...session,
-                    description: buildSessionDescription(nextMessages),
-                    messages: nextMessages,
-                  };
-                });
+                return appendAssistantDeltaToSessions(
+                  current,
+                  targetSessionId,
+                  targetAssistantMessageId,
+                  delta
+                );
               });
               continue;
             }
@@ -604,17 +570,10 @@ export function useChatSessions() {
               sseEvent.event === "message_complete"
               || sseEvent.event === "message_error"
             ) {
-              const nextMessage = mapMessage(
+              const nextMessage = await mapMessage(
                 sseEvent.data as unknown as MessageResponse
               );
-              const targetSessionId = chatSessionId ?? (() => {
-                const messageSession = sessions?.find((session) =>
-                  session.messages.some(
-                    (message) => message.id === nextMessage.id
-                  )
-                );
-                return messageSession?.id ?? null;
-              })();
+              const targetSessionId = streamSessionId;
 
               if (targetSessionId) {
                 replaceMessage(targetSessionId, nextMessage);

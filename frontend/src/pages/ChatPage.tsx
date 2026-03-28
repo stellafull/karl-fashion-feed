@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import ChatComposer from "@/components/ChatComposer";
 import { useImageAttachments } from "@/hooks/useImageAttachments";
 import type { ChatSession, ChatUploadAttachment } from "@/lib/chat";
+import {
+  buildChatViewportSpacing,
+  buildLastMessageScrollKey,
+} from "@/lib/chat-stream";
 import { cn } from "@/lib/utils";
 import { formatChinaDateTimeShort } from "@/lib/time";
 
@@ -31,6 +35,8 @@ export default function ChatPage({
   const [, setLocation] = useLocation();
   const [draft, setDraft] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [composerHeight, setComposerHeight] = useState(0);
+  const composerRef = useRef<HTMLDivElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const {
     attachments,
@@ -42,10 +48,38 @@ export default function ChatPage({
   const session = sessionId
     ? sessions.find((item) => item.id === sessionId) ?? null
     : null;
+  const lastMessage = session?.messages[session.messages.length - 1];
+  const scrollKey = session ? buildLastMessageScrollKey(session.messages) : "empty";
+  const viewportSpacing = buildChatViewportSpacing(composerHeight);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [session?.messages.length]);
+    const composerElement = composerRef.current;
+    if (!composerElement) {
+      return;
+    }
+
+    const syncComposerHeight = () => {
+      setComposerHeight(Math.ceil(composerElement.getBoundingClientRect().height));
+    };
+
+    syncComposerHeight();
+
+    const resizeObserver = new ResizeObserver(() => {
+      syncComposerHeight();
+    });
+    resizeObserver.observe(composerElement);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: lastMessage?.status === "running" ? "auto" : "smooth",
+      block: "end",
+    });
+  }, [lastMessage?.status, scrollKey]);
 
   const resetComposer = () => {
     setDraft("");
@@ -107,7 +141,10 @@ export default function ChatPage({
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-5 pb-40 md:px-8 md:pb-48">
+      <div
+        className="flex-1 overflow-y-auto overscroll-contain px-4 py-5 md:px-8"
+        style={{ paddingBottom: viewportSpacing.bottomPadding }}
+      >
         {!session && (
           <div className="flex min-h-full items-center justify-center py-12">
             <div className="w-full max-w-3xl text-center">
@@ -184,12 +221,16 @@ export default function ChatPage({
                 </div>
               </div>
             ))}
-            <div ref={messagesEndRef} />
+            <div
+              ref={messagesEndRef}
+              style={{ scrollMarginBottom: viewportSpacing.scrollMarginBottom }}
+            />
           </div>
         )}
       </div>
 
       <ChatComposer
+        containerRef={composerRef}
         draft={draft}
         onDraftChange={setDraft}
         onSubmit={handleSubmit}

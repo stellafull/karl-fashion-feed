@@ -174,15 +174,14 @@ export default function AppSidebar({
         </div>
 
         <div className="border-t border-[#e4dccf] px-4 py-4">
-          <div className="flex items-center justify-between rounded-2xl bg-white px-3 py-3">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-[#1f1c18]">{currentUserLabel}</p>
-              <p className="text-xs text-[#7f776e]">JWT local session</p>
+          <div className="flex items-center justify-between">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d9d1c5] bg-[#f7f3eb] text-sm font-medium text-[#1f1c18]">
+              {userInitials}
             </div>
             <Button
               variant="ghost"
               size="icon-sm"
-              className="rounded-full"
+              className="rounded-full text-[#6f685f] hover:bg-[#ece6dc] hover:text-[#1f1c18]"
               onClick={onLogout}
               aria-label="Logout"
             >
@@ -351,27 +350,19 @@ export default function AppSidebar({
         <div className="mt-auto pt-4">
           <div
             className={cn(
-              "rounded-2xl border border-[#d9d1c5] bg-white",
+              "flex items-center",
               expanded
-                ? "flex items-center justify-between gap-3 px-3 py-3"
-                : "flex flex-col items-center gap-2 px-0 py-2"
+                ? "justify-between gap-3 px-1 py-2"
+                : "flex-col gap-2 px-0 py-2"
             )}
           >
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d9d1c5] bg-[#f7f3eb] text-sm font-medium">
-                {userInitials}
-              </div>
-              {expanded && (
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{currentUserLabel}</p>
-                  <p className="text-xs text-[#7f776e]">JWT local session</p>
-                </div>
-              )}
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d9d1c5] bg-[#f7f3eb] text-sm font-medium">
+              {userInitials}
             </div>
             <Button
               variant="ghost"
               size="icon-sm"
-              className="rounded-full"
+              className="rounded-full text-[#6f685f] hover:bg-[#ece6dc] hover:text-[#1f1c18]"
               onClick={onLogout}
               aria-label="Logout"
               title="Logout"

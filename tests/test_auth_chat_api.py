@@ -175,3 +175,98 @@ class ChatWorkerServiceTests(unittest.TestCase):
                 assert assistant_message is not None
                 self.assertEqual(assistant_message.status, "done")
                 self.assertEqual(assistant_message.content_text, "assistant answer")
+
+    def test_process_one_message_reuses_latest_session_image_when_current_turn_has_none(self) -> None:
+        """The worker should reuse the latest uploaded user image in the same session."""
+
+        captured_contexts: list[RagRequestContext] = []
+
+        class FakeRagService:
+            async def answer(
+                self,
+                *,
+                request,
+                request_context,
+                conversation_compact,
+                recent_messages,
+                user_memories,
+            ):
+                captured_contexts.append(request_context)
+                return RagAnswerResponse(answer="assistant answer")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            attachment_root = Path(temp_dir)
+            attachment_path = attachment_root / "2026-03-23" / "user-message-1" / "image.png"
+            attachment_path.parent.mkdir(parents=True, exist_ok=True)
+            attachment_path.write_bytes(b"fake-image-bytes")
+
+            with self.session_local() as session:
+                user = make_user()
+                chat_session = ChatSession(
+                    chat_session_id="session-1",
+                    user_id=user.user_id,
+                    title="Test Chat",
+                )
+                earlier_user_message = ChatMessage(
+                    chat_message_id="user-message-1",
+                    chat_session_id=chat_session.chat_session_id,
+                    role="user",
+                    content_text="first image",
+                    status="done",
+                )
+                earlier_assistant_message = ChatMessage(
+                    chat_message_id="assistant-message-1",
+                    chat_session_id=chat_session.chat_session_id,
+                    role="assistant",
+                    content_text="first answer",
+                    status="done",
+                    reply_to_message_id=earlier_user_message.chat_message_id,
+                )
+                current_user_message = ChatMessage(
+                    chat_message_id="user-message-2",
+                    chat_session_id=chat_session.chat_session_id,
+                    role="user",
+                    content_text="similar style jewelry images",
+                    status="done",
+                )
+                current_assistant_message = ChatMessage(
+                    chat_message_id="assistant-message-2",
+                    chat_session_id=chat_session.chat_session_id,
+                    role="assistant",
+                    content_text="",
+                    status="queued",
+                    reply_to_message_id=current_user_message.chat_message_id,
+                )
+                attachment = ChatAttachment(
+                    chat_attachment_id="attachment-1",
+                    chat_message_id=earlier_user_message.chat_message_id,
+                    attachment_type="image",
+                    mime_type="image/png",
+                    original_filename="image.png",
+                    storage_rel_path="2026-03-23/user-message-1/image.png",
+                    size_bytes=16,
+                )
+                session.add_all(
+                    [
+                        user,
+                        chat_session,
+                        earlier_user_message,
+                        earlier_assistant_message,
+                        current_user_message,
+                        current_assistant_message,
+                        attachment,
+                    ]
+                )
+                session.commit()
+
+            worker = ChatWorkerService(rag_service=FakeRagService())
+            with (
+                patch.object(chat_worker_module.auth_settings, "CHAT_ATTACHMENT_ROOT", temp_dir),
+                self.session_local() as session,
+            ):
+                processed = asyncio.run(worker.process_one_message(session))
+
+            self.assertTrue(processed)
+            [request_context] = captured_contexts
+            self.assertEqual(len(request_context.request_images), 1)
+            self.assertEqual(request_context.request_images[0].mime_type, "image/png")

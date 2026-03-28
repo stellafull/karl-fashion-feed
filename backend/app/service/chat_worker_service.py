@@ -114,11 +114,11 @@ class ChatWorkerService:
                 select(LongTermMemory).where(LongTermMemory.user_id == session.user_id)
             ).scalars().all()
 
-            attachments = db.execute(
-                select(ChatAttachment).where(
-                    ChatAttachment.chat_message_id == user_message.chat_message_id
-                )
-            ).scalars().all()
+            attachments = self._load_request_attachments(
+                db,
+                session_id=session.chat_session_id,
+                user_message=user_message,
+            )
 
             conversation_compact = session.compact_context
             recent_messages_data = [
@@ -223,3 +223,42 @@ class ChatWorkerService:
             )
 
         return request_images
+
+    def _load_request_attachments(
+        self,
+        db: Session,
+        *,
+        session_id: str,
+        user_message: ChatMessage,
+    ) -> list[ChatAttachment]:
+        """Load current-turn attachments, or reuse the latest earlier user image."""
+        current_attachments = db.execute(
+            select(ChatAttachment).where(
+                ChatAttachment.chat_message_id == user_message.chat_message_id
+            )
+        ).scalars().all()
+        if current_attachments:
+            return current_attachments
+
+        fallback_message_id = db.execute(
+            select(ChatMessage.chat_message_id)
+            .join(
+                ChatAttachment,
+                ChatAttachment.chat_message_id == ChatMessage.chat_message_id,
+            )
+            .where(
+                ChatMessage.chat_session_id == session_id,
+                ChatMessage.role == "user",
+                ChatMessage.created_at < user_message.created_at,
+            )
+            .order_by(ChatMessage.created_at.desc())
+            .limit(1)
+        ).scalar_one_or_none()
+        if fallback_message_id is None:
+            return []
+
+        return db.execute(
+            select(ChatAttachment).where(
+                ChatAttachment.chat_message_id == fallback_message_id
+            )
+        ).scalars().all()
