@@ -29,6 +29,7 @@ RETRYABLE_STATUSES = {"pending", "failed"}
 ACTIVE_STATUSES = {"queued", "running"}
 TERMINAL_STATUSES = {"done", "abandoned"}
 STALE_RECLAIM_ERROR = "RuntimeError: stale runtime state reclaimed by coordinator"
+Dispatch = Callable[[], None]
 
 
 class DailyRunCoordinatorService:
@@ -48,30 +49,51 @@ class DailyRunCoordinatorService:
         observed_at = coerce_utc_naive(now or datetime.now(UTC))
         business_day = business_day_for_runtime(observed_at)
         source_names = self._enabled_source_names()
+        dispatches: list[Dispatch] = []
 
         with self._session_factory() as session:
             ensure_article_storage_schema(session.get_bind())
             run = self._ensure_run_for_day(session, business_day, observed_at)
             self._reclaim_stale_source_states(session, run.run_id, observed_at)
             self._reclaim_stale_article_states(session, business_day, observed_at)
-            self._enqueue_retryable_sources(session, run.run_id, source_names, observed_at)
+            self._reclaim_stale_batch_states(run, observed_at)
+            self._enqueue_retryable_sources(
+                session,
+                run.run_id,
+                source_names,
+                observed_at,
+                dispatches=dispatches,
+            )
             self._enqueue_retryable_articles(
                 session,
                 business_day,
                 stage="parse",
                 observed_at=observed_at,
+                dispatches=dispatches,
             )
             self._enqueue_retryable_articles(
                 session,
                 business_day,
                 stage="event_frame",
                 observed_at=observed_at,
+                dispatches=dispatches,
             )
             self._refresh_run_metadata(session, run, business_day, source_names)
-            self._enqueue_batch_jobs_if_ready(session, run, source_names, observed_at)
+            self._enqueue_batch_jobs_if_ready(
+                session,
+                run,
+                source_names,
+                observed_at,
+                dispatches=dispatches,
+            )
             self._refresh_run_status(run, observed_at)
             session.commit()
-            return run.run_id
+            run_id = run.run_id
+
+        for dispatch in dispatches:
+            dispatch()
+
+        return run_id
 
     def _ensure_run_for_day(
         self,
@@ -129,7 +151,9 @@ class DailyRunCoordinatorService:
             ).all()
         )
         for state in states:
-            state.attempts += 1
+            consume_attempt = state.status == "running"
+            if consume_attempt:
+                state.attempts += 1
             state.status = "abandoned" if state.attempts >= SOURCE_RUN_MAX_ATTEMPTS else "failed"
             state.error = STALE_RECLAIM_ERROR
             state.updated_at = observed_at
@@ -151,12 +175,65 @@ class DailyRunCoordinatorService:
                         self._article_business_day_clause(business_day),
                         status_column.in_(tuple(ACTIVE_STATUSES)),
                         updated_at_column < cutoff,
-                    )
-                    .order_by(Article.article_id.asc())
-                ).all()
+                )
+                .order_by(Article.article_id.asc())
+            ).all()
             )
             for article in stale_articles:
-                self._mark_article_failed(article, stage=stage, observed_at=observed_at)
+                self._mark_article_failed(
+                    article,
+                    stage=stage,
+                    observed_at=observed_at,
+                    consume_attempt=bool(getattr(article, f"{stage}_status") == "running"),
+                )
+
+    def _reclaim_stale_batch_states(
+        self,
+        run: PipelineRun,
+        observed_at: datetime,
+    ) -> None:
+        cutoff = observed_at - self._stale_after
+        self._reclaim_stale_batch_stage(
+            run,
+            stage="strict_story",
+            observed_at=observed_at,
+            cutoff=cutoff,
+        )
+        self._reclaim_stale_batch_stage(
+            run,
+            stage="digest",
+            observed_at=observed_at,
+            cutoff=cutoff,
+        )
+
+    @staticmethod
+    def _reclaim_stale_batch_stage(
+        run: PipelineRun,
+        *,
+        stage: str,
+        observed_at: datetime,
+        cutoff: datetime,
+    ) -> None:
+        status_field = f"{stage}_status"
+        attempts_field = f"{stage}_attempts"
+        error_field = f"{stage}_error"
+        updated_at_field = f"{stage}_updated_at"
+        status = getattr(run, status_field)
+        updated_at = getattr(run, updated_at_field)
+        if status not in ACTIVE_STATUSES or updated_at >= cutoff:
+            return
+
+        attempts = int(getattr(run, attempts_field))
+        if status == "running":
+            attempts += 1
+            setattr(run, attempts_field, attempts)
+        setattr(
+            run,
+            status_field,
+            "abandoned" if attempts >= BATCH_STAGE_MAX_ATTEMPTS else "failed",
+        )
+        setattr(run, error_field, STALE_RECLAIM_ERROR)
+        setattr(run, updated_at_field, observed_at)
 
     def _enqueue_retryable_sources(
         self,
@@ -164,6 +241,8 @@ class DailyRunCoordinatorService:
         run_id: str,
         source_names: Sequence[str],
         observed_at: datetime,
+        *,
+        dispatches: list[Dispatch],
     ) -> None:
         if not source_names:
             return
@@ -191,7 +270,7 @@ class DailyRunCoordinatorService:
             state.status = "queued"
             state.updated_at = observed_at
             session.flush()
-            collect_source.delay(source_name, run_id)
+            dispatches.append(lambda source_name=source_name, run_id=run_id: collect_source.delay(source_name, run_id))
 
     def _enqueue_retryable_articles(
         self,
@@ -200,6 +279,7 @@ class DailyRunCoordinatorService:
         *,
         stage: str,
         observed_at: datetime,
+        dispatches: list[Dispatch],
     ) -> None:
         if stage not in {"parse", "event_frame"}:
             raise ValueError(f"unsupported article stage: {stage}")
@@ -223,7 +303,7 @@ class DailyRunCoordinatorService:
             setattr(article, f"{stage}_status", "queued")
             setattr(article, updated_at_field, observed_at)
             session.flush()
-            task.delay(article.article_id)
+            dispatches.append(lambda article_id=article.article_id, task=task: task.delay(article_id))
 
     def _refresh_run_metadata(
         self,
@@ -273,17 +353,21 @@ class DailyRunCoordinatorService:
         run: PipelineRun,
         source_names: Sequence[str],
         observed_at: datetime,
+        *,
+        dispatches: list[Dispatch],
     ) -> None:
         if self._front_stages_drained(session, run.run_id, run.business_date, source_names):
-            self._enqueue_unique_pack(session, run, observed_at)
+            self._enqueue_unique_pack(session, run, observed_at, dispatches=dispatches)
         if run.strict_story_status == "done" and run.digest_status in {"pending", "failed"}:
-            self._enqueue_unique_digest(session, run, observed_at)
+            self._enqueue_unique_digest(session, run, observed_at, dispatches=dispatches)
 
     def _enqueue_unique_pack(
         self,
         session: Session,
         run: PipelineRun,
         observed_at: datetime,
+        *,
+        dispatches: list[Dispatch],
     ) -> None:
         if run.strict_story_status not in RETRYABLE_STATUSES:
             return
@@ -294,13 +378,20 @@ class DailyRunCoordinatorService:
         run.strict_story_status = "queued"
         run.strict_story_updated_at = observed_at
         session.flush()
-        pack_strict_stories_for_day.delay(run.business_date.isoformat(), run.run_id)
+        dispatches.append(
+            lambda business_day_iso=run.business_date.isoformat(), run_id=run.run_id: pack_strict_stories_for_day.delay(
+                business_day_iso,
+                run_id,
+            )
+        )
 
     def _enqueue_unique_digest(
         self,
         session: Session,
         run: PipelineRun,
         observed_at: datetime,
+        *,
+        dispatches: list[Dispatch],
     ) -> None:
         if run.digest_attempts >= BATCH_STAGE_MAX_ATTEMPTS:
             run.digest_status = "abandoned"
@@ -309,7 +400,12 @@ class DailyRunCoordinatorService:
         run.digest_status = "queued"
         run.digest_updated_at = observed_at
         session.flush()
-        generate_digests_for_day.delay(run.business_date.isoformat(), run.run_id)
+        dispatches.append(
+            lambda business_day_iso=run.business_date.isoformat(), run_id=run.run_id: generate_digests_for_day.delay(
+                business_day_iso,
+                run_id,
+            )
+        )
 
     def _front_stages_drained(
         self,
@@ -445,13 +541,21 @@ class DailyRunCoordinatorService:
         return True
 
     @staticmethod
-    def _mark_article_failed(article: Article, *, stage: str, observed_at: datetime) -> None:
+    def _mark_article_failed(
+        article: Article,
+        *,
+        stage: str,
+        observed_at: datetime,
+        consume_attempt: bool,
+    ) -> None:
         attempts_field = f"{stage}_attempts"
         status_field = f"{stage}_status"
         error_field = f"{stage}_error"
         updated_at_field = f"{stage}_updated_at"
-        attempts = int(getattr(article, attempts_field)) + 1
-        setattr(article, attempts_field, attempts)
+        attempts = int(getattr(article, attempts_field))
+        if consume_attempt:
+            attempts += 1
+            setattr(article, attempts_field, attempts)
         setattr(
             article,
             status_field,

@@ -74,6 +74,13 @@ class ArticleCollectionService:
             state.updated_at = _utcnow_naive()
             session.commit()
             raise RuntimeError(f"source already exhausted retries: {source_name}")
+        if state.status not in {"pending", "failed", "queued", "running"}:
+            raise RuntimeError(f"source is not runnable: {source_name} ({state.status})")
+
+        state.status = "running"
+        state.error = None
+        state.updated_at = _utcnow_naive()
+        session.commit()
 
         try:
             collected = await self._collector.collect_articles(

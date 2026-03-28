@@ -104,10 +104,13 @@ class ArticleParseService:
         article_ids: list[str] | None,
         limit: int | None,
     ) -> list[Article]:
+        eligible_statuses = (
+            ("pending", "failed", "queued", "running") if article_ids else ("pending", "failed")
+        )
         with SessionLocal() as session:
             query = (
                 select(Article)
-                .where(Article.parse_status.in_(("pending", "failed")))
+                .where(Article.parse_status.in_(eligible_statuses))
                 .where(Article.parse_attempts < MAX_PARSE_ATTEMPTS)
                 .order_by(Article.discovered_at.asc(), Article.article_id.asc())
             )
@@ -415,6 +418,7 @@ def _reuse_duplicate_image(*, existing_image: ArticleImage, session: Session) ->
 
 def run_parse_article(*, article_id: str) -> ParseResult:
     """Run parse for one article and fail fast if it does not finish successfully."""
+    _claim_article_for_parse(article_id=article_id)
     result = asyncio.run(ArticleParseService().parse_articles(article_ids=[article_id], limit=1))
     if result.candidates != 1:
         raise RuntimeError(f"parse candidate not found or not eligible: {article_id}")
@@ -423,3 +427,20 @@ def run_parse_article(*, article_id: str) -> ParseResult:
     if result.parsed != 1:
         raise RuntimeError(f"parse did not complete for article: {article_id}")
     return result
+
+
+def _claim_article_for_parse(*, article_id: str) -> None:
+    with SessionLocal() as session:
+        ensure_article_storage_schema(session.get_bind())
+        article = session.get(Article, article_id)
+        if article is None:
+            raise RuntimeError(f"article not found for parse: {article_id}")
+        if article.parse_status not in {"pending", "failed", "queued", "running"}:
+            raise RuntimeError(f"article is not runnable for parse: {article_id} ({article.parse_status})")
+        if article.parse_attempts >= MAX_PARSE_ATTEMPTS:
+            raise RuntimeError(f"article already exhausted parse retries: {article_id}")
+
+        article.parse_status = "running"
+        article.parse_error = None
+        article.parse_updated_at = datetime.now(UTC).replace(tzinfo=None)
+        session.commit()

@@ -190,6 +190,22 @@ def run_extract_event_frames(*, article_id: str) -> tuple[ArticleEventFrame, ...
         article = session.get(Article, article_id)
         if article is None:
             raise RuntimeError(f"article not found for frame extraction: {article_id}")
+        if article.parse_status != "done":
+            raise RuntimeError(f"parse must be done before frame extraction: {article_id}")
+        if article.event_frame_attempts >= 3:
+            raise RuntimeError(f"article already exhausted frame extraction retries: {article_id}")
+        if article.event_frame_status not in {"pending", "failed", "queued", "running"}:
+            raise RuntimeError(
+                f"article is not runnable for frame extraction: {article_id} ({article.event_frame_status})"
+            )
+
+        article.event_frame_status = "running"
+        article.event_frame_error = None
+        article.event_frame_updated_at = _utcnow_naive()
+        session.commit()
+        article = session.get(Article, article_id)
+        if article is None:
+            raise RuntimeError(f"article disappeared before frame extraction: {article_id}")
 
         frames = asyncio.run(service.extract_frames(session, article))
         session.commit()

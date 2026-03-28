@@ -15,7 +15,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from backend.app.config.celery_config import build_celery_broker_url
+from backend.app.config.celery_config import build_celery_broker_url, build_celery_settings
 from backend.app.core.database import Base
 from backend.app.models import Article
 from backend.app.service.article_contracts import MarkdownBlock, ParsedArticle
@@ -112,6 +112,13 @@ class ContentTasksTest(unittest.TestCase):
 
         self.assertEqual(broker_url, "redis://:pa%2Fss%3F%23word@redis.internal:6380/0")
 
+    def test_aggregation_tasks_route_to_aggregation_queue(self) -> None:
+        settings = build_celery_settings()
+        task_routes = settings["task_routes"]
+
+        self.assertEqual(task_routes["aggregation.pack_strict_stories_for_day"]["queue"], "aggregation")
+        self.assertEqual(task_routes["aggregation.generate_digests_for_day"]["queue"], "aggregation")
+
     def test_parse_task_marks_article_done_in_eager_mode(self) -> None:
         self._insert_article(article_id="article-1")
         celery_app = self._load_fresh_celery_app()
@@ -153,6 +160,103 @@ class ContentTasksTest(unittest.TestCase):
 
         with self.session_factory() as session:
             article = session.get(Article, "article-1")
+
+        self.assertIsNotNone(article)
+        self.assertEqual(article.parse_status, "done")
+
+    def test_parse_task_marks_article_running_before_parse_work_starts(self) -> None:
+        self._insert_article(article_id="article-running-1", parse_status="queued")
+        celery_app = self._load_fresh_celery_app()
+        celery_app.loader.import_default_modules()
+        original_eager = celery_app.conf.task_always_eager
+        original_propagates = celery_app.conf.task_eager_propagates
+        parse_task = celery_app.tasks["content.parse_article"]
+        test_case = self
+        parsed = ParsedArticle(
+            title="Running parsed title",
+            summary="Running parsed summary",
+            markdown_blocks=(MarkdownBlock(kind="paragraph", text="Running body text"),),
+            images=(),
+            published_at=datetime(2026, 3, 27, 9, 10, tzinfo=UTC).replace(tzinfo=None),
+            metadata={"parser": "running-unit-test"},
+        )
+
+        async def fake_parse_batches(self, candidates: list[Article]):  # type: ignore[no-untyped-def]
+            del self
+            test_case.assertEqual(len(candidates), 1)
+            test_case.assertEqual(candidates[0].article_id, "article-running-1")
+            test_case.assertEqual(candidates[0].parse_status, "running")
+            return [(candidates[0].article_id, parsed, None)]
+
+        try:
+            celery_app.conf.task_always_eager = True
+            celery_app.conf.task_eager_propagates = True
+            with patch("backend.app.service.article_parse_service.SessionLocal", self.session_factory):
+                with patch(
+                    "backend.app.service.article_parse_service.ARTICLE_MARKDOWN_ROOT",
+                    Path(self.temp_dir.name),
+                ):
+                    with patch(
+                        "backend.app.service.article_parse_service.ArticleMarkdownService.write_markdown",
+                        return_value=Path(self.temp_dir.name) / "article-running-1.md",
+                    ):
+                        with patch(
+                            "backend.app.service.article_parse_service.ArticleParseService._parse_batches_with_http_session",
+                            new=fake_parse_batches,
+                        ):
+                            parse_task.delay("article-running-1")
+        finally:
+            celery_app.conf.task_always_eager = original_eager
+            celery_app.conf.task_eager_propagates = original_propagates
+
+        with self.session_factory() as session:
+            article = session.get(Article, "article-running-1")
+
+        self.assertIsNotNone(article)
+        self.assertEqual(article.parse_status, "done")
+        self.assertEqual(article.parse_attempts, 0)
+
+    def test_parse_task_accepts_coordinator_queued_article_in_eager_mode(self) -> None:
+        self._insert_article(article_id="article-queued-1", parse_status="queued")
+        celery_app = self._load_fresh_celery_app()
+        celery_app.loader.import_default_modules()
+
+        parsed = ParsedArticle(
+            title="Queued parsed title",
+            summary="Queued parsed summary",
+            markdown_blocks=(MarkdownBlock(kind="paragraph", text="Queued body text"),),
+            images=(),
+            published_at=datetime(2026, 3, 27, 9, 5, tzinfo=UTC).replace(tzinfo=None),
+            metadata={"parser": "queued-unit-test"},
+        )
+        original_eager = celery_app.conf.task_always_eager
+        parse_task = celery_app.tasks["content.parse_article"]
+
+        async def fake_parse_batches(self, candidates: list[Article]):  # type: ignore[no-untyped-def]
+            del self, candidates
+            return [("article-queued-1", parsed, None)]
+
+        try:
+            celery_app.conf.task_always_eager = True
+            with patch("backend.app.service.article_parse_service.SessionLocal", self.session_factory):
+                with patch(
+                    "backend.app.service.article_parse_service.ARTICLE_MARKDOWN_ROOT",
+                    Path(self.temp_dir.name),
+                ):
+                    with patch(
+                        "backend.app.service.article_parse_service.ArticleMarkdownService.write_markdown",
+                        return_value=Path(self.temp_dir.name) / "article-queued-1.md",
+                    ):
+                        with patch(
+                            "backend.app.service.article_parse_service.ArticleParseService._parse_batches_with_http_session",
+                            new=fake_parse_batches,
+                        ):
+                            parse_task.delay("article-queued-1")
+        finally:
+            celery_app.conf.task_always_eager = original_eager
+
+        with self.session_factory() as session:
+            article = session.get(Article, "article-queued-1")
 
         self.assertIsNotNone(article)
         self.assertEqual(article.parse_status, "done")
@@ -220,6 +324,50 @@ class ContentTasksTest(unittest.TestCase):
                         extract_task.delay(article_id)
         finally:
             celery_app.conf.task_always_eager = original_eager
+
+        with self.session_factory() as session:
+            article = session.get(Article, article_id)
+
+        self.assertIsNotNone(article)
+        self.assertEqual(article.event_frame_status, "done")
+
+    def test_extract_event_frames_task_marks_article_running_before_work_starts(self) -> None:
+        article_id = self._insert_article(
+            article_id="article-extract-running-1",
+            markdown_rel_path="2026-03-27/article-extract-running-1.md",
+        )
+        celery_app = self._load_fresh_celery_app()
+        celery_app.loader.import_default_modules()
+        extract_task = celery_app.tasks["content.extract_event_frames"]
+        original_eager = celery_app.conf.task_always_eager
+        original_propagates = celery_app.conf.task_eager_propagates
+        test_case = self
+
+        async def fake_extract_frames(self, session, article):  # type: ignore[no-untyped-def]
+            del self, session
+            test_case.assertEqual(article.event_frame_status, "running")
+            article.event_frame_status = "done"
+            article.event_frame_updated_at = datetime(2026, 3, 27, 9, 31, tzinfo=UTC).replace(
+                tzinfo=None
+            )
+            return ()
+
+        try:
+            celery_app.conf.task_always_eager = True
+            celery_app.conf.task_eager_propagates = True
+            with patch("backend.app.service.event_frame_extraction_service.SessionLocal", self.session_factory):
+                with patch(
+                    "backend.app.service.event_frame_extraction_service.ensure_article_storage_schema",
+                    return_value=None,
+                ):
+                    with patch(
+                        "backend.app.service.event_frame_extraction_service.EventFrameExtractionService.extract_frames",
+                        new=fake_extract_frames,
+                    ):
+                        extract_task.delay(article_id)
+        finally:
+            celery_app.conf.task_always_eager = original_eager
+            celery_app.conf.task_eager_propagates = original_propagates
 
         with self.session_factory() as session:
             article = session.get(Article, article_id)
@@ -295,8 +443,10 @@ class ContentTasksTest(unittest.TestCase):
         *,
         article_id: str,
         markdown_rel_path: str | None = None,
+        parse_status: str | None = None,
     ) -> str:
         now = datetime(2026, 3, 27, 8, 0, tzinfo=UTC).replace(tzinfo=None)
+        resolved_parse_status = parse_status or ("done" if markdown_rel_path else "pending")
         with self.session_factory() as session:
             session.add(
                 Article(
@@ -314,7 +464,7 @@ class ContentTasksTest(unittest.TestCase):
                     discovered_at=now,
                     ingested_at=now,
                     metadata_json={},
-                    parse_status="done" if markdown_rel_path else "pending",
+                    parse_status=resolved_parse_status,
                     parse_attempts=0,
                     parse_error=None,
                     parse_updated_at=now,

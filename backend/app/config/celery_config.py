@@ -29,6 +29,10 @@ def build_celery_settings() -> dict[str, Any]:
         "timezone": "UTC",
         "enable_utc": True,
         "task_track_started": True,
+        "task_routes": {
+            "aggregation.pack_strict_stories_for_day": {"queue": "aggregation"},
+            "aggregation.generate_digests_for_day": {"queue": "aggregation"},
+        },
         "imports": (
             "backend.app.tasks.content_tasks",
             "backend.app.tasks.aggregation_tasks",

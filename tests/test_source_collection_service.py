@@ -92,6 +92,31 @@ class SourceCollectionServiceTest(unittest.TestCase):
 
         self.assertEqual(result.skipped_in_batch, 1)
 
+    def test_collect_source_marks_state_running_before_collection_starts(self) -> None:
+        service = ArticleCollectionService()
+
+        async def fake_collect_articles(*, source_names, limit_sources):  # type: ignore[no-untyped-def]
+            del source_names, limit_sources
+            state = session.get(SourceRunState, {"run_id": "run-1", "source_name": "Vogue"})
+            self.assertIsNotNone(state)
+            self.assertEqual(state.status, "running")
+            return [self._build_article("https://example.com/a")]
+
+        service._collector = SimpleNamespace(collect_articles=fake_collect_articles)
+
+        with self.session_factory() as session:
+            self._add_pipeline_run(session)
+            result = asyncio.run(
+                service.collect_source(
+                    session,
+                    run_id="run-1",
+                    source_name="Vogue",
+                )
+            )
+            session.rollback()
+
+        self.assertEqual(result.inserted, 1)
+
     def test_collect_source_abandons_after_third_failure(self) -> None:
         service = ArticleCollectionService()
         service._collector = SimpleNamespace(
