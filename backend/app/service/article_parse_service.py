@@ -91,17 +91,22 @@ class ArticleParseService:
         article_ids: list[str] | None = None,
         limit: int | None = None,
         require_running_claim: bool = False,
+        claim_updated_at_by_article: dict[str, datetime] | None = None,
     ) -> ParseResult:
         candidates = self._load_candidates(
             article_ids=article_ids,
             limit=limit,
             require_running_claim=require_running_claim,
+            claim_updated_at_by_article=claim_updated_at_by_article,
         )
         if not candidates:
             return ParseResult(candidates=0, parsed=0, failed=0, parsed_article_ids=tuple())
 
         outcomes = await self._parse_batches_with_http_session(candidates)
-        return self._persist_outcomes(outcomes)
+        return self._persist_outcomes(
+            outcomes,
+            claim_updated_at_by_article=claim_updated_at_by_article,
+        )
 
     def _load_candidates(
         self,
@@ -109,6 +114,7 @@ class ArticleParseService:
         article_ids: list[str] | None,
         limit: int | None,
         require_running_claim: bool,
+        claim_updated_at_by_article: dict[str, datetime] | None,
     ) -> list[Article]:
         if require_running_claim:
             eligible_statuses = ("running",)
@@ -127,7 +133,14 @@ class ArticleParseService:
                 query = query.where(Article.article_id.in_(article_ids))
             if limit is not None:
                 query = query.limit(limit)
-            return session.scalars(query).all()
+            candidates = session.scalars(query).all()
+            if not claim_updated_at_by_article:
+                return candidates
+            return [
+                article
+                for article in candidates
+                if claim_updated_at_by_article.get(article.article_id) == article.parse_updated_at
+            ]
 
     async def _parse_batches_with_http_session(
         self,
@@ -208,6 +221,8 @@ class ArticleParseService:
     def _persist_outcomes(
         self,
         outcomes: list[tuple[str, ParsedArticle | None, Exception | None]],
+        *,
+        claim_updated_at_by_article: dict[str, datetime] | None = None,
     ) -> ParseResult:
         if not outcomes:
             return ParseResult(candidates=0, parsed=0, failed=0, parsed_article_ids=tuple())
@@ -230,15 +245,21 @@ class ArticleParseService:
                         stored = session.get(Article, article_id)
                         if stored is None:
                             continue
+                        claimed_updated_at = None
+                        if claim_updated_at_by_article is not None:
+                            claimed_updated_at = claim_updated_at_by_article.get(article_id)
 
                         if error is not None or parsed is None:
-                            stored.parse_attempts += 1
-                            if stored.parse_attempts >= MAX_PARSE_ATTEMPTS:
-                                stored.parse_status = "abandoned"
-                            else:
-                                stored.parse_status = "failed"
-                            stored.parse_error = _format_error(error)
-                            stored.parse_updated_at = datetime.now(UTC).replace(tzinfo=None)
+                            finalized = _finalize_parse_failure(
+                                session=session,
+                                article=stored,
+                                error=error,
+                                claimed_updated_at=claimed_updated_at,
+                            )
+                            if not finalized:
+                                raise RuntimeError(
+                                    f"parse ownership lost before finalize: article_id={article_id}"
+                                )
                             failed_count += 1
                             continue
 
@@ -326,9 +347,15 @@ class ArticleParseService:
                             **dict(stored.metadata_json or {}),
                             **dict(parsed.metadata),
                         }
-                        stored.parse_status = "done"
-                        stored.parse_updated_at = datetime.now(UTC).replace(tzinfo=None)
-                        stored.parse_error = None
+                        finalized = _finalize_parse_success(
+                            session=session,
+                            article=stored,
+                            claimed_updated_at=claimed_updated_at,
+                        )
+                        if not finalized:
+                            raise RuntimeError(
+                                f"parse ownership lost before finalize: article_id={article_id}"
+                            )
                         parsed_count += 1
                         parsed_article_ids.append(stored.article_id)
 
@@ -427,12 +454,13 @@ def _reuse_duplicate_image(*, existing_image: ArticleImage, session: Session) ->
 
 def run_parse_article(*, article_id: str) -> ParseResult:
     """Run parse for one article and fail fast if it does not finish successfully."""
-    _claim_article_for_parse(article_id=article_id)
+    claim_updated_at = _claim_article_for_parse(article_id=article_id)
     result = asyncio.run(
         ArticleParseService().parse_articles(
             article_ids=[article_id],
             limit=1,
             require_running_claim=True,
+            claim_updated_at_by_article={article_id: claim_updated_at},
         )
     )
     if result.candidates != 1:
@@ -444,7 +472,7 @@ def run_parse_article(*, article_id: str) -> ParseResult:
     return result
 
 
-def _claim_article_for_parse(*, article_id: str) -> None:
+def _claim_article_for_parse(*, article_id: str) -> datetime:
     with SessionLocal() as session:
         ensure_article_storage_schema(session.get_bind())
         claim_now = datetime.now(UTC).replace(tzinfo=None)
@@ -463,7 +491,7 @@ def _claim_article_for_parse(*, article_id: str) -> None:
         )
         if claim_result.rowcount == 1:
             session.commit()
-            return
+            return claim_now
 
         session.rollback()
         article = session.get(Article, article_id)
@@ -474,3 +502,63 @@ def _claim_article_for_parse(*, article_id: str) -> None:
         if article.parse_attempts >= MAX_PARSE_ATTEMPTS:
             raise RuntimeError(f"article already exhausted parse retries: {article_id}")
         raise RuntimeError(f"article is not runnable for parse: {article_id} ({article.parse_status})")
+
+
+def _finalize_parse_failure(
+    *,
+    session: Session,
+    article: Article,
+    error: Exception | None,
+    claimed_updated_at: datetime | None,
+) -> bool:
+    if claimed_updated_at is None:
+        article.parse_attempts += 1
+        article.parse_status = "abandoned" if article.parse_attempts >= MAX_PARSE_ATTEMPTS else "failed"
+        article.parse_error = _format_error(error)
+        article.parse_updated_at = datetime.now(UTC).replace(tzinfo=None)
+        return True
+
+    next_attempts = article.parse_attempts + 1
+    finalize_result = session.execute(
+        update(Article)
+        .where(
+            Article.article_id == article.article_id,
+            Article.parse_status == "running",
+            Article.parse_updated_at == claimed_updated_at,
+        )
+        .values(
+            parse_attempts=next_attempts,
+            parse_status="abandoned" if next_attempts >= MAX_PARSE_ATTEMPTS else "failed",
+            parse_error=_format_error(error),
+            parse_updated_at=datetime.now(UTC).replace(tzinfo=None),
+        )
+    )
+    return finalize_result.rowcount == 1
+
+
+def _finalize_parse_success(
+    *,
+    session: Session,
+    article: Article,
+    claimed_updated_at: datetime | None,
+) -> bool:
+    if claimed_updated_at is None:
+        article.parse_status = "done"
+        article.parse_updated_at = datetime.now(UTC).replace(tzinfo=None)
+        article.parse_error = None
+        return True
+
+    finalize_result = session.execute(
+        update(Article)
+        .where(
+            Article.article_id == article.article_id,
+            Article.parse_status == "running",
+            Article.parse_updated_at == claimed_updated_at,
+        )
+        .values(
+            parse_status="done",
+            parse_updated_at=datetime.now(UTC).replace(tzinfo=None),
+            parse_error=None,
+        )
+    )
+    return finalize_result.rowcount == 1

@@ -108,10 +108,11 @@ class ArticleCollectionService:
         except Exception as exc:
             if session.in_transaction():
                 session.rollback()
-            state = self._get_or_create_source_state(
+            state = self._get_owned_source_state(
                 session,
                 run_id=run_id,
                 source_name=source_name,
+                claimed_updated_at=claim_now,
             )
             state.attempts += 1
             state.status = "abandoned" if state.attempts >= SOURCE_RUN_MAX_ATTEMPTS else "failed"
@@ -120,11 +121,27 @@ class ArticleCollectionService:
             session.commit()
             raise
 
-        state.status = "done"
-        state.error = None
-        state.discovered_count = result.total_collected
-        state.inserted_count = result.inserted
-        state.updated_at = _utcnow_naive()
+        complete_result = session.execute(
+            update(SourceRunState)
+            .where(
+                SourceRunState.run_id == run_id,
+                SourceRunState.source_name == source_name,
+                SourceRunState.status == "running",
+                SourceRunState.updated_at == claim_now,
+            )
+            .values(
+                status="done",
+                error=None,
+                discovered_count=result.total_collected,
+                inserted_count=result.inserted,
+                updated_at=_utcnow_naive(),
+            )
+        )
+        if complete_result.rowcount != 1:
+            session.rollback()
+            raise RuntimeError(
+                f"source ownership lost before finalize: run={run_id} source={source_name}"
+            )
         session.commit()
         return result
 
@@ -238,3 +255,25 @@ class ArticleCollectionService:
     def _assert_session_is_clean(session: Session) -> None:
         if session.in_transaction() or session.new or session.dirty or session.deleted:
             raise RuntimeError("collect_source requires a clean session without an active transaction")
+
+    @staticmethod
+    def _get_owned_source_state(
+        session: Session,
+        *,
+        run_id: str,
+        source_name: str,
+        claimed_updated_at: datetime,
+    ) -> SourceRunState:
+        state = session.scalar(
+            select(SourceRunState).where(
+                SourceRunState.run_id == run_id,
+                SourceRunState.source_name == source_name,
+                SourceRunState.status == "running",
+                SourceRunState.updated_at == claimed_updated_at,
+            )
+        )
+        if state is None:
+            raise RuntimeError(
+                f"source ownership lost before finalize: run={run_id} source={source_name}"
+            )
+        return state

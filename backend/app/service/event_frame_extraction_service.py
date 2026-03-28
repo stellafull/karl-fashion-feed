@@ -44,7 +44,13 @@ class EventFrameExtractionService:
         self._markdown_service = markdown_service or ArticleMarkdownService()
         self._rate_limiter = rate_limiter or LlmRateLimiter()
 
-    async def extract_frames(self, session: Session, article: Article) -> tuple[ArticleEventFrame, ...]:
+    async def extract_frames(
+        self,
+        session: Session,
+        article: Article,
+        *,
+        claimed_updated_at: datetime | None = None,
+    ) -> tuple[ArticleEventFrame, ...]:
         """Extract sparse event frames and persist them for one parsed article."""
         if article.parse_status != "done":
             raise ValueError(f"parse must be done before frame extraction: {article.article_id}")
@@ -61,12 +67,23 @@ class EventFrameExtractionService:
                 delete(ArticleEventFrame).where(ArticleEventFrame.article_id == article.article_id)
             )
             session.add_all(frames)
-            article.event_frame_status = "done"
-            article.event_frame_error = None
-            article.event_frame_updated_at = _utcnow_naive()
+            finalized = _finalize_event_frame_success(
+                session=session,
+                article=article,
+                claimed_updated_at=claimed_updated_at,
+            )
+            if not finalized:
+                raise RuntimeError(
+                    f"event frame ownership lost before finalize: article_id={article.article_id}"
+                )
             session.flush()
         except Exception as exc:
-            self._persist_failure_state(session, article, exc)
+            self._persist_failure_state(
+                session,
+                article,
+                exc,
+                claimed_updated_at=claimed_updated_at,
+            )
             return ()
 
         return frames
@@ -166,18 +183,29 @@ class EventFrameExtractionService:
             ingested_at = ingested_at.replace(tzinfo=UTC)
         return ingested_at.astimezone(ASIA_SHANGHAI).date()
 
-    def _persist_failure_state(self, session: Session, article: Article, exc: Exception) -> Article:
+    def _persist_failure_state(
+        self,
+        session: Session,
+        article: Article,
+        exc: Exception,
+        *,
+        claimed_updated_at: datetime | None = None,
+    ) -> Article:
         session.rollback()
         stored_article = session.get(Article, article.article_id)
         if stored_article is None:
             raise RuntimeError(f"article disappeared during frame extraction failure handling: {article.article_id}")
 
-        stored_article.event_frame_attempts += 1
-        stored_article.event_frame_status = (
-            "abandoned" if stored_article.event_frame_attempts >= 3 else "failed"
+        finalized = _finalize_event_frame_failure(
+            session=session,
+            article=stored_article,
+            exc=exc,
+            claimed_updated_at=claimed_updated_at,
         )
-        stored_article.event_frame_error = f"{exc.__class__.__name__}: {exc}"
-        stored_article.event_frame_updated_at = _utcnow_naive()
+        if not finalized:
+            raise RuntimeError(
+                f"event frame ownership lost before finalize: article_id={article.article_id}"
+            )
         session.flush()
         return stored_article
 
@@ -212,12 +240,18 @@ def run_extract_event_frames(*, article_id: str) -> tuple[ArticleEventFrame, ...
             raise RuntimeError(f"parse must be done before frame extraction: {article_id}")
         if article.event_frame_attempts >= 3:
             raise RuntimeError(f"article already exhausted frame extraction retries: {article_id}")
-        if article.event_frame_status != "running":
+        if article.event_frame_status != "running" or article.event_frame_updated_at != claim_now:
             raise RuntimeError(
                 f"article is not runnable for frame extraction: {article_id} ({article.event_frame_status})"
             )
 
-        frames = asyncio.run(service.extract_frames(session, article))
+        frames = asyncio.run(
+            service.extract_frames(
+                session,
+                article,
+                claimed_updated_at=claim_now,
+            )
+        )
         session.commit()
 
         refreshed = session.get(Article, article_id)
@@ -228,3 +262,63 @@ def run_extract_event_frames(*, article_id: str) -> tuple[ArticleEventFrame, ...
                 f"frame extraction did not complete for article {article_id}: {refreshed.event_frame_status}"
             )
         return frames
+
+
+def _finalize_event_frame_success(
+    *,
+    session: Session,
+    article: Article,
+    claimed_updated_at: datetime | None,
+) -> bool:
+    if claimed_updated_at is None:
+        article.event_frame_status = "done"
+        article.event_frame_error = None
+        article.event_frame_updated_at = _utcnow_naive()
+        return True
+
+    finalize_result = session.execute(
+        update(Article)
+        .where(
+            Article.article_id == article.article_id,
+            Article.event_frame_status == "running",
+            Article.event_frame_updated_at == claimed_updated_at,
+        )
+        .values(
+            event_frame_status="done",
+            event_frame_error=None,
+            event_frame_updated_at=_utcnow_naive(),
+        )
+    )
+    return finalize_result.rowcount == 1
+
+
+def _finalize_event_frame_failure(
+    *,
+    session: Session,
+    article: Article,
+    exc: Exception,
+    claimed_updated_at: datetime | None,
+) -> bool:
+    if claimed_updated_at is None:
+        article.event_frame_attempts += 1
+        article.event_frame_status = "abandoned" if article.event_frame_attempts >= 3 else "failed"
+        article.event_frame_error = f"{exc.__class__.__name__}: {exc}"
+        article.event_frame_updated_at = _utcnow_naive()
+        return True
+
+    next_attempts = article.event_frame_attempts + 1
+    finalize_result = session.execute(
+        update(Article)
+        .where(
+            Article.article_id == article.article_id,
+            Article.event_frame_status == "running",
+            Article.event_frame_updated_at == claimed_updated_at,
+        )
+        .values(
+            event_frame_attempts=next_attempts,
+            event_frame_status="abandoned" if next_attempts >= 3 else "failed",
+            event_frame_error=f"{exc.__class__.__name__}: {exc}",
+            event_frame_updated_at=_utcnow_naive(),
+        )
+    )
+    return finalize_result.rowcount == 1

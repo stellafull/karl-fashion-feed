@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import unittest
-from datetime import date
+from datetime import UTC, date, datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -259,6 +259,95 @@ class SourceCollectionServiceTest(unittest.TestCase):
             session.rollback()
 
         self.assertEqual(collector.await_count, 0)
+
+    def test_collect_source_rejects_late_success_after_ownership_moves(self) -> None:
+        service = ArticleCollectionService()
+        claimed_by_retry_at = datetime(2026, 3, 27, 8, 5, tzinfo=UTC).replace(tzinfo=None)
+
+        async def fake_collect_articles(*, source_names, limit_sources):  # type: ignore[no-untyped-def]
+            del source_names, limit_sources
+            with self.session_factory() as competing_session:
+                state = competing_session.get(
+                    SourceRunState,
+                    {"run_id": "run-1", "source_name": "Vogue"},
+                )
+                self.assertIsNotNone(state)
+                state.status = "running"
+                state.error = None
+                state.updated_at = claimed_by_retry_at
+                competing_session.commit()
+            return [self._build_article("https://example.com/late-owner")]
+
+        service._collector = SimpleNamespace(collect_articles=fake_collect_articles)
+
+        with self.session_factory() as session:
+            self._add_pipeline_run(session)
+
+            with self.assertRaisesRegex(RuntimeError, "source ownership lost before finalize"):
+                asyncio.run(
+                    service.collect_source(
+                        session,
+                        run_id="run-1",
+                        source_name="Vogue",
+                    )
+                )
+            session.rollback()
+
+        with self.session_factory() as verification_session:
+            state = verification_session.get(
+                SourceRunState,
+                {"run_id": "run-1", "source_name": "Vogue"},
+            )
+            inserted_articles = verification_session.scalar(select(func.count()).select_from(Article))
+
+        self.assertIsNotNone(state)
+        self.assertEqual(state.status, "running")
+        self.assertEqual(state.updated_at, claimed_by_retry_at)
+        self.assertEqual(inserted_articles, 0)
+
+    def test_collect_source_rejects_late_failure_after_ownership_moves(self) -> None:
+        service = ArticleCollectionService()
+        claimed_by_retry_at = datetime(2026, 3, 27, 8, 6, tzinfo=UTC).replace(tzinfo=None)
+
+        async def fake_collect_articles(*, source_names, limit_sources):  # type: ignore[no-untyped-def]
+            del source_names, limit_sources
+            with self.session_factory() as competing_session:
+                state = competing_session.get(
+                    SourceRunState,
+                    {"run_id": "run-1", "source_name": "Vogue"},
+                )
+                self.assertIsNotNone(state)
+                state.status = "running"
+                state.error = None
+                state.updated_at = claimed_by_retry_at
+                competing_session.commit()
+            raise RuntimeError("collector boom")
+
+        service._collector = SimpleNamespace(collect_articles=fake_collect_articles)
+
+        with self.session_factory() as session:
+            self._add_pipeline_run(session)
+
+            with self.assertRaisesRegex(RuntimeError, "source ownership lost before finalize"):
+                asyncio.run(
+                    service.collect_source(
+                        session,
+                        run_id="run-1",
+                        source_name="Vogue",
+                    )
+                )
+            session.rollback()
+
+        with self.session_factory() as verification_session:
+            state = verification_session.get(
+                SourceRunState,
+                {"run_id": "run-1", "source_name": "Vogue"},
+            )
+
+        self.assertIsNotNone(state)
+        self.assertEqual(state.status, "running")
+        self.assertEqual(state.updated_at, claimed_by_retry_at)
+        self.assertIsNone(state.error)
 
     def test_collect_source_rejects_open_transaction_with_raw_sql_write(self) -> None:
         service = ArticleCollectionService()

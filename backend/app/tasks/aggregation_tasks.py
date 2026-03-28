@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 import asyncio
 from datetime import date
 
@@ -174,6 +175,10 @@ def _finalize_batch_stage_success(
         raise RuntimeError(
             f"batch stage ownership lost before finalize: {stage} run={run_id} token={ownership_token}"
         )
+    session.flush()
+    run = _load_run(session=session, run_id=run_id, business_day=business_day)
+    session.refresh(run)
+    _merge_batch_metadata(run)
 
 
 def _finalize_batch_stage_failure(
@@ -206,4 +211,31 @@ def _finalize_batch_stage_failure(
     if stage == "digest":
         run.status = "failed" if run.digest_status == "abandoned" else "running"
         run.finished_at = _utcnow_naive() if run.digest_status == "abandoned" else None
+    _merge_batch_metadata(run)
     session.commit()
+
+
+def _merge_batch_metadata(run: PipelineRun) -> None:
+    metadata_json = dict(run.metadata_json or {})
+    existing_failure_summary = dict(metadata_json.get("failure_summary") or {})
+    metadata_json["batch_status_counts"] = dict(
+        sorted(Counter((run.strict_story_status, run.digest_status)).items())
+    )
+    metadata_json["batch_stage_summary"] = {
+        "strict_story": {
+            "status": run.strict_story_status,
+            "attempts": run.strict_story_attempts,
+            "error": run.strict_story_error,
+        },
+        "digest": {
+            "status": run.digest_status,
+            "attempts": run.digest_attempts,
+            "error": run.digest_error,
+        },
+    }
+    metadata_json["failure_summary"] = {
+        **existing_failure_summary,
+        "strict_story": run.strict_story_error,
+        "digest": run.digest_error,
+    }
+    run.metadata_json = metadata_json

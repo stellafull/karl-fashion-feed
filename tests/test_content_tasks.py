@@ -12,15 +12,24 @@ from pathlib import Path
 from unittest.mock import patch
 
 from sqlalchemy import create_engine
+from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from backend.app.config.celery_config import build_celery_broker_url, build_celery_settings
 from backend.app.core.database import Base
-from backend.app.models import Article, Digest, PipelineRun, StrictStory, ensure_article_storage_schema
+from backend.app.models import (
+    Article,
+    ArticleEventFrame,
+    Digest,
+    PipelineRun,
+    StrictStory,
+    ensure_article_storage_schema,
+)
 from backend.app.service.article_contracts import MarkdownBlock, ParsedArticle
 from backend.app.service.event_frame_extraction_service import EventFrameExtractionService
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
+from backend.app.schemas.llm.event_frame_extraction import EventFrameExtractionSchema
 from backend.app.tasks.aggregation_tasks import generate_digests_for_day, pack_strict_stories_for_day
 
 
@@ -281,6 +290,107 @@ class ContentTasksTest(unittest.TestCase):
             celery_app.conf.task_always_eager = original_eager
             celery_app.conf.task_eager_propagates = original_propagates
 
+    def test_parse_task_rejects_late_completion_after_ownership_moves(self) -> None:
+        article_id = self._insert_article(article_id="article-parse-late-owner", parse_status="queued")
+        celery_app = self._load_fresh_celery_app()
+        celery_app.loader.import_default_modules()
+        parse_task = celery_app.tasks["content.parse_article"]
+        original_eager = celery_app.conf.task_always_eager
+        original_propagates = celery_app.conf.task_eager_propagates
+        test_case = self
+        claimed_by_retry_at = datetime(2026, 3, 27, 9, 12, tzinfo=UTC).replace(tzinfo=None)
+        parsed = ParsedArticle(
+            title="Late owner parsed title",
+            summary="Late owner parsed summary",
+            markdown_blocks=(MarkdownBlock(kind="paragraph", text="Late owner body"),),
+            images=(),
+            published_at=datetime(2026, 3, 27, 9, 11, tzinfo=UTC).replace(tzinfo=None),
+            metadata={"parser": "late-owner"},
+        )
+
+        async def fake_parse_batches(self, candidates: list[Article]):  # type: ignore[no-untyped-def]
+            del self
+            with test_case.session_factory() as competing_session:
+                article = competing_session.get(Article, article_id)
+                test_case.assertIsNotNone(article)
+                article.parse_status = "running"
+                article.parse_error = None
+                article.parse_updated_at = claimed_by_retry_at
+                competing_session.commit()
+            return [(candidates[0].article_id, parsed, None)]
+
+        try:
+            celery_app.conf.task_always_eager = True
+            celery_app.conf.task_eager_propagates = True
+            with patch("backend.app.service.article_parse_service.SessionLocal", self.session_factory):
+                with patch(
+                    "backend.app.service.article_parse_service.ARTICLE_MARKDOWN_ROOT",
+                    Path(self.temp_dir.name),
+                ):
+                    with patch(
+                        "backend.app.service.article_parse_service.ArticleParseService._parse_batches_with_http_session",
+                        new=fake_parse_batches,
+                    ):
+                        with self.assertRaisesRegex(RuntimeError, "parse ownership lost before finalize"):
+                            parse_task.delay(article_id)
+        finally:
+            celery_app.conf.task_always_eager = original_eager
+            celery_app.conf.task_eager_propagates = original_propagates
+
+        with self.session_factory() as session:
+            article = session.get(Article, article_id)
+
+        expected_markdown_path = Path(self.temp_dir.name) / "2026-03-27" / f"{article_id}.md"
+        self.assertIsNotNone(article)
+        self.assertEqual(article.parse_status, "running")
+        self.assertEqual(article.parse_updated_at, claimed_by_retry_at)
+        self.assertIsNone(article.markdown_rel_path)
+        self.assertFalse(expected_markdown_path.exists())
+
+    def test_parse_task_rejects_late_failure_after_ownership_moves(self) -> None:
+        article_id = self._insert_article(article_id="article-parse-late-failure", parse_status="queued")
+        celery_app = self._load_fresh_celery_app()
+        celery_app.loader.import_default_modules()
+        parse_task = celery_app.tasks["content.parse_article"]
+        original_eager = celery_app.conf.task_always_eager
+        original_propagates = celery_app.conf.task_eager_propagates
+        test_case = self
+        claimed_by_retry_at = datetime(2026, 3, 27, 9, 13, tzinfo=UTC).replace(tzinfo=None)
+
+        async def fake_parse_batches(self, candidates: list[Article]):  # type: ignore[no-untyped-def]
+            del self
+            with test_case.session_factory() as competing_session:
+                article = competing_session.get(Article, article_id)
+                test_case.assertIsNotNone(article)
+                article.parse_status = "running"
+                article.parse_error = None
+                article.parse_updated_at = claimed_by_retry_at
+                competing_session.commit()
+            return [(candidates[0].article_id, None, RuntimeError("late parse boom"))]
+
+        try:
+            celery_app.conf.task_always_eager = True
+            celery_app.conf.task_eager_propagates = True
+            with patch("backend.app.service.article_parse_service.SessionLocal", self.session_factory):
+                with patch(
+                    "backend.app.service.article_parse_service.ArticleParseService._parse_batches_with_http_session",
+                    new=fake_parse_batches,
+                ):
+                    with self.assertRaisesRegex(RuntimeError, "parse ownership lost before finalize"):
+                        parse_task.delay(article_id)
+        finally:
+            celery_app.conf.task_always_eager = original_eager
+            celery_app.conf.task_eager_propagates = original_propagates
+
+        with self.session_factory() as session:
+            article = session.get(Article, article_id)
+
+        self.assertIsNotNone(article)
+        self.assertEqual(article.parse_status, "running")
+        self.assertEqual(article.parse_updated_at, claimed_by_retry_at)
+        self.assertEqual(article.parse_attempts, 0)
+        self.assertIsNone(article.parse_error)
+
     def test_collect_source_task_runs_in_eager_mode(self) -> None:
         celery_app = self._load_fresh_celery_app()
         celery_app.loader.import_default_modules()
@@ -320,8 +430,14 @@ class ContentTasksTest(unittest.TestCase):
         extract_task = celery_app.tasks["content.extract_event_frames"]
         original_eager = celery_app.conf.task_always_eager
 
-        async def fake_extract_frames(self, session, article):  # type: ignore[no-untyped-def]
-            del self
+        async def fake_extract_frames(
+            self,
+            session,
+            article,
+            *,
+            claimed_updated_at=None,
+        ):  # type: ignore[no-untyped-def]
+            del self, claimed_updated_at
             article.event_frame_status = "done"
             article.event_frame_error = None
             article.event_frame_updated_at = datetime(2026, 3, 27, 9, 30, tzinfo=UTC).replace(
@@ -363,8 +479,14 @@ class ContentTasksTest(unittest.TestCase):
         original_propagates = celery_app.conf.task_eager_propagates
         test_case = self
 
-        async def fake_extract_frames(self, session, article):  # type: ignore[no-untyped-def]
-            del self, session
+        async def fake_extract_frames(
+            self,
+            session,
+            article,
+            *,
+            claimed_updated_at=None,
+        ):  # type: ignore[no-untyped-def]
+            del self, session, claimed_updated_at
             test_case.assertEqual(article.event_frame_status, "running")
             article.event_frame_status = "done"
             article.event_frame_updated_at = datetime(2026, 3, 27, 9, 31, tzinfo=UTC).replace(
@@ -425,6 +547,72 @@ class ContentTasksTest(unittest.TestCase):
         finally:
             celery_app.conf.task_always_eager = original_eager
             celery_app.conf.task_eager_propagates = original_propagates
+
+    def test_extract_event_frames_task_rejects_late_completion_after_ownership_moves(self) -> None:
+        article_id = self._insert_article(
+            article_id="article-extract-late-owner",
+            markdown_rel_path="2026-03-27/article-extract-late-owner.md",
+        )
+        celery_app = self._load_fresh_celery_app()
+        celery_app.loader.import_default_modules()
+        extract_task = celery_app.tasks["content.extract_event_frames"]
+        original_eager = celery_app.conf.task_always_eager
+        original_propagates = celery_app.conf.task_eager_propagates
+        claimed_by_retry_at = datetime(2026, 3, 27, 9, 32, tzinfo=UTC).replace(tzinfo=None)
+        test_case = self
+
+        async def fake_infer_frames(self, article):  # type: ignore[no-untyped-def]
+            del self, article
+            with test_case.session_factory() as competing_session:
+                competing_article = competing_session.get(Article, article_id)
+                test_case.assertIsNotNone(competing_article)
+                competing_article.event_frame_status = "running"
+                competing_article.event_frame_error = None
+                competing_article.event_frame_updated_at = claimed_by_retry_at
+                competing_session.commit()
+            return EventFrameExtractionSchema.model_validate(
+                {
+                    "frames": [
+                        {
+                            "event_type": "runway_show",
+                            "action_text": "show staged",
+                            "extraction_confidence": 0.97,
+                        }
+                    ]
+                }
+            )
+
+        try:
+            celery_app.conf.task_always_eager = True
+            celery_app.conf.task_eager_propagates = True
+            with patch("backend.app.service.event_frame_extraction_service.SessionLocal", self.session_factory):
+                with patch(
+                    "backend.app.service.event_frame_extraction_service.ensure_article_storage_schema",
+                    return_value=None,
+                ):
+                    with patch(
+                        "backend.app.service.event_frame_extraction_service.EventFrameExtractionService._infer_frames",
+                        new=fake_infer_frames,
+                    ):
+                        with self.assertRaisesRegex(
+                            RuntimeError,
+                            "event frame ownership lost before finalize",
+                        ):
+                            extract_task.delay(article_id)
+        finally:
+            celery_app.conf.task_always_eager = original_eager
+            celery_app.conf.task_eager_propagates = original_propagates
+
+        with self.session_factory() as session:
+            article = session.get(Article, article_id)
+            frames = session.scalars(
+                select(ArticleEventFrame).where(ArticleEventFrame.article_id == article_id)
+            ).all()
+
+        self.assertIsNotNone(article)
+        self.assertEqual(article.event_frame_status, "running")
+        self.assertEqual(article.event_frame_updated_at, claimed_by_retry_at)
+        self.assertEqual(frames, [])
 
     def test_pack_task_rejects_superseded_token_before_work_starts(self) -> None:
         session_factory = self._build_file_session_factory("pack-superseded-before-start.db")
@@ -535,6 +723,132 @@ class ContentTasksTest(unittest.TestCase):
         self.assertEqual(run.strict_story_attempts, 3)
         self.assertEqual(run.status, "failed")
         self.assertIsNotNone(run.finished_at)
+        self.assertEqual(
+            run.metadata_json,
+            {
+                "batch_status_counts": {"abandoned": 1, "pending": 1},
+                "batch_stage_summary": {
+                    "strict_story": {
+                        "status": "abandoned",
+                        "attempts": 3,
+                        "error": "RuntimeError: pack boom",
+                    },
+                    "digest": {
+                        "status": "pending",
+                        "attempts": 0,
+                        "error": None,
+                    },
+                },
+                "failure_summary": {
+                    "strict_story": "RuntimeError: pack boom",
+                    "digest": None,
+                },
+            },
+        )
+
+    def test_digest_task_refreshes_metadata_immediately_on_success(self) -> None:
+        session_factory = self._build_file_session_factory("digest-success-metadata.db")
+        business_day = datetime(2026, 3, 27, 0, 0, tzinfo=UTC).date()
+        self._insert_pipeline_run(
+            session_factory,
+            run_id="run-digest-success",
+            business_date_value=business_day,
+            strict_story_status="done",
+            strict_story_token=1,
+            digest_status="queued",
+            digest_token=1,
+        )
+
+        async def fake_generate(self, session, business_day, *, run_id):  # type: ignore[no-untyped-def]
+            del self, session, business_day, run_id
+            return []
+
+        with patch("backend.app.tasks.aggregation_tasks.SessionLocal", session_factory):
+            with patch("backend.app.tasks.aggregation_tasks.ensure_article_storage_schema", return_value=None):
+                with patch(
+                    "backend.app.tasks.aggregation_tasks.DigestGenerationService.generate_for_day",
+                    new=fake_generate,
+                ):
+                    generate_digests_for_day("2026-03-27", "run-digest-success", 1)
+
+        with session_factory() as session:
+            run = session.get(PipelineRun, "run-digest-success")
+
+        self.assertIsNotNone(run)
+        self.assertEqual(run.digest_status, "done")
+        self.assertEqual(run.status, "done")
+        self.assertIsNotNone(run.finished_at)
+        self.assertEqual(
+            run.metadata_json,
+            {
+                "batch_status_counts": {"done": 2},
+                "batch_stage_summary": {
+                    "strict_story": {
+                        "status": "done",
+                        "attempts": 0,
+                        "error": None,
+                    },
+                    "digest": {
+                        "status": "done",
+                        "attempts": 0,
+                        "error": None,
+                    },
+                },
+                "failure_summary": {
+                    "strict_story": None,
+                    "digest": None,
+                },
+            },
+        )
+
+    def test_digest_task_preserves_existing_front_stage_failure_summary(self) -> None:
+        session_factory = self._build_file_session_factory("digest-preserve-front-failures.db")
+        business_day = datetime(2026, 3, 27, 0, 0, tzinfo=UTC).date()
+        self._insert_pipeline_run(
+            session_factory,
+            run_id="run-digest-preserve-front-failures",
+            business_date_value=business_day,
+            strict_story_status="done",
+            strict_story_token=1,
+            digest_status="queued",
+            digest_token=1,
+            metadata_json={
+                "failure_summary": {
+                    "sources": {"Vogue": "RuntimeError: source boom"},
+                    "parse": {"article-1": "RuntimeError: parse boom"},
+                    "event_frame": {"article-2": "RuntimeError: frame boom"},
+                    "strict_story": None,
+                    "digest": None,
+                }
+            },
+        )
+
+        async def fake_generate(self, session, business_day, *, run_id):  # type: ignore[no-untyped-def]
+            del self, session, business_day, run_id
+            return []
+
+        with patch("backend.app.tasks.aggregation_tasks.SessionLocal", session_factory):
+            with patch("backend.app.tasks.aggregation_tasks.ensure_article_storage_schema", return_value=None):
+                with patch(
+                    "backend.app.tasks.aggregation_tasks.DigestGenerationService.generate_for_day",
+                    new=fake_generate,
+                ):
+                    generate_digests_for_day("2026-03-27", "run-digest-preserve-front-failures", 1)
+
+        with session_factory() as session:
+            run = session.get(PipelineRun, "run-digest-preserve-front-failures")
+
+        self.assertIsNotNone(run)
+        self.assertEqual(
+            run.metadata_json["failure_summary"],
+            {
+                "sources": {"Vogue": "RuntimeError: source boom"},
+                "parse": {"article-1": "RuntimeError: parse boom"},
+                "event_frame": {"article-2": "RuntimeError: frame boom"},
+                "strict_story": None,
+                "digest": None,
+            },
+        )
 
     def test_digest_task_rolls_back_output_after_losing_ownership(self) -> None:
         session_factory = self._build_file_session_factory("digest-ownership-loss.db")
@@ -721,6 +1035,7 @@ class ContentTasksTest(unittest.TestCase):
         strict_story_token: int = 0,
         digest_status: str = "pending",
         digest_token: int = 0,
+        metadata_json: dict | None = None,
     ) -> None:
         observed_at = datetime(2026, 3, 27, 8, 0, tzinfo=UTC).replace(tzinfo=None)
         with session_factory() as session:
@@ -741,7 +1056,7 @@ class ContentTasksTest(unittest.TestCase):
                     digest_updated_at=observed_at,
                     digest_token=digest_token,
                     started_at=observed_at,
-                    metadata_json={},
+                    metadata_json={} if metadata_json is None else metadata_json,
                 )
             )
             session.commit()

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 from collections.abc import Callable, Sequence
+from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 
 from sqlalchemy import and_, or_, select
@@ -31,6 +32,15 @@ ACTIVE_STATUSES = {"queued", "running"}
 TERMINAL_STATUSES = {"done", "abandoned"}
 STALE_RECLAIM_ERROR = "RuntimeError: stale runtime state reclaimed by coordinator"
 Dispatch = Callable[[], None]
+RepairDispatch = Callable[[Exception], None]
+
+
+@dataclass(frozen=True)
+class PendingDispatch:
+    """Track a post-commit publish and its immediate repair path."""
+
+    publish: Dispatch
+    repair: RepairDispatch
 
 
 class DailyRunCoordinatorService:
@@ -50,7 +60,7 @@ class DailyRunCoordinatorService:
         observed_at = coerce_utc_naive(now or datetime.now(UTC))
         business_day = business_day_for_runtime(observed_at)
         source_names = self._enabled_source_names()
-        dispatches: list[Dispatch] = []
+        dispatches: list[PendingDispatch] = []
 
         with self._session_factory() as session:
             ensure_article_storage_schema(session.get_bind())
@@ -79,7 +89,6 @@ class DailyRunCoordinatorService:
                 observed_at=observed_at,
                 dispatches=dispatches,
             )
-            self._refresh_run_metadata(session, run, business_day, source_names)
             self._enqueue_batch_jobs_if_ready(
                 session,
                 run,
@@ -88,13 +97,25 @@ class DailyRunCoordinatorService:
                 dispatches=dispatches,
             )
             self._refresh_run_status(run, observed_at)
+            self._refresh_run_metadata(session, run, business_day, source_names)
             session.commit()
             run_id = run.run_id
 
-        for dispatch in dispatches:
-            dispatch()
+        self._publish_dispatches(dispatches)
 
         return run_id
+
+    def _publish_dispatches(self, dispatches: Sequence[PendingDispatch]) -> None:
+        first_error: Exception | None = None
+        for dispatch in dispatches:
+            try:
+                dispatch.publish()
+            except Exception as exc:
+                dispatch.repair(exc)
+                if first_error is None:
+                    first_error = exc
+        if first_error is not None:
+            raise first_error
 
     def _ensure_run_for_day(
         self,
@@ -259,7 +280,7 @@ class DailyRunCoordinatorService:
         source_names: Sequence[str],
         observed_at: datetime,
         *,
-        dispatches: list[Dispatch],
+        dispatches: list[PendingDispatch],
     ) -> None:
         if not source_names:
             return
@@ -287,7 +308,16 @@ class DailyRunCoordinatorService:
             state.status = "queued"
             state.updated_at = observed_at
             session.flush()
-            dispatches.append(lambda source_name=source_name, run_id=run_id: collect_source.delay(source_name, run_id))
+            dispatches.append(
+                PendingDispatch(
+                    publish=lambda source_name=source_name, run_id=run_id: collect_source.delay(source_name, run_id),
+                    repair=lambda exc, run_id=run_id, source_name=source_name: self._repair_source_publish_failure(
+                        run_id,
+                        source_name,
+                        exc,
+                    ),
+                )
+            )
 
     def _enqueue_retryable_articles(
         self,
@@ -296,7 +326,7 @@ class DailyRunCoordinatorService:
         *,
         stage: str,
         observed_at: datetime,
-        dispatches: list[Dispatch],
+        dispatches: list[PendingDispatch],
     ) -> None:
         if stage not in {"parse", "event_frame"}:
             raise ValueError(f"unsupported article stage: {stage}")
@@ -320,7 +350,16 @@ class DailyRunCoordinatorService:
             setattr(article, f"{stage}_status", "queued")
             setattr(article, updated_at_field, observed_at)
             session.flush()
-            dispatches.append(lambda article_id=article.article_id, task=task: task.delay(article_id))
+            dispatches.append(
+                PendingDispatch(
+                    publish=lambda article_id=article.article_id, task=task: task.delay(article_id),
+                    repair=lambda exc, article_id=article.article_id, stage=stage: self._repair_article_publish_failure(
+                        article_id,
+                        stage=stage,
+                        exc=exc,
+                    ),
+                )
+            )
 
     def _refresh_run_metadata(
         self,
@@ -362,6 +401,13 @@ class DailyRunCoordinatorService:
                 business_day,
                 stage="event_frame",
             ),
+            "batch_status_counts": self._batch_status_counts(run),
+            "batch_stage_summary": self._batch_stage_summary(run),
+            "failure_summary": self._failure_summary(
+                run,
+                source_states=source_states,
+                articles=articles,
+            ),
         }
 
     def _enqueue_batch_jobs_if_ready(
@@ -371,7 +417,7 @@ class DailyRunCoordinatorService:
         source_names: Sequence[str],
         observed_at: datetime,
         *,
-        dispatches: list[Dispatch],
+        dispatches: list[PendingDispatch],
     ) -> None:
         front_stages_drained = self._front_stages_drained(
             session,
@@ -390,7 +436,7 @@ class DailyRunCoordinatorService:
         run: PipelineRun,
         observed_at: datetime,
         *,
-        dispatches: list[Dispatch],
+        dispatches: list[PendingDispatch],
     ) -> None:
         if run.strict_story_status not in RETRYABLE_STATUSES:
             return
@@ -404,12 +450,19 @@ class DailyRunCoordinatorService:
         ownership_token = run.strict_story_token
         session.flush()
         dispatches.append(
-            lambda business_day_iso=run.business_date.isoformat(),
-            run_id=run.run_id,
-            ownership_token=ownership_token: pack_strict_stories_for_day.delay(
-                business_day_iso,
-                run_id,
-                ownership_token,
+            PendingDispatch(
+                publish=lambda business_day_iso=run.business_date.isoformat(),
+                run_id=run.run_id,
+                ownership_token=ownership_token: pack_strict_stories_for_day.delay(
+                    business_day_iso,
+                    run_id,
+                    ownership_token,
+                ),
+                repair=lambda exc, run_id=run.run_id: self._repair_batch_publish_failure(
+                    run_id,
+                    stage="strict_story",
+                    exc=exc,
+                ),
             )
         )
 
@@ -419,7 +472,7 @@ class DailyRunCoordinatorService:
         run: PipelineRun,
         observed_at: datetime,
         *,
-        dispatches: list[Dispatch],
+        dispatches: list[PendingDispatch],
     ) -> None:
         if run.digest_attempts >= BATCH_STAGE_MAX_ATTEMPTS:
             run.digest_status = "abandoned"
@@ -431,12 +484,19 @@ class DailyRunCoordinatorService:
         ownership_token = run.digest_token
         session.flush()
         dispatches.append(
-            lambda business_day_iso=run.business_date.isoformat(),
-            run_id=run.run_id,
-            ownership_token=ownership_token: generate_digests_for_day.delay(
-                business_day_iso,
-                run_id,
-                ownership_token,
+            PendingDispatch(
+                publish=lambda business_day_iso=run.business_date.isoformat(),
+                run_id=run.run_id,
+                ownership_token=ownership_token: generate_digests_for_day.delay(
+                    business_day_iso,
+                    run_id,
+                    ownership_token,
+                ),
+                repair=lambda exc, run_id=run.run_id: self._repair_batch_publish_failure(
+                    run_id,
+                    stage="digest",
+                    exc=exc,
+                ),
             )
         )
 
@@ -528,14 +588,122 @@ class DailyRunCoordinatorService:
     ) -> None:
         if run.digest_status == "done":
             run.status = "done"
-            run.finished_at = observed_at
+            run.finished_at = run.finished_at or observed_at
             return
         if run.strict_story_status == "abandoned" or run.digest_status == "abandoned":
             run.status = "failed"
-            run.finished_at = observed_at
+            run.finished_at = run.finished_at or observed_at
             return
         run.status = "running"
         run.finished_at = None
+
+    def _repair_source_publish_failure(
+        self,
+        run_id: str,
+        source_name: str,
+        exc: Exception,
+    ) -> None:
+        with self._session_factory() as session:
+            observed_at = coerce_utc_naive(datetime.now(UTC))
+            run = session.get(PipelineRun, run_id)
+            if run is None:
+                raise RuntimeError(f"missing pipeline run while repairing publish failure: run_id={run_id}")
+            state = session.get(SourceRunState, {"run_id": run_id, "source_name": source_name})
+            if state is None:
+                raise RuntimeError(
+                    f"missing source runtime state while repairing publish failure: run={run_id} source={source_name}"
+                )
+            if state.status == "queued":
+                state.status = "failed"
+                state.error = self._format_publish_error(exc)
+                state.updated_at = observed_at
+            elif not self._publish_ownership_moved(state.status):
+                raise RuntimeError(
+                    f"unexpected source runtime status while repairing publish failure: "
+                    f"run={run_id} source={source_name} status={state.status}"
+                )
+            self._refresh_run_status(run, observed_at)
+            self._refresh_run_metadata(
+                session,
+                run,
+                run.business_date,
+                self._enabled_source_names(),
+            )
+            session.commit()
+
+    def _repair_article_publish_failure(
+        self,
+        article_id: str,
+        *,
+        stage: str,
+        exc: Exception,
+    ) -> None:
+        with self._session_factory() as session:
+            observed_at = coerce_utc_naive(datetime.now(UTC))
+            article = session.get(Article, article_id)
+            if article is None:
+                raise RuntimeError(f"missing article while repairing publish failure: article_id={article_id}")
+            run = self._load_run_for_business_day(
+                session,
+                business_day=business_day_for_runtime(article.ingested_at),
+            )
+
+            status_field = f"{stage}_status"
+            error_field = f"{stage}_error"
+            updated_at_field = f"{stage}_updated_at"
+            status = getattr(article, status_field)
+            if status == "queued":
+                setattr(article, status_field, "failed")
+                setattr(article, error_field, self._format_publish_error(exc))
+                setattr(article, updated_at_field, observed_at)
+            elif not self._publish_ownership_moved(status):
+                raise RuntimeError(
+                    f"unexpected article runtime status while repairing publish failure: "
+                    f"article_id={article_id} stage={stage} status={status}"
+                )
+            self._refresh_run_status(run, observed_at)
+            self._refresh_run_metadata(
+                session,
+                run,
+                run.business_date,
+                self._enabled_source_names(),
+            )
+            session.commit()
+
+    def _repair_batch_publish_failure(
+        self,
+        run_id: str,
+        *,
+        stage: str,
+        exc: Exception,
+    ) -> None:
+        with self._session_factory() as session:
+            observed_at = coerce_utc_naive(datetime.now(UTC))
+            run = session.get(PipelineRun, run_id)
+            if run is None:
+                raise RuntimeError(f"missing pipeline run while repairing publish failure: run_id={run_id}")
+
+            status_field = f"{stage}_status"
+            error_field = f"{stage}_error"
+            updated_at_field = f"{stage}_updated_at"
+            status = getattr(run, status_field)
+            if status == "queued":
+                setattr(run, status_field, "failed")
+                setattr(run, error_field, self._format_publish_error(exc))
+                setattr(run, updated_at_field, observed_at)
+            elif not self._publish_ownership_moved(status):
+                raise RuntimeError(
+                    f"unexpected batch runtime status while repairing publish failure: "
+                    f"run_id={run_id} stage={stage} status={status}"
+                )
+            self._refresh_run_status(run, observed_at)
+            self._refresh_run_metadata(
+                session,
+                run,
+                run.business_date,
+                self._enabled_source_names(),
+            )
+            session.commit()
 
     def _load_articles_for_business_day(self, session: Session, business_day: date) -> list[Article]:
         return list(
@@ -557,6 +725,22 @@ class DailyRunCoordinatorService:
     @staticmethod
     def _enabled_source_names() -> tuple[str, ...]:
         return tuple(source.name for source in load_source_configs())
+
+    @staticmethod
+    def _load_run_for_business_day(
+        session: Session,
+        *,
+        business_day: date,
+    ) -> PipelineRun:
+        run = session.scalar(
+            select(PipelineRun).where(
+                PipelineRun.business_date == business_day,
+                PipelineRun.run_type == RUN_TYPE_DAILY_DIGEST,
+            )
+        )
+        if run is None:
+            raise RuntimeError(f"missing pipeline run while repairing publish failure: business_day={business_day}")
+        return run
 
     @staticmethod
     def _source_is_retryable(state: SourceRunState) -> bool:
@@ -598,6 +782,60 @@ class DailyRunCoordinatorService:
         setattr(article, updated_at_field, observed_at)
 
     @staticmethod
+    def _format_publish_error(exc: Exception) -> str:
+        return f"{exc.__class__.__name__}: {exc}"
+
+    @staticmethod
+    def _publish_ownership_moved(status: str) -> bool:
+        return status in {"running", "done", "failed", "abandoned"}
+
+    @staticmethod
     def _article_business_day_clause(business_day: date) -> object:
         window_start, window_end = utc_bounds_for_business_day(business_day)
         return and_(Article.ingested_at >= window_start, Article.ingested_at < window_end)
+
+    @staticmethod
+    def _batch_status_counts(run: PipelineRun) -> dict[str, int]:
+        return dict(sorted(Counter((run.strict_story_status, run.digest_status)).items()))
+
+    @staticmethod
+    def _batch_stage_summary(run: PipelineRun) -> dict[str, dict[str, object]]:
+        return {
+            "strict_story": {
+                "status": run.strict_story_status,
+                "attempts": run.strict_story_attempts,
+                "error": run.strict_story_error,
+            },
+            "digest": {
+                "status": run.digest_status,
+                "attempts": run.digest_attempts,
+                "error": run.digest_error,
+            },
+        }
+
+    @staticmethod
+    def _failure_summary(
+        run: PipelineRun,
+        *,
+        source_states: Sequence[SourceRunState],
+        articles: Sequence[Article],
+    ) -> dict[str, object]:
+        return {
+            "sources": {
+                state.source_name: state.error
+                for state in source_states
+                if state.status in {"failed", "abandoned"}
+            },
+            "parse": {
+                article.article_id: article.parse_error
+                for article in articles
+                if article.parse_status in {"failed", "abandoned"}
+            },
+            "event_frame": {
+                article.article_id: article.event_frame_error
+                for article in articles
+                if article.event_frame_status in {"failed", "abandoned"}
+            },
+            "strict_story": run.strict_story_error,
+            "digest": run.digest_error,
+        }
