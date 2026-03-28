@@ -15,6 +15,7 @@ from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
 from backend.app.models import Article, Digest, DigestArticle, DigestStrictStory, StrictStory, StrictStoryArticle
 from backend.app.prompts.digest_generation_prompt import build_digest_generation_prompt
 from backend.app.schemas.llm.digest_generation import DigestGenerationSchema
+from backend.app.service.llm_rate_limiter import LlmRateLimiter
 
 if TYPE_CHECKING:
     from openai import AsyncOpenAI
@@ -43,8 +44,14 @@ class _ResolvedPlan:
 class DigestGenerationService:
     """Generate immutable digest rows from one business-day strict-story set."""
 
-    def __init__(self, *, client: AsyncOpenAI | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        client: AsyncOpenAI | None = None,
+        rate_limiter: LlmRateLimiter | None = None,
+    ) -> None:
         self._client = client
+        self._rate_limiter = rate_limiter or LlmRateLimiter()
 
     async def generate_for_day(
         self,
@@ -111,18 +118,19 @@ class DigestGenerationService:
         if not strict_stories:
             return DigestGenerationSchema()
         client = self._get_client()
-        response = await client.chat.completions.create(
-            model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-            temperature=0,
-            messages=[
-                {"role": "system", "content": build_digest_generation_prompt()},
-                {
-                    "role": "user",
-                    "content": self._build_user_message(strict_stories),
-                },
-            ],
-            response_format={"type": "json_object"},
-        )
+        with self._rate_limiter.lease("digest_generation"):
+            response = await client.chat.completions.create(
+                model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+                temperature=0,
+                messages=[
+                    {"role": "system", "content": build_digest_generation_prompt()},
+                    {
+                        "role": "user",
+                        "content": self._build_user_message(strict_stories),
+                    },
+                ],
+                response_format={"type": "json_object"},
+            )
         raw_content = response.choices[0].message.content or "{}"
         return DigestGenerationSchema.model_validate_json(raw_content)
 

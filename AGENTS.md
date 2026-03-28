@@ -5,6 +5,7 @@
 ## 代码规范
 
 当你编写任何Python代码时, 强制使用 Skill python-code-style
+- Python 包与虚拟环境统一使用 `uv` 管理。新增、移除、同步依赖默认使用 `uv add`、`uv remove`、`uv sync`，不要手动编辑 `pyproject.toml` 或改用 `pip`。
 
 
 ## 方案规范

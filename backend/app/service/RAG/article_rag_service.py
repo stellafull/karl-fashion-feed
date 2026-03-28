@@ -21,7 +21,7 @@ RAG_COLLECTION_NAME = "kff_retrieval"
 
 @dataclass(frozen=True)
 class RagInsertResult:
-    eligible_articles: int
+    indexed_articles: int
     text_units: int
     image_units: int
     upserted_units: int
@@ -62,7 +62,7 @@ class ArticleRagService:
         """Upsert retrieval units for parse-complete articles into Qdrant."""
         if not article_ids:
             return RagInsertResult(
-                eligible_articles=0,
+                indexed_articles=0,
                 text_units=0,
                 image_units=0,
                 upserted_units=0,
@@ -75,25 +75,25 @@ class ArticleRagService:
                 .order_by(Article.ingested_at.asc(), Article.article_id.asc())
             ).all()
 
-        eligible_articles = [
+        indexed_articles = [
             article
             for article in articles
             if article.parse_status == "done"
         ]
-        if not eligible_articles:
+        if not indexed_articles:
             return RagInsertResult(
-                eligible_articles=0,
+                indexed_articles=0,
                 text_units=0,
                 image_units=0,
                 upserted_units=0,
             )
 
-        text_records = self._build_text_records(eligible_articles)
-        image_records = self._build_image_records(eligible_articles)
+        text_records = self._build_text_records(indexed_articles)
+        image_records = self._build_image_records(indexed_articles)
         records = text_records + image_records
         if not records:
             return RagInsertResult(
-                eligible_articles=len(eligible_articles),
+                indexed_articles=len(indexed_articles),
                 text_units=0,
                 image_units=0,
                 upserted_units=0,
@@ -104,7 +104,7 @@ class ArticleRagService:
 
         upserted_units = self._qdrant_service.upsert_data(self._collection_name, records)
         return RagInsertResult(
-            eligible_articles=len(eligible_articles),
+            indexed_articles=len(indexed_articles),
             text_units=len(text_records),
             image_units=len(image_records),
             upserted_units=upserted_units,

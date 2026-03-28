@@ -1,11 +1,19 @@
 # Models
 
-本目录维护 ORM 实体的长期设计说明。
+本目录维护当前 digest runtime 的 ORM 设计说明。
 
-当前目标已经从旧 `story` 阅读模型切换到新的
-`article -> article_event_frame -> strict_story -> digest` 链路。
+唯一有效的聚合链路是：
 
-后续维护以本文件描述的 digest runtime contract 为准。
+`article -> article_event_frame -> strict_story -> digest`
+
+其中：
+
+- `article` / `article_image` 是事实真相源
+- `article_event_frame` 是最小可回放事件单元
+- `strict_story` 只服务内部打包
+- `digest` 是唯一 public read model
+
+旧 `story` / `story_article` 不再属于当前 schema contract。
 
 ## 当前边界
 
@@ -154,7 +162,7 @@
 
 ### Read Model Replacement
 
-旧 `story` / `story_article` 阅读模型不再是 schema bootstrap 的一部分。
+旧 `story` / `story_article` 不允许出现在当前 runtime schema bootstrap 中。
 当前对外导出的聚合链路是：
 
 - `article_event_frame`
@@ -207,5 +215,5 @@
 ## 迁移约束
 
 - Postgres 是唯一业务真相。
-- Redis 仅做协调态，不承载核心真相。
+- Redis 仅做 broker、锁和短期协调态，不承载核心真相。
 - 新 schema bootstrap 走 replacement-only，不保留 story-era 双轨逻辑。

@@ -282,6 +282,8 @@ def _ensure_pipeline_run_columns(bind: Engine) -> None:
                 "ALTER TABLE pipeline_run ADD COLUMN strict_story_updated_at TIMESTAMP "
                 "DEFAULT CURRENT_TIMESTAMP NOT NULL"
             )
+    if "strict_story_token" not in existing_columns:
+        statements.append("ALTER TABLE pipeline_run ADD COLUMN strict_story_token INTEGER DEFAULT 0 NOT NULL")
     if "digest_status" not in existing_columns:
         statements.append(
             "ALTER TABLE pipeline_run ADD COLUMN digest_status VARCHAR(32) DEFAULT 'pending' NOT NULL"
@@ -304,9 +306,30 @@ def _ensure_pipeline_run_columns(bind: Engine) -> None:
                 "ALTER TABLE pipeline_run ADD COLUMN digest_updated_at TIMESTAMP "
                 "DEFAULT CURRENT_TIMESTAMP NOT NULL"
             )
+    if "digest_token" not in existing_columns:
+        statements.append("ALTER TABLE pipeline_run ADD COLUMN digest_token INTEGER DEFAULT 0 NOT NULL")
 
     _apply_schema_statements(bind, statements)
     _apply_schema_statements(bind, fill_statements)
+    _ensure_pipeline_run_unique_index(bind)
+
+
+def _ensure_pipeline_run_unique_index(bind: Engine) -> None:
+    inspector = inspect(bind)
+    if "pipeline_run" not in inspector.get_table_names():
+        return
+
+    indexes = {index["name"] for index in inspector.get_indexes("pipeline_run")}
+    if "uq_pipeline_run_business_date_run_type" in indexes:
+        return
+
+    _apply_schema_statements(
+        bind,
+        [
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_pipeline_run_business_date_run_type "
+            "ON pipeline_run (business_date, run_type)"
+        ],
+    )
 
 
 def _ensure_article_image_columns(bind: Engine) -> None:

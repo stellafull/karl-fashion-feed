@@ -2,25 +2,61 @@
 
 from __future__ import annotations
 
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time, timedelta
 from uuid import uuid4
+from zoneinfo import ZoneInfo
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, JSON, String, Text
+from sqlalchemy import Date, DateTime, ForeignKey, Index, Integer, JSON, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.app.core.database import Base
 
+ASIA_SHANGHAI = ZoneInfo("Asia/Shanghai")
+ARTICLE_STAGE_MAX_ATTEMPTS = 3
+BATCH_STAGE_MAX_ATTEMPTS = 3
 SOURCE_RUN_MAX_ATTEMPTS = 3
+DEFAULT_STALE_STATE_TIMEOUT = timedelta(minutes=30)
 
 
 def _utcnow_naive() -> datetime:
     return datetime.now(UTC).replace(tzinfo=None)
 
 
+def coerce_utc_naive(value: datetime) -> datetime:
+    """Normalize an input datetime to a naive UTC timestamp."""
+    if value.tzinfo is None:
+        return value
+    return value.astimezone(UTC).replace(tzinfo=None)
+
+
+def business_day_for_runtime(now: datetime) -> date:
+    """Resolve the active business day using Asia/Shanghai local date."""
+    normalized = now if now.tzinfo is not None else now.replace(tzinfo=UTC)
+    return normalized.astimezone(ASIA_SHANGHAI).date()
+
+
+def utc_bounds_for_business_day(business_day: date) -> tuple[datetime, datetime]:
+    """Return the naive UTC window covering one Asia/Shanghai business day."""
+    start_local = datetime.combine(business_day, time.min, tzinfo=ASIA_SHANGHAI)
+    end_local = start_local + timedelta(days=1)
+    return (
+        start_local.astimezone(UTC).replace(tzinfo=None),
+        end_local.astimezone(UTC).replace(tzinfo=None),
+    )
+
+
 class PipelineRun(Base):
     """Batch execution state for one business-date digest run."""
 
     __tablename__ = "pipeline_run"
+    __table_args__ = (
+        Index(
+            "uq_pipeline_run_business_date_run_type",
+            "business_date",
+            "run_type",
+            unique=True,
+        ),
+    )
 
     run_id: Mapped[str] = mapped_column(
         String(36),
@@ -56,6 +92,11 @@ class PipelineRun(Base):
         nullable=False,
         default=_utcnow_naive,
     )
+    strict_story_token: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
     digest_status: Mapped[str] = mapped_column(
         String(32),
         nullable=False,
@@ -71,6 +112,11 @@ class PipelineRun(Base):
         DateTime,
         nullable=False,
         default=_utcnow_naive,
+    )
+    digest_token: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
     )
     started_at: Mapped[datetime] = mapped_column(
         DateTime,
