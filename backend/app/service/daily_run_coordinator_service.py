@@ -51,9 +51,15 @@ class DailyRunCoordinatorService:
         *,
         session_factory: Callable[[], Session] = SessionLocal,
         stale_after: timedelta = DEFAULT_STALE_STATE_TIMEOUT,
+        source_names: Sequence[str] | None = None,
+        limit_sources: int | None = None,
     ) -> None:
         self._session_factory = session_factory
         self._stale_after = stale_after
+        self._source_names = tuple(source_names) if source_names is not None else None
+        self._limit_sources = limit_sources
+        if self._limit_sources is not None and self._limit_sources <= 0:
+            raise ValueError("limit_sources must be greater than zero")
 
     def tick(self, *, now: datetime | None = None) -> str:
         """Rescan runtime state, enqueue retryable work, and trigger batch jobs."""
@@ -104,6 +110,33 @@ class DailyRunCoordinatorService:
         self._publish_dispatches(dispatches)
 
         return run_id
+
+    def drain_until_idle(
+        self,
+        *,
+        run_id: str,
+        business_day: date,
+        skip_collect: bool = False,
+        max_ticks: int = 32,
+    ) -> None:
+        """Run coordinator ticks until digest run is terminal for the day."""
+        for _ in range(max_ticks):
+            self.tick()
+            with self._session_factory() as session:
+                run = session.get(PipelineRun, run_id)
+                if run is None:
+                    raise RuntimeError(f"pipeline run missing while draining runtime: run_id={run_id}")
+                if run.business_date != business_day:
+                    raise RuntimeError(
+                        "pipeline run business day changed while draining runtime: "
+                        f"run_id={run_id} expected={business_day.isoformat()} got={run.business_date.isoformat()}"
+                    )
+                if run.status in {"done", "failed"}:
+                    return
+        raise RuntimeError(
+            f"coordinator runtime did not drain within {max_ticks} ticks: "
+            f"run_id={run_id} business_day={business_day.isoformat()} skip_collect={skip_collect}"
+        )
 
     def _publish_dispatches(self, dispatches: Sequence[PendingDispatch]) -> None:
         first_error: Exception | None = None
@@ -722,9 +755,17 @@ class DailyRunCoordinatorService:
             and_(status_column == "failed", attempts_column < ARTICLE_STAGE_MAX_ATTEMPTS),
         )
 
-    @staticmethod
-    def _enabled_source_names() -> tuple[str, ...]:
-        return tuple(source.name for source in load_source_configs())
+    def _enabled_source_names(self) -> tuple[str, ...]:
+        configured = tuple(source.name for source in load_source_configs())
+        if self._source_names is not None:
+            configured_set = set(configured)
+            unknown_sources = sorted(source_name for source_name in self._source_names if source_name not in configured_set)
+            if unknown_sources:
+                raise ValueError(f"unknown source names requested: {unknown_sources}")
+            configured = self._source_names
+        if self._limit_sources is not None:
+            configured = configured[: self._limit_sources]
+        return configured
 
     @staticmethod
     def _load_run_for_business_day(
