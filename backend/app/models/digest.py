@@ -16,7 +16,7 @@ def _utcnow_naive() -> datetime:
 
 
 class Digest(Base):
-    """Public digest artifact generated from strict stories and articles."""
+    """Public digest artifact generated from stories and articles."""
 
     __tablename__ = "digest"
 
@@ -52,17 +52,17 @@ class Digest(Base):
     )
 
 
-class DigestStrictStory(Base):
-    """Ordered mapping from digests to strict stories."""
+class DigestStory(Base):
+    """Ordered mapping from digests to stories."""
 
-    __tablename__ = "digest_strict_story"
+    __tablename__ = "digest_story"
 
     digest_key: Mapped[str] = mapped_column(
         ForeignKey("digest.digest_key", ondelete="CASCADE"),
         primary_key=True,
     )
-    strict_story_key: Mapped[str] = mapped_column(
-        ForeignKey("strict_story.strict_story_key", ondelete="CASCADE"),
+    story_key: Mapped[str] = mapped_column(
+        ForeignKey("story.story_key", ondelete="CASCADE"),
         primary_key=True,
     )
     rank: Mapped[int] = mapped_column(Integer, nullable=False, default=0)

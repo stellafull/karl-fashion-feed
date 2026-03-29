@@ -4,16 +4,16 @@
 
 唯一有效的聚合链路是：
 
-`article -> article_event_frame -> strict_story -> digest`
+`article -> article_event_frame -> story -> digest`
 
 其中：
 
 - `article` / `article_image` 是事实真相源
 - `article_event_frame` 是最小可回放事件单元
-- `strict_story` 只服务内部打包
+- `story` 只服务阅读
 - `digest` 是唯一 public read model
 
-旧 `story` / `story_article` 不再属于当前 schema contract。
+旧 `strict_story` / `digest_strict_story` 不再属于当前 schema contract。
 
 ## 当前边界
 
@@ -25,10 +25,10 @@
   pipeline_run / source_run_state 运行态
 - [event_frame.py](/root/karl-fashion-feed/backend/app/models/event_frame.py)
   article_event_frame 结构化事件帧
-- [strict_story.py](/root/karl-fashion-feed/backend/app/models/strict_story.py)
-  strict_story 及其 frame/article bridge
+- [story.py](/root/karl-fashion-feed/backend/app/models/story.py)
+  story 及其 frame/article/facet bridge
 - [digest.py](/root/karl-fashion-feed/backend/app/models/digest.py)
-  digest 及其 strict_story/article bridge
+  digest 及其 story/article bridge
 
 ## Image ORM
 
@@ -155,18 +155,18 @@
 
 `pipeline_run` 只保留 run 级批处理状态，并显式建模两段 batch stage：
 
-- `strict_story_*`
+- `story_*`
 - `digest_*`
 
 `source_run_state` 负责每个 source 在一次 run 内的采集状态。
 
 ### Read Model Replacement
 
-旧 `story` / `story_article` 不允许出现在当前 runtime schema bootstrap 中。
+旧 `strict_story` / `strict_story_frame` / `strict_story_article` 不允许出现在当前 runtime schema bootstrap 中。
 当前对外导出的聚合链路是：
 
 - `article_event_frame`
-- `strict_story`
+- `story`
 - `digest`
 
 ## 设计原则

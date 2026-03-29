@@ -76,23 +76,23 @@ class PipelineRun(Base):
         default="pending",
         index=True,
     )
-    strict_story_status: Mapped[str] = mapped_column(
+    story_status: Mapped[str] = mapped_column(
         String(32),
         nullable=False,
         default="pending",
     )
-    strict_story_attempts: Mapped[int] = mapped_column(
+    story_attempts: Mapped[int] = mapped_column(
         Integer,
         nullable=False,
         default=0,
     )
-    strict_story_error: Mapped[str | None] = mapped_column(Text, nullable=True)
-    strict_story_updated_at: Mapped[datetime] = mapped_column(
+    story_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    story_updated_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
         default=_utcnow_naive,
     )
-    strict_story_token: Mapped[int] = mapped_column(
+    story_token: Mapped[int] = mapped_column(
         Integer,
         nullable=False,
         default=0,

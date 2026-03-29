@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from datetime import UTC, datetime
 from uuid import uuid4
 
@@ -140,13 +139,13 @@ class Article(Base):
 def ensure_article_storage_schema(bind: Engine) -> None:
     """Create the digest runtime tables and repair required storage columns."""
 
-    from backend.app.models.digest import Digest, DigestArticle, DigestStrictStory
+    from backend.app.models.digest import Digest, DigestArticle, DigestStory
     from backend.app.models.event_frame import ArticleEventFrame
     from backend.app.models.image import ArticleImage
     from backend.app.models.runtime import PipelineRun, SourceRunState
-    from backend.app.models.strict_story import StrictStory, StrictStoryArticle, StrictStoryFrame
+    from backend.app.models.story import Story, StoryArticle, StoryFacet, StoryFrame
 
-    _fail_on_legacy_story_tables(bind)
+    _fail_on_legacy_strict_story_tables(bind)
     _fail_on_legacy_article_columns(bind)
     _reset_legacy_pipeline_run_table(bind)
     Base.metadata.create_all(
@@ -157,17 +156,17 @@ def ensure_article_storage_schema(bind: Engine) -> None:
             PipelineRun.__table__,
             SourceRunState.__table__,
             ArticleEventFrame.__table__,
-            StrictStory.__table__,
-            StrictStoryFrame.__table__,
-            StrictStoryArticle.__table__,
+            Story.__table__,
+            StoryFrame.__table__,
+            StoryArticle.__table__,
+            StoryFacet.__table__,
             Digest.__table__,
-            DigestStrictStory.__table__,
+            DigestStory.__table__,
             DigestArticle.__table__,
         ],
     )
     _ensure_article_columns(bind)
     _ensure_article_image_columns(bind)
-    _ensure_strict_story_columns(bind)
     _ensure_pipeline_run_columns(bind)
 
 
@@ -180,12 +179,18 @@ def _apply_schema_statements(bind: Engine, statements: list[str]) -> None:
             connection.execute(text(statement))
 
 
-def _fail_on_legacy_story_tables(bind: Engine) -> None:
+def _fail_on_legacy_strict_story_tables(bind: Engine) -> None:
     inspector = inspect(bind)
     table_names = set(inspector.get_table_names())
-    if "story" in table_names or "story_article" in table_names:
+    legacy_tables = {
+        "strict_story",
+        "strict_story_frame",
+        "strict_story_article",
+        "digest_strict_story",
+    }
+    if table_names.intersection(legacy_tables):
         raise RuntimeError(
-            "story-era tables are still present; reset local runtime DB state before bootstrap"
+            "strict_story-era tables are still present; reset local runtime DB state before bootstrap"
         )
 
 
@@ -260,30 +265,28 @@ def _ensure_pipeline_run_columns(bind: Engine) -> None:
     statements: list[str] = []
     fill_statements: list[str] = []
 
-    if "strict_story_status" not in existing_columns:
+    if "story_status" not in existing_columns:
         statements.append(
-            "ALTER TABLE pipeline_run ADD COLUMN strict_story_status VARCHAR(32) DEFAULT 'pending' NOT NULL"
+            "ALTER TABLE pipeline_run ADD COLUMN story_status VARCHAR(32) DEFAULT 'pending' NOT NULL"
         )
-    if "strict_story_attempts" not in existing_columns:
+    if "story_attempts" not in existing_columns:
         statements.append(
-            "ALTER TABLE pipeline_run ADD COLUMN strict_story_attempts INTEGER DEFAULT 0 NOT NULL"
+            "ALTER TABLE pipeline_run ADD COLUMN story_attempts INTEGER DEFAULT 0 NOT NULL"
         )
-    if "strict_story_error" not in existing_columns:
-        statements.append("ALTER TABLE pipeline_run ADD COLUMN strict_story_error TEXT")
-    if "strict_story_updated_at" not in existing_columns:
+    if "story_error" not in existing_columns:
+        statements.append("ALTER TABLE pipeline_run ADD COLUMN story_error TEXT")
+    if "story_updated_at" not in existing_columns:
         if bind.dialect.name == "sqlite":
-            statements.append("ALTER TABLE pipeline_run ADD COLUMN strict_story_updated_at TIMESTAMP")
+            statements.append("ALTER TABLE pipeline_run ADD COLUMN story_updated_at TIMESTAMP")
             fill_statements.append(
-                "UPDATE pipeline_run SET strict_story_updated_at = CURRENT_TIMESTAMP "
-                "WHERE strict_story_updated_at IS NULL"
+                "UPDATE pipeline_run SET story_updated_at = CURRENT_TIMESTAMP WHERE story_updated_at IS NULL"
             )
         else:
             statements.append(
-                "ALTER TABLE pipeline_run ADD COLUMN strict_story_updated_at TIMESTAMP "
-                "DEFAULT CURRENT_TIMESTAMP NOT NULL"
+                "ALTER TABLE pipeline_run ADD COLUMN story_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL"
             )
-    if "strict_story_token" not in existing_columns:
-        statements.append("ALTER TABLE pipeline_run ADD COLUMN strict_story_token INTEGER DEFAULT 0 NOT NULL")
+    if "story_token" not in existing_columns:
+        statements.append("ALTER TABLE pipeline_run ADD COLUMN story_token INTEGER DEFAULT 0 NOT NULL")
     if "digest_status" not in existing_columns:
         statements.append(
             "ALTER TABLE pipeline_run ADD COLUMN digest_status VARCHAR(32) DEFAULT 'pending' NOT NULL"
@@ -347,66 +350,6 @@ def _ensure_article_image_columns(bind: Engine) -> None:
         )
 
     _apply_schema_statements(bind, statements)
-
-
-def _ensure_strict_story_columns(bind: Engine) -> None:
-    inspector = inspect(bind)
-    if "strict_story" not in inspector.get_table_names():
-        return
-
-    existing_columns = {column["name"] for column in inspector.get_columns("strict_story")}
-    statements: list[str] = []
-    if "frame_membership_json" not in existing_columns:
-        statements.append(
-            "ALTER TABLE strict_story ADD COLUMN frame_membership_json JSON DEFAULT '[]' NOT NULL"
-        )
-
-    _apply_schema_statements(bind, statements)
-    _backfill_strict_story_frame_membership(bind)
-
-
-def _backfill_strict_story_frame_membership(bind: Engine) -> None:
-    inspector = inspect(bind)
-    table_names = set(inspector.get_table_names())
-    if "strict_story" not in table_names or "strict_story_frame" not in table_names:
-        return
-
-    with bind.begin() as connection:
-        story_keys = [
-            row[0]
-            for row in connection.execute(
-                text("SELECT strict_story_key FROM strict_story ORDER BY strict_story_key ASC")
-            ).fetchall()
-        ]
-        rows = connection.execute(
-            text(
-                """
-                SELECT strict_story_key, event_frame_id
-                FROM strict_story_frame
-                ORDER BY strict_story_key ASC, rank ASC, event_frame_id ASC
-                """
-            )
-        ).fetchall()
-
-        membership_by_story: dict[str, list[str]] = {}
-        for strict_story_key, event_frame_id in rows:
-            membership_by_story.setdefault(strict_story_key, []).append(event_frame_id)
-
-        for strict_story_key in story_keys:
-            frame_ids = membership_by_story.get(strict_story_key, [])
-            connection.execute(
-                text(
-                    """
-                    UPDATE strict_story
-                    SET frame_membership_json = :membership_json
-                    WHERE strict_story_key = :strict_story_key
-                    """
-                ),
-                {
-                    "membership_json": json.dumps(frame_ids, ensure_ascii=False),
-                    "strict_story_key": strict_story_key,
-                },
-            )
 
 
 def _reset_legacy_pipeline_run_table(bind: Engine) -> None:
