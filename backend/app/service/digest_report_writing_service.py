@@ -130,11 +130,16 @@ class DigestReportWritingService:
             self._artifact_recorder.record(
                 run_id=run_id,
                 stage="digest_report_writing",
-                object_key=f"facet-{plan.facet}",
+                object_key=self._artifact_object_key(plan),
                 prompt_text=json.dumps(request_payload, ensure_ascii=False, indent=2),
                 response_text=json.dumps({"raw_content": raw_content}, ensure_ascii=False, indent=2),
             )
         return DigestReportWritingSchema.model_validate_json(raw_content)
+
+    def _artifact_object_key(self, plan: ResolvedDigestPlan) -> str:
+        story_segment = "-".join(plan.story_keys) if plan.story_keys else "none"
+        article_segment = "-".join(plan.article_ids) if plan.article_ids else "none"
+        return f"facet-{plan.facet}-stories-{story_segment}-articles-{article_segment}"
 
     def _resolve_written_digest(
         self,

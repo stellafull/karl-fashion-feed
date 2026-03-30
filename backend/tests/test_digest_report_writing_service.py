@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from backend.app.models import Article, Digest, PipelineRun, ensure_article_storage_schema
 from backend.app.service.digest_packaging_service import ResolvedDigestPlan
 from backend.app.service.digest_report_writing_service import DigestReportWritingService
+from backend.app.service.llm_debug_artifact_service import LlmDebugArtifactRecorder
 
 
 def _build_fake_llm_client(raw_content: str) -> SimpleNamespace:
@@ -117,3 +118,60 @@ class DigestReportWritingServiceTest(unittest.TestCase):
             ("article-2", "article-1"),
             written.selected_source_article_ids,
         )
+
+    def test_write_digest_records_unique_artifacts_for_same_facet_plans(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            session = _build_session(root)
+            self.addCleanup(session.close)
+            service = DigestReportWritingService(
+                client=_build_fake_llm_client(
+                    (
+                        '{"title_zh":"本日品牌动作速写","dek_zh":"导语摘要",'
+                        '"body_markdown":"# 正文\\n\\n聚合后的内容",'
+                        '"source_article_ids":["article-2","article-1"]}'
+                    )
+                ),
+                markdown_root=root,
+                rate_limiter=_build_fake_rate_limiter(),
+                artifact_recorder=LlmDebugArtifactRecorder(
+                    base_dir=root / "llm-artifacts",
+                    enabled=True,
+                ),
+            )
+            common_plan = {
+                "business_date": date(2026, 3, 30),
+                "facet": "trend_summary",
+                "article_ids": ("article-1", "article-2"),
+                "editorial_angle": "用品牌动作解释趋势变化",
+                "title_zh": "包装阶段标题",
+                "dek_zh": "包装阶段导语",
+                "source_names": ("Vogue", "WWD"),
+            }
+
+            asyncio.run(
+                service.write_digest(
+                    session,
+                    run_id="run-1",
+                    plan=ResolvedDigestPlan(
+                        story_keys=("story-1",),
+                        **common_plan,
+                    ),
+                )
+            )
+            asyncio.run(
+                service.write_digest(
+                    session,
+                    run_id="run-1",
+                    plan=ResolvedDigestPlan(
+                        story_keys=("story-2",),
+                        **common_plan,
+                    ),
+                )
+            )
+
+            stage_dir = root / "llm-artifacts" / "run-1" / "digest_report_writing"
+            prompt_files = sorted(stage_dir.glob("*/prompt.json"))
+            response_files = sorted(stage_dir.glob("*/response.json"))
+            self.assertEqual(2, len(prompt_files))
+            self.assertEqual(2, len(response_files))
