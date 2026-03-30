@@ -16,7 +16,7 @@ def _utcnow_naive() -> datetime:
 
 
 class Digest(Base):
-    """Public digest artifact generated from strict stories and articles."""
+    """Public digest artifact generated from stories and articles."""
 
     __tablename__ = "digest"
 
@@ -51,18 +51,36 @@ class Digest(Base):
         default=_utcnow_naive,
     )
 
+    @property
+    def selected_source_article_ids(self) -> tuple[str, ...] | None:
+        """Writer-selected source article IDs used to build digest memberships."""
+        raw_value = self.__dict__.get("_selected_source_article_ids")
+        if raw_value is None:
+            return None
+        return tuple(raw_value)
 
-class DigestStrictStory(Base):
-    """Ordered mapping from digests to strict stories."""
+    @selected_source_article_ids.setter
+    def selected_source_article_ids(self, article_ids: tuple[str, ...] | list[str] | None) -> None:
+        if article_ids is None:
+            self.__dict__.pop("_selected_source_article_ids", None)
+            return
+        self.__dict__["_selected_source_article_ids"] = tuple(article_ids)
 
-    __tablename__ = "digest_strict_story"
+
+class DigestStory(Base):
+    """Ordered mapping from digests to stories.
+
+    A story may appear in multiple digests for the same business day.
+    """
+
+    __tablename__ = "digest_story"
 
     digest_key: Mapped[str] = mapped_column(
         ForeignKey("digest.digest_key", ondelete="CASCADE"),
         primary_key=True,
     )
-    strict_story_key: Mapped[str] = mapped_column(
-        ForeignKey("strict_story.strict_story_key", ondelete="CASCADE"),
+    story_key: Mapped[str] = mapped_column(
+        ForeignKey("story.story_key", ondelete="CASCADE"),
         primary_key=True,
     )
     rank: Mapped[int] = mapped_column(Integer, nullable=False, default=0)

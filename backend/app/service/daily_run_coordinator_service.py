@@ -13,7 +13,14 @@ from sqlalchemy.orm import Session
 
 from backend.app.config.source_config import load_source_configs
 from backend.app.core.database import SessionLocal
-from backend.app.models import Article, PipelineRun, SourceRunState, ensure_article_storage_schema
+from backend.app.models import (
+    Article,
+    Digest,
+    PipelineRun,
+    SourceRunState,
+    Story,
+    ensure_article_storage_schema,
+)
 from backend.app.models.runtime import (
     ARTICLE_STAGE_MAX_ATTEMPTS,
     BATCH_STAGE_MAX_ATTEMPTS,
@@ -23,7 +30,7 @@ from backend.app.models.runtime import (
     coerce_utc_naive,
     utc_bounds_for_business_day,
 )
-from backend.app.tasks.aggregation_tasks import generate_digests_for_day, pack_strict_stories_for_day
+from backend.app.tasks.aggregation_tasks import cluster_stories_for_day, generate_digests_for_day
 from backend.app.tasks.content_tasks import collect_source, extract_event_frames, parse_article
 
 RUN_TYPE_DAILY_DIGEST = "digest_daily"
@@ -103,6 +110,11 @@ class DailyRunCoordinatorService:
                 dispatches=dispatches,
             )
             self._refresh_run_status(run, observed_at)
+            if run.status in {"done", "failed"}:
+                self._raise_if_unexpectedly_empty_final_digest_set(
+                    session=session,
+                    run=run,
+                )
             self._refresh_run_metadata(session, run, business_day, source_names)
             session.commit()
             run_id = run.run_id
@@ -132,6 +144,10 @@ class DailyRunCoordinatorService:
                         f"run_id={run_id} expected={business_day.isoformat()} got={run.business_date.isoformat()}"
                     )
                 if run.status in {"done", "failed"}:
+                    self._raise_if_unexpectedly_empty_final_digest_set(
+                        session=session,
+                        run=run,
+                    )
                     return
         raise RuntimeError(
             f"coordinator runtime did not drain within {max_ticks} ticks: "
@@ -179,8 +195,8 @@ class DailyRunCoordinatorService:
             run_type=RUN_TYPE_DAILY_DIGEST,
             status="running",
             started_at=observed_at,
-            strict_story_updated_at=observed_at,
-            strict_story_token=0,
+            story_updated_at=observed_at,
+            story_token=0,
             digest_updated_at=observed_at,
             digest_token=0,
             metadata_json={},
@@ -266,7 +282,7 @@ class DailyRunCoordinatorService:
         cutoff = observed_at - self._stale_after
         self._reclaim_stale_batch_stage(
             run,
-            stage="strict_story",
+            stage="story",
             observed_at=observed_at,
             cutoff=cutoff,
         )
@@ -459,11 +475,11 @@ class DailyRunCoordinatorService:
             source_names,
         )
         if front_stages_drained:
-            self._enqueue_unique_pack(session, run, observed_at, dispatches=dispatches)
-        if front_stages_drained and run.strict_story_status == "done" and run.digest_status in {"pending", "failed"}:
+            self._enqueue_unique_story(session, run, observed_at, dispatches=dispatches)
+        if front_stages_drained and run.story_status == "done" and run.digest_status in {"pending", "failed"}:
             self._enqueue_unique_digest(session, run, observed_at, dispatches=dispatches)
 
-    def _enqueue_unique_pack(
+    def _enqueue_unique_story(
         self,
         session: Session,
         run: PipelineRun,
@@ -471,29 +487,29 @@ class DailyRunCoordinatorService:
         *,
         dispatches: list[PendingDispatch],
     ) -> None:
-        if run.strict_story_status not in RETRYABLE_STATUSES:
+        if run.story_status not in RETRYABLE_STATUSES:
             return
-        if run.strict_story_attempts >= BATCH_STAGE_MAX_ATTEMPTS:
-            run.strict_story_status = "abandoned"
+        if run.story_attempts >= BATCH_STAGE_MAX_ATTEMPTS:
+            run.story_status = "abandoned"
             return
 
-        run.strict_story_status = "queued"
-        run.strict_story_updated_at = observed_at
-        run.strict_story_token += 1
-        ownership_token = run.strict_story_token
+        run.story_status = "queued"
+        run.story_updated_at = observed_at
+        run.story_token += 1
+        ownership_token = run.story_token
         session.flush()
         dispatches.append(
             PendingDispatch(
                 publish=lambda business_day_iso=run.business_date.isoformat(),
                 run_id=run.run_id,
-                ownership_token=ownership_token: pack_strict_stories_for_day.delay(
+                ownership_token=ownership_token: cluster_stories_for_day.delay(
                     business_day_iso,
                     run_id,
                     ownership_token,
                 ),
                 repair=lambda exc, run_id=run.run_id: self._repair_batch_publish_failure(
                     run_id,
-                    stage="strict_story",
+                    stage="story",
                     exc=exc,
                 ),
             )
@@ -623,7 +639,7 @@ class DailyRunCoordinatorService:
             run.status = "done"
             run.finished_at = run.finished_at or observed_at
             return
-        if run.strict_story_status == "abandoned" or run.digest_status == "abandoned":
+        if run.story_status == "abandoned" or run.digest_status == "abandoned":
             run.status = "failed"
             run.finished_at = run.finished_at or observed_at
             return
@@ -663,6 +679,38 @@ class DailyRunCoordinatorService:
                 self._enabled_source_names(),
             )
             session.commit()
+
+    @staticmethod
+    def _raise_if_unexpectedly_empty_final_digest_set(
+        *,
+        session: Session,
+        run: PipelineRun,
+    ) -> None:
+        story_count = len(
+            session.execute(
+                select(Story.story_key).where(
+                    Story.business_date == run.business_date,
+                    Story.created_run_id == run.run_id,
+                )
+            ).all()
+        )
+        if story_count == 0:
+            return
+        digest_count = len(
+            session.execute(
+                select(Digest.digest_key).where(
+                    Digest.business_date == run.business_date,
+                    Digest.created_run_id == run.run_id,
+                )
+            ).all()
+        )
+        if digest_count == 0:
+            raise RuntimeError(
+                "unexpectedly empty final digest set: "
+                f"run_id={run.run_id} business_day={run.business_date.isoformat()} "
+                f"story_count={story_count} digest_count={digest_count} run_status={run.status} "
+                f"digest_status={run.digest_status}"
+            )
 
     def _repair_article_publish_failure(
         self,
@@ -837,15 +885,15 @@ class DailyRunCoordinatorService:
 
     @staticmethod
     def _batch_status_counts(run: PipelineRun) -> dict[str, int]:
-        return dict(sorted(Counter((run.strict_story_status, run.digest_status)).items()))
+        return dict(sorted(Counter((run.story_status, run.digest_status)).items()))
 
     @staticmethod
     def _batch_stage_summary(run: PipelineRun) -> dict[str, dict[str, object]]:
         return {
-            "strict_story": {
-                "status": run.strict_story_status,
-                "attempts": run.strict_story_attempts,
-                "error": run.strict_story_error,
+            "story": {
+                "status": run.story_status,
+                "attempts": run.story_attempts,
+                "error": run.story_error,
             },
             "digest": {
                 "status": run.digest_status,
@@ -877,6 +925,6 @@ class DailyRunCoordinatorService:
                 for article in articles
                 if article.event_frame_status in {"failed", "abandoned"}
             },
-            "strict_story": run.strict_story_error,
+            "story": run.story_error,
             "digest": run.digest_error,
         }

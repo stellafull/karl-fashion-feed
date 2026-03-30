@@ -35,7 +35,7 @@ def build_celery_settings() -> dict[str, Any]:
         "enable_utc": True,
         "task_track_started": True,
         "task_routes": {
-            "aggregation.pack_strict_stories_for_day": {"queue": "aggregation"},
+            "aggregation.cluster_stories_for_day": {"queue": "aggregation"},
             "aggregation.generate_digests_for_day": {"queue": "aggregation"},
         },
         "imports": (

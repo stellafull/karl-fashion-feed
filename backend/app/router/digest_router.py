@@ -79,7 +79,7 @@ def build_digest_detail_response(db: Session, *, digest_key: str) -> DigestDetai
         DigestDetailSource(
             name=article.source_name,
             title=article.title_raw,
-            link=article.original_url,
+            link=article.canonical_url,
             lang=article.source_lang,
         )
         for article in rows

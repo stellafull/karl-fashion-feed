@@ -1,8 +1,7 @@
-"""Business-day digest generation service."""
+"""Business-day digest generation orchestrator."""
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from datetime import date
 from typing import TYPE_CHECKING
@@ -11,47 +10,48 @@ from uuid import uuid4
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
-from backend.app.models import Article, Digest, DigestArticle, DigestStrictStory, StrictStory, StrictStoryArticle
-from backend.app.prompts.digest_generation_prompt import build_digest_generation_prompt
-from backend.app.schemas.llm.digest_generation import DigestGenerationSchema
+from backend.app.models import Digest, DigestArticle, DigestStory, Story, StoryFacet
+from backend.app.service.digest_packaging_service import DigestPackagingService, ResolvedDigestPlan
+from backend.app.service.digest_report_writing_service import DigestReportWritingService
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
+from backend.app.service.story_facet_assignment_service import StoryFacetAssignmentService
 
 if TYPE_CHECKING:
     from openai import AsyncOpenAI
 
 
 @dataclass(frozen=True)
-class _StrictStoryInput:
-    strict_story_key: str
-    synopsis_zh: str
-    event_type: str
+class _WrittenPlanDigest:
+    plan: ResolvedDigestPlan
+    digest: Digest
     article_ids: tuple[str, ...]
-    source_names: tuple[str, ...]
-
-
-@dataclass(frozen=True)
-class _ResolvedPlan:
-    facet: str
-    strict_story_keys: tuple[str, ...]
-    title_zh: str
-    dek_zh: str
-    body_markdown: str
-    article_ids: tuple[str, ...]
-    source_names: tuple[str, ...]
 
 
 class DigestGenerationService:
-    """Generate immutable digest rows from one business-day strict-story set."""
+    """Assign facets, package stories, write digests, and replace day memberships."""
 
     def __init__(
         self,
         *,
         client: AsyncOpenAI | None = None,
         rate_limiter: LlmRateLimiter | None = None,
+        facet_assignment_service: StoryFacetAssignmentService | None = None,
+        packaging_service: DigestPackagingService | None = None,
+        report_writing_service: DigestReportWritingService | None = None,
     ) -> None:
-        self._client = client
-        self._rate_limiter = rate_limiter or LlmRateLimiter()
+        shared_rate_limiter = rate_limiter or LlmRateLimiter()
+        self._facet_assignment_service = facet_assignment_service or StoryFacetAssignmentService(
+            client=client,
+            rate_limiter=shared_rate_limiter,
+        )
+        self._packaging_service = packaging_service or DigestPackagingService(
+            client=client,
+            rate_limiter=shared_rate_limiter,
+        )
+        self._report_writing_service = report_writing_service or DigestReportWritingService(
+            client=client,
+            rate_limiter=shared_rate_limiter,
+        )
 
     async def generate_for_day(
         self,
@@ -60,259 +60,139 @@ class DigestGenerationService:
         *,
         run_id: str,
     ) -> list[Digest]:
-        strict_stories = self._load_day_strict_stories(session, business_day)
-        plans = await self._select_digest_plans(strict_stories)
-        resolved = self._resolve_plans(strict_stories, plans)
-        return self._replace_day_digests(session, business_day, run_id=run_id, plans=resolved)
-
-    def _load_day_strict_stories(self, session: Session, business_day: date) -> list[_StrictStoryInput]:
-        stories = list(
-            session.scalars(
-                select(StrictStory)
-                .where(StrictStory.business_date == business_day)
-                .order_by(StrictStory.strict_story_key.asc())
-            ).all()
-        )
-        if not stories:
-            return []
-
-        article_pairs = session.execute(
-            select(
-                StrictStoryArticle.strict_story_key,
-                StrictStoryArticle.article_id,
-                Article.source_name,
+        await self._facet_assignment_service.assign_for_day(session, business_day, run_id=run_id)
+        plans = await self._packaging_service.build_plans_for_day(session, business_day, run_id=run_id)
+        if self._has_packaging_input(session, business_day) and not plans:
+            raise RuntimeError(
+                f"digest packaging produced zero digest plans for business day {business_day.isoformat()}"
             )
-            .join(Article, Article.article_id == StrictStoryArticle.article_id)
-            .where(StrictStoryArticle.strict_story_key.in_([story.strict_story_key for story in stories]))
-            .order_by(
-                StrictStoryArticle.strict_story_key.asc(),
-                StrictStoryArticle.rank.asc(),
-                StrictStoryArticle.article_id.asc(),
-            )
-        ).all()
-        by_story_articles: dict[str, list[str]] = {}
-        by_story_sources: dict[str, list[str]] = {}
-        for strict_story_key, article_id, source_name in article_pairs:
-            by_story_articles.setdefault(strict_story_key, []).append(article_id)
-            by_story_sources.setdefault(strict_story_key, []).append(source_name)
 
-        payloads: list[_StrictStoryInput] = []
-        for story in stories:
-            signature_json = story.signature_json if isinstance(story.signature_json, dict) else {}
-            event_type = str(signature_json.get("event_type", "")).strip() or "general"
-            source_names = sorted(set(by_story_sources.get(story.strict_story_key, [])))
-            payloads.append(
-                _StrictStoryInput(
-                    strict_story_key=story.strict_story_key,
-                    synopsis_zh=story.synopsis_zh.strip(),
-                    event_type=event_type,
-                    article_ids=tuple(by_story_articles.get(story.strict_story_key, [])),
-                    source_names=tuple(source_names),
+        written_digests: list[_WrittenPlanDigest] = []
+        for plan in plans:
+            if plan.business_date != business_day:
+                raise RuntimeError(
+                    "digest plan business_date mismatch: "
+                    f"expected {business_day.isoformat()}, got {plan.business_date.isoformat()}"
+                )
+            digest = await self._report_writing_service.write_digest(session, plan, run_id=run_id)
+            if digest.business_date != plan.business_date:
+                raise RuntimeError(
+                    "digest business_date mismatch: "
+                    f"expected {plan.business_date.isoformat()}, got {digest.business_date.isoformat()}"
+                )
+            written_digests.append(
+                _WrittenPlanDigest(
+                    plan=plan,
+                    digest=digest,
+                    article_ids=self._extract_writer_selected_article_ids(digest=digest, plan=plan),
                 )
             )
-        return payloads
+        return self._replace_day_digests(session, business_day, written_digests=written_digests)
 
-    async def _select_digest_plans(
-        self, strict_stories: list[_StrictStoryInput]
-    ) -> DigestGenerationSchema:
-        if not strict_stories:
-            return DigestGenerationSchema()
-        client = self._get_client()
-        with self._rate_limiter.lease("digest_generation"):
-            response = await client.chat.completions.create(
-                model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-                temperature=0,
-                messages=[
-                    {"role": "system", "content": build_digest_generation_prompt()},
-                    {
-                        "role": "user",
-                        "content": self._build_user_message(strict_stories),
-                    },
-                ],
-                response_format={"type": "json_object"},
-            )
-        raw_content = response.choices[0].message.content or "{}"
-        return DigestGenerationSchema.model_validate_json(raw_content)
-
-    def _resolve_plans(
-        self,
-        strict_stories: list[_StrictStoryInput],
-        schema: DigestGenerationSchema,
-    ) -> list[_ResolvedPlan]:
-        story_by_key = {item.strict_story_key: item for item in strict_stories}
-        resolved: list[_ResolvedPlan] = []
-        assigned_story_to_digest: dict[str, int] = {}
-        for digest_index, plan in enumerate(schema.digests):
-            facet = plan.facet.strip()
-            if not facet:
-                raise ValueError(f"digest[{digest_index}] facet cannot be blank")
-            title_zh = plan.title_zh.strip()
-            if not title_zh:
-                raise ValueError(f"digest[{digest_index}] title_zh cannot be blank")
-            body_markdown = plan.body_markdown.strip()
-            if not body_markdown:
-                raise ValueError(f"digest[{digest_index}] body_markdown cannot be blank")
-
-            plan_story_keys = [key.strip() for key in plan.strict_story_keys]
-            if any(not key for key in plan_story_keys):
-                raise ValueError(f"digest[{digest_index}] strict_story_keys contains blank value")
-            if len(set(plan_story_keys)) != len(plan_story_keys):
-                raise ValueError(f"digest[{digest_index}] strict_story_keys contains duplicates")
-            unknown_story_keys = sorted(key for key in plan_story_keys if key not in story_by_key)
-            if unknown_story_keys:
-                raise ValueError(
-                    f"digest[{digest_index}] unknown strict_story_key(s): {', '.join(unknown_story_keys)}"
-                )
-            for strict_story_key in plan_story_keys:
-                if strict_story_key in assigned_story_to_digest:
-                    previous_digest_index = assigned_story_to_digest[strict_story_key]
-                    raise ValueError(
-                        "strict_story_key assigned more than once across digests: "
-                        f"{strict_story_key} (digest[{previous_digest_index}] and digest[{digest_index}])"
-                    )
-                assigned_story_to_digest[strict_story_key] = digest_index
-            strict_story_keys = tuple(sorted(plan_story_keys))
-
-            ordered_articles: list[str] = []
-            seen_articles: set[str] = set()
-            source_names: set[str] = set()
-            for strict_story_key in strict_story_keys:
-                story = story_by_key[strict_story_key]
-                source_names.update(story.source_names)
-                for article_id in story.article_ids:
-                    if article_id in seen_articles:
-                        continue
-                    seen_articles.add(article_id)
-                    ordered_articles.append(article_id)
-
-            resolved.append(
-                _ResolvedPlan(
-                    facet=facet,
-                    strict_story_keys=strict_story_keys,
-                    title_zh=title_zh,
-                    dek_zh=plan.dek_zh.strip(),
-                    body_markdown=body_markdown,
-                    article_ids=tuple(ordered_articles),
-                    source_names=tuple(sorted(source_names)),
-                )
-            )
-
-        resolved.sort(key=lambda item: (item.facet, item.strict_story_keys))
-        return resolved
+    def _has_packaging_input(self, session: Session, business_day: date) -> bool:
+        row = session.execute(
+            select(StoryFacet.story_key)
+            .join(Story, Story.story_key == StoryFacet.story_key)
+            .where(Story.business_date == business_day)
+            .limit(1)
+        ).first()
+        return row is not None
 
     def _replace_day_digests(
         self,
         session: Session,
         business_day: date,
         *,
-        run_id: str,
-        plans: list[_ResolvedPlan],
+        written_digests: list[_WrittenPlanDigest],
     ) -> list[Digest]:
-        existing_digests = list(
+        old_digest_keys = list(
             session.scalars(
-                select(Digest).where(Digest.business_date == business_day).order_by(Digest.digest_key.asc())
+                select(Digest.digest_key)
+                .where(Digest.business_date == business_day)
+                .order_by(Digest.digest_key.asc())
             ).all()
         )
-        existing_memberships = list(
-            session.execute(
-                select(DigestStrictStory.digest_key, DigestStrictStory.strict_story_key)
-                .where(DigestStrictStory.digest_key.in_([row.digest_key for row in existing_digests]))
-                .order_by(DigestStrictStory.digest_key.asc(), DigestStrictStory.rank.asc())
-            ).all()
-        )
-        memberships_by_digest: dict[str, tuple[str, ...]] = {}
-        for digest_key, strict_story_key in existing_memberships:
-            memberships_by_digest.setdefault(digest_key, tuple())
-            memberships_by_digest[digest_key] = tuple(
-                sorted(set((*memberships_by_digest[digest_key], strict_story_key)))
-            )
-
-        reusable_key_map: dict[tuple[str, tuple[str, ...]], list[str]] = {}
-        for digest in existing_digests:
-            membership = memberships_by_digest.get(digest.digest_key, tuple())
-            reusable_key_map.setdefault((digest.facet, membership), []).append(digest.digest_key)
-
-        old_keys = [row.digest_key for row in existing_digests]
-        if old_keys:
-            session.execute(delete(DigestArticle).where(DigestArticle.digest_key.in_(old_keys)))
-            session.execute(delete(DigestStrictStory).where(DigestStrictStory.digest_key.in_(old_keys)))
-            session.execute(delete(Digest).where(Digest.digest_key.in_(old_keys)))
+        if old_digest_keys:
+            session.execute(delete(DigestArticle).where(DigestArticle.digest_key.in_(old_digest_keys)))
+            session.execute(delete(DigestStory).where(DigestStory.digest_key.in_(old_digest_keys)))
+            session.execute(delete(Digest).where(Digest.digest_key.in_(old_digest_keys)))
 
         digests: list[Digest] = []
-        strict_story_rows: list[DigestStrictStory] = []
-        article_rows: list[DigestArticle] = []
-        for plan in plans:
-            reuse_bucket = reusable_key_map.get((plan.facet, plan.strict_story_keys), [])
-            digest_key = reuse_bucket.pop(0) if reuse_bucket else str(uuid4())
-            digest = Digest(
-                digest_key=digest_key,
-                business_date=business_day,
-                facet=plan.facet,
-                title_zh=plan.title_zh,
-                dek_zh=plan.dek_zh,
-                body_markdown=plan.body_markdown,
-                source_article_count=len(plan.article_ids),
-                source_names_json=list(plan.source_names),
-                created_run_id=run_id,
-                generation_status="done",
-                generation_error=None,
-            )
+        for item in written_digests:
+            digest = item.digest
+            if not digest.digest_key:
+                digest.digest_key = str(uuid4())
+            if digest.business_date != business_day:
+                raise RuntimeError(
+                    "digest business_date mismatch at persistence: "
+                    f"expected {business_day.isoformat()}, got {digest.business_date.isoformat()}"
+                )
             digests.append(digest)
-            strict_story_rows.extend(
+
+        if digests:
+            session.add_all(digests)
+            session.flush()
+
+        digest_story_rows: list[DigestStory] = []
+        digest_article_rows: list[DigestArticle] = []
+        for item in written_digests:
+            digest_key = item.digest.digest_key
+            if not digest_key:
+                raise RuntimeError("digest key missing after persistence")
+            digest_story_rows.extend(
                 [
-                    DigestStrictStory(
+                    DigestStory(
                         digest_key=digest_key,
-                        strict_story_key=strict_story_key,
+                        story_key=story_key,
                         rank=rank,
                     )
-                    for rank, strict_story_key in enumerate(plan.strict_story_keys)
+                    for rank, story_key in enumerate(item.plan.story_keys)
                 ]
             )
-            article_rows.extend(
+            digest_article_rows.extend(
                 [
                     DigestArticle(
                         digest_key=digest_key,
                         article_id=article_id,
                         rank=rank,
                     )
-                    for rank, article_id in enumerate(plan.article_ids)
+                    for rank, article_id in enumerate(item.article_ids)
                 ]
             )
 
-        session.add_all(digests)
-        session.flush()
-        session.add_all(strict_story_rows)
-        session.add_all(article_rows)
-        session.flush()
+        if digest_story_rows:
+            session.add_all(digest_story_rows)
+        if digest_article_rows:
+            session.add_all(digest_article_rows)
+        if digest_story_rows or digest_article_rows:
+            session.flush()
+
         for digest in digests:
             session.expunge(digest)
         return digests
 
-    def _build_user_message(self, strict_stories: list[_StrictStoryInput]) -> str:
-        payload = {
-            "strict_stories": [
-                {
-                    "strict_story_key": story.strict_story_key,
-                    "synopsis_zh": story.synopsis_zh,
-                    "event_type": story.event_type,
-                    "article_ids": list(story.article_ids),
-                    "source_names": list(story.source_names),
-                }
-                for story in strict_stories
-            ]
-        }
-        return json.dumps(payload, ensure_ascii=False)
+    def _extract_writer_selected_article_ids(
+        self,
+        *,
+        digest: Digest,
+        plan: ResolvedDigestPlan,
+    ) -> tuple[str, ...]:
+        raw_value = digest.selected_source_article_ids
+        if not isinstance(raw_value, (tuple, list)):
+            raise RuntimeError("digest report writing must provide selected_source_article_ids")
 
-    def _get_client(self) -> AsyncOpenAI:
-        if self._client is None:
-            from openai import AsyncOpenAI
+        article_ids = [str(article_id).strip() for article_id in raw_value]
+        if not article_ids or any(not article_id for article_id in article_ids):
+            raise RuntimeError("digest report writing returned invalid selected_source_article_ids")
+        if len(set(article_ids)) != len(article_ids):
+            raise RuntimeError("digest report writing returned duplicate selected_source_article_ids")
 
-            api_key = STORY_SUMMARIZATION_MODEL_CONFIG.api_key
-            if not api_key:
-                raise RuntimeError("digest generation requires configured API key")
-            self._client = AsyncOpenAI(
-                api_key=api_key,
-                base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
-                timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
-            )
-        return self._client
+        allowed_article_ids = set(plan.article_ids)
+        unknown_article_ids = sorted(article_id for article_id in article_ids if article_id not in allowed_article_ids)
+        if unknown_article_ids:
+            joined = ", ".join(unknown_article_ids)
+            raise RuntimeError(f"digest report writing returned unknown source_article_ids: {joined}")
+        return tuple(article_ids)
+
+
+__all__ = ["DigestGenerationService"]
