@@ -53,7 +53,10 @@ class Digest(Base):
 
 
 class DigestStory(Base):
-    """Ordered mapping from digests to stories."""
+    """Ordered mapping from digests to stories.
+
+    A story may appear in multiple digests for the same business day.
+    """
 
     __tablename__ = "digest_story"
 
