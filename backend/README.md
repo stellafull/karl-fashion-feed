@@ -109,6 +109,8 @@
 - Celery `aggregation` queue 负责 strict-story packing 和 digest generation
 - `DailyRunCoordinatorService` 负责当前 business day 的重扫、重试、stale reclaim 和 batch gating
 - 本地 review run 使用 `backend/app/scripts/dev_run_today_digest_pipeline.py`
+  - `--published-today-only`：仅保留 `published_at` 命中当天 business day 的文章用于本地 review
+  - `--llm-artifact-dir PATH`：仅本次 dev run 导出 `KARL_LLM_DEBUG_ARTIFACT_DIR`，用于 LLM 原始产物落盘
 
 脚本入口见 [backend/app/scripts/README.md](/root/karl-fashion-feed/backend/app/scripts/README.md)。
 

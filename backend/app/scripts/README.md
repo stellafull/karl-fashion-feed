@@ -7,7 +7,7 @@
 - `backend/app/scripts/run_daily_coordinator.py`  
   启动单机 coordinator loop，持续 tick 当天 runtime。
 - `backend/app/scripts/dev_run_today_digest_pipeline.py`  
-  本地同步跑今天 digest pipeline（Celery eager），输出 review bundle。
+  本地同步跑今天 digest pipeline（Celery eager），输出 review bundle（仅 dev 使用）。
 
 ## Other Existing Scripts
 
@@ -48,4 +48,16 @@ backend/.venv/bin/python backend/app/scripts/dev_run_today_digest_pipeline.py --
 
 ```bash
 backend/.venv/bin/python backend/app/scripts/dev_run_today_digest_pipeline.py --skip-collect --output-dir /tmp/today-digest-review
+```
+
+只保留发布时间属于当天 business day 的文章（dev review 过滤，不影响生产 runtime）：
+
+```bash
+backend/.venv/bin/python backend/app/scripts/dev_run_today_digest_pipeline.py --skip-collect --published-today-only
+```
+
+为本次 dev run 导出原始 LLM artifact 落盘目录：
+
+```bash
+backend/.venv/bin/python backend/app/scripts/dev_run_today_digest_pipeline.py --skip-collect --llm-artifact-dir /tmp/llm-artifacts
 ```

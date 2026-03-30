@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from contextlib import contextmanager
 from datetime import UTC, date, datetime
@@ -50,6 +51,17 @@ def _build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=None,
         help="Review bundle output directory",
+    )
+    parser.add_argument(
+        "--published-today-only",
+        action="store_true",
+        help="Dev-only: keep only articles whose published_at falls on current business day",
+    )
+    parser.add_argument(
+        "--llm-artifact-dir",
+        type=Path,
+        default=None,
+        help="Dev-only: export KARL_LLM_DEBUG_ARTIFACT_DIR for raw LLM artifact dumps",
     )
     return parser
 
@@ -129,6 +141,20 @@ def load_day_articles(business_day: date) -> list[dict[str, Any]]:
     ]
 
 
+def filter_dev_articles_by_published_today(
+    articles: list[dict[str, Any]],
+    *,
+    business_day: date,
+) -> list[dict[str, Any]]:
+    """Dev-only review filter for articles published on current business day."""
+    business_day_prefix = business_day.isoformat()
+    return [
+        row
+        for row in articles
+        if row.get("published_at") is not None and str(row["published_at"]).startswith(business_day_prefix)
+    ]
+
+
 def write_review_bundle(
     *,
     business_day: date,
@@ -179,6 +205,8 @@ def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     now = datetime.now(UTC)
     business_day = business_day_for_runtime(now)
+    if args.llm_artifact_dir is not None:
+        os.environ["KARL_LLM_DEBUG_ARTIFACT_DIR"] = str(args.llm_artifact_dir)
     source_names = [] if args.skip_collect else args.source_names
     with temporary_celery_eager_mode():
         coordinator = DailyRunCoordinatorService(
@@ -192,10 +220,14 @@ def main(argv: list[str] | None = None) -> int:
             skip_collect=args.skip_collect,
         )
 
+    articles = load_day_articles(business_day)
+    if args.published_today_only:
+        articles = filter_dev_articles_by_published_today(articles, business_day=business_day)
+
     review_dir = write_review_bundle(
         business_day=business_day,
         digests=load_day_digests(business_day),
-        articles=load_day_articles(business_day),
+        articles=articles,
         output_dir=args.output_dir,
     )
     print(f"review bundle: {review_dir}")
