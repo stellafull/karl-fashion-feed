@@ -237,10 +237,22 @@ class StoryDigestRuntimeIntegrationTest(unittest.TestCase):
 
         self.assertEqual(1, len(stories))
         self.assertEqual(1, len(digests))
+        story_key = stories[0].story_key
         self.assertEqual(1, len(cluster_call_log))
         self.assertEqual(1, len(facet_call_log))
         self.assertEqual(1, len(packaging_call_log))
         self.assertEqual(1, len(report_call_log))
+        facet_request = json.loads(facet_call_log[0]["messages"][1]["content"])
+        self.assertEqual([story_key], [story["story_key"] for story in facet_request["stories"]])
+        packaging_request = json.loads(packaging_call_log[0]["messages"][1]["content"])
+        self.assertEqual("runway_series", packaging_request["facet"])
+        self.assertEqual(["runway_series"], packaging_request["stories"][0]["facets"])
+        self.assertEqual(["article-1"], packaging_request["stories"][0]["article_ids"])
+        self.assertEqual(story_key, packaging_request["stories"][0]["story_key"])
+        report_request = json.loads(report_call_log[0]["messages"][1]["content"])
+        self.assertEqual([story_key], report_request["plan"]["story_keys"])
+        self.assertEqual(["article-1"], report_request["plan"]["article_ids"])
+        self.assertIn("Acme released FW26 in Paris.", report_request["source_articles"][0]["body_markdown"])
         persisted_stories = session.scalars(select(Story).where(Story.business_date == business_day)).all()
         self.assertEqual(1, len(persisted_stories))
         persisted_digests = session.scalars(select(Digest).where(Digest.business_date == business_day)).all()
@@ -257,3 +269,32 @@ class StoryDigestRuntimeIntegrationTest(unittest.TestCase):
         self.assertFalse((project_root / "app/service/strict_story_packing_service.py").exists())
         self.assertFalse((project_root / "app/prompts/strict_story_tiebreak_prompt.py").exists())
         self.assertFalse((project_root / "app/schemas/llm/strict_story_tiebreak.py").exists())
+
+    def test_merge_batch_metadata_normalizes_failure_summary_to_current_runtime_keys(self) -> None:
+        from backend.app.tasks.aggregation_tasks import _merge_batch_metadata
+
+        run = PipelineRun(
+            run_id="run-meta",
+            business_date=date(2026, 3, 30),
+            story_status="failed",
+            story_error="story failed",
+            digest_status="failed",
+            digest_error="digest failed",
+            metadata_json={
+                "failure_summary": {
+                    "strict_story": "legacy",
+                    "sources": {"source-a": "legacy source failed"},
+                    "parse": "legacy parse failed",
+                }
+            },
+        )
+
+        _merge_batch_metadata(run)
+
+        self.assertEqual(
+            {
+                "story": "story failed",
+                "digest": "digest failed",
+            },
+            run.metadata_json["failure_summary"],
+        )

@@ -22,6 +22,8 @@ from backend.app.service.digest_generation_service import DigestGenerationServic
 from backend.app.service.story_clustering_service import StoryClusteringService
 from backend.app.tasks.celery_app import celery_app
 
+_RUNTIME_FAILURE_SUMMARY_KEYS = frozenset({"story", "digest"})
+
 
 @celery_app.task(name="aggregation.cluster_stories_for_day")
 def cluster_stories_for_day(business_day_iso: str, run_id: str, ownership_token: int) -> None:
@@ -253,7 +255,7 @@ def _finalize_batch_stage_failure(
 
 def _merge_batch_metadata(run: PipelineRun) -> None:
     metadata_json = dict(run.metadata_json or {})
-    existing_failure_summary = dict(metadata_json.get("failure_summary") or {})
+    existing_failure_summary = _normalize_failure_summary_keys(metadata_json.get("failure_summary"))
     metadata_json["batch_status_counts"] = dict(
         sorted(Counter((run.story_status, run.digest_status)).items())
     )
@@ -275,3 +277,13 @@ def _merge_batch_metadata(run: PipelineRun) -> None:
         "digest": run.digest_error,
     }
     run.metadata_json = metadata_json
+
+
+def _normalize_failure_summary_keys(payload: object) -> dict:
+    if not isinstance(payload, dict):
+        return {}
+    return {
+        key: payload[key]
+        for key in _RUNTIME_FAILURE_SUMMARY_KEYS
+        if key in payload
+    }
