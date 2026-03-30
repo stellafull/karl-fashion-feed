@@ -254,7 +254,6 @@ def _finalize_batch_stage_failure(
 def _merge_batch_metadata(run: PipelineRun) -> None:
     metadata_json = dict(run.metadata_json or {})
     existing_failure_summary = dict(metadata_json.get("failure_summary") or {})
-    existing_failure_summary.pop("strict_story", None)
     metadata_json["batch_status_counts"] = dict(
         sorted(Counter((run.story_status, run.digest_status)).items())
     )

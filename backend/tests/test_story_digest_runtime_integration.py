@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from contextlib import nullcontext
 from datetime import date
 from pathlib import Path
+import tempfile
 from types import SimpleNamespace
 import unittest
 
@@ -18,25 +20,115 @@ from backend.app.models import (
     DigestStory,
     PipelineRun,
     Story,
-    StoryArticle,
-    StoryFacet,
     ensure_article_storage_schema,
 )
 from backend.app.service.digest_generation_service import DigestGenerationService
-from backend.app.service.digest_packaging_service import ResolvedDigestPlan
+from backend.app.service.digest_packaging_service import DigestPackagingService
+from backend.app.service.digest_report_writing_service import DigestReportWritingService
+from backend.app.service.story_facet_assignment_service import StoryFacetAssignmentService
 from backend.app.service.story_clustering_service import StoryClusteringService
 
 
-def _build_fake_story_cluster_llm() -> SimpleNamespace:
+def _build_fake_story_cluster_llm(call_log: list[dict[str, object]]) -> SimpleNamespace:
     raw_content = (
         '{"groups":[{"seed_event_frame_id":"frame-1","member_event_frame_ids":["frame-1"],'
         '"synopsis_zh":"Acme 同日秀场事件","event_type":"runway_show","anchor_json":{"brand":"Acme"}}]}'
     )
 
-    async def create(**_: object) -> SimpleNamespace:
-        return response
+    async def create(**kwargs: object) -> SimpleNamespace:
+        call_log.append(dict(kwargs))
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))]
+        )
 
-    response = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))])
+    completions = SimpleNamespace(create=create)
+    chat = SimpleNamespace(completions=completions)
+    return SimpleNamespace(chat=chat)
+
+
+def _build_fake_facet_assignment_llm(call_log: list[dict[str, object]]) -> SimpleNamespace:
+    async def create(**kwargs: object) -> SimpleNamespace:
+        call_log.append(dict(kwargs))
+        messages = kwargs.get("messages")
+        assert isinstance(messages, list)
+        payload = json.loads(messages[1]["content"])
+        stories = payload.get("stories", [])
+        response_payload = {
+            "stories": [
+                {
+                    "story_key": story["story_key"],
+                    "facets": ["runway_series"],
+                }
+                for story in stories
+            ]
+        }
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(response_payload, ensure_ascii=False)))]
+        )
+
+    completions = SimpleNamespace(create=create)
+    chat = SimpleNamespace(completions=completions)
+    return SimpleNamespace(chat=chat)
+
+
+def _build_fake_digest_packaging_llm(call_log: list[dict[str, object]]) -> SimpleNamespace:
+    async def create(**kwargs: object) -> SimpleNamespace:
+        call_log.append(dict(kwargs))
+        messages = kwargs.get("messages")
+        assert isinstance(messages, list)
+        payload = json.loads(messages[1]["content"])
+        facet = str(payload["facet"])
+        stories = payload.get("stories", [])
+        story_keys: list[str] = []
+        article_ids: list[str] = []
+        for story in stories:
+            story_key = str(story["story_key"])
+            if story_key not in story_keys:
+                story_keys.append(story_key)
+            for article_id in story.get("article_ids", []):
+                normalized_article_id = str(article_id)
+                if normalized_article_id not in article_ids:
+                    article_ids.append(normalized_article_id)
+
+        response_payload = {
+            "digests": [
+                {
+                    "facet": facet,
+                    "story_keys": story_keys,
+                    "article_ids": article_ids,
+                    "editorial_angle": "同日主事件聚焦",
+                    "title_zh": "同日事件摘要",
+                    "dek_zh": "聚焦当日单一主事件",
+                }
+            ]
+        }
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(response_payload, ensure_ascii=False)))]
+        )
+
+    completions = SimpleNamespace(create=create)
+    chat = SimpleNamespace(completions=completions)
+    return SimpleNamespace(chat=chat)
+
+
+def _build_fake_digest_report_writing_llm(call_log: list[dict[str, object]]) -> SimpleNamespace:
+    async def create(**kwargs: object) -> SimpleNamespace:
+        call_log.append(dict(kwargs))
+        messages = kwargs.get("messages")
+        assert isinstance(messages, list)
+        payload = json.loads(messages[1]["content"])
+        plan = payload["plan"]
+        article_ids = [str(article_id) for article_id in plan["article_ids"]]
+        response_payload = {
+            "title_zh": "同日时尚摘要",
+            "dek_zh": "覆盖当日核心事件",
+            "body_markdown": "## 长文正文\n\nAcme 在巴黎发布 FW26 系列并触发同日事件聚合。",
+            "source_article_ids": article_ids,
+        }
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(response_payload, ensure_ascii=False)))]
+        )
+
     completions = SimpleNamespace(create=create)
     chat = SimpleNamespace(completions=completions)
     return SimpleNamespace(chat=chat)
@@ -91,115 +183,64 @@ def _build_session() -> Session:
     return session
 
 
-class _FakeFacetAssignmentService:
-    async def assign_for_day(self, session: Session, business_day: date, *, run_id: str) -> list[StoryFacet]:
-        _ = run_id
-        story_keys = list(
-            session.scalars(
-                select(Story.story_key)
-                .where(Story.business_date == business_day)
-                .order_by(Story.story_key.asc())
-            ).all()
-        )
-        rows = [StoryFacet(story_key=story_key, facet="runway_series") for story_key in story_keys]
-        if rows:
-            session.add_all(rows)
-            session.flush()
-            for row in rows:
-                session.expunge(row)
-        return rows
-
-
-class _FakePackagingService:
-    async def build_plans_for_day(
-        self,
-        session: Session,
-        business_day: date,
-        *,
-        run_id: str,
-    ) -> list[ResolvedDigestPlan]:
-        _ = run_id
-        row = session.execute(
-            select(Story.story_key, StoryArticle.article_id, Article.source_name)
-            .join(StoryArticle, StoryArticle.story_key == Story.story_key)
-            .join(Article, Article.article_id == StoryArticle.article_id)
-            .where(Story.business_date == business_day)
-            .order_by(Story.story_key.asc(), StoryArticle.rank.asc())
-            .limit(1)
-        ).first()
-        if row is None:
-            return []
-        return [
-            ResolvedDigestPlan(
-                business_date=business_day,
-                facet="runway_series",
-                story_keys=(row[0],),
-                article_ids=(row[1],),
-                editorial_angle="同日秀场摘要",
-                title_zh="同日秀场摘要",
-                dek_zh="聚焦同日关键事件",
-                source_names=(row[2],),
-            )
-        ]
-
-
-class _FakeReportWritingService:
-    async def write_digest(
-        self,
-        session: Session,
-        plan: ResolvedDigestPlan,
-        *,
-        run_id: str,
-    ) -> Digest:
-        _ = session
-        digest = Digest(
-            business_date=plan.business_date,
-            facet=plan.facet,
-            title_zh="同日时尚摘要",
-            dek_zh="覆盖当日核心事件",
-            body_markdown="## 长文正文\n\nAcme 在巴黎发布 FW26 系列，形成单一主事件聚合。",
-            source_article_count=len(plan.article_ids),
-            source_names_json=list(plan.source_names),
-            created_run_id=run_id,
-            generation_status="done",
-            generation_error=None,
-        )
-        digest.selected_source_article_ids = plan.article_ids
-        return digest
-
-
 class StoryDigestRuntimeIntegrationTest(unittest.TestCase):
     def test_same_day_runtime_clusters_stories_then_generates_digest(self) -> None:
-        session = _build_session()
-        self.addCleanup(session.close)
-        business_day = date(2026, 3, 30)
-        run_id = "run-1"
-
-        stories = asyncio.run(
-            StoryClusteringService(
-                client=_build_fake_story_cluster_llm(),
-                rate_limiter=_build_fake_rate_limiter(),
-            ).cluster_business_day(
-                session,
-                business_day,
-                run_id=run_id,
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            session = _build_session()
+            self.addCleanup(session.close)
+            business_day = date(2026, 3, 30)
+            run_id = "run-1"
+            markdown_root = Path(tmp_dir)
+            (markdown_root / "2026/03/30").mkdir(parents=True, exist_ok=True)
+            (markdown_root / "2026/03/30/article-1.md").write_text(
+                "# Article 1\n\nAcme released FW26 in Paris.\n",
+                encoding="utf-8",
             )
-        )
 
-        digests = asyncio.run(
-            DigestGenerationService(
-                facet_assignment_service=_FakeFacetAssignmentService(),
-                packaging_service=_FakePackagingService(),
-                report_writing_service=_FakeReportWritingService(),
-            ).generate_for_day(
-                session,
-                business_day,
-                run_id=run_id,
+            cluster_call_log: list[dict[str, object]] = []
+            facet_call_log: list[dict[str, object]] = []
+            packaging_call_log: list[dict[str, object]] = []
+            report_call_log: list[dict[str, object]] = []
+
+            stories = asyncio.run(
+                StoryClusteringService(
+                    client=_build_fake_story_cluster_llm(cluster_call_log),
+                    rate_limiter=_build_fake_rate_limiter(),
+                ).cluster_business_day(
+                    session,
+                    business_day,
+                    run_id=run_id,
+                )
             )
-        )
+
+            digests = asyncio.run(
+                DigestGenerationService(
+                    facet_assignment_service=StoryFacetAssignmentService(
+                        client=_build_fake_facet_assignment_llm(facet_call_log),
+                        rate_limiter=_build_fake_rate_limiter(),
+                    ),
+                    packaging_service=DigestPackagingService(
+                        client=_build_fake_digest_packaging_llm(packaging_call_log),
+                        rate_limiter=_build_fake_rate_limiter(),
+                    ),
+                    report_writing_service=DigestReportWritingService(
+                        client=_build_fake_digest_report_writing_llm(report_call_log),
+                        markdown_root=markdown_root,
+                        rate_limiter=_build_fake_rate_limiter(),
+                    ),
+                ).generate_for_day(
+                    session,
+                    business_day,
+                    run_id=run_id,
+                )
+            )
 
         self.assertEqual(1, len(stories))
         self.assertEqual(1, len(digests))
+        self.assertEqual(1, len(cluster_call_log))
+        self.assertEqual(1, len(facet_call_log))
+        self.assertEqual(1, len(packaging_call_log))
+        self.assertEqual(1, len(report_call_log))
         persisted_stories = session.scalars(select(Story).where(Story.business_date == business_day)).all()
         self.assertEqual(1, len(persisted_stories))
         persisted_digests = session.scalars(select(Digest).where(Digest.business_date == business_day)).all()
