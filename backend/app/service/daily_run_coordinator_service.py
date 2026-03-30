@@ -110,6 +110,11 @@ class DailyRunCoordinatorService:
                 dispatches=dispatches,
             )
             self._refresh_run_status(run, observed_at)
+            if run.status in {"done", "failed"}:
+                self._raise_if_unexpectedly_empty_final_digest_set(
+                    session=session,
+                    run=run,
+                )
             self._refresh_run_metadata(session, run, business_day, source_names)
             session.commit()
             run_id = run.run_id

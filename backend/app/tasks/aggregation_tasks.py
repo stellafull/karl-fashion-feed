@@ -6,16 +6,18 @@ from collections import Counter
 import asyncio
 from datetime import date
 
-from sqlalchemy import update
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from backend.app.core.database import SessionLocal
 from backend.app.models.article import ensure_article_storage_schema
+from backend.app.models.digest import Digest
 from backend.app.models.runtime import (
     BATCH_STAGE_MAX_ATTEMPTS,
     PipelineRun,
     _utcnow_naive,
 )
+from backend.app.models.story import Story
 from backend.app.service.digest_generation_service import DigestGenerationService
 from backend.app.service.story_clustering_service import StoryClusteringService
 from backend.app.tasks.celery_app import celery_app
@@ -152,6 +154,8 @@ def _finalize_batch_stage_success(
     stage: str,
     ownership_token: int,
 ) -> None:
+    if stage == "digest":
+        _assert_non_empty_final_digest_set(session=session, run_id=run_id, business_day=business_day)
     values = {
         f"{stage}_status": "done",
         f"{stage}_error": None,
@@ -179,6 +183,38 @@ def _finalize_batch_stage_success(
     run = _load_run(session=session, run_id=run_id, business_day=business_day)
     session.refresh(run)
     _merge_batch_metadata(run)
+
+
+def _assert_non_empty_final_digest_set(
+    *,
+    session: Session,
+    run_id: str,
+    business_day: date,
+) -> None:
+    story_count = len(
+        session.execute(
+            select(Story.story_key).where(
+                Story.business_date == business_day,
+                Story.created_run_id == run_id,
+            )
+        ).all()
+    )
+    if story_count == 0:
+        return
+    digest_count = len(
+        session.execute(
+            select(Digest.digest_key).where(
+                Digest.business_date == business_day,
+                Digest.created_run_id == run_id,
+            )
+        ).all()
+    )
+    if digest_count == 0:
+        raise RuntimeError(
+            "unexpectedly empty final digest set: "
+            f"run_id={run_id} business_day={business_day.isoformat()} "
+            f"story_count={story_count} digest_count={digest_count}"
+        )
 
 
 def _finalize_batch_stage_failure(
