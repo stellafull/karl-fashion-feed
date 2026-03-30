@@ -16,7 +16,7 @@ def _utcnow_naive() -> datetime:
 
 
 class Story(Base):
-    """Immutable business-date event aggregate assembled from event frames."""
+    """Immutable same-day story cluster assembled from one or more event frames."""
 
     __tablename__ = "story"
 

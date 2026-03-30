@@ -30,6 +30,51 @@ if TYPE_CHECKING:
 ASIA_SHANGHAI = ZoneInfo("Asia/Shanghai")
 
 
+def build_event_frame_signature_json(
+    *,
+    subject_json: object,
+    signature_json: object,
+    place_text: str | None,
+    collection_text: str | None,
+    season_text: str | None,
+) -> dict[str, str]:
+    """Normalize compact event anchors for downstream same-day clustering."""
+    normalized: dict[str, str] = {}
+    if isinstance(signature_json, dict):
+        for key, value in signature_json.items():
+            key_text = str(key).strip()
+            value_text = _normalize_anchor_text(value)
+            if key_text and value_text:
+                normalized[key_text] = value_text
+
+    if isinstance(subject_json, dict):
+        for key in ("brand", "person"):
+            if key in normalized:
+                continue
+            value_text = _normalize_anchor_text(subject_json.get(key))
+            if value_text:
+                normalized[key] = value_text
+
+    for key, value in (
+        ("place", place_text),
+        ("collection", collection_text),
+        ("season", season_text),
+    ):
+        if key in normalized:
+            continue
+        value_text = _normalize_anchor_text(value)
+        if value_text:
+            normalized[key] = value_text
+
+    return normalized
+
+
+def _normalize_anchor_text(value: object) -> str:
+    if not isinstance(value, str):
+        return ""
+    return value.strip()
+
+
 class EventFrameExtractionService:
     """Extract up to three high-confidence event frames from one article."""
 
@@ -165,7 +210,13 @@ class EventFrameExtractionService:
             season_text=self._normalize_optional_text(frame.season_text),
             show_context_text=self._normalize_optional_text(frame.show_context_text),
             evidence_json=[dict(item) for item in frame.evidence_json],
-            signature_json=dict(frame.signature_json),
+            signature_json=build_event_frame_signature_json(
+                subject_json=frame.subject_json,
+                signature_json=frame.signature_json,
+                place_text=frame.place_text,
+                collection_text=frame.collection_text,
+                season_text=frame.season_text,
+            ),
             extraction_confidence=float(frame.extraction_confidence),
             extraction_status="done",
             extraction_error=None,
