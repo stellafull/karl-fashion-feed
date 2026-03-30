@@ -60,8 +60,8 @@ class DigestGenerationService:
         *,
         run_id: str,
     ) -> list[Digest]:
-        await self._facet_assignment_service.assign_for_day(session, business_day)
-        plans = await self._packaging_service.build_plans_for_day(session, business_day)
+        await self._facet_assignment_service.assign_for_day(session, business_day, run_id=run_id)
+        plans = await self._packaging_service.build_plans_for_day(session, business_day, run_id=run_id)
         if self._has_packaging_input(session, business_day) and not plans:
             raise RuntimeError(
                 f"digest packaging produced zero digest plans for business day {business_day.isoformat()}"

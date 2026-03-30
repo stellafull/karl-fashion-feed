@@ -14,6 +14,10 @@ from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
 from backend.app.models import Article, Story, StoryArticle, StoryFacet
 from backend.app.prompts.digest_packaging_prompt import build_digest_packaging_prompt
 from backend.app.schemas.llm.digest_packaging import DigestPackagingSchema
+from backend.app.service.llm_debug_artifact_service import (
+    LlmDebugArtifactRecorder,
+    build_llm_debug_artifact_recorder_from_env,
+)
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
 
 if TYPE_CHECKING:
@@ -69,11 +73,19 @@ class DigestPackagingService:
         *,
         client: AsyncOpenAI | None = None,
         rate_limiter: LlmRateLimiter | None = None,
+        artifact_recorder: LlmDebugArtifactRecorder | None = None,
     ) -> None:
         self._client = client
         self._rate_limiter = rate_limiter or LlmRateLimiter()
+        self._artifact_recorder = artifact_recorder or build_llm_debug_artifact_recorder_from_env()
 
-    async def build_plans_for_day(self, session: Session, business_day: date) -> list[ResolvedDigestPlan]:
+    async def build_plans_for_day(
+        self,
+        session: Session,
+        business_day: date,
+        *,
+        run_id: str,
+    ) -> list[ResolvedDigestPlan]:
         story_inputs = self._load_day_story_inputs(session, business_day)
         if not story_inputs:
             return []
@@ -85,6 +97,7 @@ class DigestPackagingService:
             schema = await self._select_digest_plans(
                 facet=facet,
                 story_inputs=facet_story_inputs,
+                run_id=run_id,
             )
             plans.extend(
                 self._resolve_plans(
@@ -176,21 +189,34 @@ class DigestPackagingService:
         *,
         facet: str,
         story_inputs: list[_StoryPackagingInput],
+        run_id: str,
     ) -> DigestPackagingSchema:
         if not story_inputs:
             return DigestPackagingSchema()
         client = self._get_client()
+        user_message = self._build_user_message(facet, story_inputs)
+        request_payload = {
+            "model": STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+            "temperature": 0,
+            "messages": [
+                {"role": "system", "content": build_digest_packaging_prompt()},
+                {"role": "user", "content": user_message},
+            ],
+            "response_format": {"type": "json_object"},
+        }
         with self._rate_limiter.lease("digest_packaging"):
             response = await client.chat.completions.create(
-                model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-                temperature=0,
-                messages=[
-                    {"role": "system", "content": build_digest_packaging_prompt()},
-                    {"role": "user", "content": self._build_user_message(facet, story_inputs)},
-                ],
-                response_format={"type": "json_object"},
+                **request_payload,
             )
         raw_content = response.choices[0].message.content or "{}"
+        if self._artifact_recorder.enabled:
+            self._artifact_recorder.record(
+                run_id=run_id,
+                stage="digest_packaging",
+                object_key=f"facet-{facet}",
+                prompt_text=json.dumps(request_payload, ensure_ascii=False, indent=2),
+                response_text=json.dumps({"raw_content": raw_content}, ensure_ascii=False, indent=2),
+            )
         return DigestPackagingSchema.model_validate_json(raw_content)
 
     def _resolve_plans(

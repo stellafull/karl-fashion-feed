@@ -14,6 +14,10 @@ from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
 from backend.app.models import Article, Story, StoryArticle, StoryFacet
 from backend.app.prompts.facet_assignment_prompt import build_facet_assignment_prompt
 from backend.app.schemas.llm.facet_assignment import FacetAssignmentSchema
+from backend.app.service.llm_debug_artifact_service import (
+    LlmDebugArtifactRecorder,
+    build_llm_debug_artifact_recorder_from_env,
+)
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
 
 if TYPE_CHECKING:
@@ -46,13 +50,15 @@ class StoryFacetAssignmentService:
         *,
         client: AsyncOpenAI | None = None,
         rate_limiter: LlmRateLimiter | None = None,
+        artifact_recorder: LlmDebugArtifactRecorder | None = None,
     ) -> None:
         self._client = client
         self._rate_limiter = rate_limiter or LlmRateLimiter()
+        self._artifact_recorder = artifact_recorder or build_llm_debug_artifact_recorder_from_env()
 
-    async def assign_for_day(self, session: Session, business_day: date) -> list[StoryFacet]:
+    async def assign_for_day(self, session: Session, business_day: date, *, run_id: str) -> list[StoryFacet]:
         story_inputs = self._load_day_story_inputs(session, business_day)
-        schema = await self._assign_facets(story_inputs)
+        schema = await self._assign_facets(story_inputs, business_day=business_day, run_id=run_id)
         assignments = self._resolve_assignments(story_inputs, schema)
         return self._replace_day_rows(session, business_day, assignments)
 
@@ -87,21 +93,39 @@ class StoryFacetAssignmentService:
             for story in stories
         ]
 
-    async def _assign_facets(self, story_inputs: list[_StoryFacetInput]) -> FacetAssignmentSchema:
+    async def _assign_facets(
+        self,
+        story_inputs: list[_StoryFacetInput],
+        *,
+        business_day: date,
+        run_id: str,
+    ) -> FacetAssignmentSchema:
         if not story_inputs:
             return FacetAssignmentSchema()
         client = self._get_client()
+        user_message = self._build_user_message(story_inputs)
+        request_payload = {
+            "model": STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+            "temperature": 0,
+            "messages": [
+                {"role": "system", "content": build_facet_assignment_prompt()},
+                {"role": "user", "content": user_message},
+            ],
+            "response_format": {"type": "json_object"},
+        }
         with self._rate_limiter.lease("facet_assignment"):
             response = await client.chat.completions.create(
-                model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-                temperature=0,
-                messages=[
-                    {"role": "system", "content": build_facet_assignment_prompt()},
-                    {"role": "user", "content": self._build_user_message(story_inputs)},
-                ],
-                response_format={"type": "json_object"},
+                **request_payload,
             )
         raw_content = response.choices[0].message.content or "{}"
+        if self._artifact_recorder.enabled:
+            self._artifact_recorder.record(
+                run_id=run_id,
+                stage="facet_assignment",
+                object_key=f"business-day-{business_day.isoformat()}",
+                prompt_text=json.dumps(request_payload, ensure_ascii=False, indent=2),
+                response_text=json.dumps({"raw_content": raw_content}, ensure_ascii=False, indent=2),
+            )
         return FacetAssignmentSchema.model_validate_json(raw_content)
 
     def _resolve_assignments(

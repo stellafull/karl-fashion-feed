@@ -90,20 +90,26 @@ def _build_session() -> Session:
 
 class _FakeFacetAssignmentService:
     def __init__(self) -> None:
-        self.calls: list[tuple[Session, date]] = []
+        self.calls: list[tuple[Session, date, str]] = []
 
-    async def assign_for_day(self, session: Session, business_day: date) -> list[object]:
-        self.calls.append((session, business_day))
+    async def assign_for_day(self, session: Session, business_day: date, *, run_id: str) -> list[object]:
+        self.calls.append((session, business_day, run_id))
         return []
 
 
 class _FakePackagingService:
     def __init__(self, plans: list[ResolvedDigestPlan]) -> None:
-        self.calls: list[tuple[Session, date]] = []
+        self.calls: list[tuple[Session, date, str]] = []
         self._plans = plans
 
-    async def build_plans_for_day(self, session: Session, business_day: date) -> list[ResolvedDigestPlan]:
-        self.calls.append((session, business_day))
+    async def build_plans_for_day(
+        self,
+        session: Session,
+        business_day: date,
+        *,
+        run_id: str,
+    ) -> list[ResolvedDigestPlan]:
+        self.calls.append((session, business_day, run_id))
         return self._plans
 
 

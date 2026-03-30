@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+import os
+from pathlib import Path
+import tempfile
 import unittest
 from contextlib import nullcontext
 from datetime import date
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
@@ -104,7 +108,7 @@ class StoryFacetAssignmentServiceTest(unittest.TestCase):
             rate_limiter=_build_fake_rate_limiter(),
         )
 
-        persisted = asyncio.run(service.assign_for_day(session, date(2026, 3, 30)))
+        persisted = asyncio.run(service.assign_for_day(session, date(2026, 3, 30), run_id="run-1"))
 
         self.assertEqual(
             [("story-1", "runway_series"), ("story-1", "trend_summary")],
@@ -134,4 +138,32 @@ class StoryFacetAssignmentServiceTest(unittest.TestCase):
         )
 
         with self.assertRaisesRegex(ValueError, "unsupported runtime facet"):
-            asyncio.run(service.assign_for_day(session, date(2026, 3, 30)))
+            asyncio.run(service.assign_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+    def test_assign_for_day_records_llm_debug_artifacts_from_env(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch.dict(os.environ, {"KARL_LLM_DEBUG_ARTIFACT_DIR": tmpdir}):
+                service = StoryFacetAssignmentService(
+                    client=_build_fake_llm_client(
+                        (
+                            '{"stories":['
+                            '{"story_key":"story-1","facets":["runway_series"]},'
+                            '{"story_key":"story-2","facets":["trend_summary"]}'
+                            "]}"
+                        )
+                    ),
+                    rate_limiter=_build_fake_rate_limiter(),
+                )
+                persisted = asyncio.run(service.assign_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+            self.assertEqual(2, len(persisted))
+            prompt_path = (
+                Path(tmpdir) / "run-1" / "facet_assignment" / "business-day-2026-03-30" / "prompt.json"
+            )
+            response_path = (
+                Path(tmpdir) / "run-1" / "facet_assignment" / "business-day-2026-03-30" / "response.json"
+            )
+            self.assertTrue(prompt_path.exists())
+            self.assertTrue(response_path.exists())

@@ -17,6 +17,10 @@ from backend.app.schemas.llm.story_cluster_judgment import (
     StoryClusterGroup,
     StoryClusterJudgmentSchema,
 )
+from backend.app.service.llm_debug_artifact_service import (
+    LlmDebugArtifactRecorder,
+    build_llm_debug_artifact_recorder_from_env,
+)
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
 
 if TYPE_CHECKING:
@@ -92,10 +96,12 @@ class StoryClusteringService:
         *,
         client: AsyncOpenAI | None = None,
         rate_limiter: LlmRateLimiter | None = None,
+        artifact_recorder: LlmDebugArtifactRecorder | None = None,
         max_window_size: int = 8,
     ) -> None:
         self._client = client
         self._rate_limiter = rate_limiter or LlmRateLimiter()
+        self._artifact_recorder = artifact_recorder or build_llm_debug_artifact_recorder_from_env()
         self._max_window_size = max_window_size
 
     async def cluster_business_day(
@@ -110,7 +116,7 @@ class StoryClusteringService:
             return []
 
         windows = self._build_candidate_windows(frame_cards)
-        judged_groups = await self._judge_candidate_windows(windows)
+        judged_groups = await self._judge_candidate_windows(windows, run_id=run_id)
         if not judged_groups:
             raise RuntimeError(
                 f"story clustering produced zero stories for non-empty input: business_day={business_day.isoformat()}"
@@ -198,10 +204,12 @@ class StoryClusteringService:
     async def _judge_candidate_windows(
         self,
         windows: list[tuple[_FrameCard, ...]],
+        *,
+        run_id: str,
     ) -> list[_JudgedGroup]:
         judged_groups: dict[tuple[str, ...], _JudgedGroup] = {}
         for window in windows:
-            schema = await self._run_story_cluster_judgment(window)
+            schema = await self._run_story_cluster_judgment(window, run_id=run_id)
             valid_ids = {card.event_frame_id for card in window}
             for group in schema.groups:
                 normalized_member_ids = self._normalize_member_ids(group, valid_ids)
@@ -222,22 +230,37 @@ class StoryClusteringService:
     async def _run_story_cluster_judgment(
         self,
         window: tuple[_FrameCard, ...],
+        *,
+        run_id: str,
     ) -> StoryClusterJudgmentSchema:
         client = self._get_client()
         payload = {
             "candidate_frames": [card.to_payload() for card in window],
         }
+        user_message = json.dumps(payload, ensure_ascii=False)
+        request_payload = {
+            "model": STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+            "temperature": 0,
+            "messages": [
+                {"role": "system", "content": build_story_cluster_judgment_prompt()},
+                {"role": "user", "content": user_message},
+            ],
+            "response_format": {"type": "json_object"},
+        }
         with self._rate_limiter.lease("story_cluster_judgment"):
             response = await client.chat.completions.create(
-                model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-                temperature=0,
-                messages=[
-                    {"role": "system", "content": build_story_cluster_judgment_prompt()},
-                    {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
-                ],
-                response_format={"type": "json_object"},
+                **request_payload,
             )
         raw_content = response.choices[0].message.content or "{}"
+        if self._artifact_recorder.enabled:
+            window_ids = "-".join(card.event_frame_id for card in window)
+            self._artifact_recorder.record(
+                run_id=run_id,
+                stage="story_cluster_judgment",
+                object_key=f"window-{window_ids}",
+                prompt_text=json.dumps(request_payload, ensure_ascii=False, indent=2),
+                response_text=json.dumps({"raw_content": raw_content}, ensure_ascii=False, indent=2),
+            )
         return StoryClusterJudgmentSchema.model_validate_json(raw_content)
 
     def _replace_day_rows(

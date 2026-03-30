@@ -16,6 +16,10 @@ from backend.app.prompts.digest_report_writing_prompt import build_digest_report
 from backend.app.schemas.llm.digest_report_writing import DigestReportWritingSchema
 from backend.app.service.article_parse_service import ArticleMarkdownService
 from backend.app.service.digest_packaging_service import ResolvedDigestPlan
+from backend.app.service.llm_debug_artifact_service import (
+    LlmDebugArtifactRecorder,
+    build_llm_debug_artifact_recorder_from_env,
+)
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
 
 if TYPE_CHECKING:
@@ -40,10 +44,12 @@ class DigestReportWritingService:
         client: AsyncOpenAI | None = None,
         markdown_root: Path | None = None,
         rate_limiter: LlmRateLimiter | None = None,
+        artifact_recorder: LlmDebugArtifactRecorder | None = None,
     ) -> None:
         self._client = client
         self._markdown_service = ArticleMarkdownService(markdown_root)
         self._rate_limiter = rate_limiter or LlmRateLimiter()
+        self._artifact_recorder = artifact_recorder or build_llm_debug_artifact_recorder_from_env()
 
     async def write_digest(
         self,
@@ -53,7 +59,7 @@ class DigestReportWritingService:
         run_id: str,
     ) -> Digest:
         article_sources = self._load_article_sources(session, plan.article_ids)
-        schema = await self._write_report(plan, article_sources)
+        schema = await self._write_report(plan, article_sources, run_id=run_id)
         return self._resolve_written_digest(
             run_id=run_id,
             plan=plan,
@@ -101,19 +107,33 @@ class DigestReportWritingService:
         self,
         plan: ResolvedDigestPlan,
         article_sources: list[_ArticleSourceInput],
+        *,
+        run_id: str,
     ) -> DigestReportWritingSchema:
         client = self._get_client()
+        user_message = self._build_user_message(plan, article_sources)
+        request_payload = {
+            "model": STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
+            "temperature": 0,
+            "messages": [
+                {"role": "system", "content": build_digest_report_writing_prompt()},
+                {"role": "user", "content": user_message},
+            ],
+            "response_format": {"type": "json_object"},
+        }
         with self._rate_limiter.lease("digest_report_writing"):
             response = await client.chat.completions.create(
-                model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-                temperature=0,
-                messages=[
-                    {"role": "system", "content": build_digest_report_writing_prompt()},
-                    {"role": "user", "content": self._build_user_message(plan, article_sources)},
-                ],
-                response_format={"type": "json_object"},
+                **request_payload,
             )
         raw_content = response.choices[0].message.content or "{}"
+        if self._artifact_recorder.enabled:
+            self._artifact_recorder.record(
+                run_id=run_id,
+                stage="digest_report_writing",
+                object_key=f"facet-{plan.facet}",
+                prompt_text=json.dumps(request_payload, ensure_ascii=False, indent=2),
+                response_text=json.dumps({"raw_content": raw_content}, ensure_ascii=False, indent=2),
+            )
         return DigestReportWritingSchema.model_validate_json(raw_content)
 
     def _resolve_written_digest(

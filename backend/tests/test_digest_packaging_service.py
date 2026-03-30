@@ -153,7 +153,7 @@ class DigestPackagingServiceTest(unittest.TestCase):
             rate_limiter=_build_fake_rate_limiter(),
         )
 
-        plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30)))
+        plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
 
         self.assertEqual(2, len(plans))
         self.assertEqual(date(2026, 3, 30), plans[0].business_date)
@@ -186,7 +186,7 @@ class DigestPackagingServiceTest(unittest.TestCase):
             rate_limiter=_build_fake_rate_limiter(),
         )
 
-        plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30)))
+        plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
         self.assertEqual([], plans)
         self.assertEqual([], call_log)
 
@@ -207,5 +207,5 @@ class DigestPackagingServiceTest(unittest.TestCase):
         )
 
         with self.assertRaisesRegex(ValueError, "unsupported runtime facet"):
-            asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30)))
+            asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
         self.assertEqual([], call_log)
