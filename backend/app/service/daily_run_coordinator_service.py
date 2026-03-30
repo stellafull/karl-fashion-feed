@@ -681,8 +681,6 @@ class DailyRunCoordinatorService:
         session: Session,
         run: PipelineRun,
     ) -> None:
-        if run.digest_status != "failed":
-            return
         story_count = len(
             session.execute(
                 select(Story.story_key).where(
@@ -705,7 +703,8 @@ class DailyRunCoordinatorService:
             raise RuntimeError(
                 "unexpectedly empty final digest set: "
                 f"run_id={run.run_id} business_day={run.business_date.isoformat()} "
-                f"story_count={story_count} digest_count={digest_count} digest_status={run.digest_status}"
+                f"story_count={story_count} digest_count={digest_count} run_status={run.status} "
+                f"digest_status={run.digest_status}"
             )
 
     def _repair_article_publish_failure(

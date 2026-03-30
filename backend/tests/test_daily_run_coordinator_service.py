@@ -114,3 +114,44 @@ class DailyRunCoordinatorServiceTest(unittest.TestCase):
                     max_ticks=1,
                 )
 
+    def test_drain_until_idle_raises_when_digest_done_with_empty_final_digest_set(self) -> None:
+        business_day = date(2026, 3, 30)
+        run_id = "run-task5-done"
+        with self.session_factory() as session:
+            session.add(
+                PipelineRun(
+                    run_id=run_id,
+                    business_date=business_day,
+                    run_type="digest_daily",
+                    status="done",
+                    story_status="done",
+                    digest_status="done",
+                    metadata_json={},
+                )
+            )
+            session.add(
+                Story(
+                    story_key="story-task5-done",
+                    business_date=business_day,
+                    event_type="runway_show",
+                    synopsis_zh="故事",
+                    anchor_json={},
+                    article_membership_json=[],
+                    created_run_id=run_id,
+                    clustering_status="done",
+                    clustering_error=None,
+                )
+            )
+            session.commit()
+
+        service = coordinator_module.DailyRunCoordinatorService(
+            session_factory=self.session_factory,
+            source_names=(),
+        )
+        with patch.object(service, "tick", return_value=run_id):
+            with self.assertRaisesRegex(RuntimeError, "unexpectedly empty final digest set"):
+                service.drain_until_idle(
+                    run_id=run_id,
+                    business_day=business_day,
+                    max_ticks=1,
+                )
