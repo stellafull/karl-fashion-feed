@@ -115,8 +115,8 @@ def _build_session() -> Session:
             StoryArticle(story_key="story-1", article_id="article-2", rank=1),
             StoryArticle(story_key="story-2", article_id="article-3", rank=0),
             StoryFacet(story_key="story-1", facet="runway_series"),
-            StoryFacet(story_key="story-1", facet="trend_watch"),
-            StoryFacet(story_key="story-2", facet="trend_watch"),
+            StoryFacet(story_key="story-1", facet="trend_summary"),
+            StoryFacet(story_key="story-2", facet="trend_summary"),
         ]
     )
     session.commit()
@@ -141,7 +141,7 @@ class DigestPackagingServiceTest(unittest.TestCase):
                     ),
                     (
                         '{"digests":['
-                        '{"facet":"trend_watch","story_keys":["story-1","story-2"],'
+                        '{"facet":"trend_summary","story_keys":["story-1","story-2"],'
                         '"article_ids":["article-2","article-3"],'
                         '"editorial_angle":"设计语言与组织动作共同指向新趋势",'
                         '"title_zh":"本日趋势联动","dek_zh":"从秀场延展到品牌动作"}'
@@ -188,4 +188,24 @@ class DigestPackagingServiceTest(unittest.TestCase):
 
         plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30)))
         self.assertEqual([], plans)
+        self.assertEqual([], call_log)
+
+    def test_build_plans_for_day_raises_on_unsupported_runtime_facet(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        session.query(StoryFacet).delete()
+        session.add(StoryFacet(story_key="story-1", facet="trend_watch"))
+        session.commit()
+
+        call_log: list[dict[str, object]] = []
+        service = DigestPackagingService(
+            client=_build_fake_llm_client(
+                ['{"digests":[]}'],
+                call_log=call_log,
+            ),
+            rate_limiter=_build_fake_rate_limiter(),
+        )
+
+        with self.assertRaisesRegex(ValueError, "unsupported runtime facet"):
+            asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30)))
         self.assertEqual([], call_log)

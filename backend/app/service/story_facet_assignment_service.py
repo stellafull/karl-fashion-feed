@@ -20,6 +20,16 @@ if TYPE_CHECKING:
     from openai import AsyncOpenAI
 
 
+RUNTIME_FACETS = frozenset(
+    {
+        "runway_series",
+        "street_style",
+        "trend_summary",
+        "brand_market",
+    }
+)
+
+
 @dataclass(frozen=True)
 class _StoryFacetInput:
     story_key: str
@@ -116,6 +126,9 @@ class StoryFacetAssignmentService:
             cleaned_facets = [facet.strip() for facet in assignment.facets]
             if any(not facet for facet in cleaned_facets):
                 raise ValueError(f"stories[{index}] facets contains blank value")
+            for facet in cleaned_facets:
+                if facet not in RUNTIME_FACETS:
+                    raise ValueError(f"stories[{index}] unsupported runtime facet: {facet}")
             resolved[story_key] = tuple(sorted(set(cleaned_facets)))
 
         return resolved

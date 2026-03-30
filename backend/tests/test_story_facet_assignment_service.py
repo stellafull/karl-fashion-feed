@@ -96,7 +96,7 @@ class StoryFacetAssignmentServiceTest(unittest.TestCase):
             client=_build_fake_llm_client(
                 (
                     '{"stories":['
-                    '{"story_key":"story-1","facets":["runway_series","trend_watch"]},'
+                    '{"story_key":"story-1","facets":["runway_series","trend_summary"]},'
                     '{"story_key":"story-2","facets":[]}'
                     "]}"
                 )
@@ -107,13 +107,31 @@ class StoryFacetAssignmentServiceTest(unittest.TestCase):
         persisted = asyncio.run(service.assign_for_day(session, date(2026, 3, 30)))
 
         self.assertEqual(
-            [("story-1", "runway_series"), ("story-1", "trend_watch")],
+            [("story-1", "runway_series"), ("story-1", "trend_summary")],
             [(row.story_key, row.facet) for row in persisted],
         )
         stored = session.execute(
             select(StoryFacet.story_key, StoryFacet.facet).order_by(StoryFacet.story_key.asc(), StoryFacet.facet.asc())
         ).all()
         self.assertEqual(
-            [("story-1", "runway_series"), ("story-1", "trend_watch")],
+            [("story-1", "runway_series"), ("story-1", "trend_summary")],
             stored,
         )
+
+    def test_assign_for_day_raises_on_unsupported_runtime_facet(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        service = StoryFacetAssignmentService(
+            client=_build_fake_llm_client(
+                (
+                    '{"stories":['
+                    '{"story_key":"story-1","facets":["trend_watch"]},'
+                    '{"story_key":"story-2","facets":[]}'
+                    "]}"
+                )
+            ),
+            rate_limiter=_build_fake_rate_limiter(),
+        )
+
+        with self.assertRaisesRegex(ValueError, "unsupported runtime facet"):
+            asyncio.run(service.assign_for_day(session, date(2026, 3, 30)))

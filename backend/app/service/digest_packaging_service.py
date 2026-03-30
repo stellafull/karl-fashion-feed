@@ -20,6 +20,16 @@ if TYPE_CHECKING:
     from openai import AsyncOpenAI
 
 
+RUNTIME_FACETS = frozenset(
+    {
+        "runway_series",
+        "street_style",
+        "trend_summary",
+        "brand_market",
+    }
+)
+
+
 @dataclass(frozen=True)
 class _ArticlePackagingInput:
     article_id: str
@@ -105,6 +115,8 @@ class DigestPackagingService:
         ).all()
         facets_by_story: dict[str, list[str]] = {}
         for story_key, facet in facet_rows:
+            if facet not in RUNTIME_FACETS:
+                raise ValueError(f"unsupported runtime facet: {facet}")
             facets_by_story.setdefault(story_key, []).append(facet)
 
         article_rows = session.execute(
@@ -201,6 +213,8 @@ class DigestPackagingService:
             plan_facet = plan.facet.strip()
             if not plan_facet:
                 raise ValueError(f"digests[{index}] facet cannot be blank")
+            if plan_facet not in RUNTIME_FACETS:
+                raise ValueError(f"digests[{index}] unsupported runtime facet: {plan_facet}")
             if plan_facet != facet:
                 raise ValueError(
                     f"digests[{index}] facet {plan_facet} does not match requested facet {facet}"

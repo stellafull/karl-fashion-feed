@@ -108,8 +108,15 @@ class _FakePackagingService:
 
 
 class _FakeReportWritingService:
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        selected_article_ids_by_facet: dict[str, tuple[str, ...]] | None = None,
+        business_date_offset_days: int = 0,
+    ) -> None:
         self.calls: list[tuple[Session, str, ResolvedDigestPlan]] = []
+        self._selected_article_ids_by_facet = selected_article_ids_by_facet or {}
+        self._business_date_offset_days = business_date_offset_days
 
     async def write_digest(
         self,
@@ -119,18 +126,21 @@ class _FakeReportWritingService:
         run_id: str,
     ) -> Digest:
         self.calls.append((session, run_id, plan))
-        return Digest(
-            business_date=plan.business_date,
+        selected_article_ids = self._selected_article_ids_by_facet.get(plan.facet, plan.article_ids)
+        digest = Digest(
+            business_date=plan.business_date.fromordinal(plan.business_date.toordinal() + self._business_date_offset_days),
             facet=plan.facet,
             title_zh=f"写作标题-{plan.facet}",
             dek_zh="写作导语",
             body_markdown="# 正文",
-            source_article_count=len(plan.article_ids),
+            source_article_count=len(selected_article_ids),
             source_names_json=list(plan.source_names),
             created_run_id=run_id,
             generation_status="done",
             generation_error=None,
         )
+        setattr(digest, "_writer_selected_article_ids", selected_article_ids)
+        return digest
 
 
 class DigestGenerationServiceTest(unittest.TestCase):
@@ -209,6 +219,59 @@ class DigestGenerationServiceTest(unittest.TestCase):
             sorted(digest_article_rows),
         )
 
+    def test_generate_for_day_persists_writer_selected_source_article_order_and_subset(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        facet_assignment_service = _FakeFacetAssignmentService()
+        packaging_service = _FakePackagingService(
+            plans=[
+                ResolvedDigestPlan(
+                    business_date=date(2026, 3, 30),
+                    facet="runway_series",
+                    story_keys=("story-1",),
+                    article_ids=("article-1", "article-2"),
+                    editorial_angle="秀场单稿",
+                    title_zh="包装标题-1",
+                    dek_zh="包装导语-1",
+                    source_names=("Vogue", "WWD"),
+                ),
+                ResolvedDigestPlan(
+                    business_date=date(2026, 3, 30),
+                    facet="trend_summary",
+                    story_keys=("story-1", "story-2"),
+                    article_ids=("article-2",),
+                    editorial_angle="趋势综合稿",
+                    title_zh="包装标题-2",
+                    dek_zh="包装导语-2",
+                    source_names=("WWD",),
+                ),
+            ]
+        )
+        report_writing_service = _FakeReportWritingService(
+            selected_article_ids_by_facet={
+                "runway_series": ("article-2",),
+                "trend_summary": ("article-2",),
+            }
+        )
+        service = DigestGenerationService(
+            facet_assignment_service=facet_assignment_service,
+            packaging_service=packaging_service,
+            report_writing_service=report_writing_service,
+        )
+
+        asyncio.run(service.generate_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+        digest_article_rows = session.execute(
+            select(DigestArticle.article_id, DigestArticle.rank).order_by(
+                DigestArticle.digest_key.asc(),
+                DigestArticle.rank.asc(),
+            )
+        ).all()
+        self.assertEqual(
+            [("article-2", 0), ("article-2", 0)],
+            digest_article_rows,
+        )
+
     def test_generate_for_day_raises_when_packaging_returns_zero_plans_for_non_empty_input(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
@@ -222,6 +285,36 @@ class DigestGenerationServiceTest(unittest.TestCase):
         )
 
         with self.assertRaisesRegex(RuntimeError, "zero digest plans.*2026-03-30"):
+            asyncio.run(service.generate_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+        self.assertEqual(0, len(report_writing_service.calls))
+
+    def test_generate_for_day_raises_when_plan_business_date_mismatches_target_day(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        facet_assignment_service = _FakeFacetAssignmentService()
+        packaging_service = _FakePackagingService(
+            plans=[
+                ResolvedDigestPlan(
+                    business_date=date(2026, 3, 29),
+                    facet="runway_series",
+                    story_keys=("story-1",),
+                    article_ids=("article-1",),
+                    editorial_angle="秀场单稿",
+                    title_zh="包装标题-1",
+                    dek_zh="包装导语-1",
+                    source_names=("Vogue",),
+                )
+            ]
+        )
+        report_writing_service = _FakeReportWritingService()
+        service = DigestGenerationService(
+            facet_assignment_service=facet_assignment_service,
+            packaging_service=packaging_service,
+            report_writing_service=report_writing_service,
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "plan business_date mismatch"):
             asyncio.run(service.generate_for_day(session, date(2026, 3, 30), run_id="run-1"))
 
         self.assertEqual(0, len(report_writing_service.calls))

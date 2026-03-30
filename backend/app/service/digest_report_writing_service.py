@@ -150,7 +150,7 @@ class DigestReportWritingService:
             article.article_id: article.source_name for article in article_sources
         }
         source_names = sorted({source_name_by_article[article_id] for article_id in requested_article_ids})
-        return Digest(
+        digest = Digest(
             business_date=plan.business_date,
             facet=plan.facet,
             title_zh=title_zh,
@@ -162,6 +162,8 @@ class DigestReportWritingService:
             generation_status="done",
             generation_error=None,
         )
+        setattr(digest, "_writer_selected_article_ids", tuple(requested_article_ids))
+        return digest
 
     def _build_user_message(
         self,

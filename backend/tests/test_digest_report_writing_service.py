@@ -95,7 +95,7 @@ class DigestReportWritingServiceTest(unittest.TestCase):
                     run_id="run-1",
                     plan=ResolvedDigestPlan(
                         business_date=date(2026, 3, 30),
-                        facet="trend_watch",
+                        facet="trend_summary",
                         story_keys=("story-1", "story-2"),
                         article_ids=("article-1", "article-2"),
                         editorial_angle="用品牌动作解释趋势变化",
@@ -107,9 +107,13 @@ class DigestReportWritingServiceTest(unittest.TestCase):
             )
 
         self.assertIsInstance(written, Digest)
-        self.assertEqual("trend_watch", written.facet)
+        self.assertEqual("trend_summary", written.facet)
         self.assertEqual("本日品牌动作速写", written.title_zh)
         self.assertEqual("导语摘要", written.dek_zh)
         self.assertEqual("# 正文\n\n聚合后的内容", written.body_markdown)
         self.assertEqual(["Vogue", "WWD"], written.source_names_json)
         self.assertEqual(2, written.source_article_count)
+        self.assertEqual(
+            ("article-2", "article-1"),
+            getattr(written, "_writer_selected_article_ids"),
+        )

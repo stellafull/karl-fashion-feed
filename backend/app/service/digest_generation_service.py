@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 class _WrittenPlanDigest:
     plan: ResolvedDigestPlan
     digest: Digest
+    article_ids: tuple[str, ...]
 
 
 class DigestGenerationService:
@@ -68,8 +69,24 @@ class DigestGenerationService:
 
         written_digests: list[_WrittenPlanDigest] = []
         for plan in plans:
+            if plan.business_date != business_day:
+                raise RuntimeError(
+                    "digest plan business_date mismatch: "
+                    f"expected {business_day.isoformat()}, got {plan.business_date.isoformat()}"
+                )
             digest = await self._report_writing_service.write_digest(session, plan, run_id=run_id)
-            written_digests.append(_WrittenPlanDigest(plan=plan, digest=digest))
+            if digest.business_date != plan.business_date:
+                raise RuntimeError(
+                    "digest business_date mismatch: "
+                    f"expected {plan.business_date.isoformat()}, got {digest.business_date.isoformat()}"
+                )
+            written_digests.append(
+                _WrittenPlanDigest(
+                    plan=plan,
+                    digest=digest,
+                    article_ids=self._extract_writer_selected_article_ids(digest=digest, plan=plan),
+                )
+            )
         return self._replace_day_digests(session, business_day, written_digests=written_digests)
 
     def _has_packaging_input(self, session: Session, business_day: date) -> bool:
@@ -105,7 +122,11 @@ class DigestGenerationService:
             digest = item.digest
             if not digest.digest_key:
                 digest.digest_key = str(uuid4())
-            digest.business_date = business_day
+            if digest.business_date != business_day:
+                raise RuntimeError(
+                    "digest business_date mismatch at persistence: "
+                    f"expected {business_day.isoformat()}, got {digest.business_date.isoformat()}"
+                )
             digests.append(digest)
 
         if digests:
@@ -135,7 +156,7 @@ class DigestGenerationService:
                         article_id=article_id,
                         rank=rank,
                     )
-                    for rank, article_id in enumerate(item.plan.article_ids)
+                    for rank, article_id in enumerate(item.article_ids)
                 ]
             )
 
@@ -149,6 +170,29 @@ class DigestGenerationService:
         for digest in digests:
             session.expunge(digest)
         return digests
+
+    def _extract_writer_selected_article_ids(
+        self,
+        *,
+        digest: Digest,
+        plan: ResolvedDigestPlan,
+    ) -> tuple[str, ...]:
+        raw_value = getattr(digest, "_writer_selected_article_ids", None)
+        if not isinstance(raw_value, (tuple, list)):
+            raise RuntimeError("digest report writing must provide writer-selected source_article_ids")
+
+        article_ids = [str(article_id).strip() for article_id in raw_value]
+        if not article_ids or any(not article_id for article_id in article_ids):
+            raise RuntimeError("digest report writing returned invalid writer-selected source_article_ids")
+        if len(set(article_ids)) != len(article_ids):
+            raise RuntimeError("digest report writing returned duplicate writer-selected source_article_ids")
+
+        allowed_article_ids = set(plan.article_ids)
+        unknown_article_ids = sorted(article_id for article_id in article_ids if article_id not in allowed_article_ids)
+        if unknown_article_ids:
+            joined = ", ".join(unknown_article_ids)
+            raise RuntimeError(f"digest report writing returned unknown source_article_ids: {joined}")
+        return tuple(article_ids)
 
 
 __all__ = ["DigestGenerationService"]
