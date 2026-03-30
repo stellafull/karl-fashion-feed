@@ -12,7 +12,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
-from backend.app.models import Article, Digest, DigestArticle, DigestStrictStory, StrictStory, StrictStoryArticle
+from backend.app.models import Article, Digest, DigestArticle, DigestStory, Story, StoryArticle
 from backend.app.prompts.digest_generation_prompt import build_digest_generation_prompt
 from backend.app.schemas.llm.digest_generation import DigestGenerationSchema
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
@@ -68,9 +68,9 @@ class DigestGenerationService:
     def _load_day_strict_stories(self, session: Session, business_day: date) -> list[_StrictStoryInput]:
         stories = list(
             session.scalars(
-                select(StrictStory)
-                .where(StrictStory.business_date == business_day)
-                .order_by(StrictStory.strict_story_key.asc())
+                select(Story)
+                .where(Story.business_date == business_day)
+                .order_by(Story.story_key.asc())
             ).all()
         )
         if not stories:
@@ -78,35 +78,34 @@ class DigestGenerationService:
 
         article_pairs = session.execute(
             select(
-                StrictStoryArticle.strict_story_key,
-                StrictStoryArticle.article_id,
+                StoryArticle.story_key,
+                StoryArticle.article_id,
                 Article.source_name,
             )
-            .join(Article, Article.article_id == StrictStoryArticle.article_id)
-            .where(StrictStoryArticle.strict_story_key.in_([story.strict_story_key for story in stories]))
+            .join(Article, Article.article_id == StoryArticle.article_id)
+            .where(StoryArticle.story_key.in_([story.story_key for story in stories]))
             .order_by(
-                StrictStoryArticle.strict_story_key.asc(),
-                StrictStoryArticle.rank.asc(),
-                StrictStoryArticle.article_id.asc(),
+                StoryArticle.story_key.asc(),
+                StoryArticle.rank.asc(),
+                StoryArticle.article_id.asc(),
             )
         ).all()
         by_story_articles: dict[str, list[str]] = {}
         by_story_sources: dict[str, list[str]] = {}
-        for strict_story_key, article_id, source_name in article_pairs:
-            by_story_articles.setdefault(strict_story_key, []).append(article_id)
-            by_story_sources.setdefault(strict_story_key, []).append(source_name)
+        for story_key, article_id, source_name in article_pairs:
+            by_story_articles.setdefault(story_key, []).append(article_id)
+            by_story_sources.setdefault(story_key, []).append(source_name)
 
         payloads: list[_StrictStoryInput] = []
         for story in stories:
-            signature_json = story.signature_json if isinstance(story.signature_json, dict) else {}
-            event_type = str(signature_json.get("event_type", "")).strip() or "general"
-            source_names = sorted(set(by_story_sources.get(story.strict_story_key, [])))
+            event_type = story.event_type.strip() or "general"
+            source_names = sorted(set(by_story_sources.get(story.story_key, [])))
             payloads.append(
                 _StrictStoryInput(
-                    strict_story_key=story.strict_story_key,
+                    strict_story_key=story.story_key,
                     synopsis_zh=story.synopsis_zh.strip(),
                     event_type=event_type,
-                    article_ids=tuple(by_story_articles.get(story.strict_story_key, [])),
+                    article_ids=tuple(by_story_articles.get(story.story_key, [])),
                     source_names=tuple(source_names),
                 )
             )
@@ -215,16 +214,16 @@ class DigestGenerationService:
         )
         existing_memberships = list(
             session.execute(
-                select(DigestStrictStory.digest_key, DigestStrictStory.strict_story_key)
-                .where(DigestStrictStory.digest_key.in_([row.digest_key for row in existing_digests]))
-                .order_by(DigestStrictStory.digest_key.asc(), DigestStrictStory.rank.asc())
+                select(DigestStory.digest_key, DigestStory.story_key)
+                .where(DigestStory.digest_key.in_([row.digest_key for row in existing_digests]))
+                .order_by(DigestStory.digest_key.asc(), DigestStory.rank.asc())
             ).all()
         )
         memberships_by_digest: dict[str, tuple[str, ...]] = {}
-        for digest_key, strict_story_key in existing_memberships:
+        for digest_key, story_key in existing_memberships:
             memberships_by_digest.setdefault(digest_key, tuple())
             memberships_by_digest[digest_key] = tuple(
-                sorted(set((*memberships_by_digest[digest_key], strict_story_key)))
+                sorted(set((*memberships_by_digest[digest_key], story_key)))
             )
 
         reusable_key_map: dict[tuple[str, tuple[str, ...]], list[str]] = {}
@@ -235,11 +234,11 @@ class DigestGenerationService:
         old_keys = [row.digest_key for row in existing_digests]
         if old_keys:
             session.execute(delete(DigestArticle).where(DigestArticle.digest_key.in_(old_keys)))
-            session.execute(delete(DigestStrictStory).where(DigestStrictStory.digest_key.in_(old_keys)))
+            session.execute(delete(DigestStory).where(DigestStory.digest_key.in_(old_keys)))
             session.execute(delete(Digest).where(Digest.digest_key.in_(old_keys)))
 
         digests: list[Digest] = []
-        strict_story_rows: list[DigestStrictStory] = []
+        digest_story_rows: list[DigestStory] = []
         article_rows: list[DigestArticle] = []
         for plan in plans:
             reuse_bucket = reusable_key_map.get((plan.facet, plan.strict_story_keys), [])
@@ -258,11 +257,11 @@ class DigestGenerationService:
                 generation_error=None,
             )
             digests.append(digest)
-            strict_story_rows.extend(
+            digest_story_rows.extend(
                 [
-                    DigestStrictStory(
+                    DigestStory(
                         digest_key=digest_key,
-                        strict_story_key=strict_story_key,
+                        story_key=strict_story_key,
                         rank=rank,
                     )
                     for rank, strict_story_key in enumerate(plan.strict_story_keys)
@@ -281,7 +280,7 @@ class DigestGenerationService:
 
         session.add_all(digests)
         session.flush()
-        session.add_all(strict_story_rows)
+        session.add_all(digest_story_rows)
         session.add_all(article_rows)
         session.flush()
         for digest in digests:

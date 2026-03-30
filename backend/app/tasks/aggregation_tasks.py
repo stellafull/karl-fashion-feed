@@ -32,7 +32,7 @@ def pack_strict_stories_for_day(business_day_iso: str, run_id: str, ownership_to
             session=session,
             run_id=run_id,
             business_day=business_day,
-            stage="strict_story",
+            stage="story",
             ownership_token=ownership_token,
         )
 
@@ -42,7 +42,7 @@ def pack_strict_stories_for_day(business_day_iso: str, run_id: str, ownership_to
                 session=session,
                 run_id=run_id,
                 business_day=business_day,
-                stage="strict_story",
+                stage="story",
                 ownership_token=ownership_token,
             )
             session.commit()
@@ -52,7 +52,7 @@ def pack_strict_stories_for_day(business_day_iso: str, run_id: str, ownership_to
                 session=session,
                 run_id=run_id,
                 business_day=business_day,
-                stage="strict_story",
+                stage="story",
                 ownership_token=ownership_token,
                 exc=exc,
             )
@@ -205,9 +205,9 @@ def _finalize_batch_stage_failure(
     setattr(run, status_field, "abandoned" if attempts >= BATCH_STAGE_MAX_ATTEMPTS else "failed")
     setattr(run, error_field, f"{exc.__class__.__name__}: {exc}")
     setattr(run, updated_at_field, _utcnow_naive())
-    if stage == "strict_story":
-        run.status = "failed" if run.strict_story_status == "abandoned" else "running"
-        run.finished_at = _utcnow_naive() if run.strict_story_status == "abandoned" else None
+    if stage == "story":
+        run.status = "failed" if run.story_status == "abandoned" else "running"
+        run.finished_at = _utcnow_naive() if run.story_status == "abandoned" else None
     if stage == "digest":
         run.status = "failed" if run.digest_status == "abandoned" else "running"
         run.finished_at = _utcnow_naive() if run.digest_status == "abandoned" else None
@@ -218,14 +218,15 @@ def _finalize_batch_stage_failure(
 def _merge_batch_metadata(run: PipelineRun) -> None:
     metadata_json = dict(run.metadata_json or {})
     existing_failure_summary = dict(metadata_json.get("failure_summary") or {})
+    existing_failure_summary.pop("strict_story", None)
     metadata_json["batch_status_counts"] = dict(
-        sorted(Counter((run.strict_story_status, run.digest_status)).items())
+        sorted(Counter((run.story_status, run.digest_status)).items())
     )
     metadata_json["batch_stage_summary"] = {
-        "strict_story": {
-            "status": run.strict_story_status,
-            "attempts": run.strict_story_attempts,
-            "error": run.strict_story_error,
+        "story": {
+            "status": run.story_status,
+            "attempts": run.story_attempts,
+            "error": run.story_error,
         },
         "digest": {
             "status": run.digest_status,
@@ -235,7 +236,7 @@ def _merge_batch_metadata(run: PipelineRun) -> None:
     }
     metadata_json["failure_summary"] = {
         **existing_failure_summary,
-        "strict_story": run.strict_story_error,
+        "story": run.story_error,
         "digest": run.digest_error,
     }
     run.metadata_json = metadata_json

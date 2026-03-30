@@ -12,7 +12,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
-from backend.app.models import ArticleEventFrame, StrictStory, StrictStoryArticle, StrictStoryFrame
+from backend.app.models import ArticleEventFrame, Story, StoryArticle, StoryFrame
 from backend.app.prompts.strict_story_tiebreak_prompt import build_strict_story_tiebreak_prompt
 from backend.app.schemas.llm.strict_story_tiebreak import (
     StrictStoryTieBreakSchema,
@@ -34,7 +34,7 @@ class _CandidateGroup:
 
 @dataclass(frozen=True)
 class _ExistingStory:
-    strict_story_key: str
+    story_key: str
     signature_json: dict
     frame_ids: tuple[str, ...]
     signature_token: str
@@ -42,7 +42,7 @@ class _ExistingStory:
 
 @dataclass(frozen=True)
 class _ResolvedStory:
-    strict_story_key: str
+    story_key: str
     signature_json: dict
     synopsis_zh: str
     frame_ids: tuple[str, ...]
@@ -68,7 +68,7 @@ class StrictStoryPackingService:
         business_day: date,
         *,
         run_id: str,
-    ) -> list[StrictStory]:
+    ) -> list[Story]:
         """Pack one business day and fully replace stored strict_story state for that day."""
         frames = self._load_day_frames(session, business_day)
         candidate_groups = self._group_by_signature(frames)
@@ -121,20 +121,37 @@ class StrictStoryPackingService:
     def _load_existing_stories(self, session: Session, business_day: date) -> list[_ExistingStory]:
         stories = list(
             session.scalars(
-                select(StrictStory)
-                .where(StrictStory.business_date == business_day)
-                .order_by(StrictStory.strict_story_key.asc())
+                select(Story)
+                .where(Story.business_date == business_day)
+                .order_by(Story.story_key.asc())
             ).all()
         )
         if not stories:
             return []
 
+        frame_memberships = session.execute(
+            select(StoryFrame.story_key, StoryFrame.event_frame_id)
+            .where(StoryFrame.story_key.in_([story.story_key for story in stories]))
+            .order_by(StoryFrame.story_key.asc(), StoryFrame.rank.asc(), StoryFrame.event_frame_id.asc())
+        ).all()
+        frame_ids_by_story: dict[str, list[str]] = {}
+        for story_key, event_frame_id in frame_memberships:
+            frame_ids_by_story.setdefault(story_key, []).append(event_frame_id)
+
         existing = [
             _ExistingStory(
-                strict_story_key=story.strict_story_key,
-                signature_json=dict(story.signature_json or {}),
-                frame_ids=tuple(sorted(str(item) for item in story.frame_membership_json)),
-                signature_token=self._signature_token(dict(story.signature_json or {})),
+                story_key=story.story_key,
+                signature_json={
+                    "event_type": story.event_type,
+                    "signature_json": dict(story.anchor_json or {}),
+                },
+                frame_ids=tuple(frame_ids_by_story.get(story.story_key, [])),
+                signature_token=self._signature_token(
+                    {
+                        "event_type": story.event_type,
+                        "signature_json": dict(story.anchor_json or {}),
+                    }
+                ),
             )
             for story in stories
         ]
@@ -155,7 +172,7 @@ class StrictStoryPackingService:
             compatible = [
                 item
                 for item in existing_by_token.get(group.signature_token, [])
-                if item.strict_story_key not in used_existing_keys
+                if item.story_key not in used_existing_keys
             ]
             pick_key = str(uuid4())
             synopsis = self._build_default_synopsis(group.signature_json)
@@ -166,22 +183,22 @@ class StrictStoryPackingService:
                 top_candidates = [item for item, ratio in ratios if ratio == top_ratio]
                 if top_ratio >= 0.5:
                     if len(top_candidates) == 1:
-                        pick_key = top_candidates[0].strict_story_key
+                        pick_key = top_candidates[0].story_key
                     else:
                         tie = await self._run_tie_break(group, top_candidates)
                         choice = tie.choice
                         if choice.reuse_strict_story_key is not None:
-                            candidate_keys = {item.strict_story_key for item in top_candidates}
+                            candidate_keys = {item.story_key for item in top_candidates}
                             if choice.reuse_strict_story_key in candidate_keys:
                                 pick_key = choice.reuse_strict_story_key
                         synopsis = choice.synopsis_zh.strip() or synopsis
 
-            if pick_key in {item.strict_story_key for item in compatible}:
+            if pick_key in {item.story_key for item in compatible}:
                 used_existing_keys.add(pick_key)
 
             resolved.append(
                 _ResolvedStory(
-                    strict_story_key=pick_key,
+                    story_key=pick_key,
                     signature_json=group.signature_json,
                     synopsis_zh=synopsis,
                     frame_ids=group.frame_ids,
@@ -199,54 +216,61 @@ class StrictStoryPackingService:
         *,
         run_id: str,
         resolved: list[_ResolvedStory],
-    ) -> list[StrictStory]:
+    ) -> list[Story]:
         existing_rows = list(
-            session.scalars(select(StrictStory).where(StrictStory.business_date == business_day)).all()
+            session.scalars(select(Story).where(Story.business_date == business_day)).all()
         )
-        existing_by_key = {item.strict_story_key: item for item in existing_rows}
+        existing_by_key = {item.story_key: item for item in existing_rows}
         existing_keys = set(existing_by_key.keys())
-        resolved_keys = {item.strict_story_key for item in resolved}
+        resolved_keys = {item.story_key for item in resolved}
         reused_keys = existing_keys & resolved_keys
         obsolete_keys = existing_keys - resolved_keys
 
         if reused_keys:
-            session.execute(delete(StrictStoryFrame).where(StrictStoryFrame.strict_story_key.in_(reused_keys)))
-            session.execute(delete(StrictStoryArticle).where(StrictStoryArticle.strict_story_key.in_(reused_keys)))
+            session.execute(delete(StoryFrame).where(StoryFrame.story_key.in_(reused_keys)))
+            session.execute(delete(StoryArticle).where(StoryArticle.story_key.in_(reused_keys)))
 
         if obsolete_keys:
-            session.execute(delete(StrictStory).where(StrictStory.strict_story_key.in_(obsolete_keys)))
+            session.execute(delete(Story).where(Story.story_key.in_(obsolete_keys)))
 
-        stories_in_order: list[StrictStory] = []
-        frame_rows: list[StrictStoryFrame] = []
-        article_rows: list[StrictStoryArticle] = []
+        stories_in_order: list[Story] = []
+        frame_rows: list[StoryFrame] = []
+        article_rows: list[StoryArticle] = []
         for story in resolved:
-            if story.strict_story_key in existing_by_key:
-                persisted = existing_by_key[story.strict_story_key]
+            event_type = str(story.signature_json.get("event_type", "")).strip() or "general"
+            anchor_json = story.signature_json.get("signature_json", {})
+            if not isinstance(anchor_json, dict):
+                anchor_json = {}
+
+            if story.story_key in existing_by_key:
+                persisted = existing_by_key[story.story_key]
                 persisted.business_date = business_day
                 persisted.synopsis_zh = story.synopsis_zh
-                persisted.signature_json = story.signature_json
-                persisted.frame_membership_json = list(story.frame_ids)
+                persisted.event_type = event_type
+                persisted.anchor_json = anchor_json
+                persisted.article_membership_json = list(story.article_ids)
                 persisted.created_run_id = run_id
-                persisted.packing_status = "done"
-                persisted.packing_error = None
+                persisted.clustering_status = "done"
+                persisted.clustering_error = None
             else:
-                persisted = StrictStory(
-                    strict_story_key=story.strict_story_key,
+                persisted = Story(
+                    story_key=story.story_key,
                     business_date=business_day,
+                    event_type=event_type,
                     synopsis_zh=story.synopsis_zh,
-                    signature_json=story.signature_json,
-                    frame_membership_json=list(story.frame_ids),
+                    anchor_json=anchor_json,
+                    article_membership_json=list(story.article_ids),
                     created_run_id=run_id,
-                    packing_status="done",
-                    packing_error=None,
+                    clustering_status="done",
+                    clustering_error=None,
                 )
                 session.add(persisted)
 
             stories_in_order.append(persisted)
             frame_rows.extend(
                 [
-                    StrictStoryFrame(
-                        strict_story_key=persisted.strict_story_key,
+                    StoryFrame(
+                        story_key=persisted.story_key,
                         event_frame_id=frame_id,
                         rank=rank,
                     )
@@ -255,8 +279,8 @@ class StrictStoryPackingService:
             )
             article_rows.extend(
                 [
-                    StrictStoryArticle(
-                        strict_story_key=persisted.strict_story_key,
+                    StoryArticle(
+                        story_key=persisted.story_key,
                         article_id=article_id,
                         rank=rank,
                     )
@@ -298,7 +322,7 @@ class StrictStoryPackingService:
             },
             "existing_candidates": [
                 {
-                    "strict_story_key": item.strict_story_key,
+                    "strict_story_key": item.story_key,
                     "signature_json": item.signature_json,
                     "frame_ids": list(item.frame_ids),
                     "overlap_ratio": self._overlap_ratio(group.frame_ids, item.frame_ids),

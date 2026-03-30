@@ -179,8 +179,8 @@ class DailyRunCoordinatorService:
             run_type=RUN_TYPE_DAILY_DIGEST,
             status="running",
             started_at=observed_at,
-            strict_story_updated_at=observed_at,
-            strict_story_token=0,
+            story_updated_at=observed_at,
+            story_token=0,
             digest_updated_at=observed_at,
             digest_token=0,
             metadata_json={},
@@ -266,7 +266,7 @@ class DailyRunCoordinatorService:
         cutoff = observed_at - self._stale_after
         self._reclaim_stale_batch_stage(
             run,
-            stage="strict_story",
+            stage="story",
             observed_at=observed_at,
             cutoff=cutoff,
         )
@@ -460,7 +460,7 @@ class DailyRunCoordinatorService:
         )
         if front_stages_drained:
             self._enqueue_unique_pack(session, run, observed_at, dispatches=dispatches)
-        if front_stages_drained and run.strict_story_status == "done" and run.digest_status in {"pending", "failed"}:
+        if front_stages_drained and run.story_status == "done" and run.digest_status in {"pending", "failed"}:
             self._enqueue_unique_digest(session, run, observed_at, dispatches=dispatches)
 
     def _enqueue_unique_pack(
@@ -471,16 +471,16 @@ class DailyRunCoordinatorService:
         *,
         dispatches: list[PendingDispatch],
     ) -> None:
-        if run.strict_story_status not in RETRYABLE_STATUSES:
+        if run.story_status not in RETRYABLE_STATUSES:
             return
-        if run.strict_story_attempts >= BATCH_STAGE_MAX_ATTEMPTS:
-            run.strict_story_status = "abandoned"
+        if run.story_attempts >= BATCH_STAGE_MAX_ATTEMPTS:
+            run.story_status = "abandoned"
             return
 
-        run.strict_story_status = "queued"
-        run.strict_story_updated_at = observed_at
-        run.strict_story_token += 1
-        ownership_token = run.strict_story_token
+        run.story_status = "queued"
+        run.story_updated_at = observed_at
+        run.story_token += 1
+        ownership_token = run.story_token
         session.flush()
         dispatches.append(
             PendingDispatch(
@@ -493,7 +493,7 @@ class DailyRunCoordinatorService:
                 ),
                 repair=lambda exc, run_id=run.run_id: self._repair_batch_publish_failure(
                     run_id,
-                    stage="strict_story",
+                    stage="story",
                     exc=exc,
                 ),
             )
@@ -623,7 +623,7 @@ class DailyRunCoordinatorService:
             run.status = "done"
             run.finished_at = run.finished_at or observed_at
             return
-        if run.strict_story_status == "abandoned" or run.digest_status == "abandoned":
+        if run.story_status == "abandoned" or run.digest_status == "abandoned":
             run.status = "failed"
             run.finished_at = run.finished_at or observed_at
             return
@@ -837,15 +837,15 @@ class DailyRunCoordinatorService:
 
     @staticmethod
     def _batch_status_counts(run: PipelineRun) -> dict[str, int]:
-        return dict(sorted(Counter((run.strict_story_status, run.digest_status)).items()))
+        return dict(sorted(Counter((run.story_status, run.digest_status)).items()))
 
     @staticmethod
     def _batch_stage_summary(run: PipelineRun) -> dict[str, dict[str, object]]:
         return {
-            "strict_story": {
-                "status": run.strict_story_status,
-                "attempts": run.strict_story_attempts,
-                "error": run.strict_story_error,
+            "story": {
+                "status": run.story_status,
+                "attempts": run.story_attempts,
+                "error": run.story_error,
             },
             "digest": {
                 "status": run.digest_status,
@@ -877,6 +877,6 @@ class DailyRunCoordinatorService:
                 for article in articles
                 if article.event_frame_status in {"failed", "abandoned"}
             },
-            "strict_story": run.strict_story_error,
+            "story": run.story_error,
             "digest": run.digest_error,
         }
