@@ -1,4 +1,4 @@
-"""Business-day aggregation Celery tasks for strict stories and digests."""
+"""Business-day aggregation Celery tasks for stories and digests."""
 
 from __future__ import annotations
 
@@ -17,15 +17,15 @@ from backend.app.models.runtime import (
     _utcnow_naive,
 )
 from backend.app.service.digest_generation_service import DigestGenerationService
-from backend.app.service.strict_story_packing_service import StrictStoryPackingService
+from backend.app.service.story_clustering_service import StoryClusteringService
 from backend.app.tasks.celery_app import celery_app
 
 
-@celery_app.task(name="aggregation.pack_strict_stories_for_day")
-def pack_strict_stories_for_day(business_day_iso: str, run_id: str, ownership_token: int) -> None:
-    """Pack strict stories for one business day and update pipeline_run state."""
+@celery_app.task(name="aggregation.cluster_stories_for_day")
+def cluster_stories_for_day(business_day_iso: str, run_id: str, ownership_token: int) -> None:
+    """Cluster stories for one business day and update pipeline_run state."""
     business_day = date.fromisoformat(business_day_iso)
-    service = StrictStoryPackingService()
+    service = StoryClusteringService()
     with SessionLocal() as session:
         ensure_article_storage_schema(session.get_bind())
         _claim_batch_stage(
@@ -37,7 +37,7 @@ def pack_strict_stories_for_day(business_day_iso: str, run_id: str, ownership_to
         )
 
         try:
-            asyncio.run(service.pack_business_day(session, business_day, run_id=run_id))
+            asyncio.run(service.cluster_business_day(session, business_day, run_id=run_id))
             _finalize_batch_stage_success(
                 session=session,
                 run_id=run_id,

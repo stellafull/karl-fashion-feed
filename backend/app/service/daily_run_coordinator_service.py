@@ -13,7 +13,14 @@ from sqlalchemy.orm import Session
 
 from backend.app.config.source_config import load_source_configs
 from backend.app.core.database import SessionLocal
-from backend.app.models import Article, PipelineRun, SourceRunState, ensure_article_storage_schema
+from backend.app.models import (
+    Article,
+    Digest,
+    PipelineRun,
+    SourceRunState,
+    Story,
+    ensure_article_storage_schema,
+)
 from backend.app.models.runtime import (
     ARTICLE_STAGE_MAX_ATTEMPTS,
     BATCH_STAGE_MAX_ATTEMPTS,
@@ -23,7 +30,7 @@ from backend.app.models.runtime import (
     coerce_utc_naive,
     utc_bounds_for_business_day,
 )
-from backend.app.tasks.aggregation_tasks import generate_digests_for_day, pack_strict_stories_for_day
+from backend.app.tasks.aggregation_tasks import cluster_stories_for_day, generate_digests_for_day
 from backend.app.tasks.content_tasks import collect_source, extract_event_frames, parse_article
 
 RUN_TYPE_DAILY_DIGEST = "digest_daily"
@@ -132,6 +139,10 @@ class DailyRunCoordinatorService:
                         f"run_id={run_id} expected={business_day.isoformat()} got={run.business_date.isoformat()}"
                     )
                 if run.status in {"done", "failed"}:
+                    self._raise_if_unexpectedly_empty_final_digest_set(
+                        session=session,
+                        run=run,
+                    )
                     return
         raise RuntimeError(
             f"coordinator runtime did not drain within {max_ticks} ticks: "
@@ -459,11 +470,11 @@ class DailyRunCoordinatorService:
             source_names,
         )
         if front_stages_drained:
-            self._enqueue_unique_pack(session, run, observed_at, dispatches=dispatches)
+            self._enqueue_unique_story(session, run, observed_at, dispatches=dispatches)
         if front_stages_drained and run.story_status == "done" and run.digest_status in {"pending", "failed"}:
             self._enqueue_unique_digest(session, run, observed_at, dispatches=dispatches)
 
-    def _enqueue_unique_pack(
+    def _enqueue_unique_story(
         self,
         session: Session,
         run: PipelineRun,
@@ -486,7 +497,7 @@ class DailyRunCoordinatorService:
             PendingDispatch(
                 publish=lambda business_day_iso=run.business_date.isoformat(),
                 run_id=run.run_id,
-                ownership_token=ownership_token: pack_strict_stories_for_day.delay(
+                ownership_token=ownership_token: cluster_stories_for_day.delay(
                     business_day_iso,
                     run_id,
                     ownership_token,
@@ -663,6 +674,39 @@ class DailyRunCoordinatorService:
                 self._enabled_source_names(),
             )
             session.commit()
+
+    @staticmethod
+    def _raise_if_unexpectedly_empty_final_digest_set(
+        *,
+        session: Session,
+        run: PipelineRun,
+    ) -> None:
+        if run.digest_status != "failed":
+            return
+        story_count = len(
+            session.execute(
+                select(Story.story_key).where(
+                    Story.business_date == run.business_date,
+                    Story.created_run_id == run.run_id,
+                )
+            ).all()
+        )
+        if story_count == 0:
+            return
+        digest_count = len(
+            session.execute(
+                select(Digest.digest_key).where(
+                    Digest.business_date == run.business_date,
+                    Digest.created_run_id == run.run_id,
+                )
+            ).all()
+        )
+        if digest_count == 0:
+            raise RuntimeError(
+                "unexpectedly empty final digest set: "
+                f"run_id={run.run_id} business_day={run.business_date.isoformat()} "
+                f"story_count={story_count} digest_count={digest_count} digest_status={run.digest_status}"
+            )
 
     def _repair_article_publish_failure(
         self,
