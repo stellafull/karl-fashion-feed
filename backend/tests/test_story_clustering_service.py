@@ -167,3 +167,32 @@ class StoryClusteringServiceTest(unittest.TestCase):
                     run_id="run-1",
                 )
             )
+
+    def test_cluster_business_day_fails_when_llm_leaves_frames_unassigned(self) -> None:
+        session = build_story_test_session_with_frames(
+            business_day=date(2026, 3, 29),
+            frames=[
+                build_frame("f1", "a1", event_type="runway_show", brand="Acme", person="Jane"),
+                build_frame("f2", "a2", event_type="campaign_launch", brand="Acme", person="Jane"),
+            ],
+        )
+        self.addCleanup(session.close)
+        fake_client = build_fake_llm_client(
+            (
+                '{"groups":[{"seed_event_frame_id":"f1","member_event_frame_ids":["f1"],'
+                '"synopsis_zh":"Only one frame covered","event_type":"runway_show",'
+                '"anchor_json":{"brand":"Acme"}}]}'
+            )
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "unassigned event frames"):
+            asyncio.run(
+                StoryClusteringService(
+                    client=fake_client,
+                    rate_limiter=build_fake_rate_limiter(),
+                ).cluster_business_day(
+                    session,
+                    business_day=date(2026, 3, 29),
+                    run_id="run-1",
+                )
+            )

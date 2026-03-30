@@ -17,7 +17,6 @@ from backend.app.schemas.llm.story_cluster_judgment import (
     StoryClusterGroup,
     StoryClusterJudgmentSchema,
 )
-from backend.app.service.event_frame_extraction_service import build_event_frame_signature_json
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
 
 if TYPE_CHECKING:
@@ -116,13 +115,17 @@ class StoryClusteringService:
             raise RuntimeError(
                 f"story clustering produced zero stories for non-empty input: business_day={business_day.isoformat()}"
             )
+        story_plans = self._resolve_story_plans(
+            {card.event_frame_id: card for card in frame_cards},
+            judged_groups,
+        )
+        self._assert_full_frame_coverage(frame_cards, story_plans, business_day=business_day)
 
         return self._replace_day_rows(
             session,
             business_day,
             run_id=run_id,
-            frame_cards=frame_cards,
-            judged_groups=judged_groups,
+            story_plans=story_plans,
         )
 
     def _load_frame_cards(self, session: Session, business_day: date) -> list[_FrameCard]:
@@ -136,7 +139,7 @@ class StoryClusteringService:
 
     def _build_frame_card(self, frame: ArticleEventFrame, article: Article) -> _FrameCard:
         subject_json = frame.subject_json if isinstance(frame.subject_json, dict) else {}
-        anchor_json = build_event_frame_signature_json(
+        anchor_json = self._build_anchor_json(
             subject_json=subject_json,
             signature_json=frame.signature_json,
             place_text=frame.place_text,
@@ -243,12 +246,8 @@ class StoryClusteringService:
         business_day: date,
         *,
         run_id: str,
-        frame_cards: list[_FrameCard],
-        judged_groups: list[_JudgedGroup],
+        story_plans: list[_ResolvedStoryPlan],
     ) -> list[Story]:
-        card_by_id = {card.event_frame_id: card for card in frame_cards}
-        story_plans = self._resolve_story_plans(card_by_id, judged_groups)
-
         existing_story_keys = list(
             session.scalars(
                 select(Story.story_key).where(Story.business_date == business_day).order_by(Story.story_key.asc())
@@ -343,6 +342,46 @@ class StoryClusteringService:
                 tuple(card_by_id[event_frame_id].article_id for event_frame_id in item.member_event_frame_ids),
             ),
         )
+
+    def _assert_full_frame_coverage(
+        self,
+        frame_cards: list[_FrameCard],
+        story_plans: list[_ResolvedStoryPlan],
+        *,
+        business_day: date,
+    ) -> None:
+        expected_ids = {card.event_frame_id for card in frame_cards}
+        assignment_counts = {event_frame_id: 0 for event_frame_id in expected_ids}
+        for story_plan in story_plans:
+            for event_frame_id in story_plan.member_event_frame_ids:
+                if event_frame_id not in assignment_counts:
+                    raise RuntimeError(
+                        "story clustering produced unknown event_frame_id in final plans: "
+                        f"{event_frame_id}"
+                    )
+                assignment_counts[event_frame_id] += 1
+
+        unassigned_ids = sorted(
+            event_frame_id
+            for event_frame_id, count in assignment_counts.items()
+            if count == 0
+        )
+        if unassigned_ids:
+            raise RuntimeError(
+                "story clustering left unassigned event frames for "
+                f"{business_day.isoformat()}: {', '.join(unassigned_ids)}"
+            )
+
+        duplicate_ids = sorted(
+            event_frame_id
+            for event_frame_id, count in assignment_counts.items()
+            if count > 1
+        )
+        if duplicate_ids:
+            raise RuntimeError(
+                "story clustering assigned event frames more than once for "
+                f"{business_day.isoformat()}: {', '.join(duplicate_ids)}"
+            )
 
     def _merge_overlapping_groups(self, judged_groups: list[_JudgedGroup]) -> list[tuple[str, ...]]:
         adjacency: dict[str, set[str]] = {}
@@ -450,3 +489,41 @@ class StoryClusteringService:
         if not isinstance(value, str):
             return ""
         return value.strip()
+
+    def _build_anchor_json(
+        self,
+        *,
+        subject_json: object,
+        signature_json: object,
+        place_text: str | None,
+        collection_text: str | None,
+        season_text: str | None,
+    ) -> dict[str, str]:
+        normalized: dict[str, str] = {}
+        if isinstance(signature_json, dict):
+            for key, value in signature_json.items():
+                key_text = str(key).strip()
+                value_text = self._clean_anchor_value(value)
+                if key_text and value_text:
+                    normalized[key_text] = value_text
+
+        if isinstance(subject_json, dict):
+            for key in ("brand", "person"):
+                if key in normalized:
+                    continue
+                value_text = self._clean_anchor_value(subject_json.get(key))
+                if value_text:
+                    normalized[key] = value_text
+
+        for key, value in (
+            ("place", place_text),
+            ("collection", collection_text),
+            ("season", season_text),
+        ):
+            if key in normalized:
+                continue
+            value_text = self._clean_anchor_value(value)
+            if value_text:
+                normalized[key] = value_text
+
+        return normalized
