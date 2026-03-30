@@ -22,7 +22,15 @@ from backend.app.service.digest_generation_service import DigestGenerationServic
 from backend.app.service.story_clustering_service import StoryClusteringService
 from backend.app.tasks.celery_app import celery_app
 
-_RUNTIME_FAILURE_SUMMARY_KEYS = frozenset({"story", "digest"})
+_RUNTIME_FAILURE_SUMMARY_KEYS = frozenset(
+    {
+        "sources",
+        "parse",
+        "event_frame",
+        "story",
+        "digest",
+    }
+)
 
 
 @celery_app.task(name="aggregation.cluster_stories_for_day")

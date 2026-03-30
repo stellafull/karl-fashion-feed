@@ -283,8 +283,10 @@ class StoryDigestRuntimeIntegrationTest(unittest.TestCase):
             metadata_json={
                 "failure_summary": {
                     "strict_story": "legacy",
-                    "sources": {"source-a": "legacy source failed"},
-                    "parse": "legacy parse failed",
+                    "sources": {"source-a": "source failed"},
+                    "parse": "parse failed",
+                    "event_frame": "event frame failed",
+                    "legacy_extra": "legacy extra failed",
                 }
             },
         )
@@ -293,6 +295,9 @@ class StoryDigestRuntimeIntegrationTest(unittest.TestCase):
 
         self.assertEqual(
             {
+                "sources": {"source-a": "source failed"},
+                "parse": "parse failed",
+                "event_frame": "event frame failed",
                 "story": "story failed",
                 "digest": "digest failed",
             },
