@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import unittest
 from contextlib import nullcontext
 from datetime import date
@@ -20,11 +21,22 @@ from backend.app.models import (
 from backend.app.service.digest_packaging_service import DigestPackagingService
 
 
-def _build_fake_llm_client(raw_content: str) -> SimpleNamespace:
-    async def create(**_: object) -> SimpleNamespace:
-        return response
+def _build_fake_llm_client(
+    raw_contents: list[str],
+    *,
+    call_log: list[dict[str, object]],
+) -> SimpleNamespace:
+    queued = list(raw_contents)
 
-    response = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))])
+    async def create(**kwargs: object) -> SimpleNamespace:
+        call_log.append(dict(kwargs))
+        if not queued:
+            raise AssertionError("fake llm client exhausted queued responses")
+        raw_content = queued.pop(0)
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))]
+        )
+
     completions = SimpleNamespace(create=create)
     chat = SimpleNamespace(completions=completions)
     return SimpleNamespace(chat=chat)
@@ -112,40 +124,68 @@ def _build_session() -> Session:
 
 
 class DigestPackagingServiceTest(unittest.TestCase):
-    def test_package_for_day_allows_story_overlap_across_digest_plans(self) -> None:
+    def test_build_plans_for_day_groups_by_facet_and_allows_story_overlap(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
+        call_log: list[dict[str, object]] = []
         service = DigestPackagingService(
             client=_build_fake_llm_client(
-                (
-                    '{"digests":['
-                    '{"facet":"runway_series","story_keys":["story-1"],'
-                    '"article_ids":["article-1","article-2"],'
-                    '"editorial_angle":"秀场造型作为独立看点",'
-                    '"title_zh":"Acme 秀场速览","dek_zh":"聚焦造型变化"},'
-                    '{"facet":"trend_watch","story_keys":["story-1","story-2"],'
-                    '"article_ids":["article-2","article-3"],'
-                    '"editorial_angle":"设计语言与组织动作共同指向新趋势",'
-                    '"title_zh":"本日趋势联动","dek_zh":"从秀场延展到品牌动作"}'
-                    "]}"
-                )
+                [
+                    (
+                        '{"digests":['
+                        '{"facet":"runway_series","story_keys":["story-1"],'
+                        '"article_ids":["article-1","article-2"],'
+                        '"editorial_angle":"秀场造型作为独立看点",'
+                        '"title_zh":"Acme 秀场速览","dek_zh":"聚焦造型变化"}'
+                        "]}"
+                    ),
+                    (
+                        '{"digests":['
+                        '{"facet":"trend_watch","story_keys":["story-1","story-2"],'
+                        '"article_ids":["article-2","article-3"],'
+                        '"editorial_angle":"设计语言与组织动作共同指向新趋势",'
+                        '"title_zh":"本日趋势联动","dek_zh":"从秀场延展到品牌动作"}'
+                        "]}"
+                    ),
+                ],
+                call_log=call_log,
             ),
             rate_limiter=_build_fake_rate_limiter(),
         )
 
-        plans = asyncio.run(service.package_for_day(session, date(2026, 3, 30)))
+        plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30)))
 
         self.assertEqual(2, len(plans))
+        self.assertEqual(date(2026, 3, 30), plans[0].business_date)
+        self.assertEqual(date(2026, 3, 30), plans[1].business_date)
         self.assertEqual(("story-1",), plans[0].story_keys)
         self.assertEqual(("story-1", "story-2"), plans[1].story_keys)
+        self.assertEqual(2, len(call_log))
+        story_keys_by_call = []
+        for call in call_log:
+            messages = call["messages"]
+            user_message = messages[1]["content"]
+            payload = json.loads(user_message)
+            story_keys_by_call.append(tuple(story["story_key"] for story in payload["stories"]))
+        self.assertEqual(
+            [("story-1",), ("story-1", "story-2")],
+            story_keys_by_call,
+        )
 
-    def test_package_for_day_fails_when_non_empty_input_produces_zero_plans(self) -> None:
+    def test_build_plans_for_day_returns_empty_when_no_faceted_stories(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
+        session.query(StoryFacet).delete()
+        session.commit()
+        call_log: list[dict[str, object]] = []
         service = DigestPackagingService(
-            client=_build_fake_llm_client('{"digests":[]}'),
+            client=_build_fake_llm_client(
+                ['{"digests":[]}'],
+                call_log=call_log,
+            ),
             rate_limiter=_build_fake_rate_limiter(),
         )
 
-        with self.assertRaisesRegex(RuntimeError, "zero plans"):
-            asyncio.run(service.package_for_day(session, date(2026, 3, 30)))
+        plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30)))
+        self.assertEqual([], plans)
+        self.assertEqual([], call_log)

@@ -40,7 +40,8 @@ class _StoryPackagingInput:
 
 
 @dataclass(frozen=True)
-class _ResolvedPlan:
+class ResolvedDigestPlan:
+    business_date: date
     facet: str
     story_keys: tuple[str, ...]
     article_ids: tuple[str, ...]
@@ -62,13 +63,28 @@ class DigestPackagingService:
         self._client = client
         self._rate_limiter = rate_limiter or LlmRateLimiter()
 
-    async def package_for_day(self, session: Session, business_day: date) -> list[_ResolvedPlan]:
+    async def build_plans_for_day(self, session: Session, business_day: date) -> list[ResolvedDigestPlan]:
         story_inputs = self._load_day_story_inputs(session, business_day)
-        schema = await self._select_digest_plans(story_inputs)
-        resolved = self._resolve_plans(story_inputs, schema)
-        if story_inputs and not resolved:
-            raise RuntimeError("digest packaging produced zero plans for non-empty input")
-        return resolved
+        if not story_inputs:
+            return []
+
+        story_inputs_by_facet = self._group_story_inputs_by_facet(story_inputs)
+        plans: list[ResolvedDigestPlan] = []
+        for facet in sorted(story_inputs_by_facet):
+            facet_story_inputs = story_inputs_by_facet[facet]
+            schema = await self._select_digest_plans(
+                facet=facet,
+                story_inputs=facet_story_inputs,
+            )
+            plans.extend(
+                self._resolve_plans(
+                    business_day=business_day,
+                    facet=facet,
+                    story_inputs=facet_story_inputs,
+                    schema=schema,
+                )
+            )
+        return plans
 
     def _load_day_story_inputs(self, session: Session, business_day: date) -> list[_StoryPackagingInput]:
         stories = list(
@@ -133,8 +149,20 @@ class DigestPackagingService:
             )
         return inputs
 
+    def _group_story_inputs_by_facet(
+        self,
+        story_inputs: list[_StoryPackagingInput],
+    ) -> dict[str, list[_StoryPackagingInput]]:
+        grouped: dict[str, list[_StoryPackagingInput]] = {}
+        for item in story_inputs:
+            for facet in item.facets:
+                grouped.setdefault(facet, []).append(item)
+        return grouped
+
     async def _select_digest_plans(
         self,
+        *,
+        facet: str,
         story_inputs: list[_StoryPackagingInput],
     ) -> DigestPackagingSchema:
         if not story_inputs:
@@ -146,7 +174,7 @@ class DigestPackagingService:
                 temperature=0,
                 messages=[
                     {"role": "system", "content": build_digest_packaging_prompt()},
-                    {"role": "user", "content": self._build_user_message(story_inputs)},
+                    {"role": "user", "content": self._build_user_message(facet, story_inputs)},
                 ],
                 response_format={"type": "json_object"},
             )
@@ -155,21 +183,28 @@ class DigestPackagingService:
 
     def _resolve_plans(
         self,
+        *,
+        business_day: date,
+        facet: str,
         story_inputs: list[_StoryPackagingInput],
         schema: DigestPackagingSchema,
-    ) -> list[_ResolvedPlan]:
+    ) -> list[ResolvedDigestPlan]:
         story_by_key = {item.story_key: item for item in story_inputs}
         article_by_id = {
             article.article_id: article
             for item in story_inputs
             for article in item.articles
         }
-        resolved: list[_ResolvedPlan] = []
+        resolved: list[ResolvedDigestPlan] = []
 
         for index, plan in enumerate(schema.digests):
-            facet = plan.facet.strip()
-            if not facet:
+            plan_facet = plan.facet.strip()
+            if not plan_facet:
                 raise ValueError(f"digests[{index}] facet cannot be blank")
+            if plan_facet != facet:
+                raise ValueError(
+                    f"digests[{index}] facet {plan_facet} does not match requested facet {facet}"
+                )
             title_zh = plan.title_zh.strip()
             if not title_zh:
                 raise ValueError(f"digests[{index}] title_zh cannot be blank")
@@ -206,15 +241,18 @@ class DigestPackagingService:
                 raise ValueError(f"digests[{index}] article_ids contains blank value")
             if len(set(article_ids)) != len(article_ids):
                 raise ValueError(f"digests[{index}] article_ids contains duplicates")
-            unknown_article_ids = sorted(article_id for article_id in article_ids if article_id not in allowed_article_id_set)
+            unknown_article_ids = sorted(
+                article_id for article_id in article_ids if article_id not in allowed_article_id_set
+            )
             if unknown_article_ids:
                 joined = ", ".join(unknown_article_ids)
                 raise ValueError(f"digests[{index}] unknown article_id(s): {joined}")
 
             source_names = tuple(sorted({article_by_id[article_id].source_name for article_id in article_ids}))
             resolved.append(
-                _ResolvedPlan(
-                    facet=facet,
+                ResolvedDigestPlan(
+                    business_date=business_day,
+                    facet=plan_facet,
                     story_keys=tuple(story_keys),
                     article_ids=tuple(article_ids),
                     editorial_angle=editorial_angle,
@@ -226,8 +264,9 @@ class DigestPackagingService:
 
         return resolved
 
-    def _build_user_message(self, story_inputs: list[_StoryPackagingInput]) -> str:
+    def _build_user_message(self, facet: str, story_inputs: list[_StoryPackagingInput]) -> str:
         payload = {
+            "facet": facet,
             "stories": [
                 {
                     "story_key": item.story_key,
@@ -264,3 +303,6 @@ class DigestPackagingService:
                 timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
             )
         return self._client
+
+
+__all__ = ["DigestPackagingService", "ResolvedDigestPlan"]

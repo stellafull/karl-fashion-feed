@@ -16,11 +16,11 @@ from backend.app.models import (
     PipelineRun,
     Story,
     StoryArticle,
+    StoryFacet,
     ensure_article_storage_schema,
 )
 from backend.app.service.digest_generation_service import DigestGenerationService
-from backend.app.service.digest_packaging_service import _ResolvedPlan
-from backend.app.service.digest_report_writing_service import _WrittenDigest
+from backend.app.service.digest_packaging_service import ResolvedDigestPlan
 
 
 def _build_session() -> Session:
@@ -66,8 +66,22 @@ def _build_session() -> Session:
                 created_run_id="run-1",
                 clustering_status="done",
             ),
+            Story(
+                story_key="story-2",
+                business_date=business_day,
+                event_type="market_update",
+                synopsis_zh="Beta 品牌动作",
+                anchor_json={"brand": "Beta"},
+                article_membership_json=["article-2"],
+                created_run_id="run-1",
+                clustering_status="done",
+            ),
             StoryArticle(story_key="story-1", article_id="article-1", rank=0),
             StoryArticle(story_key="story-1", article_id="article-2", rank=1),
+            StoryArticle(story_key="story-2", article_id="article-2", rank=0),
+            StoryFacet(story_key="story-1", facet="runway_series"),
+            StoryFacet(story_key="story-1", facet="trend_summary"),
+            StoryFacet(story_key="story-2", facet="trend_summary"),
         ]
     )
     session.commit()
@@ -84,55 +98,39 @@ class _FakeFacetAssignmentService:
 
 
 class _FakePackagingService:
-    def __init__(self) -> None:
+    def __init__(self, plans: list[ResolvedDigestPlan]) -> None:
         self.calls: list[tuple[Session, date]] = []
+        self._plans = plans
 
-    async def package_for_day(self, session: Session, business_day: date) -> list[_ResolvedPlan]:
+    async def build_plans_for_day(self, session: Session, business_day: date) -> list[ResolvedDigestPlan]:
         self.calls.append((session, business_day))
-        return [
-            _ResolvedPlan(
-                facet="trend_watch",
-                story_keys=("story-1",),
-                article_ids=("article-2", "article-1"),
-                editorial_angle="品牌动作解释趋势",
-                title_zh="包装标题",
-                dek_zh="包装导语",
-                source_names=("Vogue", "WWD"),
-            )
-        ]
+        return self._plans
 
 
 class _FakeReportWritingService:
     def __init__(self) -> None:
-        self.calls: list[tuple[Session, date, str, tuple[_ResolvedPlan, ...]]] = []
+        self.calls: list[tuple[Session, str, ResolvedDigestPlan]] = []
 
-    async def write_digests(
+    async def write_digest(
         self,
         session: Session,
-        business_day: date,
+        plan: ResolvedDigestPlan,
         *,
         run_id: str,
-        plans: list[_ResolvedPlan],
-    ) -> list[_WrittenDigest]:
-        self.calls.append((session, business_day, run_id, tuple(plans)))
-        return [
-            _WrittenDigest(
-                digest=Digest(
-                    business_date=business_day,
-                    facet="trend_watch",
-                    title_zh="写作标题",
-                    dek_zh="写作导语",
-                    body_markdown="# 正文",
-                    source_article_count=2,
-                    source_names_json=["Vogue", "WWD"],
-                    created_run_id=run_id,
-                    generation_status="done",
-                    generation_error=None,
-                ),
-                story_keys=("story-1",),
-                article_ids=("article-2", "article-1"),
-            )
-        ]
+    ) -> Digest:
+        self.calls.append((session, run_id, plan))
+        return Digest(
+            business_date=plan.business_date,
+            facet=plan.facet,
+            title_zh=f"写作标题-{plan.facet}",
+            dek_zh="写作导语",
+            body_markdown="# 正文",
+            source_article_count=len(plan.article_ids),
+            source_names_json=list(plan.source_names),
+            created_run_id=run_id,
+            generation_status="done",
+            generation_error=None,
+        )
 
 
 class DigestGenerationServiceTest(unittest.TestCase):
@@ -148,11 +146,34 @@ class DigestGenerationServiceTest(unittest.TestCase):
             with self.subTest(module_name=module_name):
                 importlib.import_module(module_name)
 
-    def test_generate_for_day_orchestrates_subservices_and_persists_memberships(self) -> None:
+    def test_generate_for_day_orchestrates_subservices_and_allows_story_overlap(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
         facet_assignment_service = _FakeFacetAssignmentService()
-        packaging_service = _FakePackagingService()
+        packaging_service = _FakePackagingService(
+            plans=[
+                ResolvedDigestPlan(
+                    business_date=date(2026, 3, 30),
+                    facet="runway_series",
+                    story_keys=("story-1",),
+                    article_ids=("article-1",),
+                    editorial_angle="秀场单稿",
+                    title_zh="包装标题-1",
+                    dek_zh="包装导语-1",
+                    source_names=("Vogue",),
+                ),
+                ResolvedDigestPlan(
+                    business_date=date(2026, 3, 30),
+                    facet="trend_summary",
+                    story_keys=("story-1", "story-2"),
+                    article_ids=("article-2",),
+                    editorial_angle="趋势综合稿",
+                    title_zh="包装标题-2",
+                    dek_zh="包装导语-2",
+                    source_names=("WWD",),
+                ),
+            ]
+        )
         report_writing_service = _FakeReportWritingService()
         service = DigestGenerationService(
             facet_assignment_service=facet_assignment_service,
@@ -164,16 +185,43 @@ class DigestGenerationServiceTest(unittest.TestCase):
 
         self.assertEqual(1, len(facet_assignment_service.calls))
         self.assertEqual(1, len(packaging_service.calls))
-        self.assertEqual(1, len(report_writing_service.calls))
-        self.assertEqual(1, len(persisted))
+        self.assertEqual(2, len(report_writing_service.calls))
+        self.assertEqual(2, len(persisted))
         digest_rows = session.scalars(select(Digest).order_by(Digest.digest_key.asc())).all()
-        self.assertEqual(1, len(digest_rows))
-        self.assertEqual("写作标题", digest_rows[0].title_zh)
+        self.assertEqual(2, len(digest_rows))
         digest_story_rows = session.execute(
-            select(DigestStory.story_key, DigestStory.rank).order_by(DigestStory.rank.asc())
+            select(DigestStory.digest_key, DigestStory.story_key, DigestStory.rank).order_by(
+                DigestStory.digest_key.asc(),
+                DigestStory.rank.asc(),
+            )
         ).all()
-        self.assertEqual([("story-1", 0)], digest_story_rows)
+        self.assertEqual(3, len(digest_story_rows))
+        story_one_occurrences = [row for row in digest_story_rows if row[1] == "story-1"]
+        self.assertEqual(2, len(story_one_occurrences))
         digest_article_rows = session.execute(
-            select(DigestArticle.article_id, DigestArticle.rank).order_by(DigestArticle.rank.asc())
+            select(DigestArticle.article_id, DigestArticle.rank).order_by(
+                DigestArticle.digest_key.asc(),
+                DigestArticle.rank.asc(),
+            )
         ).all()
-        self.assertEqual([("article-2", 0), ("article-1", 1)], digest_article_rows)
+        self.assertEqual(
+            [("article-1", 0), ("article-2", 0)],
+            sorted(digest_article_rows),
+        )
+
+    def test_generate_for_day_raises_when_packaging_returns_zero_plans_for_non_empty_input(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        facet_assignment_service = _FakeFacetAssignmentService()
+        packaging_service = _FakePackagingService(plans=[])
+        report_writing_service = _FakeReportWritingService()
+        service = DigestGenerationService(
+            facet_assignment_service=facet_assignment_service,
+            packaging_service=packaging_service,
+            report_writing_service=report_writing_service,
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "zero digest plans.*2026-03-30"):
+            asyncio.run(service.generate_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+        self.assertEqual(0, len(report_writing_service.calls))

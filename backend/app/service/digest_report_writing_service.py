@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import date
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -16,7 +15,7 @@ from backend.app.models import Article, Digest
 from backend.app.prompts.digest_report_writing_prompt import build_digest_report_writing_prompt
 from backend.app.schemas.llm.digest_report_writing import DigestReportWritingSchema
 from backend.app.service.article_parse_service import ArticleMarkdownService
-from backend.app.service.digest_packaging_service import _ResolvedPlan
+from backend.app.service.digest_packaging_service import ResolvedDigestPlan
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
 
 if TYPE_CHECKING:
@@ -30,13 +29,6 @@ class _ArticleSourceInput:
     title_raw: str
     summary_raw: str
     body_markdown: str
-
-
-@dataclass(frozen=True)
-class _WrittenDigest:
-    digest: Digest
-    story_keys: tuple[str, ...]
-    article_ids: tuple[str, ...]
 
 
 class DigestReportWritingService:
@@ -53,38 +45,16 @@ class DigestReportWritingService:
         self._markdown_service = ArticleMarkdownService(markdown_root)
         self._rate_limiter = rate_limiter or LlmRateLimiter()
 
-    async def write_digests(
-        self,
-        session: Session,
-        business_day: date,
-        *,
-        run_id: str,
-        plans: list[_ResolvedPlan],
-    ) -> list[_WrittenDigest]:
-        written: list[_WrittenDigest] = []
-        for plan in plans:
-            written.append(
-                await self.write_digest(
-                    session,
-                    business_day=business_day,
-                    run_id=run_id,
-                    plan=plan,
-                )
-            )
-        return written
-
     async def write_digest(
         self,
         session: Session,
+        plan: ResolvedDigestPlan,
         *,
-        business_day: date,
         run_id: str,
-        plan: _ResolvedPlan,
-    ) -> _WrittenDigest:
+    ) -> Digest:
         article_sources = self._load_article_sources(session, plan.article_ids)
         schema = await self._write_report(plan, article_sources)
         return self._resolve_written_digest(
-            business_day=business_day,
             run_id=run_id,
             plan=plan,
             article_sources=article_sources,
@@ -129,7 +99,7 @@ class DigestReportWritingService:
 
     async def _write_report(
         self,
-        plan: _ResolvedPlan,
+        plan: ResolvedDigestPlan,
         article_sources: list[_ArticleSourceInput],
     ) -> DigestReportWritingSchema:
         client = self._get_client()
@@ -149,12 +119,11 @@ class DigestReportWritingService:
     def _resolve_written_digest(
         self,
         *,
-        business_day: date,
         run_id: str,
-        plan: _ResolvedPlan,
+        plan: ResolvedDigestPlan,
         article_sources: list[_ArticleSourceInput],
         schema: DigestReportWritingSchema,
-    ) -> _WrittenDigest:
+    ) -> Digest:
         title_zh = schema.title_zh.strip()
         if not title_zh:
             raise ValueError("digest report writing title_zh cannot be blank")
@@ -181,8 +150,8 @@ class DigestReportWritingService:
             article.article_id: article.source_name for article in article_sources
         }
         source_names = sorted({source_name_by_article[article_id] for article_id in requested_article_ids})
-        digest = Digest(
-            business_date=business_day,
+        return Digest(
+            business_date=plan.business_date,
             facet=plan.facet,
             title_zh=title_zh,
             dek_zh=dek_zh,
@@ -193,19 +162,15 @@ class DigestReportWritingService:
             generation_status="done",
             generation_error=None,
         )
-        return _WrittenDigest(
-            digest=digest,
-            story_keys=plan.story_keys,
-            article_ids=tuple(requested_article_ids),
-        )
 
     def _build_user_message(
         self,
-        plan: _ResolvedPlan,
+        plan: ResolvedDigestPlan,
         article_sources: list[_ArticleSourceInput],
     ) -> str:
         payload = {
             "plan": {
+                "business_date": plan.business_date.isoformat(),
                 "facet": plan.facet,
                 "story_keys": list(plan.story_keys),
                 "article_ids": list(plan.article_ids),
@@ -240,3 +205,6 @@ class DigestReportWritingService:
                 timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
             )
         return self._client
+
+
+__all__ = ["DigestReportWritingService"]

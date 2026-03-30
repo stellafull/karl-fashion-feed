@@ -12,7 +12,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app.models import Article, Digest, PipelineRun, ensure_article_storage_schema
-from backend.app.service.digest_packaging_service import _ResolvedPlan
+from backend.app.service.digest_packaging_service import ResolvedDigestPlan
 from backend.app.service.digest_report_writing_service import DigestReportWritingService
 
 
@@ -92,9 +92,9 @@ class DigestReportWritingServiceTest(unittest.TestCase):
             written = asyncio.run(
                 service.write_digest(
                     session,
-                    business_day=date(2026, 3, 30),
                     run_id="run-1",
-                    plan=_ResolvedPlan(
+                    plan=ResolvedDigestPlan(
+                        business_date=date(2026, 3, 30),
                         facet="trend_watch",
                         story_keys=("story-1", "story-2"),
                         article_ids=("article-1", "article-2"),
@@ -106,12 +106,10 @@ class DigestReportWritingServiceTest(unittest.TestCase):
                 )
             )
 
-        self.assertIsInstance(written.digest, Digest)
-        self.assertEqual("trend_watch", written.digest.facet)
-        self.assertEqual("本日品牌动作速写", written.digest.title_zh)
-        self.assertEqual("导语摘要", written.digest.dek_zh)
-        self.assertEqual("# 正文\n\n聚合后的内容", written.digest.body_markdown)
-        self.assertEqual(("story-1", "story-2"), written.story_keys)
-        self.assertEqual(("article-2", "article-1"), written.article_ids)
-        self.assertEqual(["Vogue", "WWD"], written.digest.source_names_json)
-        self.assertEqual(2, written.digest.source_article_count)
+        self.assertIsInstance(written, Digest)
+        self.assertEqual("trend_watch", written.facet)
+        self.assertEqual("本日品牌动作速写", written.title_zh)
+        self.assertEqual("导语摘要", written.dek_zh)
+        self.assertEqual("# 正文\n\n聚合后的内容", written.body_markdown)
+        self.assertEqual(["Vogue", "WWD"], written.source_names_json)
+        self.assertEqual(2, written.source_article_count)
