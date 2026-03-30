@@ -147,11 +147,11 @@ def filter_dev_articles_by_published_today(
     business_day: date,
 ) -> list[dict[str, Any]]:
     """Dev-only review filter for articles published on current business day."""
-    business_day_prefix = business_day.isoformat()
+    window_start, window_end = utc_bounds_for_business_day(business_day)
     return [
         row
         for row in articles
-        if row.get("published_at") is not None and str(row["published_at"]).startswith(business_day_prefix)
+        if row.get("published_at") is not None and window_start <= row["published_at"] < window_end
     ]
 
 

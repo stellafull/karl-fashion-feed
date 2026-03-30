@@ -40,7 +40,7 @@ class DevRunTodayDigestPipelineScriptTest(unittest.TestCase):
     def test_filter_dev_articles_by_published_today_excludes_null_published_at(self) -> None:
         articles = [
             {"article_id": "a-null", "published_at": None},
-            {"article_id": "a-prev", "published_at": datetime(2026, 3, 29, 23, 59, 59)},
+            {"article_id": "a-prev", "published_at": datetime(2026, 3, 29, 15, 59, 59)},
             {"article_id": "a-match", "published_at": datetime(2026, 3, 30, 8, 0, 0)},
         ]
 
@@ -50,6 +50,25 @@ class DevRunTodayDigestPipelineScriptTest(unittest.TestCase):
         )
 
         self.assertEqual(["a-match"], [row["article_id"] for row in filtered])
+
+    def test_filter_dev_articles_by_published_today_uses_shanghai_business_day_bounds(self) -> None:
+        articles = [
+            # Shanghai 2026-03-30 starts at UTC 2026-03-29 16:00:00.
+            {"article_id": "a-boundary-in", "published_at": datetime(2026, 3, 29, 16, 0, 0)},
+            {"article_id": "a-middle-in", "published_at": datetime(2026, 3, 30, 3, 0, 0)},
+            # End boundary is exclusive: UTC 2026-03-30 16:00:00 belongs to next Shanghai day.
+            {"article_id": "a-boundary-out", "published_at": datetime(2026, 3, 30, 16, 0, 0)},
+        ]
+
+        filtered = script_module.filter_dev_articles_by_published_today(
+            articles,
+            business_day=date(2026, 3, 30),
+        )
+
+        self.assertEqual(
+            ["a-boundary-in", "a-middle-in"],
+            [row["article_id"] for row in filtered],
+        )
 
     def test_main_exports_llm_artifact_dir_for_dev_run(self) -> None:
         with (
