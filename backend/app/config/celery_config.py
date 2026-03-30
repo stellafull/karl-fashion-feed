@@ -6,6 +6,11 @@ import os
 from typing import Any
 from urllib.parse import quote
 
+from dotenv import find_dotenv, load_dotenv
+
+
+_ = load_dotenv(find_dotenv())
+
 
 def build_celery_broker_url() -> str:
     """Build the Redis broker URL from environment variables."""
