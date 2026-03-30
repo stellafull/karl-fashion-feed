@@ -177,15 +177,15 @@ class DigestGenerationService:
         digest: Digest,
         plan: ResolvedDigestPlan,
     ) -> tuple[str, ...]:
-        raw_value = getattr(digest, "_writer_selected_article_ids", None)
+        raw_value = digest.selected_source_article_ids
         if not isinstance(raw_value, (tuple, list)):
-            raise RuntimeError("digest report writing must provide writer-selected source_article_ids")
+            raise RuntimeError("digest report writing must provide selected_source_article_ids")
 
         article_ids = [str(article_id).strip() for article_id in raw_value]
         if not article_ids or any(not article_id for article_id in article_ids):
-            raise RuntimeError("digest report writing returned invalid writer-selected source_article_ids")
+            raise RuntimeError("digest report writing returned invalid selected_source_article_ids")
         if len(set(article_ids)) != len(article_ids):
-            raise RuntimeError("digest report writing returned duplicate writer-selected source_article_ids")
+            raise RuntimeError("digest report writing returned duplicate selected_source_article_ids")
 
         allowed_article_ids = set(plan.article_ids)
         unknown_article_ids = sorted(article_id for article_id in article_ids if article_id not in allowed_article_ids)

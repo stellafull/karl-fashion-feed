@@ -115,5 +115,5 @@ class DigestReportWritingServiceTest(unittest.TestCase):
         self.assertEqual(2, written.source_article_count)
         self.assertEqual(
             ("article-2", "article-1"),
-            getattr(written, "_writer_selected_article_ids"),
+            written.selected_source_article_ids,
         )

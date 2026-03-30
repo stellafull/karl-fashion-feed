@@ -51,6 +51,21 @@ class Digest(Base):
         default=_utcnow_naive,
     )
 
+    @property
+    def selected_source_article_ids(self) -> tuple[str, ...] | None:
+        """Writer-selected source article IDs used to build digest memberships."""
+        raw_value = self.__dict__.get("_selected_source_article_ids")
+        if raw_value is None:
+            return None
+        return tuple(raw_value)
+
+    @selected_source_article_ids.setter
+    def selected_source_article_ids(self, article_ids: tuple[str, ...] | list[str] | None) -> None:
+        if article_ids is None:
+            self.__dict__.pop("_selected_source_article_ids", None)
+            return
+        self.__dict__["_selected_source_article_ids"] = tuple(article_ids)
+
 
 class DigestStory(Base):
     """Ordered mapping from digests to stories.

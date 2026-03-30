@@ -162,7 +162,7 @@ class DigestReportWritingService:
             generation_status="done",
             generation_error=None,
         )
-        setattr(digest, "_writer_selected_article_ids", tuple(requested_article_ids))
+        digest.selected_source_article_ids = tuple(requested_article_ids)
         return digest
 
     def _build_user_message(

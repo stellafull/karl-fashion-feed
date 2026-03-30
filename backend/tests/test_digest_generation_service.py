@@ -113,10 +113,12 @@ class _FakeReportWritingService:
         *,
         selected_article_ids_by_facet: dict[str, tuple[str, ...]] | None = None,
         business_date_offset_days: int = 0,
+        expose_selected_article_ids: bool = True,
     ) -> None:
         self.calls: list[tuple[Session, str, ResolvedDigestPlan]] = []
         self._selected_article_ids_by_facet = selected_article_ids_by_facet or {}
         self._business_date_offset_days = business_date_offset_days
+        self._expose_selected_article_ids = expose_selected_article_ids
 
     async def write_digest(
         self,
@@ -139,7 +141,8 @@ class _FakeReportWritingService:
             generation_status="done",
             generation_error=None,
         )
-        setattr(digest, "_writer_selected_article_ids", selected_article_ids)
+        if self._expose_selected_article_ids:
+            digest.selected_source_article_ids = selected_article_ids
         return digest
 
 
@@ -318,3 +321,31 @@ class DigestGenerationServiceTest(unittest.TestCase):
             asyncio.run(service.generate_for_day(session, date(2026, 3, 30), run_id="run-1"))
 
         self.assertEqual(0, len(report_writing_service.calls))
+
+    def test_generate_for_day_raises_when_writer_contract_omits_selected_source_article_ids(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        facet_assignment_service = _FakeFacetAssignmentService()
+        packaging_service = _FakePackagingService(
+            plans=[
+                ResolvedDigestPlan(
+                    business_date=date(2026, 3, 30),
+                    facet="runway_series",
+                    story_keys=("story-1",),
+                    article_ids=("article-1",),
+                    editorial_angle="秀场单稿",
+                    title_zh="包装标题-1",
+                    dek_zh="包装导语-1",
+                    source_names=("Vogue",),
+                )
+            ]
+        )
+        report_writing_service = _FakeReportWritingService(expose_selected_article_ids=False)
+        service = DigestGenerationService(
+            facet_assignment_service=facet_assignment_service,
+            packaging_service=packaging_service,
+            report_writing_service=report_writing_service,
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "selected_source_article_ids"):
+            asyncio.run(service.generate_for_day(session, date(2026, 3, 30), run_id="run-1"))
