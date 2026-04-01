@@ -148,7 +148,7 @@ class StoryClusteringServiceTest(unittest.TestCase):
         )
         self.assertEqual(persisted_articles, ["a1", "a2"])
 
-    def test_cluster_business_day_fails_when_non_empty_input_produces_zero_stories(self) -> None:
+    def test_cluster_business_day_backfills_singleton_story_when_llm_returns_zero_groups(self) -> None:
         session = build_story_test_session_with_frames(
             business_day=date(2026, 3, 29),
             frames=[build_frame("f1", "a1", event_type="runway_show", brand="Acme")],
@@ -156,19 +156,30 @@ class StoryClusteringServiceTest(unittest.TestCase):
         self.addCleanup(session.close)
         fake_client = build_fake_llm_client('{"groups":[]}')
 
-        with self.assertRaisesRegex(RuntimeError, "produced zero stories"):
-            asyncio.run(
-                StoryClusteringService(
-                    client=fake_client,
-                    rate_limiter=build_fake_rate_limiter(),
-                ).cluster_business_day(
-                    session,
-                    business_day=date(2026, 3, 29),
-                    run_id="run-1",
-                )
+        stories = asyncio.run(
+            StoryClusteringService(
+                client=fake_client,
+                rate_limiter=build_fake_rate_limiter(),
+            ).cluster_business_day(
+                session,
+                business_day=date(2026, 3, 29),
+                run_id="run-1",
             )
+        )
 
-    def test_cluster_business_day_fails_when_llm_leaves_frames_unassigned(self) -> None:
+        self.assertEqual(1, len(stories))
+        self.assertEqual("runway_show", stories[0].event_type)
+        self.assertEqual(["a1"], stories[0].article_membership_json)
+        self.assertTrue(stories[0].synopsis_zh)
+
+        persisted_frames = list(
+            session.execute(
+                select(StoryFrame.event_frame_id).order_by(StoryFrame.rank.asc(), StoryFrame.event_frame_id.asc())
+            ).scalars()
+        )
+        self.assertEqual(["f1"], persisted_frames)
+
+    def test_cluster_business_day_backfills_singleton_when_llm_leaves_frames_unassigned(self) -> None:
         session = build_story_test_session_with_frames(
             business_day=date(2026, 3, 29),
             frames=[
@@ -185,14 +196,70 @@ class StoryClusteringServiceTest(unittest.TestCase):
             )
         )
 
-        with self.assertRaisesRegex(RuntimeError, "unassigned event frames"):
-            asyncio.run(
-                StoryClusteringService(
-                    client=fake_client,
-                    rate_limiter=build_fake_rate_limiter(),
-                ).cluster_business_day(
-                    session,
-                    business_day=date(2026, 3, 29),
-                    run_id="run-1",
-                )
+        stories = asyncio.run(
+            StoryClusteringService(
+                client=fake_client,
+                rate_limiter=build_fake_rate_limiter(),
+            ).cluster_business_day(
+                session,
+                business_day=date(2026, 3, 29),
+                run_id="run-1",
             )
+        )
+
+        self.assertEqual(2, len(stories))
+        persisted_story_frames = list(
+            session.execute(
+                select(Story.story_key, StoryFrame.event_frame_id)
+                .join(StoryFrame, StoryFrame.story_key == Story.story_key)
+                .order_by(Story.story_key.asc(), StoryFrame.rank.asc(), StoryFrame.event_frame_id.asc())
+            ).all()
+        )
+        frames_by_story: dict[str, list[str]] = {}
+        for story_key, event_frame_id in persisted_story_frames:
+            frames_by_story.setdefault(story_key, []).append(event_frame_id)
+        self.assertEqual([["f1"], ["f2"]], sorted(frames_by_story.values()))
+
+        persisted_synopses = {
+            story.synopsis_zh
+            for story in session.scalars(select(Story).order_by(Story.story_key.asc())).all()
+        }
+        self.assertIn("Only one frame covered", persisted_synopses)
+
+    def test_cluster_business_day_continues_when_one_window_judgment_raises(self) -> None:
+        session = build_story_test_session_with_frames(
+            business_day=date(2026, 3, 29),
+            frames=[
+                build_frame("f1", "a1", event_type="runway_show", brand="Acme", person="Jane"),
+                build_frame("f2", "a2", event_type="campaign_launch", brand="Acme", person="Jane"),
+            ],
+        )
+        self.addCleanup(session.close)
+
+        class _AlwaysFailingWindowService(StoryClusteringService):
+            async def _run_story_cluster_judgment(self, window: tuple[object, ...], *, run_id: str):
+                _ = (window, run_id)
+                raise ValueError("window judgment failed")
+
+        stories = asyncio.run(
+            _AlwaysFailingWindowService(
+                rate_limiter=build_fake_rate_limiter(),
+            ).cluster_business_day(
+                session,
+                business_day=date(2026, 3, 29),
+                run_id="run-1",
+            )
+        )
+
+        self.assertEqual(2, len(stories))
+        persisted_story_frames = list(
+            session.execute(
+                select(Story.story_key, StoryFrame.event_frame_id)
+                .join(StoryFrame, StoryFrame.story_key == Story.story_key)
+                .order_by(Story.story_key.asc(), StoryFrame.rank.asc(), StoryFrame.event_frame_id.asc())
+            ).all()
+        )
+        frames_by_story: dict[str, list[str]] = {}
+        for story_key, event_frame_id in persisted_story_frames:
+            frames_by_story.setdefault(story_key, []).append(event_frame_id)
+        self.assertEqual([["f1"], ["f2"]], sorted(frames_by_story.values()))

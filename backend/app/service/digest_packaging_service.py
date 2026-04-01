@@ -19,20 +19,10 @@ from backend.app.service.llm_debug_artifact_service import (
     build_llm_debug_artifact_recorder_from_env,
 )
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
+from backend.app.service.runtime_facets import RUNTIME_FACETS
 
 if TYPE_CHECKING:
     from openai import AsyncOpenAI
-
-
-RUNTIME_FACETS = frozenset(
-    {
-        "runway_series",
-        "street_style",
-        "trend_summary",
-        "brand_market",
-    }
-)
-
 
 @dataclass(frozen=True)
 class _ArticlePackagingInput:
@@ -202,7 +192,6 @@ class DigestPackagingService:
                 {"role": "system", "content": build_digest_packaging_prompt()},
                 {"role": "user", "content": user_message},
             ],
-            "response_format": {"type": "json_object"},
         }
         with self._rate_limiter.lease("digest_packaging"):
             response = await client.chat.completions.create(

@@ -171,6 +171,8 @@ class DigestPackagingServiceTest(unittest.TestCase):
             [("story-1",), ("story-1", "story-2")],
             story_keys_by_call,
         )
+        for call in call_log:
+            self.assertNotIn("response_format", call)
 
     def test_build_plans_for_day_returns_empty_when_no_faceted_stories(self) -> None:
         session = _build_session()

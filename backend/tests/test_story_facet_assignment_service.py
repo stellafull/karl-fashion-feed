@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -14,6 +15,8 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app.models import Article, PipelineRun, Story, StoryArticle, StoryFacet, ensure_article_storage_schema
+from backend.app.prompts.facet_assignment_prompt import build_facet_assignment_prompt
+from backend.app.service.runtime_facets import RUNTIME_FACETS
 from backend.app.service.story_facet_assignment_service import StoryFacetAssignmentService
 
 
@@ -22,6 +25,45 @@ def _build_fake_llm_client(raw_content: str) -> SimpleNamespace:
         return response
 
     response = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))])
+    completions = SimpleNamespace(create=create)
+    chat = SimpleNamespace(completions=completions)
+    return SimpleNamespace(chat=chat)
+
+
+def _build_fake_llm_client_with_call_log(
+    raw_content: str,
+    *,
+    call_log: list[dict[str, object]],
+) -> SimpleNamespace:
+    async def create(**kwargs: object) -> SimpleNamespace:
+        call_log.append(dict(kwargs))
+        return response
+
+    response = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))])
+    completions = SimpleNamespace(create=create)
+    chat = SimpleNamespace(completions=completions)
+    return SimpleNamespace(chat=chat)
+
+
+def _build_fake_llm_client_with_queued_responses(
+    raw_contents: list[str],
+    *,
+    call_log: list[dict[str, object]],
+) -> SimpleNamespace:
+    queued = list(raw_contents)
+
+    async def create(**kwargs: object) -> SimpleNamespace:
+        call_log.append(dict(kwargs))
+        if not queued:
+            raise AssertionError("fake llm client exhausted queued responses")
+        raw_content = queued.pop(0)
+        return response_factory(raw_content)
+
+    def response_factory(raw_content: str) -> SimpleNamespace:
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))]
+        )
+
     completions = SimpleNamespace(create=create)
     chat = SimpleNamespace(completions=completions)
     return SimpleNamespace(chat=chat)
@@ -93,6 +135,13 @@ def _build_session() -> Session:
 
 
 class StoryFacetAssignmentServiceTest(unittest.TestCase):
+    def test_prompt_lists_supported_runtime_facets(self) -> None:
+        prompt = build_facet_assignment_prompt()
+
+        self.assertIn("只能使用以下 facet", prompt)
+        for facet in sorted(RUNTIME_FACETS):
+            self.assertIn(facet, prompt)
+
     def test_assign_for_day_persists_story_facet_rows(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
@@ -121,6 +170,59 @@ class StoryFacetAssignmentServiceTest(unittest.TestCase):
             [("story-1", "runway_series"), ("story-1", "trend_summary")],
             stored,
         )
+
+    def test_assign_for_day_does_not_send_response_format(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        call_log: list[dict[str, object]] = []
+        service = StoryFacetAssignmentService(
+            client=_build_fake_llm_client_with_call_log(
+                (
+                    '{"stories":['
+                    '{"story_key":"story-1","facets":["runway_series"]},'
+                    '{"story_key":"story-2","facets":[]}'
+                    "]}"
+                ),
+                call_log=call_log,
+            ),
+            rate_limiter=_build_fake_rate_limiter(),
+        )
+
+        asyncio.run(service.assign_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+        self.assertEqual(1, len(call_log))
+        self.assertNotIn("response_format", call_log[0])
+
+    def test_assign_for_day_batches_large_story_sets_and_merges_rows(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        call_log: list[dict[str, object]] = []
+        service = StoryFacetAssignmentService(
+            client=_build_fake_llm_client_with_queued_responses(
+                [
+                    '{"stories":[{"story_key":"story-1","facets":["runway_series"]}]}',
+                    '{"stories":[{"story_key":"story-2","facets":["brand_market"]}]}',
+                ],
+                call_log=call_log,
+            ),
+            rate_limiter=_build_fake_rate_limiter(),
+            max_stories_per_request=1,
+        )
+
+        persisted = asyncio.run(service.assign_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+        self.assertEqual(
+            [("story-1", "runway_series"), ("story-2", "brand_market")],
+            [(row.story_key, row.facet) for row in persisted],
+        )
+        self.assertEqual(2, len(call_log))
+
+        batch_story_keys = []
+        for call in call_log:
+            messages = call["messages"]
+            payload = json.loads(messages[1]["content"])
+            batch_story_keys.append(tuple(story["story_key"] for story in payload["stories"]))
+        self.assertEqual([("story-1",), ("story-2",)], batch_story_keys)
 
     def test_assign_for_day_raises_on_unsupported_runtime_facet(self) -> None:
         session = _build_session()

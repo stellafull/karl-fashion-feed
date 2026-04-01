@@ -117,14 +117,9 @@ class StoryClusteringService:
 
         windows = self._build_candidate_windows(frame_cards)
         judged_groups = await self._judge_candidate_windows(windows, run_id=run_id)
-        if not judged_groups:
-            raise RuntimeError(
-                f"story clustering produced zero stories for non-empty input: business_day={business_day.isoformat()}"
-            )
-        story_plans = self._resolve_story_plans(
-            {card.event_frame_id: card for card in frame_cards},
-            judged_groups,
-        )
+        card_by_id = {card.event_frame_id: card for card in frame_cards}
+        story_plans = self._resolve_story_plans(card_by_id, judged_groups)
+        story_plans = self._append_singleton_story_plans(card_by_id, story_plans)
         self._assert_full_frame_coverage(frame_cards, story_plans, business_day=business_day)
 
         return self._replace_day_rows(
@@ -209,7 +204,10 @@ class StoryClusteringService:
     ) -> list[_JudgedGroup]:
         judged_groups: dict[tuple[str, ...], _JudgedGroup] = {}
         for window in windows:
-            schema = await self._run_story_cluster_judgment(window, run_id=run_id)
+            try:
+                schema = await self._run_story_cluster_judgment(window, run_id=run_id)
+            except Exception:
+                continue
             valid_ids = {card.event_frame_id for card in window}
             for group in schema.groups:
                 normalized_member_ids = self._normalize_member_ids(group, valid_ids)
@@ -366,6 +364,38 @@ class StoryClusteringService:
             ),
         )
 
+    def _append_singleton_story_plans(
+        self,
+        card_by_id: dict[str, _FrameCard],
+        story_plans: list[_ResolvedStoryPlan],
+    ) -> list[_ResolvedStoryPlan]:
+        assigned_ids = {
+            event_frame_id
+            for story_plan in story_plans
+            for event_frame_id in story_plan.member_event_frame_ids
+        }
+        completed_plans = list(story_plans)
+        for event_frame_id in sorted(card_by_id):
+            if event_frame_id in assigned_ids:
+                continue
+            card = card_by_id[event_frame_id]
+            completed_plans.append(
+                _ResolvedStoryPlan(
+                    member_event_frame_ids=(event_frame_id,),
+                    article_ids=(card.article_id,),
+                    synopsis_zh=self._build_singleton_synopsis(card),
+                    event_type=card.event_type or "general",
+                    anchor_json=dict(card.anchor_json),
+                )
+            )
+        return sorted(
+            completed_plans,
+            key=lambda item: (
+                item.member_event_frame_ids[0],
+                tuple(card_by_id[event_frame_id].article_id for event_frame_id in item.member_event_frame_ids),
+            ),
+        )
+
     def _assert_full_frame_coverage(
         self,
         frame_cards: list[_FrameCard],
@@ -493,6 +523,22 @@ class StoryClusteringService:
             if len(snippets) == 2:
                 break
         return tuple(snippets)
+
+    def _build_singleton_synopsis(self, card: _FrameCard) -> str:
+        for value in (
+            *card.evidence_snippets,
+            card.action_text,
+            card.object_text,
+            card.brand,
+            card.person,
+            card.collection,
+            card.place,
+            card.event_type,
+        ):
+            text = value.strip()
+            if text:
+                return text
+        return "singleton_story"
 
     def _get_client(self) -> AsyncOpenAI:
         if self._client is None:

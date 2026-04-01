@@ -19,20 +19,10 @@ from backend.app.service.llm_debug_artifact_service import (
     build_llm_debug_artifact_recorder_from_env,
 )
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
+from backend.app.service.runtime_facets import RUNTIME_FACETS
 
 if TYPE_CHECKING:
     from openai import AsyncOpenAI
-
-
-RUNTIME_FACETS = frozenset(
-    {
-        "runway_series",
-        "street_style",
-        "trend_summary",
-        "brand_market",
-    }
-)
-
 
 @dataclass(frozen=True)
 class _StoryFacetInput:
@@ -51,15 +41,35 @@ class StoryFacetAssignmentService:
         client: AsyncOpenAI | None = None,
         rate_limiter: LlmRateLimiter | None = None,
         artifact_recorder: LlmDebugArtifactRecorder | None = None,
+        max_stories_per_request: int = 50,
     ) -> None:
+        if max_stories_per_request <= 0:
+            raise ValueError("max_stories_per_request must be positive")
         self._client = client
         self._rate_limiter = rate_limiter or LlmRateLimiter()
         self._artifact_recorder = artifact_recorder or build_llm_debug_artifact_recorder_from_env()
+        self._max_stories_per_request = max_stories_per_request
 
     async def assign_for_day(self, session: Session, business_day: date, *, run_id: str) -> list[StoryFacet]:
         story_inputs = self._load_day_story_inputs(session, business_day)
-        schema = await self._assign_facets(story_inputs, business_day=business_day, run_id=run_id)
-        assignments = self._resolve_assignments(story_inputs, schema)
+        if not story_inputs:
+            return []
+
+        assignments: dict[str, tuple[str, ...]] = {}
+        story_input_batches = [
+            story_inputs[index : index + self._max_stories_per_request]
+            for index in range(0, len(story_inputs), self._max_stories_per_request)
+        ]
+        batch_count = len(story_input_batches)
+        for batch_index, batch_story_inputs in enumerate(story_input_batches, start=1):
+            schema = await self._assign_facets(
+                batch_story_inputs,
+                business_day=business_day,
+                run_id=run_id,
+                batch_index=batch_index,
+                batch_count=batch_count,
+            )
+            assignments.update(self._resolve_assignments(batch_story_inputs, schema))
         return self._replace_day_rows(session, business_day, assignments)
 
     def _load_day_story_inputs(self, session: Session, business_day: date) -> list[_StoryFacetInput]:
@@ -99,6 +109,8 @@ class StoryFacetAssignmentService:
         *,
         business_day: date,
         run_id: str,
+        batch_index: int,
+        batch_count: int,
     ) -> FacetAssignmentSchema:
         if not story_inputs:
             return FacetAssignmentSchema()
@@ -111,7 +123,6 @@ class StoryFacetAssignmentService:
                 {"role": "system", "content": build_facet_assignment_prompt()},
                 {"role": "user", "content": user_message},
             ],
-            "response_format": {"type": "json_object"},
         }
         with self._rate_limiter.lease("facet_assignment"):
             response = await client.chat.completions.create(
@@ -122,7 +133,11 @@ class StoryFacetAssignmentService:
             self._artifact_recorder.record(
                 run_id=run_id,
                 stage="facet_assignment",
-                object_key=f"business-day-{business_day.isoformat()}",
+                object_key=self._build_artifact_object_key(
+                    business_day=business_day,
+                    batch_index=batch_index,
+                    batch_count=batch_count,
+                ),
                 prompt_text=json.dumps(request_payload, ensure_ascii=False, indent=2),
                 response_text=json.dumps({"raw_content": raw_content}, ensure_ascii=False, indent=2),
             )
@@ -198,6 +213,18 @@ class StoryFacetAssignmentService:
             ]
         }
         return json.dumps(payload, ensure_ascii=False)
+
+    def _build_artifact_object_key(
+        self,
+        *,
+        business_day: date,
+        batch_index: int,
+        batch_count: int,
+    ) -> str:
+        object_key = f"business-day-{business_day.isoformat()}"
+        if batch_count == 1:
+            return object_key
+        return f"{object_key}-batch-{batch_index:03d}-of-{batch_count:03d}"
 
     def _get_client(self) -> AsyncOpenAI:
         if self._client is None:
