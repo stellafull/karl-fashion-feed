@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import unittest
-from types import SimpleNamespace
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
+from langchain_core.messages import AIMessage
 
 from backend.app.app_main import app
 from backend.app.router.rag_router import get_rag_answer_service
@@ -92,6 +92,33 @@ class FakeTools:
     @staticmethod
     def serialize_tool_result(result) -> str:
         return "tool-result"
+
+
+class _FakeAnswerQueryService:
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+
+    def execute(self, query_plan: QueryPlan, *, request_images=None) -> QueryResult:
+        self.calls.append(query_plan.text_query or "")
+        return QueryResult(query_plan=query_plan)
+
+
+class _ToolCallingResearchAgent:
+    def __init__(self, tools: list[object], tool_calls: list[tuple[str, dict[str, object]]]) -> None:
+        self._tools = {tool.name: tool for tool in tools}
+        self._tool_calls = tool_calls
+
+    async def ainvoke(self, payload: dict[str, object], config: dict[str, object] | None = None) -> dict[str, object]:
+        del payload, config
+        for tool_name, tool_input in self._tool_calls:
+            await self._tools[tool_name].ainvoke(tool_input)
+        return {"messages": [AIMessage(content="research complete")]}
+
+
+class _FakeSynthesisAgent:
+    async def ainvoke(self, payload: dict[str, object]) -> dict[str, object]:
+        del payload
+        return {"messages": [AIMessage(content="final answer")]}
 
 
 class QueryPlanValidationTests(unittest.TestCase):
@@ -210,98 +237,61 @@ class RagAnswerServiceTests(unittest.IsolatedAsyncioTestCase):
     """Cover the answer-loop orchestration constraints."""
 
     async def test_answer_loop_stops_after_three_tool_calls(self) -> None:
-        tool_call = lambda index: SimpleNamespace(  # noqa: E731
-            id=f"tool-{index}",
-            type="function",
-            function=SimpleNamespace(
-                name="search_fashion_articles",
-                arguments='{"query":"dress"}',
+        fake_query_service = _FakeAnswerQueryService()
+        service = RagAnswerService(
+            tools_factory=lambda request_context: RagTools(
+                request_context=request_context,
+                query_service=fake_query_service,
+                web_search_service=FakeWebSearchService(),
             ),
+            research_agent_factory=lambda rag_tools: _ToolCallingResearchAgent(
+                rag_tools.build_langchain_tools(),
+                [
+                    ("search_fashion_articles", {"query": "dress-1"}),
+                    ("search_fashion_articles", {"query": "dress-2"}),
+                    ("search_fashion_articles", {"query": "dress-3"}),
+                    ("search_fashion_articles", {"query": "dress-4"}),
+                ],
+            ),
+            synthesis_agent=_FakeSynthesisAgent(),
         )
-        responses = [
-            SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content="", tool_calls=[tool_call(1)]))]),
-            SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content="", tool_calls=[tool_call(2)]))]),
-            SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content="", tool_calls=[tool_call(3)]))]),
-            SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content="final answer", tool_calls=None))]),
-        ]
-        fake_completions = FakeChatCompletions(responses)
-        fake_client = SimpleNamespace(chat=SimpleNamespace(completions=fake_completions))
-        fake_tools_instances: list[FakeTools] = []
-
-        def build_tools(request_context: RagRequestContext) -> FakeTools:
-            tools = FakeTools(request_context)
-            fake_tools_instances.append(tools)
-            return tools
-
-        service = RagAnswerService(client=fake_client, tools_factory=build_tools)
         response = await service.answer(
             request=RagQueryRequest(query="show me dresses", filters=QueryFilters(), limit=5),
             request_context=RagRequestContext(filters=QueryFilters(), limit=5),
         )
 
         self.assertEqual(response.answer, "final answer")
-        [fake_tools] = fake_tools_instances
-        self.assertEqual(len(fake_tools.executed_calls), 3)
-        self.assertEqual(len(fake_completions.calls), 4)
+        self.assertEqual(fake_query_service.calls, ["dress-1", "dress-2", "dress-3"])
+        self.assertEqual(len(response.query_plans), 3)
 
     async def test_answer_loop_truncates_batched_tool_calls_at_budget(self) -> None:
         """Tool-call overflows should stop at the budget instead of raising."""
-        tool_call = lambda index: SimpleNamespace(  # noqa: E731
-            id=f"tool-{index}",
-            type="function",
-            function=SimpleNamespace(
-                name="search_fashion_articles",
-                arguments='{"query":"dress"}',
+        fake_query_service = _FakeAnswerQueryService()
+        service = RagAnswerService(
+            tools_factory=lambda request_context: RagTools(
+                request_context=request_context,
+                query_service=fake_query_service,
+                web_search_service=FakeWebSearchService(),
             ),
+            research_agent_factory=lambda rag_tools: _ToolCallingResearchAgent(
+                rag_tools.build_langchain_tools(),
+                [
+                    ("search_fashion_articles", {"query": "dress-1"}),
+                    ("search_fashion_articles", {"query": "dress-2"}),
+                    ("search_fashion_articles", {"query": "dress-3"}),
+                    ("search_fashion_articles", {"query": "dress-4"}),
+                ],
+            ),
+            synthesis_agent=_FakeSynthesisAgent(),
         )
-        responses = [
-            SimpleNamespace(
-                choices=[
-                    SimpleNamespace(
-                        message=SimpleNamespace(
-                            content="",
-                            tool_calls=[tool_call(1), tool_call(2)],
-                        )
-                    )
-                ]
-            ),
-            SimpleNamespace(
-                choices=[
-                    SimpleNamespace(
-                        message=SimpleNamespace(
-                            content="",
-                            tool_calls=[tool_call(3), tool_call(4)],
-                        )
-                    )
-                ]
-            ),
-            SimpleNamespace(
-                choices=[
-                    SimpleNamespace(
-                        message=SimpleNamespace(content="final answer", tool_calls=None)
-                    )
-                ]
-            ),
-        ]
-        fake_completions = FakeChatCompletions(responses)
-        fake_client = SimpleNamespace(chat=SimpleNamespace(completions=fake_completions))
-        fake_tools_instances: list[FakeTools] = []
-
-        def build_tools(request_context: RagRequestContext) -> FakeTools:
-            tools = FakeTools(request_context)
-            fake_tools_instances.append(tools)
-            return tools
-
-        service = RagAnswerService(client=fake_client, tools_factory=build_tools)
         response = await service.answer(
             request=RagQueryRequest(query="show me dresses", filters=QueryFilters(), limit=5),
             request_context=RagRequestContext(filters=QueryFilters(), limit=5),
         )
 
         self.assertEqual(response.answer, "final answer")
-        [fake_tools] = fake_tools_instances
-        self.assertEqual(len(fake_tools.executed_calls), 3)
-        self.assertEqual(len(fake_completions.calls), 3)
+        self.assertEqual(fake_query_service.calls, ["dress-1", "dress-2", "dress-3"])
+        self.assertEqual(len(response.query_plans), 3)
 
 
 class RagRouterTests(unittest.TestCase):
