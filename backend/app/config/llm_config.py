@@ -30,7 +30,7 @@ class Configuration(BaseModel):
     rag_model_max_tokens: int = 2000
     rag_temperature: float = 0.2
     rag_timeout_seconds: int = 120
-    max_react_tool_calls: int = 8
+    max_react_tool_calls: int = 3
 
     @classmethod
     def from_runnable_config(cls, runnable_config: RunnableConfig | None = None) -> Configuration:
@@ -106,7 +106,7 @@ class Configuration(BaseModel):
                 env_keys=("MAX_REACT_TOOL_CALLS",),
                 configurable=configurable,
                 configurable_keys=("max_react_tool_calls",),
-                default=8,
+                default=3,
             ),
         }
         return cls.model_validate(data)

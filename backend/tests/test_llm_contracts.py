@@ -75,6 +75,7 @@ class LlmContractsTest(unittest.TestCase):
         self.assertEqual(configuration.rag_timeout_seconds, 120)
         self.assertEqual(configuration.rag_model_max_tokens, 2000)
         self.assertEqual(configuration.max_structured_output_retries, 3)
+        self.assertEqual(configuration.max_react_tool_calls, 3)
         self.assertEqual(configuration.base_url, "https://dashscope.aliyuncs.com/compatible-mode/v1")
 
     def test_configuration_from_runnable_config_prefers_env_over_runnable(self) -> None:

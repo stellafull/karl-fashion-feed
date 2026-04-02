@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock
 
 from langchain_core.messages import AIMessage, AIMessageChunk
 
+from backend.app.config.llm_config import Configuration
 from backend.app.schemas.rag_api import (
     RagAnswerResponse,
     RagQueryRequest,
@@ -340,6 +341,33 @@ class RagAnswerServiceTest(unittest.TestCase):
 
         self.assertEqual("无工具回答", response.answer)
         self.assertEqual({"recursion_limit": 7}, research_call_log[0]["config"])
+
+    def test_answer_uses_configuration_max_react_tool_calls_for_recursion_limit(self) -> None:
+        research_call_log: list[dict[str, object]] = []
+        service = RagAnswerService(
+            configuration=Configuration(max_react_tool_calls=5),
+            tools_factory=lambda context: RagTools(
+                request_context=context,
+                query_service=_FakeQueryService({}),
+                web_search_service=_FakeWebSearchService({}),
+            ),
+            research_agent_factory=lambda rag_tools: _ToolCallingResearchAgent(
+                rag_tools.build_langchain_tools(),
+                [],
+                call_log=research_call_log,
+            ),
+            synthesis_agent=_FakeSynthesisAgent(answer="无工具回答"),
+        )
+
+        response = asyncio.run(
+            service.answer(
+                request=RagQueryRequest(query="只验证配置驱动迭代上限"),
+                request_context=RagRequestContext(limit=5),
+            )
+        )
+
+        self.assertEqual("无工具回答", response.answer)
+        self.assertEqual({"recursion_limit": 11}, research_call_log[0]["config"])
 
     def test_answer_stream_forwards_deltas_and_returns_normalized_answer(self) -> None:
         article_result = _build_article_result()

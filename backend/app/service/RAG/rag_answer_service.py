@@ -26,7 +26,6 @@ from backend.app.schemas.rag_query import ArticlePackage, QueryResult, Retrieval
 from backend.app.service.RAG.rag_tools import RagTools
 from backend.app.service.langchain_model_factory import build_rag_model
 
-MAX_TOOL_CALLS = 3
 CITATION_MARKER_PATTERN = re.compile(r"\[([A-Za-z]\d+)\]")
 AsyncDeltaHandler = Callable[[str], Awaitable[None]]
 
@@ -417,7 +416,7 @@ class RagAnswerService:
         return self._synthesis_agent
 
     def _research_recursion_limit(self) -> int:
-        return (MAX_TOOL_CALLS * 2) + 1
+        return (self._configuration.max_react_tool_calls * 2) + 1
 
     def _ensure_query_or_request_images(
         self,
