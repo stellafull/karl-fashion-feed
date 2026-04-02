@@ -5,7 +5,7 @@ import json
 import unittest
 from contextlib import nullcontext
 from datetime import date
-from types import SimpleNamespace
+from unittest.mock import patch
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -18,32 +18,45 @@ from backend.app.models import (
     StoryFacet,
     ensure_article_storage_schema,
 )
+from backend.app.prompts.digest_packaging_prompt import build_digest_packaging_prompt
+from backend.app.schemas.llm.digest_packaging import DigestPackagingSchema
 from backend.app.service.digest_packaging_service import DigestPackagingService
 
 
-def _build_fake_llm_client(
-    raw_contents: list[str],
+class _FakeAgent:
+    def __init__(
+        self,
+        responses: list[DigestPackagingSchema | dict[str, object]],
+        *,
+        call_log: list[dict[str, object]],
+    ) -> None:
+        self._responses = list(responses)
+        self._call_log = call_log
+        self.invoke_calls = 0
+
+    async def ainvoke(self, payload: dict[str, object]) -> dict[str, object]:
+        self.invoke_calls += 1
+        self._call_log.append(payload)
+        if not self._responses:
+            raise AssertionError("fake agent exhausted queued responses")
+        return {"structured_response": self._responses.pop(0)}
+
+
+class _FakeRateLimiter:
+    def __init__(self) -> None:
+        self.leased_buckets: list[str] = []
+
+    def lease(self, bucket: str):
+        self.leased_buckets.append(bucket)
+        return nullcontext()
+
+
+def _build_fake_agent(
+    responses: list[DigestPackagingSchema | dict[str, object]],
     *,
     call_log: list[dict[str, object]],
-) -> SimpleNamespace:
-    queued = list(raw_contents)
-
-    async def create(**kwargs: object) -> SimpleNamespace:
-        call_log.append(dict(kwargs))
-        if not queued:
-            raise AssertionError("fake llm client exhausted queued responses")
-        raw_content = queued.pop(0)
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))]
-        )
-
-    completions = SimpleNamespace(create=create)
-    chat = SimpleNamespace(completions=completions)
-    return SimpleNamespace(chat=chat)
-
-
-def _build_fake_rate_limiter() -> SimpleNamespace:
-    return SimpleNamespace(lease=lambda *_: nullcontext())
+) -> _FakeAgent:
+    return _FakeAgent(responses, call_log=call_log)
 
 
 def _build_session() -> Session:
@@ -124,38 +137,84 @@ def _build_session() -> Session:
 
 
 class DigestPackagingServiceTest(unittest.TestCase):
+    def test_build_plans_for_day_builds_agent_via_create_agent_with_required_arguments(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        limiter = _FakeRateLimiter()
+        fake_model = object()
+        call_log: list[dict[str, object]] = []
+        fake_agent = _build_fake_agent(
+            [DigestPackagingSchema(), DigestPackagingSchema()],
+            call_log=call_log,
+        )
+        service = DigestPackagingService(rate_limiter=limiter)
+
+        with patch(
+            "backend.app.service.digest_packaging_service.build_story_model",
+            return_value=fake_model,
+        ) as build_story_model_mock:
+            with patch(
+                "backend.app.service.digest_packaging_service.create_agent",
+                return_value=fake_agent,
+            ) as create_agent_mock:
+                payload = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+        self.assertEqual([], payload)
+        self.assertEqual(["digest_packaging", "digest_packaging"], limiter.leased_buckets)
+        build_story_model_mock.assert_called_once_with(service._configuration)
+        create_agent_mock.assert_called_once_with(
+            model=fake_model,
+            tools=[],
+            system_prompt=build_digest_packaging_prompt(),
+            response_format=DigestPackagingSchema,
+        )
+
     def test_build_plans_for_day_groups_by_facet_and_allows_story_overlap(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
         call_log: list[dict[str, object]] = []
+        limiter = _FakeRateLimiter()
         service = DigestPackagingService(
-            client=_build_fake_llm_client(
+            agent=_build_fake_agent(
                 [
-                    (
-                        '{"digests":['
-                        '{"facet":"runway_series","story_keys":["story-1"],'
-                        '"article_ids":["article-1","article-2"],'
-                        '"editorial_angle":"秀场造型作为独立看点",'
-                        '"title_zh":"Acme 秀场速览","dek_zh":"聚焦造型变化"}'
-                        "]}"
+                    DigestPackagingSchema.model_validate(
+                        {
+                            "digests": [
+                                {
+                                    "facet": "runway_series",
+                                    "story_keys": ["story-1"],
+                                    "article_ids": ["article-1", "article-2"],
+                                    "editorial_angle": "秀场造型作为独立看点",
+                                    "title_zh": "Acme 秀场速览",
+                                    "dek_zh": "聚焦造型变化",
+                                }
+                            ]
+                        }
                     ),
-                    (
-                        '{"digests":['
-                        '{"facet":"trend_summary","story_keys":["story-1","story-2"],'
-                        '"article_ids":["article-2","article-3"],'
-                        '"editorial_angle":"设计语言与组织动作共同指向新趋势",'
-                        '"title_zh":"本日趋势联动","dek_zh":"从秀场延展到品牌动作"}'
-                        "]}"
+                    DigestPackagingSchema.model_validate(
+                        {
+                            "digests": [
+                                {
+                                    "facet": "trend_summary",
+                                    "story_keys": ["story-1", "story-2"],
+                                    "article_ids": ["article-2", "article-3"],
+                                    "editorial_angle": "设计语言与组织动作共同指向新趋势",
+                                    "title_zh": "本日趋势联动",
+                                    "dek_zh": "从秀场延展到品牌动作",
+                                }
+                            ]
+                        }
                     ),
                 ],
                 call_log=call_log,
             ),
-            rate_limiter=_build_fake_rate_limiter(),
+            rate_limiter=limiter,
         )
 
         plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
 
         self.assertEqual(2, len(plans))
+        self.assertEqual(["digest_packaging", "digest_packaging"], limiter.leased_buckets)
         self.assertEqual(date(2026, 3, 30), plans[0].business_date)
         self.assertEqual(date(2026, 3, 30), plans[1].business_date)
         self.assertEqual(("story-1",), plans[0].story_keys)
@@ -163,16 +222,12 @@ class DigestPackagingServiceTest(unittest.TestCase):
         self.assertEqual(2, len(call_log))
         story_keys_by_call = []
         for call in call_log:
-            messages = call["messages"]
-            user_message = messages[1]["content"]
-            payload = json.loads(user_message)
+            payload = json.loads(call["messages"][0]["content"])
             story_keys_by_call.append(tuple(story["story_key"] for story in payload["stories"]))
         self.assertEqual(
             [("story-1",), ("story-1", "story-2")],
             story_keys_by_call,
         )
-        for call in call_log:
-            self.assertNotIn("response_format", call)
 
     def test_build_plans_for_day_returns_empty_when_no_faceted_stories(self) -> None:
         session = _build_session()
@@ -181,11 +236,11 @@ class DigestPackagingServiceTest(unittest.TestCase):
         session.commit()
         call_log: list[dict[str, object]] = []
         service = DigestPackagingService(
-            client=_build_fake_llm_client(
-                ['{"digests":[]}'],
+            agent=_build_fake_agent(
+                [DigestPackagingSchema()],
                 call_log=call_log,
             ),
-            rate_limiter=_build_fake_rate_limiter(),
+            rate_limiter=_FakeRateLimiter(),
         )
 
         plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
@@ -201,11 +256,11 @@ class DigestPackagingServiceTest(unittest.TestCase):
 
         call_log: list[dict[str, object]] = []
         service = DigestPackagingService(
-            client=_build_fake_llm_client(
-                ['{"digests":[]}'],
+            agent=_build_fake_agent(
+                [DigestPackagingSchema()],
                 call_log=call_log,
             ),
-            rate_limiter=_build_fake_rate_limiter(),
+            rate_limiter=_FakeRateLimiter(),
         )
 
         with self.assertRaisesRegex(ValueError, "unsupported runtime facet"):

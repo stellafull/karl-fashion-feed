@@ -5,26 +5,25 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from datetime import date
-from typing import TYPE_CHECKING
+from typing import Any
 
+from langchain.agents import create_agent
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
+from backend.app.config.llm_config import Configuration
 from backend.app.models import Article, ArticleEventFrame, Story, StoryArticle, StoryFrame
 from backend.app.prompts.story_cluster_judgment_prompt import build_story_cluster_judgment_prompt
 from backend.app.schemas.llm.story_cluster_judgment import (
     StoryClusterGroup,
     StoryClusterJudgmentSchema,
 )
+from backend.app.service.langchain_model_factory import build_story_model
 from backend.app.service.llm_debug_artifact_service import (
     LlmDebugArtifactRecorder,
     build_llm_debug_artifact_recorder_from_env,
 )
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
-
-if TYPE_CHECKING:
-    from openai import AsyncOpenAI
 
 
 @dataclass(frozen=True)
@@ -94,12 +93,14 @@ class StoryClusteringService:
     def __init__(
         self,
         *,
-        client: AsyncOpenAI | None = None,
+        agent: Any | None = None,
+        configuration: Configuration | None = None,
         rate_limiter: LlmRateLimiter | None = None,
         artifact_recorder: LlmDebugArtifactRecorder | None = None,
         max_window_size: int = 8,
     ) -> None:
-        self._client = client
+        self._agent = agent
+        self._configuration = configuration or Configuration.from_runnable_config()
         self._rate_limiter = rate_limiter or LlmRateLimiter()
         self._artifact_recorder = artifact_recorder or build_llm_debug_artifact_recorder_from_env()
         self._max_window_size = max_window_size
@@ -231,35 +232,35 @@ class StoryClusteringService:
         *,
         run_id: str,
     ) -> StoryClusterJudgmentSchema:
-        client = self._get_client()
+        agent = self._get_agent()
         payload = {
             "candidate_frames": [card.to_payload() for card in window],
         }
         user_message = json.dumps(payload, ensure_ascii=False)
-        request_payload = {
-            "model": STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-            "temperature": 0,
+        invoke_payload = {
             "messages": [
-                {"role": "system", "content": build_story_cluster_judgment_prompt()},
                 {"role": "user", "content": user_message},
             ],
-            "response_format": {"type": "json_object"},
         }
         with self._rate_limiter.lease("story_cluster_judgment"):
-            response = await client.chat.completions.create(
-                **request_payload,
-            )
-        raw_content = response.choices[0].message.content or "{}"
+            result = await agent.ainvoke(invoke_payload)
+        structured_response = result["structured_response"]
         if self._artifact_recorder.enabled:
             window_ids = "-".join(card.event_frame_id for card in window)
             self._artifact_recorder.record(
                 run_id=run_id,
                 stage="story_cluster_judgment",
                 object_key=f"window-{window_ids}",
-                prompt_text=json.dumps(request_payload, ensure_ascii=False, indent=2),
-                response_text=json.dumps({"raw_content": raw_content}, ensure_ascii=False, indent=2),
+                prompt_text=json.dumps(invoke_payload, ensure_ascii=False, indent=2),
+                response_text=json.dumps(
+                    {"structured_response": self._jsonable_structured_response(structured_response)},
+                    ensure_ascii=False,
+                    indent=2,
+                ),
             )
-        return StoryClusterJudgmentSchema.model_validate_json(raw_content)
+        if isinstance(structured_response, StoryClusterJudgmentSchema):
+            return structured_response
+        return StoryClusterJudgmentSchema.model_validate(structured_response)
 
     def _replace_day_rows(
         self,
@@ -540,19 +541,22 @@ class StoryClusteringService:
                 return text
         return "singleton_story"
 
-    def _get_client(self) -> AsyncOpenAI:
-        if self._client is None:
-            from openai import AsyncOpenAI
-
-            api_key = STORY_SUMMARIZATION_MODEL_CONFIG.api_key
-            if not api_key:
-                raise RuntimeError("story clustering requires configured API key")
-            self._client = AsyncOpenAI(
-                api_key=api_key,
-                base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
-                timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
+    def _get_agent(self):
+        if self._agent is None:
+            self._agent = create_agent(
+                model=build_story_model(self._configuration),
+                tools=[],
+                system_prompt=build_story_cluster_judgment_prompt(),
+                response_format=StoryClusterJudgmentSchema,
             )
-        return self._client
+        return self._agent
+
+    def _jsonable_structured_response(self, structured_response: object) -> object:
+        if isinstance(structured_response, StoryClusterJudgmentSchema):
+            return structured_response.model_dump(mode="json")
+        if isinstance(structured_response, dict):
+            return structured_response
+        return str(structured_response)
 
     def _clean_anchor_value(self, value: object) -> str:
         if not isinstance(value, str):

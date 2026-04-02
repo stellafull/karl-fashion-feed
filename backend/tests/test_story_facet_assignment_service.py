@@ -3,12 +3,11 @@ from __future__ import annotations
 import asyncio
 import json
 import os
-from pathlib import Path
 import tempfile
 import unittest
 from contextlib import nullcontext
 from datetime import date
-from types import SimpleNamespace
+from pathlib import Path
 from unittest.mock import patch
 
 from sqlalchemy import create_engine, select
@@ -16,61 +15,37 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app.models import Article, PipelineRun, Story, StoryArticle, StoryFacet, ensure_article_storage_schema
 from backend.app.prompts.facet_assignment_prompt import build_facet_assignment_prompt
+from backend.app.schemas.llm.facet_assignment import FacetAssignmentSchema
 from backend.app.service.runtime_facets import RUNTIME_FACETS
 from backend.app.service.story_facet_assignment_service import StoryFacetAssignmentService
 
 
-def _build_fake_llm_client(raw_content: str) -> SimpleNamespace:
-    async def create(**_: object) -> SimpleNamespace:
-        return response
+class _FakeAgent:
+    def __init__(
+        self,
+        responses: list[FacetAssignmentSchema | dict[str, object]],
+        *,
+        call_log: list[dict[str, object]] | None = None,
+    ) -> None:
+        self._responses = list(responses)
+        self._call_log = call_log if call_log is not None else []
+        self.invoke_calls = 0
 
-    response = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))])
-    completions = SimpleNamespace(create=create)
-    chat = SimpleNamespace(completions=completions)
-    return SimpleNamespace(chat=chat)
-
-
-def _build_fake_llm_client_with_call_log(
-    raw_content: str,
-    *,
-    call_log: list[dict[str, object]],
-) -> SimpleNamespace:
-    async def create(**kwargs: object) -> SimpleNamespace:
-        call_log.append(dict(kwargs))
-        return response
-
-    response = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))])
-    completions = SimpleNamespace(create=create)
-    chat = SimpleNamespace(completions=completions)
-    return SimpleNamespace(chat=chat)
+    async def ainvoke(self, payload: dict[str, object]) -> dict[str, object]:
+        self.invoke_calls += 1
+        self._call_log.append(payload)
+        if not self._responses:
+            raise AssertionError("fake agent exhausted queued responses")
+        return {"structured_response": self._responses.pop(0)}
 
 
-def _build_fake_llm_client_with_queued_responses(
-    raw_contents: list[str],
-    *,
-    call_log: list[dict[str, object]],
-) -> SimpleNamespace:
-    queued = list(raw_contents)
+class _FakeRateLimiter:
+    def __init__(self) -> None:
+        self.leased_buckets: list[str] = []
 
-    async def create(**kwargs: object) -> SimpleNamespace:
-        call_log.append(dict(kwargs))
-        if not queued:
-            raise AssertionError("fake llm client exhausted queued responses")
-        raw_content = queued.pop(0)
-        return response_factory(raw_content)
-
-    def response_factory(raw_content: str) -> SimpleNamespace:
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))]
-        )
-
-    completions = SimpleNamespace(create=create)
-    chat = SimpleNamespace(completions=completions)
-    return SimpleNamespace(chat=chat)
-
-
-def _build_fake_rate_limiter() -> SimpleNamespace:
-    return SimpleNamespace(lease=lambda *_: nullcontext())
+    def lease(self, bucket: str):
+        self.leased_buckets.append(bucket)
+        return nullcontext()
 
 
 def _build_session() -> Session:
@@ -135,6 +110,34 @@ def _build_session() -> Session:
 
 
 class StoryFacetAssignmentServiceTest(unittest.TestCase):
+    def test_assign_for_day_builds_agent_via_create_agent_with_required_arguments(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        limiter = _FakeRateLimiter()
+        fake_model = object()
+        fake_agent = _FakeAgent([FacetAssignmentSchema()])
+        service = StoryFacetAssignmentService(rate_limiter=limiter)
+
+        with patch(
+            "backend.app.service.story_facet_assignment_service.build_story_model",
+            return_value=fake_model,
+        ) as build_story_model_mock:
+            with patch(
+                "backend.app.service.story_facet_assignment_service.create_agent",
+                return_value=fake_agent,
+            ) as create_agent_mock:
+                payload = asyncio.run(service.assign_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+        self.assertEqual([], payload)
+        self.assertEqual(["facet_assignment"], limiter.leased_buckets)
+        build_story_model_mock.assert_called_once_with(service._configuration)
+        create_agent_mock.assert_called_once_with(
+            model=fake_model,
+            tools=[],
+            system_prompt=build_facet_assignment_prompt(),
+            response_format=FacetAssignmentSchema,
+        )
+
     def test_prompt_lists_supported_runtime_facets(self) -> None:
         prompt = build_facet_assignment_prompt()
 
@@ -145,20 +148,26 @@ class StoryFacetAssignmentServiceTest(unittest.TestCase):
     def test_assign_for_day_persists_story_facet_rows(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
+        limiter = _FakeRateLimiter()
         service = StoryFacetAssignmentService(
-            client=_build_fake_llm_client(
-                (
-                    '{"stories":['
-                    '{"story_key":"story-1","facets":["runway_series","trend_summary"]},'
-                    '{"story_key":"story-2","facets":[]}'
-                    "]}"
-                )
+            agent=_FakeAgent(
+                [
+                    FacetAssignmentSchema.model_validate(
+                        {
+                            "stories": [
+                                {"story_key": "story-1", "facets": ["runway_series", "trend_summary"]},
+                                {"story_key": "story-2", "facets": []},
+                            ]
+                        }
+                    )
+                ]
             ),
-            rate_limiter=_build_fake_rate_limiter(),
+            rate_limiter=limiter,
         )
 
         persisted = asyncio.run(service.assign_for_day(session, date(2026, 3, 30), run_id="run-1"))
 
+        self.assertEqual(["facet_assignment"], limiter.leased_buckets)
         self.assertEqual(
             [("story-1", "runway_series"), ("story-1", "trend_summary")],
             [(row.story_key, row.facet) for row in persisted],
@@ -171,41 +180,50 @@ class StoryFacetAssignmentServiceTest(unittest.TestCase):
             stored,
         )
 
-    def test_assign_for_day_does_not_send_response_format(self) -> None:
+    def test_assign_for_day_sends_story_batch_in_user_message(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
         call_log: list[dict[str, object]] = []
         service = StoryFacetAssignmentService(
-            client=_build_fake_llm_client_with_call_log(
-                (
-                    '{"stories":['
-                    '{"story_key":"story-1","facets":["runway_series"]},'
-                    '{"story_key":"story-2","facets":[]}'
-                    "]}"
-                ),
+            agent=_FakeAgent(
+                [
+                    FacetAssignmentSchema.model_validate(
+                        {
+                            "stories": [
+                                {"story_key": "story-1", "facets": ["runway_series"]},
+                                {"story_key": "story-2", "facets": []},
+                            ]
+                        }
+                    )
+                ],
                 call_log=call_log,
             ),
-            rate_limiter=_build_fake_rate_limiter(),
+            rate_limiter=_FakeRateLimiter(),
         )
 
         asyncio.run(service.assign_for_day(session, date(2026, 3, 30), run_id="run-1"))
 
         self.assertEqual(1, len(call_log))
-        self.assertNotIn("response_format", call_log[0])
+        payload = json.loads(call_log[0]["messages"][0]["content"])
+        self.assertEqual(["story-1", "story-2"], [story["story_key"] for story in payload["stories"]])
 
     def test_assign_for_day_batches_large_story_sets_and_merges_rows(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
         call_log: list[dict[str, object]] = []
         service = StoryFacetAssignmentService(
-            client=_build_fake_llm_client_with_queued_responses(
+            agent=_FakeAgent(
                 [
-                    '{"stories":[{"story_key":"story-1","facets":["runway_series"]}]}',
-                    '{"stories":[{"story_key":"story-2","facets":["brand_market"]}]}',
+                    FacetAssignmentSchema.model_validate(
+                        {"stories": [{"story_key": "story-1", "facets": ["runway_series"]}]}
+                    ),
+                    FacetAssignmentSchema.model_validate(
+                        {"stories": [{"story_key": "story-2", "facets": ["brand_market"]}]}
+                    ),
                 ],
                 call_log=call_log,
             ),
-            rate_limiter=_build_fake_rate_limiter(),
+            rate_limiter=_FakeRateLimiter(),
             max_stories_per_request=1,
         )
 
@@ -219,8 +237,7 @@ class StoryFacetAssignmentServiceTest(unittest.TestCase):
 
         batch_story_keys = []
         for call in call_log:
-            messages = call["messages"]
-            payload = json.loads(messages[1]["content"])
+            payload = json.loads(call["messages"][0]["content"])
             batch_story_keys.append(tuple(story["story_key"] for story in payload["stories"]))
         self.assertEqual([("story-1",), ("story-2",)], batch_story_keys)
 
@@ -228,15 +245,19 @@ class StoryFacetAssignmentServiceTest(unittest.TestCase):
         session = _build_session()
         self.addCleanup(session.close)
         service = StoryFacetAssignmentService(
-            client=_build_fake_llm_client(
-                (
-                    '{"stories":['
-                    '{"story_key":"story-1","facets":["trend_watch"]},'
-                    '{"story_key":"story-2","facets":[]}'
-                    "]}"
-                )
+            agent=_FakeAgent(
+                [
+                    FacetAssignmentSchema.model_validate(
+                        {
+                            "stories": [
+                                {"story_key": "story-1", "facets": ["trend_watch"]},
+                                {"story_key": "story-2", "facets": []},
+                            ]
+                        }
+                    )
+                ]
             ),
-            rate_limiter=_build_fake_rate_limiter(),
+            rate_limiter=_FakeRateLimiter(),
         )
 
         with self.assertRaisesRegex(ValueError, "unsupported runtime facet"):
@@ -248,15 +269,19 @@ class StoryFacetAssignmentServiceTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             with patch.dict(os.environ, {"KARL_LLM_DEBUG_ARTIFACT_DIR": tmpdir}):
                 service = StoryFacetAssignmentService(
-                    client=_build_fake_llm_client(
-                        (
-                            '{"stories":['
-                            '{"story_key":"story-1","facets":["runway_series"]},'
-                            '{"story_key":"story-2","facets":["trend_summary"]}'
-                            "]}"
-                        )
+                    agent=_FakeAgent(
+                        [
+                            FacetAssignmentSchema.model_validate(
+                                {
+                                    "stories": [
+                                        {"story_key": "story-1", "facets": ["runway_series"]},
+                                        {"story_key": "story-2", "facets": ["trend_summary"]},
+                                    ]
+                                }
+                            )
+                        ]
                     ),
-                    rate_limiter=_build_fake_rate_limiter(),
+                    rate_limiter=_FakeRateLimiter(),
                 )
                 persisted = asyncio.run(service.assign_for_day(session, date(2026, 3, 30), run_id="run-1"))
 
