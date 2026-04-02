@@ -915,7 +915,7 @@ class ContentTasksTest(unittest.TestCase):
             "backend.app.service.event_frame_extraction_service.LlmRateLimiter",
             return_value=fake_limiter,
         ) as limiter_factory:
-            service = EventFrameExtractionService(client=fake_client)
+            service = EventFrameExtractionService(agent=fake_client)
 
         self.assertIs(service._rate_limiter, fake_limiter)
         limiter_factory.assert_called_once_with()
@@ -931,7 +931,7 @@ class ContentTasksTest(unittest.TestCase):
             poll_interval_seconds=0.01,
         )
         service = EventFrameExtractionService(
-            client=_FakeClient(
+            agent=_FakeClient(
                 """
                 {
                   "frames": [

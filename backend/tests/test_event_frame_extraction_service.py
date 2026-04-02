@@ -6,12 +6,14 @@ import unittest
 from contextlib import nullcontext
 from datetime import UTC, datetime
 from pathlib import Path
+from unittest.mock import patch
 
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app.models import Article, ArticleEventFrame, ensure_article_storage_schema
 from backend.app.schemas.llm.event_frame_extraction import EventFrameExtractionSchema, ExtractedEventFrame
+from backend.app.prompts.event_frame_extraction_prompt import build_event_frame_extraction_prompt
 from backend.app.service.article_parse_service import ArticleMarkdownService
 from backend.app.service.event_frame_extraction_service import EventFrameExtractionService
 
@@ -72,6 +74,49 @@ def _build_session_with_article(root_path: Path, *, article_id: str) -> tuple[Se
 
 
 class EventFrameExtractionServiceTest(unittest.TestCase):
+    def test_infer_frames_builds_agent_via_create_agent_with_required_arguments(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            markdown_root = Path(tmp_dir)
+            session, article = _build_session_with_article(markdown_root, article_id="article-agent-wire")
+            self.addCleanup(session.close)
+            limiter = _FakeRateLimiter()
+            fake_model = object()
+            fake_agent = _FakeSuccessAgent(
+                EventFrameExtractionSchema(
+                    frames=[
+                        ExtractedEventFrame(
+                            event_type="runway_show",
+                            extraction_confidence=0.9,
+                        )
+                    ]
+                )
+            )
+            service = EventFrameExtractionService(
+                markdown_service=ArticleMarkdownService(root_path=markdown_root),
+                rate_limiter=limiter,
+            )
+
+            with patch(
+                "backend.app.service.event_frame_extraction_service.build_story_model",
+                return_value=fake_model,
+            ) as build_story_model_mock:
+                with patch(
+                    "backend.app.service.event_frame_extraction_service.create_agent",
+                    return_value=fake_agent,
+                ) as create_agent_mock:
+                    payload = asyncio.run(service._infer_frames(article))
+
+            self.assertIsInstance(payload, EventFrameExtractionSchema)
+            self.assertEqual(1, fake_agent.invoke_calls)
+            self.assertEqual(["event_frame_extraction"], limiter.leased_buckets)
+            build_story_model_mock.assert_called_once_with(service._configuration)
+            create_agent_mock.assert_called_once_with(
+                model=fake_model,
+                tools=[],
+                system_prompt=build_event_frame_extraction_prompt(),
+                response_format=EventFrameExtractionSchema,
+            )
+
     def test_extract_frames_persists_structured_response(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             markdown_root = Path(tmp_dir)
