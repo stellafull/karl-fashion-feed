@@ -67,7 +67,7 @@ class LlmContractsTest(unittest.TestCase):
             configuration = Configuration.from_runnable_config()
 
         self.assertEqual(configuration.story_summarization_model, "kimi-k2.5")
-        self.assertEqual(configuration.story_summarization_temperature, 0.3)
+        self.assertEqual(configuration.story_summarization_temperature, 0.0)
         self.assertEqual(configuration.story_summarization_timeout_seconds, 600)
         self.assertEqual(configuration.story_summarization_model_max_tokens, 4000)
         self.assertEqual(configuration.rag_model, "kimi-k2.5")
@@ -161,10 +161,8 @@ class LlmContractsTest(unittest.TestCase):
         self.assertEqual(configuration.max_react_tool_calls, 11)
 
     @patch("backend.app.service.langchain_model_factory.ChatOpenAI")
-    def test_build_story_model_wires_chat_openai_and_retry(self, chat_openai_mock: MagicMock) -> None:
-        runnable = MagicMock(name="story-runnable")
+    def test_build_story_model_wires_chat_openai_without_wrapping_model(self, chat_openai_mock: MagicMock) -> None:
         model_instance = MagicMock(name="chat-openai-instance")
-        model_instance.with_retry.return_value = runnable
         chat_openai_mock.return_value = model_instance
         configuration = Configuration(
             api_key="test-key",
@@ -183,7 +181,7 @@ class LlmContractsTest(unittest.TestCase):
 
         built_model = build_story_model(configuration)
 
-        self.assertIs(built_model, runnable)
+        self.assertIs(built_model, model_instance)
         chat_openai_mock.assert_called_once_with(
             model="kimi-k2.5",
             api_key="test-key",
@@ -191,16 +189,13 @@ class LlmContractsTest(unittest.TestCase):
             temperature=0.15,
             max_completion_tokens=999,
             timeout=88,
-            max_retries=0,
+            max_retries=6,
             use_responses_api=True,
         )
-        model_instance.with_retry.assert_called_once_with(stop_after_attempt=6)
 
     @patch("backend.app.service.langchain_model_factory.ChatOpenAI")
-    def test_build_rag_model_wires_chat_openai_and_retry(self, chat_openai_mock: MagicMock) -> None:
-        runnable = MagicMock(name="rag-runnable")
+    def test_build_rag_model_wires_chat_openai_without_wrapping_model(self, chat_openai_mock: MagicMock) -> None:
         model_instance = MagicMock(name="chat-openai-instance")
-        model_instance.with_retry.return_value = runnable
         chat_openai_mock.return_value = model_instance
         configuration = Configuration(
             api_key="rag-key",
@@ -219,7 +214,7 @@ class LlmContractsTest(unittest.TestCase):
 
         built_model = build_rag_model(configuration)
 
-        self.assertIs(built_model, runnable)
+        self.assertIs(built_model, model_instance)
         chat_openai_mock.assert_called_once_with(
             model="rag-model",
             api_key="rag-key",
@@ -227,12 +222,11 @@ class LlmContractsTest(unittest.TestCase):
             temperature=0.2,
             max_completion_tokens=444,
             timeout=33,
-            max_retries=0,
+            max_retries=3,
             use_responses_api=True,
         )
-        model_instance.with_retry.assert_called_once_with(stop_after_attempt=3)
 
-    def test_build_story_model_result_is_accepted_by_create_agent_with_response_format(self) -> None:
+    def test_build_story_model_returns_agent_compatible_model(self) -> None:
         configuration = Configuration(
             api_key="test-key",
             base_url="https://openai.example/v1",
@@ -249,6 +243,7 @@ class LlmContractsTest(unittest.TestCase):
         )
 
         model = build_story_model(configuration)
+        self.assertTrue(hasattr(model, "bind_tools"))
         agent = create_agent(model=model, tools=[], response_format=StoryResponseSchema)
 
         self.assertIsNotNone(agent)

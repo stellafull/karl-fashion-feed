@@ -24,7 +24,7 @@ class Configuration(BaseModel):
     max_structured_output_retries: int = 3
     story_summarization_model: str = "kimi-k2.5"
     story_summarization_model_max_tokens: int = 4000
-    story_summarization_temperature: float = 0.3
+    story_summarization_temperature: float = 0.0
     story_summarization_timeout_seconds: int = 600
     rag_model: str = "kimi-k2.5"
     rag_model_max_tokens: int = 2000
@@ -70,7 +70,7 @@ class Configuration(BaseModel):
                 env_keys=("STORY_SUMMARIZATION_TEMPERATURE",),
                 configurable=configurable,
                 configurable_keys=("story_summarization_temperature",),
-                default=0.3,
+                default=0.0,
             ),
             "story_summarization_timeout_seconds": _resolve_numeric(
                 env_keys=("STORY_SUMMARIZATION_TIMEOUT_SECONDS",),

@@ -46,7 +46,7 @@ def _build_model(
         temperature=temperature,
         max_completion_tokens=max_completion_tokens,
         timeout=timeout_seconds,
-        max_retries=0,
+        max_retries=configuration.max_structured_output_retries,
         use_responses_api=True,
     )
-    return model.with_retry(stop_after_attempt=configuration.max_structured_output_retries)
+    return model
