@@ -137,9 +137,14 @@ class RagAnswerService:
         """Expose the full RAG answer path as a reusable LangChain tool."""
 
         async def _run(query: str | None = None) -> tuple[str, dict[str, Any]]:
+            normalized_query = self._normalize_optional_query(query)
+            self._ensure_query_or_request_images(
+                query=normalized_query,
+                request_context=request_context,
+            )
             response = await self.answer(
                 request=RagQueryRequest(
-                    query=query,
+                    query=normalized_query,
                     filters=request_context.filters,
                     limit=request_context.limit,
                 ),
@@ -413,6 +418,22 @@ class RagAnswerService:
 
     def _research_recursion_limit(self) -> int:
         return (MAX_TOOL_CALLS * 2) + 1
+
+    def _ensure_query_or_request_images(
+        self,
+        *,
+        query: str | None,
+        request_context: RagRequestContext,
+    ) -> None:
+        if query is None and not request_context.has_request_images:
+            raise ValueError("rag query requires text query or uploaded images")
+
+    @staticmethod
+    def _normalize_optional_query(query: str | None) -> str | None:
+        if query is None:
+            return None
+        normalized_query = query.strip()
+        return normalized_query or None
 
     def _extract_agent_answer(self, result: Any) -> str:
         messages = self._extract_result_messages(result)

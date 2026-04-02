@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import unittest
 from unittest.mock import patch
 
@@ -53,45 +54,6 @@ class FakeWebSearchService:
     async def search(self, *, query: str, limit: int):
         self.queries.append((query, limit))
         return []
-
-
-class FakeChatCompletions:
-    """Return a predefined sequence of chat completion messages."""
-
-    def __init__(self, responses: list[SimpleNamespace]) -> None:
-        self._responses = responses
-        self.calls: list[dict[str, object]] = []
-
-    async def create(self, **kwargs):
-        self.calls.append(kwargs)
-        if not self._responses:
-            raise AssertionError("unexpected extra chat.completions.create call")
-        return self._responses.pop(0)
-
-
-class FakeTools:
-    """Minimal tools facade for answer-loop tests."""
-
-    def __init__(self, request_context: RagRequestContext) -> None:
-        self.request_context = request_context
-        self.executed_calls: list[tuple[str, dict[str, object]]] = []
-
-    def build_tool_definitions(self) -> list[dict[str, object]]:
-        return [{"type": "function", "function": {"name": "search_fashion_articles"}}]
-
-    async def execute_tool(self, tool_name: str, arguments: dict[str, object]):
-        self.executed_calls.append((tool_name, arguments))
-        query_plan = QueryPlan(
-            plan_type="text_only",
-            text_query="query",
-            filters=self.request_context.filters,
-            limit=self.request_context.limit,
-        )
-        return QueryResult(query_plan=query_plan)
-
-    @staticmethod
-    def serialize_tool_result(result) -> str:
-        return "tool-result"
 
 
 class _FakeAnswerQueryService:
@@ -165,7 +127,18 @@ class RagToolsTests(unittest.TestCase):
             query_service=FakeQueryService(),
             web_search_service=FakeWebSearchService(),
         )
-        serialized = str(tools.build_langchain_tools())
+        serialized = json.dumps(
+            [
+                {
+                    "name": tool.name,
+                    "description": tool.description,
+                    "args": tool.args,
+                }
+                for tool in tools.build_langchain_tools()
+            ],
+            ensure_ascii=False,
+            sort_keys=True,
+        )
         self.assertNotIn("filters", serialized)
         self.assertNotIn("limit", serialized)
         self.assertNotIn("base64", serialized)

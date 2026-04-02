@@ -7,7 +7,13 @@ from unittest.mock import AsyncMock
 
 from langchain_core.messages import AIMessage, AIMessageChunk
 
-from backend.app.schemas.rag_api import RagAnswerResponse, RagQueryRequest, RagRequestContext, WebSearchResult
+from backend.app.schemas.rag_api import (
+    RagAnswerResponse,
+    RagQueryRequest,
+    RagRequestContext,
+    RequestImageInput,
+    WebSearchResult,
+)
 from backend.app.schemas.rag_query import (
     ArticlePackage,
     CitationLocator,
@@ -240,7 +246,7 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertEqual([article_result], collected_rag_results)
         self.assertEqual(web_results, collected_web_results)
 
-    def test_answer_merges_collected_results_and_builds_synthesis_payload(self) -> None:
+    def test_answer_allows_multiple_tool_calls_in_single_turn_and_merges_results(self) -> None:
         article_result = _build_article_result()
         image_result = _build_image_result()
         research_call_log: list[dict[str, object]] = []
@@ -294,6 +300,13 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertEqual(["C1", "C2", "C3", "W1"], [citation.marker for citation in response.citations])
         self.assertEqual(web_results, response.web_results)
         self.assertEqual({"recursion_limit": 7}, research_call_log[0]["config"])
+        self.assertEqual(
+            [
+                ("text_only", "silhouette", None),
+                ("image_only", "silhouette detail", None),
+            ],
+            query_service.calls,
+        )
 
         content_blocks = synthesis_agent.invoke_payloads[0]["messages"][0]["content"]
         self.assertIsInstance(content_blocks, list)
@@ -386,3 +399,32 @@ class RagAnswerServiceTest(unittest.TestCase):
         call_kwargs = service.answer.await_args.kwargs
         self.assertEqual("帮我总结一下", call_kwargs["request"].query)
         self.assertEqual(request_context, call_kwargs["request_context"])
+
+    def test_build_answer_tool_rejects_blank_query_without_request_images(self) -> None:
+        service = RagAnswerService()
+        tool = service.build_answer_tool(request_context=RagRequestContext(limit=5))
+
+        with self.assertRaisesRegex(ValueError, "rag query requires text query or uploaded images"):
+            asyncio.run(tool.ainvoke({}))
+
+    def test_build_answer_tool_allows_blank_query_when_request_images_exist(self) -> None:
+        service = RagAnswerService()
+        request_context = RagRequestContext(
+            limit=5,
+            request_images=[RequestImageInput(mime_type="image/png", base64_data="aGVsbG8=")],
+        )
+        service.answer = AsyncMock(
+            return_value=RagAnswerResponse(
+                answer="图片工具答案",
+                citations=[],
+                packages=[],
+                query_plans=[],
+                web_results=[],
+            )
+        )
+
+        tool = service.build_answer_tool(request_context=request_context)
+        result = asyncio.run(tool.ainvoke({}))
+
+        self.assertEqual("图片工具答案", result)
+        self.assertIsNone(service.answer.await_args.kwargs["request"].query)
