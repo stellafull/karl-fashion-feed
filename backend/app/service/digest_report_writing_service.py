@@ -5,25 +5,24 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import Any
 
+from langchain.agents import create_agent
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
+from backend.app.config.llm_config import Configuration
 from backend.app.models import Article, Digest
 from backend.app.prompts.digest_report_writing_prompt import build_digest_report_writing_prompt
 from backend.app.schemas.llm.digest_report_writing import DigestReportWritingSchema
 from backend.app.service.article_parse_service import ArticleMarkdownService
 from backend.app.service.digest_packaging_service import ResolvedDigestPlan
+from backend.app.service.langchain_model_factory import build_story_model
 from backend.app.service.llm_debug_artifact_service import (
     LlmDebugArtifactRecorder,
     build_llm_debug_artifact_recorder_from_env,
 )
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
-
-if TYPE_CHECKING:
-    from openai import AsyncOpenAI
 
 
 @dataclass(frozen=True)
@@ -41,12 +40,14 @@ class DigestReportWritingService:
     def __init__(
         self,
         *,
-        client: AsyncOpenAI | None = None,
+        agent: Any | None = None,
+        configuration: Configuration | None = None,
         markdown_root: Path | None = None,
         rate_limiter: LlmRateLimiter | None = None,
         artifact_recorder: LlmDebugArtifactRecorder | None = None,
     ) -> None:
-        self._client = client
+        self._agent = agent
+        self._configuration = configuration or Configuration.from_runnable_config()
         self._markdown_service = ArticleMarkdownService(markdown_root)
         self._rate_limiter = rate_limiter or LlmRateLimiter()
         self._artifact_recorder = artifact_recorder or build_llm_debug_artifact_recorder_from_env()
@@ -110,31 +111,37 @@ class DigestReportWritingService:
         *,
         run_id: str,
     ) -> DigestReportWritingSchema:
-        client = self._get_client()
+        agent = self._get_agent()
+        system_prompt = build_digest_report_writing_prompt()
         user_message = self._build_user_message(plan, article_sources)
-        request_payload = {
-            "model": STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-            "temperature": 0,
+        invoke_payload = {
             "messages": [
-                {"role": "system", "content": build_digest_report_writing_prompt()},
                 {"role": "user", "content": user_message},
             ],
-            "response_format": {"type": "json_object"},
+        }
+        prompt_payload = {
+            "model": self._configuration.story_summarization_model,
+            "system_prompt": system_prompt,
+            "invoke_payload": invoke_payload,
         }
         with self._rate_limiter.lease("digest_report_writing"):
-            response = await client.chat.completions.create(
-                **request_payload,
-            )
-        raw_content = response.choices[0].message.content or "{}"
+            result = await agent.ainvoke(invoke_payload)
+        structured_response = result["structured_response"]
         if self._artifact_recorder.enabled:
             self._artifact_recorder.record(
                 run_id=run_id,
                 stage="digest_report_writing",
                 object_key=self._artifact_object_key(plan),
-                prompt_text=json.dumps(request_payload, ensure_ascii=False, indent=2),
-                response_text=json.dumps({"raw_content": raw_content}, ensure_ascii=False, indent=2),
+                prompt_text=json.dumps(prompt_payload, ensure_ascii=False, indent=2),
+                response_text=json.dumps(
+                    {"structured_response": self._jsonable_structured_response(structured_response)},
+                    ensure_ascii=False,
+                    indent=2,
+                ),
             )
-        return DigestReportWritingSchema.model_validate_json(raw_content)
+        if isinstance(structured_response, DigestReportWritingSchema):
+            return structured_response
+        return DigestReportWritingSchema.model_validate(structured_response)
 
     def _artifact_object_key(self, plan: ResolvedDigestPlan) -> str:
         story_segment = "-".join(plan.story_keys) if plan.story_keys else "none"
@@ -219,19 +226,22 @@ class DigestReportWritingService:
         }
         return json.dumps(payload, ensure_ascii=False)
 
-    def _get_client(self) -> AsyncOpenAI:
-        if self._client is None:
-            from openai import AsyncOpenAI
-
-            api_key = STORY_SUMMARIZATION_MODEL_CONFIG.api_key
-            if not api_key:
-                raise RuntimeError("digest report writing requires configured API key")
-            self._client = AsyncOpenAI(
-                api_key=api_key,
-                base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
-                timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
+    def _get_agent(self):
+        if self._agent is None:
+            self._agent = create_agent(
+                model=build_story_model(self._configuration),
+                tools=[],
+                system_prompt=build_digest_report_writing_prompt(),
+                response_format=DigestReportWritingSchema,
             )
-        return self._client
+        return self._agent
+
+    def _jsonable_structured_response(self, structured_response: object) -> object:
+        if isinstance(structured_response, DigestReportWritingSchema):
+            return structured_response.model_dump(mode="json")
+        if isinstance(structured_response, dict):
+            return structured_response
+        return str(structured_response)
 
 
 __all__ = ["DigestReportWritingService"]

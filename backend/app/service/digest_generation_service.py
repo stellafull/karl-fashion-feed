@@ -4,20 +4,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
-from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+from backend.app.config.llm_config import Configuration
 from backend.app.models import Digest, DigestArticle, DigestStory, Story, StoryFacet
 from backend.app.service.digest_packaging_service import DigestPackagingService, ResolvedDigestPlan
 from backend.app.service.digest_report_writing_service import DigestReportWritingService
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
 from backend.app.service.story_facet_assignment_service import StoryFacetAssignmentService
-
-if TYPE_CHECKING:
-    from openai import AsyncOpenAI
 
 
 @dataclass(frozen=True)
@@ -33,21 +30,24 @@ class DigestGenerationService:
     def __init__(
         self,
         *,
-        client: AsyncOpenAI | None = None,
+        configuration: Configuration | None = None,
         rate_limiter: LlmRateLimiter | None = None,
         facet_assignment_service: StoryFacetAssignmentService | None = None,
         packaging_service: DigestPackagingService | None = None,
         report_writing_service: DigestReportWritingService | None = None,
     ) -> None:
+        self._configuration = configuration or Configuration.from_runnable_config()
         shared_rate_limiter = rate_limiter or LlmRateLimiter()
         self._facet_assignment_service = facet_assignment_service or StoryFacetAssignmentService(
+            configuration=self._configuration,
             rate_limiter=shared_rate_limiter,
         )
         self._packaging_service = packaging_service or DigestPackagingService(
+            configuration=self._configuration,
             rate_limiter=shared_rate_limiter,
         )
         self._report_writing_service = report_writing_service or DigestReportWritingService(
-            client=client,
+            configuration=self._configuration,
             rate_limiter=shared_rate_limiter,
         )
 

@@ -4,10 +4,12 @@ import asyncio
 import importlib
 import unittest
 from datetime import date
+from unittest.mock import patch
 
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
+from backend.app.config.llm_config import Configuration
 from backend.app.models import (
     Article,
     Digest,
@@ -280,6 +282,59 @@ class DigestGenerationServiceTest(unittest.TestCase):
             [("article-2", 0), ("article-2", 0)],
             digest_article_rows,
         )
+
+    def test_constructor_propagates_shared_configuration_and_rate_limiter_to_nested_services(self) -> None:
+        configuration = Configuration(
+            api_key="test-key",
+            base_url="https://openai.example/v1",
+            story_summarization_model="story-model",
+            story_summarization_model_max_tokens=1234,
+            story_summarization_temperature=0.1,
+            story_summarization_timeout_seconds=55,
+            rag_model="rag-model",
+            rag_model_max_tokens=4321,
+            rag_temperature=0.2,
+            rag_timeout_seconds=44,
+            max_structured_output_retries=5,
+            max_react_tool_calls=8,
+        )
+        shared_rate_limiter = object()
+        fake_facet_service = object()
+        fake_packaging_service = object()
+        fake_report_writing_service = object()
+
+        with patch(
+            "backend.app.service.digest_generation_service.StoryFacetAssignmentService",
+            return_value=fake_facet_service,
+        ) as facet_service_mock:
+            with patch(
+                "backend.app.service.digest_generation_service.DigestPackagingService",
+                return_value=fake_packaging_service,
+            ) as packaging_service_mock:
+                with patch(
+                    "backend.app.service.digest_generation_service.DigestReportWritingService",
+                    return_value=fake_report_writing_service,
+                ) as report_service_mock:
+                    service = DigestGenerationService(
+                        configuration=configuration,
+                        rate_limiter=shared_rate_limiter,
+                    )
+
+        facet_service_mock.assert_called_once_with(
+            configuration=configuration,
+            rate_limiter=shared_rate_limiter,
+        )
+        packaging_service_mock.assert_called_once_with(
+            configuration=configuration,
+            rate_limiter=shared_rate_limiter,
+        )
+        report_service_mock.assert_called_once_with(
+            configuration=configuration,
+            rate_limiter=shared_rate_limiter,
+        )
+        self.assertIs(service._facet_assignment_service, fake_facet_service)
+        self.assertIs(service._packaging_service, fake_packaging_service)
+        self.assertIs(service._report_writing_service, fake_report_writing_service)
 
     def test_generate_for_day_raises_when_packaging_returns_zero_plans_for_non_empty_input(self) -> None:
         session = _build_session()

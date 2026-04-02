@@ -24,6 +24,7 @@ from backend.app.models import (
     ensure_article_storage_schema,
 )
 from backend.app.schemas.llm.digest_packaging import DigestPackagingSchema
+from backend.app.schemas.llm.digest_report_writing import DigestReportWritingSchema
 from backend.app.schemas.llm.facet_assignment import FacetAssignmentSchema
 from backend.app.schemas.llm.story_cluster_judgment import StoryClusterJudgmentSchema
 from backend.app.service.digest_generation_service import DigestGenerationService
@@ -122,27 +123,23 @@ def _build_fake_digest_packaging_agent(call_log: list[dict[str, object]]) -> _Fa
     return _FakeStructuredResponseAgent(responder=responder, call_log=call_log)
 
 
-def _build_fake_digest_report_writing_llm(call_log: list[dict[str, object]]) -> SimpleNamespace:
-    async def create(**kwargs: object) -> SimpleNamespace:
-        call_log.append(dict(kwargs))
-        messages = kwargs.get("messages")
+def _build_fake_digest_report_writing_agent(call_log: list[dict[str, object]]) -> _FakeStructuredResponseAgent:
+    def responder(payload: dict[str, object]) -> DigestReportWritingSchema:
+        messages = payload.get("messages")
         assert isinstance(messages, list)
-        payload = json.loads(messages[1]["content"])
-        plan = payload["plan"]
+        user_payload = json.loads(messages[0]["content"])
+        plan = user_payload["plan"]
         article_ids = [str(article_id) for article_id in plan["article_ids"]]
-        response_payload = {
-            "title_zh": "同日时尚摘要",
-            "dek_zh": "覆盖当日核心事件",
-            "body_markdown": "## 长文正文\n\nAcme 在巴黎发布 FW26 系列并触发同日事件聚合。",
-            "source_article_ids": article_ids,
-        }
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(response_payload, ensure_ascii=False)))]
+        return DigestReportWritingSchema.model_validate(
+            {
+                "title_zh": "同日时尚摘要",
+                "dek_zh": "覆盖当日核心事件",
+                "body_markdown": "## 长文正文\n\nAcme 在巴黎发布 FW26 系列并触发同日事件聚合。",
+                "source_article_ids": article_ids,
+            }
         )
 
-    completions = SimpleNamespace(create=create)
-    chat = SimpleNamespace(completions=completions)
-    return SimpleNamespace(chat=chat)
+    return _FakeStructuredResponseAgent(responder=responder, call_log=call_log)
 
 
 def _build_fake_rate_limiter() -> SimpleNamespace:
@@ -235,7 +232,7 @@ class StoryDigestRuntimeIntegrationTest(unittest.TestCase):
                         rate_limiter=_build_fake_rate_limiter(),
                     ),
                     report_writing_service=DigestReportWritingService(
-                        client=_build_fake_digest_report_writing_llm(report_call_log),
+                        agent=_build_fake_digest_report_writing_agent(report_call_log),
                         markdown_root=markdown_root,
                         rate_limiter=_build_fake_rate_limiter(),
                     ),
@@ -260,7 +257,7 @@ class StoryDigestRuntimeIntegrationTest(unittest.TestCase):
         self.assertEqual(["runway_series"], packaging_request["stories"][0]["facets"])
         self.assertEqual(["article-1"], packaging_request["stories"][0]["article_ids"])
         self.assertEqual(story_key, packaging_request["stories"][0]["story_key"])
-        report_request = json.loads(report_call_log[0]["messages"][1]["content"])
+        report_request = json.loads(report_call_log[0]["messages"][0]["content"])
         self.assertEqual([story_key], report_request["plan"]["story_keys"])
         self.assertEqual(["article-1"], report_request["plan"]["article_ids"])
         self.assertIn("Acme released FW26 in Paris.", report_request["source_articles"][0]["body_markdown"])
