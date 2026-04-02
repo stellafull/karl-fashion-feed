@@ -54,15 +54,19 @@ class LlmContractsTest(unittest.TestCase):
         parsed = DigestReportWritingSchema.model_validate_json(payload)
         self.assertEqual(parsed.source_article_ids, ["a1", "a2"])
 
-    def test_configuration_from_runnable_config_uses_profile_defaults(self) -> None:
+    def test_configuration_from_runnable_config_uses_global_defaults(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
-            configuration = Configuration.from_runnable_config(profile="story_summarization")
+            configuration = Configuration.from_runnable_config()
 
-        self.assertEqual(configuration.model, "kimi-k2.5")
-        self.assertEqual(configuration.temperature, 0.3)
-        self.assertEqual(configuration.timeout_seconds, 600)
-        self.assertEqual(configuration.max_completion_tokens, 4000)
-        self.assertEqual(configuration.max_structured_output_retries, 2)
+        self.assertEqual(configuration.story_summarization_model, "kimi-k2.5")
+        self.assertEqual(configuration.story_summarization_temperature, 0.3)
+        self.assertEqual(configuration.story_summarization_timeout_seconds, 600)
+        self.assertEqual(configuration.story_summarization_model_max_tokens, 4000)
+        self.assertEqual(configuration.rag_model, "kimi-k2.5")
+        self.assertEqual(configuration.rag_temperature, 0.2)
+        self.assertEqual(configuration.rag_timeout_seconds, 120)
+        self.assertEqual(configuration.rag_model_max_tokens, 2000)
+        self.assertEqual(configuration.max_structured_output_retries, 3)
         self.assertEqual(configuration.base_url, "https://dashscope.aliyuncs.com/compatible-mode/v1")
 
     def test_configuration_from_runnable_config_prefers_env_over_runnable(self) -> None:
@@ -70,35 +74,50 @@ class LlmContractsTest(unittest.TestCase):
             "configurable": {
                 "api_key": "configurable-key",
                 "base_url": "https://configurable.example/v1",
-                "model": "configurable-model",
-                "temperature": 0.9,
-                "timeout_seconds": 55,
-                "max_completion_tokens": 777,
+                "story_summarization_model": "configurable-story-model",
+                "story_summarization_temperature": 0.9,
+                "story_summarization_timeout_seconds": 55,
+                "story_summarization_model_max_tokens": 777,
+                "rag_model": "configurable-rag-model",
+                "rag_temperature": 0.8,
+                "rag_timeout_seconds": 44,
+                "rag_model_max_tokens": 666,
                 "max_structured_output_retries": 4,
             }
         }
         env = {
             "OPENAI_API_KEY": "env-key",
             "OPENAI_BASE_URL": "https://env.example/v1",
-            "STORY_SUMMARIZATION_MODEL": "env-model",
+            "STORY_SUMMARIZATION_MODEL": "env-story-model",
             "STORY_SUMMARIZATION_TEMPERATURE": "0.4",
             "STORY_SUMMARIZATION_TIMEOUT_SECONDS": "666",
-            "STORY_SUMMARIZATION_MAX_COMPLETION_TOKENS": "1234",
+            "STORY_SUMMARIZATION_MODEL_MAX_TOKENS": "1234",
+            "RAG_CHAT_MODEL": "env-rag-chat-model",
+            "RAG_TEMPERATURE": "0.25",
+            "RAG_TIMEOUT_SECONDS": "321",
+            "RAG_MODEL_MAX_TOKENS": "987",
             "STORY_SUMMARIZATION_MAX_STRUCTURED_OUTPUT_RETRIES": "5",
         }
         with patch.dict(os.environ, env, clear=True):
-            configuration = Configuration.from_runnable_config(
-                profile="story_summarization",
-                runnable_config=runnable_config,
-            )
+            configuration = Configuration.from_runnable_config(runnable_config=runnable_config)
 
         self.assertEqual(configuration.api_key, "env-key")
         self.assertEqual(configuration.base_url, "https://env.example/v1")
-        self.assertEqual(configuration.model, "env-model")
-        self.assertEqual(configuration.temperature, 0.4)
-        self.assertEqual(configuration.timeout_seconds, 666)
-        self.assertEqual(configuration.max_completion_tokens, 1234)
+        self.assertEqual(configuration.story_summarization_model, "env-story-model")
+        self.assertEqual(configuration.story_summarization_temperature, 0.4)
+        self.assertEqual(configuration.story_summarization_timeout_seconds, 666)
+        self.assertEqual(configuration.story_summarization_model_max_tokens, 1234)
+        self.assertEqual(configuration.rag_model, "env-rag-chat-model")
+        self.assertEqual(configuration.rag_temperature, 0.25)
+        self.assertEqual(configuration.rag_timeout_seconds, 321)
+        self.assertEqual(configuration.rag_model_max_tokens, 987)
         self.assertEqual(configuration.max_structured_output_retries, 5)
+
+    def test_configuration_from_runnable_config_supports_rag_model_env(self) -> None:
+        with patch.dict(os.environ, {"RAG_MODEL": "env-rag-model"}, clear=True):
+            configuration = Configuration.from_runnable_config()
+
+        self.assertEqual(configuration.rag_model, "env-rag-model")
 
     @patch("backend.app.service.langchain_model_factory.ChatOpenAI")
     def test_build_story_model_wires_chat_openai_and_retry(self, chat_openai_mock: MagicMock) -> None:
@@ -109,11 +128,16 @@ class LlmContractsTest(unittest.TestCase):
         configuration = Configuration(
             api_key="test-key",
             base_url="https://openai.example/v1",
-            model="kimi-k2.5",
-            temperature=0.15,
-            timeout_seconds=88,
-            max_completion_tokens=999,
+            story_summarization_model="kimi-k2.5",
+            story_summarization_model_max_tokens=999,
+            story_summarization_temperature=0.15,
+            story_summarization_timeout_seconds=88,
+            rag_model="unused-rag-model",
+            rag_model_max_tokens=444,
+            rag_temperature=0.2,
+            rag_timeout_seconds=33,
             max_structured_output_retries=6,
+            max_react_tool_calls=8,
         )
 
         built_model = build_story_model(configuration)
@@ -140,11 +164,16 @@ class LlmContractsTest(unittest.TestCase):
         configuration = Configuration(
             api_key="rag-key",
             base_url="https://rag-openai.example/v1",
-            model="rag-model",
-            temperature=0.2,
-            timeout_seconds=33,
-            max_completion_tokens=444,
+            story_summarization_model="unused-story-model",
+            story_summarization_model_max_tokens=999,
+            story_summarization_temperature=0.15,
+            story_summarization_timeout_seconds=88,
+            rag_model="rag-model",
+            rag_model_max_tokens=444,
+            rag_temperature=0.2,
+            rag_timeout_seconds=33,
             max_structured_output_retries=3,
+            max_react_tool_calls=8,
         )
 
         built_model = build_rag_model(configuration)
