@@ -4,12 +4,20 @@ import os
 import unittest
 from unittest.mock import MagicMock, patch
 
+from langchain.agents import create_agent
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel
+
 from backend.app.config.llm_config import Configuration
 from backend.app.service.langchain_model_factory import build_rag_model, build_story_model
 from backend.app.schemas.llm.digest_packaging import DigestPackagingSchema
 from backend.app.schemas.llm.digest_report_writing import DigestReportWritingSchema
 from backend.app.schemas.llm.facet_assignment import FacetAssignmentSchema
 from backend.app.schemas.llm.story_cluster_judgment import StoryClusterJudgmentSchema
+
+
+class StoryResponseSchema(BaseModel):
+    summary_zh: str
 
 
 class LlmContractsTest(unittest.TestCase):
@@ -119,6 +127,39 @@ class LlmContractsTest(unittest.TestCase):
 
         self.assertEqual(configuration.rag_model, "env-rag-model")
 
+    def test_configuration_from_runnable_config_reads_configurable_without_env(self) -> None:
+        runnable_config = {
+            "configurable": {
+                "api_key": "configurable-key",
+                "base_url": "https://configurable.example/v1",
+                "max_structured_output_retries": 7,
+                "story_summarization_model": "configurable-story-model",
+                "story_summarization_model_max_tokens": 777,
+                "story_summarization_temperature": 0.9,
+                "story_summarization_timeout_seconds": 55,
+                "rag_model": "configurable-rag-model",
+                "rag_model_max_tokens": 666,
+                "rag_temperature": 0.8,
+                "rag_timeout_seconds": 44,
+                "max_react_tool_calls": 11,
+            }
+        }
+        with patch.dict(os.environ, {}, clear=True):
+            configuration = Configuration.from_runnable_config(runnable_config=runnable_config)
+
+        self.assertEqual(configuration.api_key, "configurable-key")
+        self.assertEqual(configuration.base_url, "https://configurable.example/v1")
+        self.assertEqual(configuration.max_structured_output_retries, 7)
+        self.assertEqual(configuration.story_summarization_model, "configurable-story-model")
+        self.assertEqual(configuration.story_summarization_model_max_tokens, 777)
+        self.assertEqual(configuration.story_summarization_temperature, 0.9)
+        self.assertEqual(configuration.story_summarization_timeout_seconds, 55)
+        self.assertEqual(configuration.rag_model, "configurable-rag-model")
+        self.assertEqual(configuration.rag_model_max_tokens, 666)
+        self.assertEqual(configuration.rag_temperature, 0.8)
+        self.assertEqual(configuration.rag_timeout_seconds, 44)
+        self.assertEqual(configuration.max_react_tool_calls, 11)
+
     @patch("backend.app.service.langchain_model_factory.ChatOpenAI")
     def test_build_story_model_wires_chat_openai_and_retry(self, chat_openai_mock: MagicMock) -> None:
         runnable = MagicMock(name="story-runnable")
@@ -190,3 +231,50 @@ class LlmContractsTest(unittest.TestCase):
             use_responses_api=True,
         )
         model_instance.with_retry.assert_called_once_with(stop_after_attempt=3)
+
+    def test_build_story_model_result_is_accepted_by_create_agent_with_response_format(self) -> None:
+        configuration = Configuration(
+            api_key="test-key",
+            base_url="https://openai.example/v1",
+            story_summarization_model="story-model",
+            story_summarization_model_max_tokens=999,
+            story_summarization_temperature=0.15,
+            story_summarization_timeout_seconds=88,
+            rag_model="rag-model",
+            rag_model_max_tokens=444,
+            rag_temperature=0.2,
+            rag_timeout_seconds=33,
+            max_structured_output_retries=3,
+            max_react_tool_calls=8,
+        )
+
+        model = build_story_model(configuration)
+        agent = create_agent(model=model, tools=[], response_format=StoryResponseSchema)
+
+        self.assertIsNotNone(agent)
+
+    def test_build_rag_model_result_is_accepted_by_create_agent_with_tools(self) -> None:
+        def rag_lookup(query: str) -> str:
+            """Lookup reference snippets for a query."""
+            return query
+
+        configuration = Configuration(
+            api_key="test-key",
+            base_url="https://openai.example/v1",
+            story_summarization_model="story-model",
+            story_summarization_model_max_tokens=999,
+            story_summarization_temperature=0.15,
+            story_summarization_timeout_seconds=88,
+            rag_model="rag-model",
+            rag_model_max_tokens=444,
+            rag_temperature=0.2,
+            rag_timeout_seconds=33,
+            max_structured_output_retries=3,
+            max_react_tool_calls=8,
+        )
+
+        tool = StructuredTool.from_function(rag_lookup)
+        model = build_rag_model(configuration)
+        agent = create_agent(model=model, tools=[tool])
+
+        self.assertIsNotNone(agent)
