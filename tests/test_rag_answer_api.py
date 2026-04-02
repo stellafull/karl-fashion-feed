@@ -157,7 +157,7 @@ class RagToolsTests(unittest.TestCase):
             query_service=FakeQueryService(),
             web_search_service=FakeWebSearchService(),
         )
-        serialized = str(tools.build_tool_definitions())
+        serialized = str(tools.build_langchain_tools())
         self.assertNotIn("filters", serialized)
         self.assertNotIn("limit", serialized)
         self.assertNotIn("base64", serialized)
