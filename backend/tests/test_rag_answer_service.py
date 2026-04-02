@@ -194,15 +194,14 @@ class _FakeSynthesisAgent:
         self.invoke_payloads.append(payload)
         return {"messages": [AIMessage(content=self._answer)]}
 
-    async def astream(self, payload: dict[str, object], **kwargs: object):
+    async def astream_events(self, payload: dict[str, object], **kwargs: object):
         self.stream_payloads.append({"payload": payload, "kwargs": kwargs})
         for chunk in self._stream_chunks:
             yield {
-                "type": "messages",
-                "data": (
-                    AIMessageChunk(content=chunk),
-                    {"langgraph_node": "model"},
-                ),
+                "event": "on_chat_model_stream",
+                "data": {
+                    "chunk": AIMessageChunk(content=chunk),
+                },
             }
 
 
@@ -336,6 +335,7 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertEqual(["答案", " [c1]", " [c1]"], deltas)
         self.assertEqual("答案 [C1]", response.answer)
         self.assertEqual(["C1"], [citation.marker for citation in response.citations])
+        self.assertEqual("v2", service._synthesis_agent.stream_payloads[0]["kwargs"]["version"])
 
     def test_build_answer_tool_exposes_rag_answer_path_for_future_agents(self) -> None:
         service = RagAnswerService()
@@ -358,4 +358,3 @@ class RagAnswerServiceTest(unittest.TestCase):
         call_kwargs = service.answer.await_args.kwargs
         self.assertEqual("帮我总结一下", call_kwargs["request"].query)
         self.assertEqual(request_context, call_kwargs["request_context"])
-

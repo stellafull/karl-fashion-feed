@@ -365,7 +365,7 @@ class RagAnswerService:
     ) -> str:
         synthesis_agent = self._get_synthesis_agent()
         answer_parts: list[str] = []
-        async for part in synthesis_agent.astream(
+        async for event in synthesis_agent.astream_events(
             {
                 "messages": [
                     {
@@ -380,10 +380,9 @@ class RagAnswerService:
                     }
                 ]
             },
-            stream_mode="messages",
             version="v2",
         ):
-            delta_text = self._extract_stream_delta_text(part)
+            delta_text = self._extract_stream_delta_text(event)
             if not delta_text:
                 continue
             answer_parts.append(delta_text)
@@ -431,14 +430,16 @@ class RagAnswerService:
             raise ValueError("agent result must include messages")
         return messages
 
-    def _extract_stream_delta_text(self, part: Any) -> str:
-        if not isinstance(part, dict) or part.get("type") != "messages":
+    def _extract_stream_delta_text(self, event: Any) -> str:
+        if not isinstance(event, dict) or event.get("event") != "on_chat_model_stream":
             return ""
-        data = part.get("data")
-        if not isinstance(data, tuple) or len(data) != 2:
+        data = event.get("data")
+        if not isinstance(data, dict):
             return ""
-        message, _metadata = data
-        return self._extract_message_content(getattr(message, "content", ""))
+        chunk = data.get("chunk")
+        if chunk is None:
+            return ""
+        return self._extract_message_content(getattr(chunk, "content", ""))
 
     def _merge_rag_packages(self, rag_results: list[QueryResult]) -> list[ArticlePackage]:
         merged_by_article_id: dict[str, ArticlePackage] = {}
