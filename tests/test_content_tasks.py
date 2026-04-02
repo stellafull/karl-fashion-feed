@@ -33,30 +33,13 @@ from backend.app.schemas.llm.event_frame_extraction import EventFrameExtractionS
 from backend.app.tasks.aggregation_tasks import generate_digests_for_day, pack_strict_stories_for_day
 
 
-class _FakeCompletionResponse:
+class _FakeAgent:
     def __init__(self, content: str) -> None:
-        message = type("Message", (), {"content": content})
-        choice = type("Choice", (), {"message": message()})
-        self.choices = [choice()]
+        self._structured = EventFrameExtractionSchema.model_validate_json(content)
 
-
-class _FakeCompletions:
-    def __init__(self, content: str) -> None:
-        self._content = content
-
-    async def create(self, **kwargs: object) -> _FakeCompletionResponse:
-        del kwargs
-        return _FakeCompletionResponse(self._content)
-
-
-class _FakeChat:
-    def __init__(self, content: str) -> None:
-        self.completions = _FakeCompletions(content)
-
-
-class _FakeClient:
-    def __init__(self, content: str) -> None:
-        self.chat = _FakeChat(content)
+    async def ainvoke(self, payload: dict[str, object]) -> dict[str, object]:
+        del payload
+        return {"structured_response": self._structured}
 
 
 class _FakeRedisClient:
@@ -907,15 +890,15 @@ class ContentTasksTest(unittest.TestCase):
         self.assertEqual(run.digest_token, 2)
         self.assertEqual(digests, [])
 
-    def test_custom_client_path_still_builds_redis_rate_limiter(self) -> None:
-        fake_client = _FakeClient('{"frames": []}')
+    def test_custom_agent_path_still_builds_redis_rate_limiter(self) -> None:
+        fake_agent = _FakeAgent('{"frames": []}')
         fake_limiter = object()
 
         with patch(
             "backend.app.service.event_frame_extraction_service.LlmRateLimiter",
             return_value=fake_limiter,
         ) as limiter_factory:
-            service = EventFrameExtractionService(agent=fake_client)
+            service = EventFrameExtractionService(agent=fake_agent)
 
         self.assertIs(service._rate_limiter, fake_limiter)
         limiter_factory.assert_called_once_with()
@@ -931,7 +914,7 @@ class ContentTasksTest(unittest.TestCase):
             poll_interval_seconds=0.01,
         )
         service = EventFrameExtractionService(
-            agent=_FakeClient(
+            agent=_FakeAgent(
                 """
                 {
                   "frames": [
