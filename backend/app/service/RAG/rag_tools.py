@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Literal
+from typing import Literal
+
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
 
 from backend.app.schemas.rag_api import RagRequestContext, WebSearchResult
 from backend.app.schemas.rag_query import QueryPlan, QueryResult, REQUEST_IMAGE_REF
@@ -12,6 +15,33 @@ from backend.app.service.RAG.web_search_service import WebSearchService
 
 ToolExecutionResult = QueryResult | list[WebSearchResult]
 REQUEST_IMAGE_TOOL_REF = "request_image"
+
+
+class _SearchFashionArticlesArgs(BaseModel):
+    query: str = Field(description="The text query used for article retrieval.")
+
+
+class _SearchFashionImagesArgs(BaseModel):
+    text_query: str | None = Field(
+        default=None,
+        description="Optional text query for text-to-image retrieval.",
+    )
+    image_ref: Literal["request_image"] | None = Field(
+        default=None,
+        description="Use request_image to search with the uploaded request images.",
+    )
+
+
+class _SearchFashionFusionArgs(BaseModel):
+    query: str = Field(description="The text query used for fusion retrieval.")
+    image_ref: Literal["request_image"] | None = Field(
+        default=None,
+        description="Use request_image to include the uploaded request images in fusion retrieval.",
+    )
+
+
+class _SearchWebArgs(BaseModel):
+    query: str = Field(description="The external web search query.")
 
 
 class RagTools:
@@ -29,87 +59,41 @@ class RagTools:
         self._web_search_service = (
             WebSearchService() if web_search_service is None else web_search_service
         )
+        self._rag_results: list[QueryResult] = []
+        self._web_results: list[WebSearchResult] = []
 
-    def build_tool_definitions(self) -> list[dict[str, object]]:
-        """Return OpenAI-compatible tool definitions for the answer loop."""
+    def build_langchain_tools(self) -> list[StructuredTool]:
+        """Return LangChain tool adapters with in-memory result collection."""
         return [
-            self._build_function_tool(
+            StructuredTool.from_function(
+                func=self._search_fashion_articles_tool,
                 name="search_fashion_articles",
                 description="Search Chinese-grounded fashion articles and return text evidence.",
-                properties={
-                    "query": {
-                        "type": "string",
-                        "description": "The text query used for article retrieval.",
-                    }
-                },
-                required=["query"],
+                args_schema=_SearchFashionArticlesArgs,
             ),
-            self._build_function_tool(
+            StructuredTool.from_function(
+                func=self._search_fashion_images_tool,
                 name="search_fashion_images",
                 description="Search fashion images either by text or by the uploaded request image.",
-                properties={
-                    "text_query": {
-                        "anyOf": [{"type": "string"}, {"type": "null"}],
-                        "description": "Optional text query for text-to-image retrieval.",
-                    },
-                    "image_ref": {
-                        "anyOf": [
-                            {"type": "string", "enum": [REQUEST_IMAGE_TOOL_REF]},
-                            {"type": "null"},
-                        ],
-                        "description": "Use request_image to search with the uploaded request images.",
-                    },
-                },
-                required=[],
+                args_schema=_SearchFashionImagesArgs,
             ),
-            self._build_function_tool(
+            StructuredTool.from_function(
+                func=self._search_fashion_fusion_tool,
                 name="search_fashion_fusion",
                 description="Run text+image fusion retrieval over fashion evidence packages.",
-                properties={
-                    "query": {
-                        "type": "string",
-                        "description": "The text query used for fusion retrieval.",
-                    },
-                    "image_ref": {
-                        "anyOf": [
-                            {"type": "string", "enum": [REQUEST_IMAGE_TOOL_REF]},
-                            {"type": "null"},
-                        ],
-                        "description": "Use request_image to include the uploaded request images in fusion retrieval.",
-                    },
-                },
-                required=["query"],
+                args_schema=_SearchFashionFusionArgs,
             ),
-            self._build_function_tool(
+            StructuredTool.from_function(
+                coroutine=self._search_web_tool,
                 name="search_web",
                 description="Search the external web for latest information when internal RAG is insufficient.",
-                properties={
-                    "query": {
-                        "type": "string",
-                        "description": "The external web search query.",
-                    }
-                },
-                required=["query"],
+                args_schema=_SearchWebArgs,
             ),
         ]
 
-    async def execute_tool(self, tool_name: str, arguments: dict[str, Any]) -> ToolExecutionResult:
-        """Dispatch one tool call with validated request-level constraints."""
-        if tool_name == "search_fashion_articles":
-            return self.search_fashion_articles(query=self._require_query(arguments, "query"))
-        if tool_name == "search_fashion_images":
-            return self.search_fashion_images(
-                text_query=self._normalize_optional_text(arguments.get("text_query")),
-                image_ref=self._normalize_optional_image_ref(arguments.get("image_ref")),
-            )
-        if tool_name == "search_fashion_fusion":
-            return self.search_fashion_fusion(
-                query=self._require_query(arguments, "query"),
-                image_ref=self._normalize_optional_image_ref(arguments.get("image_ref")),
-            )
-        if tool_name == "search_web":
-            return await self.search_web(query=self._require_query(arguments, "query"))
-        raise ValueError(f"unsupported tool: {tool_name}")
+    def get_collected_results(self) -> tuple[list[QueryResult], list[WebSearchResult]]:
+        """Return the query and web results gathered through tool execution."""
+        return list(self._rag_results), list(self._web_results)
 
     def search_fashion_articles(self, *, query: str) -> QueryResult:
         """Run text-only article retrieval."""
@@ -173,6 +157,36 @@ class RagTools:
         """Search Brave for external evidence."""
         return await self._web_search_service.search(query=query, limit=self._request_context.limit)
 
+    def _search_fashion_articles_tool(self, query: str) -> str:
+        result = self.search_fashion_articles(query=self._require_query(query, field_name="query"))
+        return self._record_tool_result(result)
+
+    def _search_fashion_images_tool(
+        self,
+        text_query: str | None = None,
+        image_ref: Literal["request_image"] | None = None,
+    ) -> str:
+        result = self.search_fashion_images(
+            text_query=self._normalize_optional_text(text_query),
+            image_ref=self._normalize_optional_image_ref(image_ref),
+        )
+        return self._record_tool_result(result)
+
+    def _search_fashion_fusion_tool(
+        self,
+        query: str,
+        image_ref: Literal["request_image"] | None = None,
+    ) -> str:
+        result = self.search_fashion_fusion(
+            query=self._require_query(query, field_name="query"),
+            image_ref=self._normalize_optional_image_ref(image_ref),
+        )
+        return self._record_tool_result(result)
+
+    async def _search_web_tool(self, query: str) -> str:
+        result = await self.search_web(query=self._require_query(query, field_name="query"))
+        return self._record_tool_result(result)
+
     @staticmethod
     def serialize_tool_result(result: ToolExecutionResult) -> str:
         """Serialize one tool result for tool-call message playback."""
@@ -185,6 +199,13 @@ class RagTools:
             sort_keys=True,
         )
 
+    def _record_tool_result(self, result: ToolExecutionResult) -> str:
+        if isinstance(result, QueryResult):
+            self._rag_results.append(result)
+        else:
+            self._web_results.extend(result)
+        return self.serialize_tool_result(result)
+
     def _resolve_image_ref(self, image_ref: Literal["request_image"] | None) -> str | None:
         if image_ref is None:
             return None
@@ -195,49 +216,23 @@ class RagTools:
         return REQUEST_IMAGE_REF
 
     @staticmethod
-    def _build_function_tool(
-        *,
-        name: str,
-        description: str,
-        properties: dict[str, object],
-        required: list[str],
-    ) -> dict[str, object]:
-        return {
-            "type": "function",
-            "function": {
-                "name": name,
-                "description": description,
-                "parameters": {
-                    "type": "object",
-                    "properties": properties,
-                    "required": required,
-                    "additionalProperties": False,
-                },
-            },
-        }
-
-    @staticmethod
-    def _require_query(arguments: dict[str, Any], field_name: str) -> str:
-        value = arguments.get(field_name)
-        if not isinstance(value, str) or not value.strip():
+    def _require_query(value: str, *, field_name: str) -> str:
+        normalized_value = value.strip()
+        if not normalized_value:
             raise ValueError(f"{field_name} must be a non-empty string")
-        return value.strip()
+        return normalized_value
 
     @staticmethod
-    def _normalize_optional_text(value: Any) -> str | None:
+    def _normalize_optional_text(value: str | None) -> str | None:
         if value is None:
             return None
-        if not isinstance(value, str):
-            raise ValueError("text_query must be a string or null")
         normalized_value = value.strip()
         return normalized_value or None
 
     @staticmethod
-    def _normalize_optional_image_ref(value: Any) -> Literal["request_image"] | None:
+    def _normalize_optional_image_ref(value: str | None) -> Literal["request_image"] | None:
         if value is None:
             return None
-        if not isinstance(value, str):
-            raise ValueError("image_ref must be a string or null")
         normalized_value = value.strip()
         if not normalized_value:
             return None

@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import json
 import re
-from urllib.parse import urlparse
 from collections.abc import Awaitable, Callable
 from typing import Any
+from urllib.parse import urlparse
 
-from openai import AsyncOpenAI
+from langchain.agents import create_agent
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
 
-from backend.app.config.llm_config import RAG_CHAT_MODEL_CONFIG
+from backend.app.config.llm_config import Configuration
 from backend.app.prompts.rag_answer_synthesis_prompt import RAG_ANSWER_SYNTHESIS_PROMPT
 from backend.app.prompts.rag_tool_loop_prompt import RAG_TOOL_LOOP_PROMPT
 from backend.app.schemas.rag_api import (
@@ -21,37 +23,40 @@ from backend.app.schemas.rag_api import (
     WebSearchResult,
 )
 from backend.app.schemas.rag_query import ArticlePackage, QueryResult, RetrievalHit
-from backend.app.service.RAG.rag_tools import RagTools, ToolExecutionResult
+from backend.app.service.RAG.rag_tools import RagTools
+from backend.app.service.langchain_model_factory import build_rag_model
 
 MAX_TOOL_CALLS = 3
 CITATION_MARKER_PATTERN = re.compile(r"\[([A-Za-z]\d+)\]")
 AsyncDeltaHandler = Callable[[str], Awaitable[None]]
 
 
+class _RagAnswerToolArgs(BaseModel):
+    query: str | None = Field(
+        default=None,
+        description="The user question to answer with grounded fashion evidence.",
+    )
+
+
 class RagAnswerService:
-    """Run the multimodal tool loop and synthesize the final grounded answer."""
+    """Run retrieval agents and synthesize one final grounded answer."""
 
     def __init__(
         self,
         *,
-        client: AsyncOpenAI | None = None,
+        configuration: Configuration | None = None,
         tools_factory: Callable[[RagRequestContext], RagTools] | None = None,
+        research_agent_factory: Callable[[RagTools], Any] | None = None,
+        synthesis_agent: Any | None = None,
     ) -> None:
-        if client is None:
-            api_key = RAG_CHAT_MODEL_CONFIG.api_key
-            if not api_key:
-                raise ValueError(f"missing API key for {RAG_CHAT_MODEL_CONFIG.model_name}")
-            client = AsyncOpenAI(
-                api_key=api_key,
-                base_url=RAG_CHAT_MODEL_CONFIG.base_url,
-                timeout=RAG_CHAT_MODEL_CONFIG.timeout_seconds,
-            )
-        self._client = client
+        self._configuration = configuration or Configuration.from_runnable_config()
         self._tools_factory = (
             (lambda request_context: RagTools(request_context=request_context))
             if tools_factory is None
             else tools_factory
         )
+        self._research_agent_factory = research_agent_factory
+        self._synthesis_agent = synthesis_agent
 
     async def answer(
         self,
@@ -62,15 +67,7 @@ class RagAnswerService:
         recent_messages: list[dict] | None = None,
         user_memories: list[dict] | None = None,
     ) -> RagAnswerResponse:
-        """Execute retrieval tools and synthesize one final Chinese answer.
-
-        Args:
-            request: RAG query request
-            request_context: Request context with filters and uploaded images
-            conversation_compact: Compressed conversation history (for chat worker)
-            recent_messages: Recent 5 messages (for chat worker)
-            user_memories: User's long-term memories (for chat worker)
-        """
+        """Execute retrieval tools and synthesize one final Chinese answer."""
         packages, query_plans, unique_web_results, citations = await self._collect_answer_materials(
             request=request,
             request_context=request_context,
@@ -129,6 +126,41 @@ class RagAnswerService:
             web_results=unique_web_results,
         )
 
+    def build_answer_tool(
+        self,
+        *,
+        request_context: RagRequestContext,
+        conversation_compact: str | None = None,
+        recent_messages: list[dict] | None = None,
+        user_memories: list[dict] | None = None,
+    ) -> StructuredTool:
+        """Expose the full RAG answer path as a reusable LangChain tool."""
+
+        async def _run(query: str | None = None) -> tuple[str, dict[str, Any]]:
+            response = await self.answer(
+                request=RagQueryRequest(
+                    query=query,
+                    filters=request_context.filters,
+                    limit=request_context.limit,
+                ),
+                request_context=request_context,
+                conversation_compact=conversation_compact,
+                recent_messages=recent_messages,
+                user_memories=user_memories,
+            )
+            return response.answer, response.model_dump(mode="json")
+
+        return StructuredTool.from_function(
+            coroutine=_run,
+            name="answer_fashion_question",
+            description=(
+                "Answer fashion intelligence questions with grounded internal RAG evidence "
+                "and optional external web citations."
+            ),
+            args_schema=_RagAnswerToolArgs,
+            response_format="content_and_artifact",
+        )
+
     async def _collect_answer_materials(
         self,
         *,
@@ -144,36 +176,47 @@ class RagAnswerService:
         list[AnswerCitation],
     ]:
         rag_tools = self._tools_factory(request_context)
-        messages = [
-            {"role": "system", "content": RAG_TOOL_LOOP_PROMPT},
-        ]
+        research_agent = self._build_research_agent(rag_tools)
+        await research_agent.ainvoke(
+            {
+                "messages": self._build_research_messages(
+                    request=request,
+                    request_context=request_context,
+                    conversation_compact=conversation_compact,
+                    recent_messages=recent_messages,
+                    user_memories=user_memories,
+                ),
+            },
+            config={"recursion_limit": self._research_recursion_limit()},
+        )
 
-        if conversation_compact or recent_messages or user_memories:
-            context_parts = []
-            if conversation_compact:
-                context_parts.append(f"历史对话摘要：{conversation_compact}")
-            if user_memories:
-                memories_text = "\n".join(
-                    [
-                        f"- {mem['type']}/{mem['key']}: {mem['value']}"
-                        for mem in user_memories
-                    ]
-                )
-                context_parts.append(f"用户记忆：\n{memories_text}")
-            if recent_messages:
-                messages_text = "\n".join(
-                    [f"{msg['role']}: {msg['content']}" for msg in recent_messages]
-                )
-                context_parts.append(f"最近对话：\n{messages_text}")
+        rag_results, web_results = rag_tools.get_collected_results()
+        packages = self._merge_rag_packages(rag_results)
+        query_plans = [result.query_plan for result in rag_results]
+        unique_web_results = self._deduplicate_web_results(web_results)
+        citations = self._build_citations(
+            packages=packages,
+            web_results=unique_web_results,
+        )
+        return packages, query_plans, unique_web_results, citations
 
-            if context_parts:
-                messages.append(
-                    {
-                        "role": "user",
-                        "content": "\n\n".join(context_parts),
-                    }
-                )
-
+    def _build_research_messages(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        conversation_compact: str | None,
+        recent_messages: list[dict] | None,
+        user_memories: list[dict] | None,
+    ) -> list[dict[str, object]]:
+        messages: list[dict[str, object]] = []
+        context_message = self._build_optional_context_message(
+            conversation_compact=conversation_compact,
+            recent_messages=recent_messages,
+            user_memories=user_memories,
+        )
+        if context_message is not None:
+            messages.append(context_message)
         messages.append(
             {
                 "role": "user",
@@ -183,55 +226,33 @@ class RagAnswerService:
                 ),
             }
         )
-        rag_results: list[QueryResult] = []
-        web_results: list[WebSearchResult] = []
-        tool_call_count = 0
+        return messages
 
-        while tool_call_count < MAX_TOOL_CALLS:
-            response = await self._client.chat.completions.create(
-                model=RAG_CHAT_MODEL_CONFIG.model_name,
-                temperature=RAG_CHAT_MODEL_CONFIG.temperature,
-                messages=messages,
-                tools=rag_tools.build_tool_definitions(),
-                tool_choice="auto",
+    def _build_optional_context_message(
+        self,
+        *,
+        conversation_compact: str | None,
+        recent_messages: list[dict] | None,
+        user_memories: list[dict] | None,
+    ) -> dict[str, str] | None:
+        if not (conversation_compact or recent_messages or user_memories):
+            return None
+
+        context_parts: list[str] = []
+        if conversation_compact:
+            context_parts.append(f"历史对话摘要：{conversation_compact}")
+        if user_memories:
+            memories_text = "\n".join(
+                [f"- {mem['type']}/{mem['key']}: {mem['value']}" for mem in user_memories]
             )
-            message = response.choices[0].message
-            messages.append(self._serialize_assistant_message(message))
-            tool_calls = list(message.tool_calls or [])
-            if not tool_calls:
-                break
-
-            remaining_tool_budget = MAX_TOOL_CALLS - tool_call_count
-            if remaining_tool_budget <= 0:
-                break
-
-            for tool_call in tool_calls[:remaining_tool_budget]:
-                result = await rag_tools.execute_tool(
-                    tool_call.function.name,
-                    self._parse_tool_arguments(tool_call.function.arguments),
-                )
-                self._accumulate_tool_result(
-                    result=result,
-                    rag_results=rag_results,
-                    web_results=web_results,
-                )
-                messages.append(
-                    {
-                        "role": "tool",
-                        "tool_call_id": tool_call.id,
-                        "content": rag_tools.serialize_tool_result(result),
-                    }
-                )
-                tool_call_count += 1
-
-        packages = self._merge_rag_packages(rag_results)
-        query_plans = [result.query_plan for result in rag_results]
-        unique_web_results = self._deduplicate_web_results(web_results)
-        citations = self._build_citations(
-            packages=packages,
-            web_results=unique_web_results,
-        )
-        return packages, query_plans, unique_web_results, citations
+            context_parts.append(f"用户记忆：\n{memories_text}")
+        if recent_messages:
+            messages_text = "\n".join([f"{msg['role']}: {msg['content']}" for msg in recent_messages])
+            context_parts.append(f"最近对话：\n{messages_text}")
+        return {
+            "role": "user",
+            "content": "\n\n".join(context_parts),
+        }
 
     def _build_tool_loop_user_content(
         self,
@@ -255,44 +276,169 @@ class RagAnswerService:
             )
         return content
 
-    def _serialize_assistant_message(self, message: Any) -> dict[str, object]:
-        serialized_message: dict[str, object] = {"role": "assistant"}
-        content = self._extract_message_content(message.content)
-        serialized_message["content"] = content
-        tool_calls = getattr(message, "tool_calls", None)
-        if tool_calls:
-            serialized_message["tool_calls"] = [
-                {
-                    "id": tool_call.id,
-                    "type": tool_call.type,
-                    "function": {
-                        "name": tool_call.function.name,
-                        "arguments": tool_call.function.arguments,
-                    },
-                }
-                for tool_call in tool_calls
-            ]
-        return serialized_message
-
-    def _parse_tool_arguments(self, raw_arguments: str) -> dict[str, Any]:
-        if not raw_arguments.strip():
-            return {}
-        parsed = json.loads(raw_arguments)
-        if not isinstance(parsed, dict):
-            raise ValueError("tool arguments must decode to a JSON object")
-        return parsed
-
-    def _accumulate_tool_result(
+    def _build_synthesis_user_content(
         self,
         *,
-        result: ToolExecutionResult,
-        rag_results: list[QueryResult],
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        packages: list[ArticlePackage],
         web_results: list[WebSearchResult],
-    ) -> None:
-        if isinstance(result, QueryResult):
-            rag_results.append(result)
-            return
-        web_results.extend(result)
+        citations: list[AnswerCitation],
+    ) -> list[dict[str, object]]:
+        synthesis_payload = {
+            "user_query": request.query or "",
+            "has_request_images": request_context.has_request_images,
+            "request_image_count": len(request_context.request_images),
+            "rag_packages": [package.model_dump() for package in packages],
+            "web_results": [result.model_dump() for result in web_results],
+            "citations": [
+                {
+                    "marker": citation.marker,
+                    "title": citation.title,
+                    "source_name": citation.source_name,
+                    "url": citation.url,
+                    "snippet": citation.snippet,
+                }
+                for citation in citations
+            ],
+        }
+        content: list[dict[str, object]] = [
+            {
+                "type": "text",
+                "text": json.dumps(
+                    synthesis_payload,
+                    ensure_ascii=False,
+                    indent=2,
+                    sort_keys=True,
+                ),
+            }
+        ]
+        for request_image in request_context.request_images:
+            content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": request_image.to_data_url()},
+                }
+            )
+        return content
+
+    async def _synthesize_answer(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        packages: list[ArticlePackage],
+        web_results: list[WebSearchResult],
+        citations: list[AnswerCitation],
+    ) -> str:
+        synthesis_agent = self._get_synthesis_agent()
+        result = await synthesis_agent.ainvoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": self._build_synthesis_user_content(
+                            request=request,
+                            request_context=request_context,
+                            packages=packages,
+                            web_results=web_results,
+                            citations=citations,
+                        ),
+                    }
+                ]
+            }
+        )
+        answer = self._extract_agent_answer(result).strip()
+        if not answer:
+            raise ValueError("rag answer synthesis returned empty content")
+        return answer
+
+    async def _synthesize_answer_stream(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        packages: list[ArticlePackage],
+        web_results: list[WebSearchResult],
+        citations: list[AnswerCitation],
+        on_delta: AsyncDeltaHandler,
+    ) -> str:
+        synthesis_agent = self._get_synthesis_agent()
+        answer_parts: list[str] = []
+        async for part in synthesis_agent.astream(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": self._build_synthesis_user_content(
+                            request=request,
+                            request_context=request_context,
+                            packages=packages,
+                            web_results=web_results,
+                            citations=citations,
+                        ),
+                    }
+                ]
+            },
+            stream_mode="messages",
+            version="v2",
+        ):
+            delta_text = self._extract_stream_delta_text(part)
+            if not delta_text:
+                continue
+            answer_parts.append(delta_text)
+            await on_delta(delta_text)
+
+        answer = "".join(answer_parts).strip()
+        if not answer:
+            raise ValueError("rag answer synthesis returned empty content")
+        return answer
+
+    def _build_research_agent(self, rag_tools: RagTools):
+        if self._research_agent_factory is not None:
+            return self._research_agent_factory(rag_tools)
+        return create_agent(
+            model=build_rag_model(self._configuration),
+            tools=rag_tools.build_langchain_tools(),
+            system_prompt=RAG_TOOL_LOOP_PROMPT,
+        )
+
+    def _get_synthesis_agent(self):
+        if self._synthesis_agent is None:
+            self._synthesis_agent = create_agent(
+                model=build_rag_model(self._configuration),
+                tools=[],
+                system_prompt=RAG_ANSWER_SYNTHESIS_PROMPT,
+            )
+        return self._synthesis_agent
+
+    def _research_recursion_limit(self) -> int:
+        return (MAX_TOOL_CALLS * 2) + 1
+
+    def _extract_agent_answer(self, result: Any) -> str:
+        messages = self._extract_result_messages(result)
+        if not messages:
+            raise ValueError("rag answer synthesis returned no messages")
+        return self._extract_message_content(messages[-1].content)
+
+    def _extract_result_messages(self, result: Any) -> list[Any]:
+        if hasattr(result, "value"):
+            result = result.value
+        if not isinstance(result, dict):
+            raise ValueError("agent result must be a dict-like payload")
+        messages = result.get("messages")
+        if not isinstance(messages, list):
+            raise ValueError("agent result must include messages")
+        return messages
+
+    def _extract_stream_delta_text(self, part: Any) -> str:
+        if not isinstance(part, dict) or part.get("type") != "messages":
+            return ""
+        data = part.get("data")
+        if not isinstance(data, tuple) or len(data) != 2:
+            return ""
+        message, _metadata = data
+        return self._extract_message_content(getattr(message, "content", ""))
 
     def _merge_rag_packages(self, rag_results: list[QueryResult]) -> list[ArticlePackage]:
         merged_by_article_id: dict[str, ArticlePackage] = {}
@@ -410,133 +556,6 @@ class RagAnswerService:
             )
         return citations
 
-    async def _synthesize_answer(
-        self,
-        *,
-        request: RagQueryRequest,
-        request_context: RagRequestContext,
-        packages: list[ArticlePackage],
-        web_results: list[WebSearchResult],
-        citations: list[AnswerCitation],
-    ) -> str:
-        synthesis_payload = {
-            "user_query": request.query or "",
-            "has_request_images": request_context.has_request_images,
-            "request_image_count": len(request_context.request_images),
-            "rag_packages": [package.model_dump() for package in packages],
-            "web_results": [result.model_dump() for result in web_results],
-            "citations": [
-                {
-                    "marker": citation.marker,
-                    "title": citation.title,
-                    "source_name": citation.source_name,
-                    "url": citation.url,
-                    "snippet": citation.snippet,
-                }
-                for citation in citations
-            ],
-        }
-        content: list[dict[str, object]] = [
-            {
-                "type": "text",
-                "text": json.dumps(
-                    synthesis_payload,
-                    ensure_ascii=False,
-                    indent=2,
-                    sort_keys=True,
-                ),
-            }
-        ]
-        for request_image in request_context.request_images:
-            content.append(
-                {
-                    "type": "image_url",
-                    "image_url": {"url": request_image.to_data_url()},
-                }
-            )
-
-        response = await self._client.chat.completions.create(
-            model=RAG_CHAT_MODEL_CONFIG.model_name,
-            temperature=RAG_CHAT_MODEL_CONFIG.temperature,
-            messages=[
-                {"role": "system", "content": RAG_ANSWER_SYNTHESIS_PROMPT},
-                {"role": "user", "content": content},
-            ],
-        )
-        answer = self._extract_message_content(response.choices[0].message.content).strip()
-        if not answer:
-            raise ValueError("rag answer synthesis returned empty content")
-        return answer
-
-    async def _synthesize_answer_stream(
-        self,
-        *,
-        request: RagQueryRequest,
-        request_context: RagRequestContext,
-        packages: list[ArticlePackage],
-        web_results: list[WebSearchResult],
-        citations: list[AnswerCitation],
-        on_delta: AsyncDeltaHandler,
-    ) -> str:
-        synthesis_payload = {
-            "user_query": request.query or "",
-            "has_request_images": request_context.has_request_images,
-            "request_image_count": len(request_context.request_images),
-            "rag_packages": [package.model_dump() for package in packages],
-            "web_results": [result.model_dump() for result in web_results],
-            "citations": [
-                {
-                    "marker": citation.marker,
-                    "title": citation.title,
-                    "source_name": citation.source_name,
-                    "url": citation.url,
-                    "snippet": citation.snippet,
-                }
-                for citation in citations
-            ],
-        }
-        content: list[dict[str, object]] = [
-            {
-                "type": "text",
-                "text": json.dumps(
-                    synthesis_payload,
-                    ensure_ascii=False,
-                    indent=2,
-                    sort_keys=True,
-                ),
-            }
-        ]
-        for request_image in request_context.request_images:
-            content.append(
-                {
-                    "type": "image_url",
-                    "image_url": {"url": request_image.to_data_url()},
-                }
-            )
-
-        stream = await self._client.chat.completions.create(
-            model=RAG_CHAT_MODEL_CONFIG.model_name,
-            temperature=RAG_CHAT_MODEL_CONFIG.temperature,
-            messages=[
-                {"role": "system", "content": RAG_ANSWER_SYNTHESIS_PROMPT},
-                {"role": "user", "content": content},
-            ],
-            stream=True,
-        )
-        answer_parts: list[str] = []
-        async for chunk in stream:
-            for choice in chunk.choices:
-                delta_text = choice.delta.content or ""
-                if not delta_text:
-                    continue
-                answer_parts.append(delta_text)
-                await on_delta(delta_text)
-
-        answer = "".join(answer_parts).strip()
-        if not answer:
-            raise ValueError("rag answer synthesis returned empty content")
-        return answer
-
     def _normalize_answer_citation_markers(
         self,
         answer: str,
@@ -594,3 +613,6 @@ class RagAnswerService:
                         text_parts.append(text)
             return "".join(text_parts)
         return ""
+
+
+__all__ = ["RagAnswerService"]
