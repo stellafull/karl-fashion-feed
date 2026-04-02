@@ -9,6 +9,7 @@ The migration target is:
 - `openai-compatible` provider only
 - `create_agent` as the default runtime primitive
 - `open_deep_research`-style configuration and retry strategy
+- existing Redis-backed LLM lease limiting preserved
 - no compatibility shims
 - no dual-path runtime
 - no `message/session` product design in this phase
@@ -37,6 +38,7 @@ This spec does not cover:
 - Keep the migration as the shortest path that satisfies current runtime needs.
 - Use `create_agent` for both structured output and tool-calling paths.
 - Reuse LangChain retry behavior with `3` attempts for transient model and network failures.
+- Preserve the current `LlmRateLimiter` lease behavior during migration.
 - Preserve fail-fast business validation in service code.
 - Keep the RAG capability callable both as an internal service and as a tool for future agents.
 
@@ -83,17 +85,22 @@ The project must not add a large custom abstraction layer on top of LangChain.
 
 `create_agent` is the default primitive for all current backend LLM execution.
 
-This includes:
+This decision is concrete, not conceptual.
 
-- structured output stages
-- tool-calling RAG stages
-- plain text generation stages
+The runtime must use exactly these two call shapes:
+
+- structured-output services:
+  `create_agent(model=model, tools=[], system_prompt=..., response_format=Schema)`
+- RAG tool-calling services:
+  `create_agent(model=model, tools=[...], system_prompt=...)`
 
 The system should not mix:
 
 - direct OpenAI SDK calls
 - one-off manual response parsing
 - hand-written model tool loops
+- `ChatOpenAI.with_structured_output(...)` as an unrelated second structured-output style
+- `langgraph.prebuilt.create_react_agent(...)` as a second agent constructor
 
 ### Decision 4: Retry strategy
 
@@ -119,6 +126,29 @@ For the current migration:
 - no LangGraph `checkpointer` is introduced into the runtime path
 
 If future top-level chat agents need resumable thread state, that is a separate design.
+
+### Decision 6: Rate limiter scope
+
+The current Redis-backed `LlmRateLimiter` remains in scope and remains required.
+
+The migration must preserve the current lease model:
+
+- service code acquires the lease
+- the full LangChain agent invocation runs under that lease
+- the lease is released after the invocation completes or fails
+
+This migration does not redesign the limiter implementation.
+In particular, the current synchronous Redis polling behavior is preserved unless a later spec changes it.
+
+### Decision 7: DB attempt semantics
+
+LangChain internal retries do not create additional business attempts.
+
+For services with durable DB attempt counters, especially `EventFrameExtractionService`:
+
+- one service invocation equals one DB-level attempt
+- LangChain retries occur inside that single attempt
+- only the final success or failure of the invocation updates durable stage status
 
 ## Current Problems
 
@@ -173,6 +203,12 @@ The migration should narrow each service back to:
 - business validation
 - persistence
 - debug capture
+
+### Problem 5: Two structured-output stages are currently the least constrained
+
+`StoryFacetAssignmentService` and `DigestPackagingService` currently do not send any `response_format` hint at all.
+
+That makes them the most brittle structured-output boundaries in the current runtime and a high-priority target for explicit migration coverage.
 
 ## Target Architecture
 
@@ -248,6 +284,16 @@ The service-local agent should define:
 - response schema or tools
 - any service-specific runtime options
 
+Structured-output services must use:
+
+- `create_agent(model=model, tools=[], system_prompt=..., response_format=Schema)`
+
+RAG services must use:
+
+- `create_agent(model=model, tools=[...], system_prompt=...)`
+
+This spec intentionally chooses one LangChain constructor for both cases to avoid growing multiple execution styles inside the same codebase.
+
 ### Layer 4: Business validation and persistence
 
 After LangChain returns structured data or tool results, existing services must continue to perform business validation.
@@ -260,6 +306,21 @@ Examples:
 - reject invalid digest source memberships
 
 These checks remain explicit and fail fast.
+
+### Layer 5: Rate-limited invocation boundary
+
+The existing `LlmRateLimiter` remains wrapped around the top-level service invocation.
+
+That means:
+
+- `EventFrameExtractionService` acquires `event_frame_extraction` lease before invoking the LangChain agent
+- `StoryClusteringService` acquires `story_cluster_judgment` lease before invoking the LangChain agent
+- `StoryFacetAssignmentService` acquires `facet_assignment` lease before invoking the LangChain agent
+- `DigestPackagingService` acquires `digest_packaging` lease before invoking the LangChain agent
+- `DigestReportWritingService` acquires `digest_report_writing` lease before invoking the LangChain agent
+
+The limiter is not moved into a generic framework layer.
+The shortest safe path is to preserve it in the existing services and replace only the inner model execution call.
 
 ## Service Migration Scope
 
@@ -335,6 +396,20 @@ Migration:
 - keep source article validation
 - keep final digest object resolution
 
+### `DigestGenerationService`
+
+Target file:
+
+- `backend/app/service/digest_generation_service.py`
+
+Migration:
+
+- remove `AsyncOpenAI`-typed constructor dependency
+- propagate the new LangChain-side dependency shape to nested services
+- preserve current shared `LlmRateLimiter` wiring across facet assignment, packaging, and report writing
+
+`DigestGenerationService` is in scope because it currently constructs three migrated services and forwards the shared runtime dependency into them.
+
 ### `RagAnswerService`
 
 Target file:
@@ -346,7 +421,7 @@ Migration:
 - remove the handwritten tool loop
 - build the RAG runtime with `create_agent(..., tools=[...])`
 - keep business-layer result normalization and citation construction
-- preserve streaming behavior for answer synthesis
+- preserve streaming behavior for answer synthesis through LangGraph streaming APIs
 
 `RagAnswerService` must remain usable in two ways:
 
@@ -380,6 +455,21 @@ The RAG path should use the simplest agent shape that satisfies current needs:
 
 The runtime should not introduce a larger graph unless a later design requires it.
 
+### Streaming shape
+
+The current external streaming contract should remain unchanged:
+
+- `RagAnswerService.answer_stream(...)` accepts `on_delta`
+- the service emits incremental text chunks through that callback
+
+The internal migration path is:
+
+- use the `CompiledStateGraph` returned by `create_agent`
+- stream with `agent.astream_events(...)`
+- translate model text stream events into the existing `on_delta` callback contract
+
+The spec chooses this explicitly so the migration does not silently change the current streaming API shape for callers.
+
 ### Tool exposure to future agents
 
 The project should provide a clear adapter that exposes RAG answering as a tool.
@@ -395,6 +485,9 @@ This keeps one canonical retrieval-and-answer path in the codebase.
 The runtime should rely on LangChain retry behavior with `3` attempts.
 
 Service code should not implement its own generic execution retry loops.
+
+For DB-backed attempt counters, retries are internal to one service invocation.
+They do not increment durable business attempts.
 
 ### Principle 2: Business validation errors are terminal
 
@@ -461,6 +554,15 @@ The migration should cover:
 - retry-aware transient failure behavior
 - RAG tool invocation and citation preservation
 - streaming behavior for RAG output
+- `DigestGenerationService` dependency propagation
+- lease acquisition preserved around migrated LangChain invocations
+
+Migration tests should prioritize:
+
+- `StoryFacetAssignmentService`
+- `DigestPackagingService`
+
+because these are the two current structured-output services without `response_format` protection.
 
 ### Acceptance verification
 
