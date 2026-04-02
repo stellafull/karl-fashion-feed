@@ -185,23 +185,6 @@ class _ToolCallingResearchAgent:
         return {"messages": [AIMessage(content="research complete")]}
 
 
-class _BatchedToolCallingResearchAgent:
-    def __init__(
-        self,
-        tools: list[object],
-        tool_call_batches: list[list[tuple[str, dict[str, Any]]]],
-    ) -> None:
-        self._tools = {tool.name: tool for tool in tools}
-        self._tool_call_batches = tool_call_batches
-
-    async def ainvoke(self, payload: dict[str, object], config: dict[str, object] | None = None) -> dict[str, object]:
-        del payload, config
-        for batch in self._tool_call_batches:
-            for tool_name, tool_input in batch:
-                await self._tools[tool_name].ainvoke(tool_input)
-        return {"messages": [AIMessage(content="research complete")]}
-
-
 class _FakeSynthesisAgent:
     def __init__(self, *, answer: str = "", stream_chunks: list[str] | None = None) -> None:
         self._answer = answer
@@ -319,97 +302,31 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertIn('"marker": "C1"', content_blocks[0]["text"])
         self.assertIn('"marker": "W1"', content_blocks[0]["text"])
 
-    def test_answer_truncates_sequential_tool_calls_after_budget(self) -> None:
-        query_service = _FakeQueryService(
-            {
-                ("text_only", "q1", None): _build_article_result(),
-                ("text_only", "q2", None): _build_article_result(),
-                ("text_only", "q3", None): _build_article_result(),
-            }
-        )
+    def test_answer_uses_three_iteration_recursion_limit(self) -> None:
+        research_call_log: list[dict[str, object]] = []
         service = RagAnswerService(
             tools_factory=lambda context: RagTools(
                 request_context=context,
-                query_service=query_service,
+                query_service=_FakeQueryService({}),
                 web_search_service=_FakeWebSearchService({}),
             ),
             research_agent_factory=lambda rag_tools: _ToolCallingResearchAgent(
                 rag_tools.build_langchain_tools(),
-                [
-                    ("search_fashion_articles", {"query": "q1"}),
-                    ("search_fashion_articles", {"query": "q2"}),
-                    ("search_fashion_articles", {"query": "q3"}),
-                    ("search_fashion_articles", {"query": "q4"}),
-                ],
+                [],
+                call_log=research_call_log,
             ),
-            synthesis_agent=_FakeSynthesisAgent(answer="预算回归"),
+            synthesis_agent=_FakeSynthesisAgent(answer="无工具回答"),
         )
 
         response = asyncio.run(
             service.answer(
-                request=RagQueryRequest(query="预算测试"),
+                request=RagQueryRequest(query="只验证迭代上限"),
                 request_context=RagRequestContext(limit=5),
             )
         )
 
-        self.assertEqual("预算回归", response.answer)
-        self.assertEqual(
-            [
-                ("text_only", "q1", None),
-                ("text_only", "q2", None),
-                ("text_only", "q3", None),
-            ],
-            query_service.calls,
-        )
-        self.assertEqual(3, len(response.query_plans))
-
-    def test_answer_truncates_batched_tool_call_overflow_without_raising(self) -> None:
-        query_service = _FakeQueryService(
-            {
-                ("text_only", "batch-1", None): _build_article_result(),
-                ("text_only", "batch-2", None): _build_article_result(),
-                ("text_only", "batch-3", None): _build_article_result(),
-            }
-        )
-        service = RagAnswerService(
-            tools_factory=lambda context: RagTools(
-                request_context=context,
-                query_service=query_service,
-                web_search_service=_FakeWebSearchService({}),
-            ),
-            research_agent_factory=lambda rag_tools: _BatchedToolCallingResearchAgent(
-                rag_tools.build_langchain_tools(),
-                [
-                    [
-                        ("search_fashion_articles", {"query": "batch-1"}),
-                        ("search_fashion_articles", {"query": "batch-2"}),
-                    ],
-                    [
-                        ("search_fashion_articles", {"query": "batch-3"}),
-                        ("search_fashion_articles", {"query": "batch-4"}),
-                    ],
-                ],
-            ),
-            synthesis_agent=_FakeSynthesisAgent(answer="批次预算回归"),
-        )
-
-        response = asyncio.run(
-            service.answer(
-                request=RagQueryRequest(query="批次预算测试"),
-                request_context=RagRequestContext(limit=5),
-            )
-        )
-
-        self.assertEqual("批次预算回归", response.answer)
-        self.assertEqual(
-            [
-                ("text_only", "batch-1", None),
-                ("text_only", "batch-2", None),
-                ("text_only", "batch-3", None),
-            ],
-            query_service.calls,
-        )
-        self.assertEqual(3, len(response.query_plans))
+        self.assertEqual("无工具回答", response.answer)
+        self.assertEqual({"recursion_limit": 7}, research_call_log[0]["config"])
 
     def test_answer_stream_forwards_deltas_and_returns_normalized_answer(self) -> None:
         article_result = _build_article_result()

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import threading
 from typing import Literal
 
 from langchain_core.tools import StructuredTool
@@ -16,7 +15,6 @@ from backend.app.service.RAG.web_search_service import WebSearchService
 
 ToolExecutionResult = QueryResult | list[WebSearchResult]
 REQUEST_IMAGE_TOOL_REF = "request_image"
-MAX_TOOL_EXECUTIONS = 3
 
 
 class _SearchFashionArticlesArgs(BaseModel):
@@ -61,8 +59,6 @@ class RagTools:
         self._web_search_service = (
             WebSearchService() if web_search_service is None else web_search_service
         )
-        self._tool_execution_lock = threading.Lock()
-        self._tool_execution_count = 0
         self._rag_results: list[QueryResult] = []
         self._web_results: list[WebSearchResult] = []
 
@@ -162,8 +158,6 @@ class RagTools:
         return await self._web_search_service.search(query=query, limit=self._request_context.limit)
 
     def _search_fashion_articles_tool(self, query: str) -> str:
-        if not self._try_acquire_tool_execution_slot():
-            return ""
         result = self.search_fashion_articles(query=self._require_query(query, field_name="query"))
         return self._record_tool_result(result)
 
@@ -172,8 +166,6 @@ class RagTools:
         text_query: str | None = None,
         image_ref: Literal["request_image"] | None = None,
     ) -> str:
-        if not self._try_acquire_tool_execution_slot():
-            return ""
         result = self.search_fashion_images(
             text_query=self._normalize_optional_text(text_query),
             image_ref=self._normalize_optional_image_ref(image_ref),
@@ -185,8 +177,6 @@ class RagTools:
         query: str,
         image_ref: Literal["request_image"] | None = None,
     ) -> str:
-        if not self._try_acquire_tool_execution_slot():
-            return ""
         result = self.search_fashion_fusion(
             query=self._require_query(query, field_name="query"),
             image_ref=self._normalize_optional_image_ref(image_ref),
@@ -194,8 +184,6 @@ class RagTools:
         return self._record_tool_result(result)
 
     async def _search_web_tool(self, query: str) -> str:
-        if not self._try_acquire_tool_execution_slot():
-            return ""
         result = await self.search_web(query=self._require_query(query, field_name="query"))
         return self._record_tool_result(result)
 
@@ -217,13 +205,6 @@ class RagTools:
         else:
             self._web_results.extend(result)
         return self.serialize_tool_result(result)
-
-    def _try_acquire_tool_execution_slot(self) -> bool:
-        with self._tool_execution_lock:
-            if self._tool_execution_count >= MAX_TOOL_EXECUTIONS:
-                return False
-            self._tool_execution_count += 1
-            return True
 
     def _resolve_image_ref(self, image_ref: Literal["request_image"] | None) -> str | None:
         if image_ref is None:

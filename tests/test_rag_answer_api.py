@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, AIMessageChunk
 
 from backend.app.app_main import app
 from backend.app.router.rag_router import get_rag_answer_service
@@ -107,9 +107,10 @@ class _ToolCallingResearchAgent:
     def __init__(self, tools: list[object], tool_calls: list[tuple[str, dict[str, object]]]) -> None:
         self._tools = {tool.name: tool for tool in tools}
         self._tool_calls = tool_calls
+        self.call_log: list[dict[str, object]] = []
 
     async def ainvoke(self, payload: dict[str, object], config: dict[str, object] | None = None) -> dict[str, object]:
-        del payload, config
+        self.call_log.append({"payload": payload, "config": config})
         for tool_name, tool_input in self._tool_calls:
             await self._tools[tool_name].ainvoke(tool_input)
         return {"messages": [AIMessage(content="research complete")]}
@@ -119,6 +120,13 @@ class _FakeSynthesisAgent:
     async def ainvoke(self, payload: dict[str, object]) -> dict[str, object]:
         del payload
         return {"messages": [AIMessage(content="final answer")]}
+
+    async def astream_events(self, payload: dict[str, object], **kwargs: object):
+        del payload, kwargs
+        yield {
+            "event": "on_chat_model_stream",
+            "data": {"chunk": AIMessageChunk(content="final answer")},
+        }
 
 
 class QueryPlanValidationTests(unittest.TestCase):
@@ -236,23 +244,15 @@ class QueryServiceRequestImageTests(unittest.TestCase):
 class RagAnswerServiceTests(unittest.IsolatedAsyncioTestCase):
     """Cover the answer-loop orchestration constraints."""
 
-    async def test_answer_loop_stops_after_three_tool_calls(self) -> None:
-        fake_query_service = _FakeAnswerQueryService()
+    async def test_answer_uses_three_iteration_recursion_limit(self) -> None:
+        research_agent = _ToolCallingResearchAgent([], [])
         service = RagAnswerService(
             tools_factory=lambda request_context: RagTools(
                 request_context=request_context,
-                query_service=fake_query_service,
+                query_service=_FakeAnswerQueryService(),
                 web_search_service=FakeWebSearchService(),
             ),
-            research_agent_factory=lambda rag_tools: _ToolCallingResearchAgent(
-                rag_tools.build_langchain_tools(),
-                [
-                    ("search_fashion_articles", {"query": "dress-1"}),
-                    ("search_fashion_articles", {"query": "dress-2"}),
-                    ("search_fashion_articles", {"query": "dress-3"}),
-                    ("search_fashion_articles", {"query": "dress-4"}),
-                ],
-            ),
+            research_agent_factory=lambda rag_tools: research_agent,
             synthesis_agent=_FakeSynthesisAgent(),
         )
         response = await service.answer(
@@ -261,37 +261,34 @@ class RagAnswerServiceTests(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(response.answer, "final answer")
-        self.assertEqual(fake_query_service.calls, ["dress-1", "dress-2", "dress-3"])
-        self.assertEqual(len(response.query_plans), 3)
+        self.assertEqual(research_agent.call_log[0]["config"], {"recursion_limit": 7})
 
-    async def test_answer_loop_truncates_batched_tool_calls_at_budget(self) -> None:
-        """Tool-call overflows should stop at the budget instead of raising."""
-        fake_query_service = _FakeAnswerQueryService()
+    async def test_answer_stream_uses_three_iteration_recursion_limit(self) -> None:
+        research_agent = _ToolCallingResearchAgent([], [])
         service = RagAnswerService(
             tools_factory=lambda request_context: RagTools(
                 request_context=request_context,
-                query_service=fake_query_service,
+                query_service=_FakeAnswerQueryService(),
                 web_search_service=FakeWebSearchService(),
             ),
-            research_agent_factory=lambda rag_tools: _ToolCallingResearchAgent(
-                rag_tools.build_langchain_tools(),
-                [
-                    ("search_fashion_articles", {"query": "dress-1"}),
-                    ("search_fashion_articles", {"query": "dress-2"}),
-                    ("search_fashion_articles", {"query": "dress-3"}),
-                    ("search_fashion_articles", {"query": "dress-4"}),
-                ],
-            ),
+            research_agent_factory=lambda rag_tools: research_agent,
             synthesis_agent=_FakeSynthesisAgent(),
         )
-        response = await service.answer(
+
+        deltas: list[str] = []
+
+        async def on_delta(delta: str) -> None:
+            deltas.append(delta)
+
+        response = await service.answer_stream(
             request=RagQueryRequest(query="show me dresses", filters=QueryFilters(), limit=5),
             request_context=RagRequestContext(filters=QueryFilters(), limit=5),
+            on_delta=on_delta,
         )
 
         self.assertEqual(response.answer, "final answer")
-        self.assertEqual(fake_query_service.calls, ["dress-1", "dress-2", "dress-3"])
-        self.assertEqual(len(response.query_plans), 3)
+        self.assertEqual(deltas, ["final answer"])
+        self.assertEqual(research_agent.call_log[0]["config"], {"recursion_limit": 7})
 
 
 class RagRouterTests(unittest.TestCase):
