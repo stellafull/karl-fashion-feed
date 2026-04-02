@@ -37,6 +37,8 @@ def _build_model(
     max_completion_tokens: int,
     timeout_seconds: int,
 ):
+    if not configuration.api_key:
+        raise RuntimeError("story runtime requires configured API key")
     model = ChatOpenAI(
         model=model_name,
         api_key=configuration.api_key,

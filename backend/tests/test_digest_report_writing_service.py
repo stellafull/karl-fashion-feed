@@ -13,6 +13,7 @@ from unittest.mock import patch
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from backend.app.config.llm_config import Configuration
 from backend.app.models import Article, Digest, PipelineRun, ensure_article_storage_schema
 from backend.app.prompts.digest_report_writing_prompt import build_digest_report_writing_prompt
 from backend.app.schemas.llm.digest_report_writing import DigestReportWritingSchema
@@ -87,6 +88,15 @@ def _build_session(root_path: Path) -> Session:
 
 
 class DigestReportWritingServiceTest(unittest.TestCase):
+    def test_get_agent_fails_fast_when_api_key_is_missing(self) -> None:
+        service = DigestReportWritingService(
+            configuration=Configuration(api_key=None),
+            rate_limiter=_build_fake_rate_limiter(),
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "configured API key"):
+            service._get_agent()
+
     def test_write_digest_builds_agent_via_create_agent_with_required_arguments(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             session = _build_session(Path(tmp_dir))
@@ -269,3 +279,10 @@ class DigestReportWritingServiceTest(unittest.TestCase):
             response_files = sorted(stage_dir.glob("*/response.json"))
             self.assertEqual(2, len(prompt_files))
             self.assertEqual(2, len(response_files))
+            prompt_payload = json.loads(prompt_files[0].read_text(encoding="utf-8"))
+            response_payload = json.loads(response_files[0].read_text(encoding="utf-8"))
+            self.assertIn("system_prompt", prompt_payload)
+            self.assertIn("invoke_payload", prompt_payload)
+            self.assertEqual("user", prompt_payload["invoke_payload"]["messages"][0]["role"])
+            self.assertIn("structured_response", response_payload)
+            self.assertEqual("本日品牌动作速写", response_payload["structured_response"]["title_zh"])
