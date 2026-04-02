@@ -5,13 +5,14 @@ from __future__ import annotations
 import asyncio
 import json
 from datetime import UTC, datetime, date
-from typing import TYPE_CHECKING
+from typing import Any
 from zoneinfo import ZoneInfo
 
+from langchain.agents import create_agent
 from sqlalchemy import delete, update
 from sqlalchemy.orm import Session
 
-from backend.app.config.llm_config import STORY_SUMMARIZATION_MODEL_CONFIG
+from backend.app.config.llm_config import Configuration
 from backend.app.core.database import SessionLocal
 from backend.app.models import Article, ArticleEventFrame
 from backend.app.models import ensure_article_storage_schema
@@ -22,10 +23,8 @@ from backend.app.schemas.llm.event_frame_extraction import (
     ExtractedEventFrame,
 )
 from backend.app.service.article_parse_service import ArticleMarkdownService
+from backend.app.service.langchain_model_factory import build_story_model
 from backend.app.service.llm_rate_limiter import LlmRateLimiter
-
-if TYPE_CHECKING:
-    from openai import AsyncOpenAI
 
 ASIA_SHANGHAI = ZoneInfo("Asia/Shanghai")
 
@@ -36,11 +35,13 @@ class EventFrameExtractionService:
     def __init__(
         self,
         *,
-        client: AsyncOpenAI | None = None,
+        agent: Any | None = None,
+        configuration: Configuration | None = None,
         markdown_service: ArticleMarkdownService | None = None,
         rate_limiter: LlmRateLimiter | None = None,
     ) -> None:
-        self._client = client
+        self._agent = agent
+        self._configuration = configuration or Configuration.from_runnable_config()
         self._markdown_service = markdown_service or ArticleMarkdownService()
         self._rate_limiter = rate_limiter or LlmRateLimiter()
 
@@ -97,39 +98,32 @@ class EventFrameExtractionService:
         if not markdown.strip():
             raise ValueError(f"markdown is empty for frame extraction: {article.article_id}")
 
-        client = self._get_client()
+        agent = self._get_agent()
         with self._rate_limiter.lease("event_frame_extraction"):
-            response = await client.chat.completions.create(
-                model=STORY_SUMMARIZATION_MODEL_CONFIG.model_name,
-                temperature=STORY_SUMMARIZATION_MODEL_CONFIG.temperature,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": build_event_frame_extraction_prompt(),
-                    },
-                    {
-                        "role": "user",
-                        "content": self._build_user_message(article=article, markdown=markdown),
-                    },
-                ],
-                response_format={"type": "json_object"},
+            result = await agent.ainvoke(
+                {
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": self._build_user_message(article=article, markdown=markdown),
+                        }
+                    ]
+                }
             )
-        raw_content = response.choices[0].message.content or "{}"
-        return EventFrameExtractionSchema.model_validate_json(raw_content)
+        structured_response = result["structured_response"]
+        if isinstance(structured_response, EventFrameExtractionSchema):
+            return structured_response
+        return EventFrameExtractionSchema.model_validate(structured_response)
 
-    def _get_client(self) -> AsyncOpenAI:
-        if self._client is None:
-            from openai import AsyncOpenAI
-
-            api_key = STORY_SUMMARIZATION_MODEL_CONFIG.api_key
-            if not api_key:
-                raise ValueError(f"missing API key for {STORY_SUMMARIZATION_MODEL_CONFIG.model_name}")
-            self._client = AsyncOpenAI(
-                api_key=api_key,
-                base_url=STORY_SUMMARIZATION_MODEL_CONFIG.base_url,
-                timeout=STORY_SUMMARIZATION_MODEL_CONFIG.timeout_seconds,
+    def _get_agent(self):
+        if self._agent is None:
+            self._agent = create_agent(
+                model=build_story_model(self._configuration),
+                tools=[],
+                system_prompt=build_event_frame_extraction_prompt(),
+                response_format=EventFrameExtractionSchema,
             )
-        return self._client
+        return self._agent
 
     def _build_user_message(self, *, article: Article, markdown: str) -> str:
         payload = {
