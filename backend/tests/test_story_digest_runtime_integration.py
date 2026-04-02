@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Callable
 import json
 from contextlib import nullcontext
 from datetime import date
@@ -22,6 +23,9 @@ from backend.app.models import (
     Story,
     ensure_article_storage_schema,
 )
+from backend.app.schemas.llm.digest_packaging import DigestPackagingSchema
+from backend.app.schemas.llm.facet_assignment import FacetAssignmentSchema
+from backend.app.schemas.llm.story_cluster_judgment import StoryClusterJudgmentSchema
 from backend.app.service.digest_generation_service import DigestGenerationService
 from backend.app.service.digest_packaging_service import DigestPackagingService
 from backend.app.service.digest_report_writing_service import DigestReportWritingService
@@ -29,30 +33,46 @@ from backend.app.service.story_facet_assignment_service import StoryFacetAssignm
 from backend.app.service.story_clustering_service import StoryClusteringService
 
 
-def _build_fake_story_cluster_llm(call_log: list[dict[str, object]]) -> SimpleNamespace:
-    raw_content = (
-        '{"groups":[{"seed_event_frame_id":"frame-1","member_event_frame_ids":["frame-1"],'
-        '"synopsis_zh":"Acme 同日秀场事件","event_type":"runway_show","anchor_json":{"brand":"Acme"}}]}'
-    )
+class _FakeStructuredResponseAgent:
+    def __init__(
+        self,
+        *,
+        responder: Callable[[dict[str, object]], object],
+        call_log: list[dict[str, object]],
+    ) -> None:
+        self._responder = responder
+        self._call_log = call_log
 
-    async def create(**kwargs: object) -> SimpleNamespace:
-        call_log.append(dict(kwargs))
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=raw_content))]
+    async def ainvoke(self, payload: dict[str, object]) -> dict[str, object]:
+        self._call_log.append(payload)
+        return {"structured_response": self._responder(payload)}
+
+
+def _build_fake_story_cluster_agent(call_log: list[dict[str, object]]) -> _FakeStructuredResponseAgent:
+    def responder(_: dict[str, object]) -> StoryClusterJudgmentSchema:
+        return StoryClusterJudgmentSchema.model_validate(
+            {
+                "groups": [
+                    {
+                        "seed_event_frame_id": "frame-1",
+                        "member_event_frame_ids": ["frame-1"],
+                        "synopsis_zh": "Acme 同日秀场事件",
+                        "event_type": "runway_show",
+                        "anchor_json": {"brand": "Acme"},
+                    }
+                ]
+            }
         )
 
-    completions = SimpleNamespace(create=create)
-    chat = SimpleNamespace(completions=completions)
-    return SimpleNamespace(chat=chat)
+    return _FakeStructuredResponseAgent(responder=responder, call_log=call_log)
 
 
-def _build_fake_facet_assignment_llm(call_log: list[dict[str, object]]) -> SimpleNamespace:
-    async def create(**kwargs: object) -> SimpleNamespace:
-        call_log.append(dict(kwargs))
-        messages = kwargs.get("messages")
+def _build_fake_facet_assignment_agent(call_log: list[dict[str, object]]) -> _FakeStructuredResponseAgent:
+    def responder(payload: dict[str, object]) -> FacetAssignmentSchema:
+        messages = payload.get("messages")
         assert isinstance(messages, list)
-        payload = json.loads(messages[1]["content"])
-        stories = payload.get("stories", [])
+        user_payload = json.loads(messages[0]["content"])
+        stories = user_payload.get("stories", [])
         response_payload = {
             "stories": [
                 {
@@ -62,23 +82,18 @@ def _build_fake_facet_assignment_llm(call_log: list[dict[str, object]]) -> Simpl
                 for story in stories
             ]
         }
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(response_payload, ensure_ascii=False)))]
-        )
+        return FacetAssignmentSchema.model_validate(response_payload)
 
-    completions = SimpleNamespace(create=create)
-    chat = SimpleNamespace(completions=completions)
-    return SimpleNamespace(chat=chat)
+    return _FakeStructuredResponseAgent(responder=responder, call_log=call_log)
 
 
-def _build_fake_digest_packaging_llm(call_log: list[dict[str, object]]) -> SimpleNamespace:
-    async def create(**kwargs: object) -> SimpleNamespace:
-        call_log.append(dict(kwargs))
-        messages = kwargs.get("messages")
+def _build_fake_digest_packaging_agent(call_log: list[dict[str, object]]) -> _FakeStructuredResponseAgent:
+    def responder(payload: dict[str, object]) -> DigestPackagingSchema:
+        messages = payload.get("messages")
         assert isinstance(messages, list)
-        payload = json.loads(messages[1]["content"])
-        facet = str(payload["facet"])
-        stories = payload.get("stories", [])
+        user_payload = json.loads(messages[0]["content"])
+        facet = str(user_payload["facet"])
+        stories = user_payload.get("stories", [])
         story_keys: list[str] = []
         article_ids: list[str] = []
         for story in stories:
@@ -102,13 +117,9 @@ def _build_fake_digest_packaging_llm(call_log: list[dict[str, object]]) -> Simpl
                 }
             ]
         }
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(response_payload, ensure_ascii=False)))]
-        )
+        return DigestPackagingSchema.model_validate(response_payload)
 
-    completions = SimpleNamespace(create=create)
-    chat = SimpleNamespace(completions=completions)
-    return SimpleNamespace(chat=chat)
+    return _FakeStructuredResponseAgent(responder=responder, call_log=call_log)
 
 
 def _build_fake_digest_report_writing_llm(call_log: list[dict[str, object]]) -> SimpleNamespace:
@@ -204,7 +215,7 @@ class StoryDigestRuntimeIntegrationTest(unittest.TestCase):
 
             stories = asyncio.run(
                 StoryClusteringService(
-                    client=_build_fake_story_cluster_llm(cluster_call_log),
+                    agent=_build_fake_story_cluster_agent(cluster_call_log),
                     rate_limiter=_build_fake_rate_limiter(),
                 ).cluster_business_day(
                     session,
@@ -216,11 +227,11 @@ class StoryDigestRuntimeIntegrationTest(unittest.TestCase):
             digests = asyncio.run(
                 DigestGenerationService(
                     facet_assignment_service=StoryFacetAssignmentService(
-                        client=_build_fake_facet_assignment_llm(facet_call_log),
+                        agent=_build_fake_facet_assignment_agent(facet_call_log),
                         rate_limiter=_build_fake_rate_limiter(),
                     ),
                     packaging_service=DigestPackagingService(
-                        client=_build_fake_digest_packaging_llm(packaging_call_log),
+                        agent=_build_fake_digest_packaging_agent(packaging_call_log),
                         rate_limiter=_build_fake_rate_limiter(),
                     ),
                     report_writing_service=DigestReportWritingService(
@@ -242,9 +253,9 @@ class StoryDigestRuntimeIntegrationTest(unittest.TestCase):
         self.assertEqual(1, len(facet_call_log))
         self.assertEqual(1, len(packaging_call_log))
         self.assertEqual(1, len(report_call_log))
-        facet_request = json.loads(facet_call_log[0]["messages"][1]["content"])
+        facet_request = json.loads(facet_call_log[0]["messages"][0]["content"])
         self.assertEqual([story_key], [story["story_key"] for story in facet_request["stories"]])
-        packaging_request = json.loads(packaging_call_log[0]["messages"][1]["content"])
+        packaging_request = json.loads(packaging_call_log[0]["messages"][0]["content"])
         self.assertEqual("runway_series", packaging_request["facet"])
         self.assertEqual(["runway_series"], packaging_request["stories"][0]["facets"])
         self.assertEqual(["article-1"], packaging_request["stories"][0]["article_ids"])

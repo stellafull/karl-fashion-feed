@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
+from pathlib import Path
+import tempfile
 import unittest
 from contextlib import nullcontext
 from datetime import date
@@ -391,3 +394,48 @@ class StoryClusteringServiceTest(unittest.TestCase):
         self.assertEqual(1, len(call_log))
         payload = json.loads(call_log[0]["messages"][0]["content"])
         self.assertEqual(["f1", "f2"], [item["event_frame_id"] for item in payload["candidate_frames"]])
+
+    def test_cluster_business_day_records_llm_debug_artifacts_with_system_prompt(self) -> None:
+        session = build_story_test_session_with_frames(
+            business_day=date(2026, 3, 29),
+            frames=[build_frame("f1", "a1", event_type="runway_show", brand="Acme", person="Jane")],
+        )
+        self.addCleanup(session.close)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch.dict(os.environ, {"KARL_LLM_DEBUG_ARTIFACT_DIR": tmpdir}):
+                service = StoryClusteringService(
+                    agent=_FakeAgent(
+                        [
+                            StoryClusterJudgmentSchema(
+                                groups=[
+                                    StoryClusterGroup(
+                                        seed_event_frame_id="f1",
+                                        member_event_frame_ids=["f1"],
+                                        synopsis_zh="Acme 单篇事件",
+                                        event_type="runway_show",
+                                        anchor_json={"brand": "Acme"},
+                                    )
+                                ]
+                            )
+                        ]
+                    ),
+                    rate_limiter=_FakeRateLimiter(),
+                )
+                stories = asyncio.run(
+                    service.cluster_business_day(
+                        session,
+                        business_day=date(2026, 3, 29),
+                        run_id="run-1",
+                    )
+                )
+
+            self.assertEqual(1, len(stories))
+            prompt_path = Path(tmpdir) / "run-1" / "story_cluster_judgment" / "window-f1" / "prompt.json"
+            response_path = Path(tmpdir) / "run-1" / "story_cluster_judgment" / "window-f1" / "response.json"
+            self.assertTrue(prompt_path.exists())
+            self.assertTrue(response_path.exists())
+            prompt_payload = json.loads(prompt_path.read_text(encoding="utf-8"))
+            self.assertEqual(build_story_cluster_judgment_prompt(), prompt_payload["system_prompt"])
+            invoke_payload = prompt_payload["invoke_payload"]
+            user_payload = json.loads(invoke_payload["messages"][0]["content"])
+            self.assertEqual(["f1"], [item["event_frame_id"] for item in user_payload["candidate_frames"]])

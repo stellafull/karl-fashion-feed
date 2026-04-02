@@ -294,3 +294,8 @@ class StoryFacetAssignmentServiceTest(unittest.TestCase):
             )
             self.assertTrue(prompt_path.exists())
             self.assertTrue(response_path.exists())
+            prompt_payload = json.loads(prompt_path.read_text(encoding="utf-8"))
+            self.assertEqual(build_facet_assignment_prompt(), prompt_payload["system_prompt"])
+            invoke_payload = prompt_payload["invoke_payload"]
+            user_payload = json.loads(invoke_payload["messages"][0]["content"])
+            self.assertEqual(["story-1", "story-2"], [item["story_key"] for item in user_payload["stories"]])

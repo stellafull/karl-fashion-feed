@@ -233,6 +233,7 @@ class StoryClusteringService:
         run_id: str,
     ) -> StoryClusterJudgmentSchema:
         agent = self._get_agent()
+        system_prompt = build_story_cluster_judgment_prompt()
         payload = {
             "candidate_frames": [card.to_payload() for card in window],
         }
@@ -241,6 +242,11 @@ class StoryClusteringService:
             "messages": [
                 {"role": "user", "content": user_message},
             ],
+        }
+        prompt_payload = {
+            "model": self._configuration.story_summarization_model,
+            "system_prompt": system_prompt,
+            "invoke_payload": invoke_payload,
         }
         with self._rate_limiter.lease("story_cluster_judgment"):
             result = await agent.ainvoke(invoke_payload)
@@ -251,7 +257,7 @@ class StoryClusteringService:
                 run_id=run_id,
                 stage="story_cluster_judgment",
                 object_key=f"window-{window_ids}",
-                prompt_text=json.dumps(invoke_payload, ensure_ascii=False, indent=2),
+                prompt_text=json.dumps(prompt_payload, ensure_ascii=False, indent=2),
                 response_text=json.dumps(
                     {"structured_response": self._jsonable_structured_response(structured_response)},
                     ensure_ascii=False,

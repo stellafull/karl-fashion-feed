@@ -117,11 +117,17 @@ class StoryFacetAssignmentService:
         if not story_inputs:
             return FacetAssignmentSchema()
         agent = self._get_agent()
+        system_prompt = build_facet_assignment_prompt()
         user_message = self._build_user_message(story_inputs)
         invoke_payload = {
             "messages": [
                 {"role": "user", "content": user_message},
             ],
+        }
+        prompt_payload = {
+            "model": self._configuration.story_summarization_model,
+            "system_prompt": system_prompt,
+            "invoke_payload": invoke_payload,
         }
         with self._rate_limiter.lease("facet_assignment"):
             result = await agent.ainvoke(invoke_payload)
@@ -135,7 +141,7 @@ class StoryFacetAssignmentService:
                     batch_index=batch_index,
                     batch_count=batch_count,
                 ),
-                prompt_text=json.dumps(invoke_payload, ensure_ascii=False, indent=2),
+                prompt_text=json.dumps(prompt_payload, ensure_ascii=False, indent=2),
                 response_text=json.dumps(
                     {"structured_response": self._jsonable_structured_response(structured_response)},
                     ensure_ascii=False,

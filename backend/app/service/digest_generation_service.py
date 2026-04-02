@@ -41,11 +41,9 @@ class DigestGenerationService:
     ) -> None:
         shared_rate_limiter = rate_limiter or LlmRateLimiter()
         self._facet_assignment_service = facet_assignment_service or StoryFacetAssignmentService(
-            client=client,
             rate_limiter=shared_rate_limiter,
         )
         self._packaging_service = packaging_service or DigestPackagingService(
-            client=client,
             rate_limiter=shared_rate_limiter,
         )
         self._report_writing_service = report_writing_service or DigestReportWritingService(

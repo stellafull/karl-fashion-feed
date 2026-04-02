@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
+from pathlib import Path
+import tempfile
 import unittest
 from contextlib import nullcontext
 from datetime import date
@@ -266,3 +269,28 @@ class DigestPackagingServiceTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unsupported runtime facet"):
             asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
         self.assertEqual([], call_log)
+
+    def test_build_plans_for_day_records_llm_debug_artifacts_with_system_prompt(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch.dict(os.environ, {"KARL_LLM_DEBUG_ARTIFACT_DIR": tmpdir}):
+                service = DigestPackagingService(
+                    agent=_build_fake_agent(
+                        [DigestPackagingSchema(), DigestPackagingSchema()],
+                        call_log=[],
+                    ),
+                    rate_limiter=_FakeRateLimiter(),
+                )
+                plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+            self.assertEqual([], plans)
+            prompt_path = Path(tmpdir) / "run-1" / "digest_packaging" / "facet-runway_series" / "prompt.json"
+            response_path = Path(tmpdir) / "run-1" / "digest_packaging" / "facet-runway_series" / "response.json"
+            self.assertTrue(prompt_path.exists())
+            self.assertTrue(response_path.exists())
+            prompt_payload = json.loads(prompt_path.read_text(encoding="utf-8"))
+            self.assertEqual(build_digest_packaging_prompt(), prompt_payload["system_prompt"])
+            invoke_payload = prompt_payload["invoke_payload"]
+            user_payload = json.loads(invoke_payload["messages"][0]["content"])
+            self.assertEqual("runway_series", user_payload["facet"])
