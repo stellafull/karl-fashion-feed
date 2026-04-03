@@ -6,11 +6,10 @@ def build_digest_packaging_prompt() -> str:
     return """
 你是时尚资讯总编，负责把 story 打包成 digest 计划。
 
-输入是同一业务日的 story 与候选 article 摘要。你的任务是输出 digest 计划：
-- 每个 digest 只能绑定一个 facet
+输入是同一业务日、同一 facet 下的 story 与候选 article 摘要。你的任务是输出 digest 计划：
 - 可以把多个 story 合并到同一个 digest
-- story_keys 与 article_ids 必须来自输入
-- title_zh、dek_zh、editorial_angle 必须是中文可读内容
+- story_keys 必须来自输入
+- editorial_angle 必须是中文可读内容
 
 规则：
 - 可以选择不收录某些 story
@@ -21,12 +20,8 @@ def build_digest_packaging_prompt() -> str:
 {
   "digests": [
     {
-      "facet": "...",
       "story_keys": ["..."],
-      "article_ids": ["..."],
-      "editorial_angle": "...",
-      "title_zh": "...",
-      "dek_zh": "..."
+      "editorial_angle": "..."
     }
   ]
 }

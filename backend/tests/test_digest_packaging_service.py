@@ -45,6 +45,16 @@ class _FakeAgent:
         return {"structured_response": self._responses.pop(0)}
 
 
+class _FakeChatModel:
+    def __init__(self, structured_model: _FakeAgent) -> None:
+        self._structured_model = structured_model
+        self.structured_output_calls: list[tuple[type[object], str]] = []
+
+    def with_structured_output(self, schema: type[object], *, method: str):
+        self.structured_output_calls.append((schema, method))
+        return self._structured_model
+
+
 class _FakeRateLimiter:
     def __init__(self) -> None:
         self.leased_buckets: list[str] = []
@@ -140,39 +150,30 @@ def _build_session() -> Session:
 
 
 class DigestPackagingServiceTest(unittest.TestCase):
-    def test_build_plans_for_day_builds_agent_via_create_agent_with_required_arguments(self) -> None:
+    def test_build_plans_for_day_builds_structured_model_with_required_arguments(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
         limiter = _FakeRateLimiter()
-        fake_model = object()
         call_log: list[dict[str, object]] = []
         fake_agent = _build_fake_agent(
             [DigestPackagingSchema(), DigestPackagingSchema()],
             call_log=call_log,
         )
+        fake_model = _FakeChatModel(fake_agent)
         service = DigestPackagingService(rate_limiter=limiter)
 
         with patch(
             "backend.app.service.digest_packaging_service.build_story_model",
             return_value=fake_model,
         ) as build_story_model_mock:
-            with patch(
-                "backend.app.service.digest_packaging_service.create_agent",
-                return_value=fake_agent,
-            ) as create_agent_mock:
-                payload = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
+            payload = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
 
         self.assertEqual([], payload)
         self.assertEqual(["digest_packaging", "digest_packaging"], limiter.leased_buckets)
         build_story_model_mock.assert_called_once_with(service._configuration)
-        create_agent_mock.assert_called_once_with(
-            model=fake_model,
-            tools=[],
-            system_prompt=build_digest_packaging_prompt(),
-            response_format=DigestPackagingSchema,
-        )
+        self.assertEqual([(DigestPackagingSchema, "json_schema")], fake_model.structured_output_calls)
 
-    def test_build_plans_for_day_groups_by_facet_and_allows_story_overlap(self) -> None:
+    def test_build_plans_for_day_derives_article_ids_and_source_names_locally(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
         call_log: list[dict[str, object]] = []
@@ -184,12 +185,8 @@ class DigestPackagingServiceTest(unittest.TestCase):
                         {
                             "digests": [
                                 {
-                                    "facet": "runway_series",
                                     "story_keys": ["story-1"],
-                                    "article_ids": ["article-1", "article-2"],
                                     "editorial_angle": "秀场造型作为独立看点",
-                                    "title_zh": "Acme 秀场速览",
-                                    "dek_zh": "聚焦造型变化",
                                 }
                             ]
                         }
@@ -198,12 +195,8 @@ class DigestPackagingServiceTest(unittest.TestCase):
                         {
                             "digests": [
                                 {
-                                    "facet": "trend_summary",
                                     "story_keys": ["story-1", "story-2"],
-                                    "article_ids": ["article-2", "article-3"],
                                     "editorial_angle": "设计语言与组织动作共同指向新趋势",
-                                    "title_zh": "本日趋势联动",
-                                    "dek_zh": "从秀场延展到品牌动作",
                                 }
                             ]
                         }
@@ -222,6 +215,10 @@ class DigestPackagingServiceTest(unittest.TestCase):
         self.assertEqual(date(2026, 3, 30), plans[1].business_date)
         self.assertEqual(("story-1",), plans[0].story_keys)
         self.assertEqual(("story-1", "story-2"), plans[1].story_keys)
+        self.assertEqual(("article-1", "article-2"), plans[0].article_ids)
+        self.assertEqual(("article-1", "article-2", "article-3"), plans[1].article_ids)
+        self.assertEqual(("Vogue", "WWD"), plans[0].source_names)
+        self.assertEqual(("BoF", "Vogue", "WWD"), plans[1].source_names)
         self.assertEqual(2, len(call_log))
         story_keys_by_call = []
         for call in call_log:
@@ -231,6 +228,33 @@ class DigestPackagingServiceTest(unittest.TestCase):
             [("story-1",), ("story-1", "story-2")],
             story_keys_by_call,
         )
+
+    def test_build_plans_for_day_fails_when_selected_story_group_resolves_zero_articles(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        session.query(StoryArticle).delete()
+        session.commit()
+        service = DigestPackagingService(
+            agent=_build_fake_agent(
+                [
+                    DigestPackagingSchema.model_validate(
+                        {
+                            "digests": [
+                                {
+                                    "story_keys": ["story-1"],
+                                    "editorial_angle": "没有文章的非法组合",
+                                }
+                            ]
+                        }
+                    )
+                ],
+                call_log=[],
+            ),
+            rate_limiter=_FakeRateLimiter(),
+        )
+
+        with self.assertRaisesRegex(ValueError, "resolved zero article_ids"):
+            asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
 
     def test_build_plans_for_day_returns_empty_when_no_faceted_stories(self) -> None:
         session = _build_session()
