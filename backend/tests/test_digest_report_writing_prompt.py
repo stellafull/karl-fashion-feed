@@ -28,10 +28,18 @@ class DigestReportWritingPromptContractTest(unittest.TestCase):
         self.assertIn("正文组织方式可灵活调整", prompt)
         self.assertIn("不强制固定模板", prompt)
         self.assertIn("正文默认使用连续 digest 段落推进", prompt)
-        self.assertIn("不要搭建杂志式分节脚手架", prompt)
+        self.assertIn("当确实有助于内部读者快速扫描时，可使用轻量结构", prompt)
+        self.assertIn("不得演变为杂志式分节脚手架", prompt)
         self.assertIn("避免多级标题", prompt)
         self.assertIn("不要写固定收尾段", prompt)
         self.assertIn("不要机械地按品牌逐一写一个小节", prompt)
+        self.assertNotIn("正文默认使用连续 digest 段落推进，不要搭建杂志式分节脚手架", prompt)
+
+    def test_prompt_does_not_reintroduce_magazine_scaffolding_language(self) -> None:
+        prompt = build_digest_report_writing_prompt()
+
+        self.assertNotIn("必须按品牌逐一分节", prompt)
+        self.assertNotIn("必须设置固定收尾总结段", prompt)
 
     def test_prompt_emphasizes_inside_digest_signals(self) -> None:
         prompt = build_digest_report_writing_prompt()
