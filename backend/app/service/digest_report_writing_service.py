@@ -7,17 +7,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from langchain.agents import create_agent
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from backend.app.config.llm_config import Configuration
-from backend.app.models import Article, Digest
+from backend.app.models import Article, Digest, Story
 from backend.app.prompts.digest_report_writing_prompt import build_digest_report_writing_prompt
 from backend.app.schemas.llm.digest_report_writing import DigestReportWritingSchema
 from backend.app.service.article_parse_service import ArticleMarkdownService
 from backend.app.service.digest_packaging_service import ResolvedDigestPlan
-from backend.app.service.langchain_model_factory import build_story_model
+from backend.app.service.langchain_model_factory import StructuredOutputRunnable, build_story_model
 from backend.app.service.llm_debug_artifact_service import (
     LlmDebugArtifactRecorder,
     build_llm_debug_artifact_recorder_from_env,
@@ -32,6 +31,13 @@ class _ArticleSourceInput:
     title_raw: str
     summary_raw: str
     body_markdown: str
+
+
+@dataclass(frozen=True)
+class _StorySummaryInput:
+    story_key: str
+    synopsis_zh: str
+    event_type: str
 
 
 class DigestReportWritingService:
@@ -59,14 +65,41 @@ class DigestReportWritingService:
         *,
         run_id: str,
     ) -> Digest:
+        story_summaries = self._load_story_summaries(session, plan.story_keys)
         article_sources = self._load_article_sources(session, plan.article_ids)
-        schema = await self._write_report(plan, article_sources, run_id=run_id)
+        schema = await self._write_report(plan, story_summaries, article_sources, run_id=run_id)
         return self._resolve_written_digest(
             run_id=run_id,
             plan=plan,
             article_sources=article_sources,
             schema=schema,
         )
+
+    def _load_story_summaries(
+        self,
+        session: Session,
+        story_keys: tuple[str, ...],
+    ) -> list[_StorySummaryInput]:
+        rows = list(
+            session.scalars(
+                select(Story)
+                .where(Story.story_key.in_(story_keys))
+                .order_by(Story.story_key.asc())
+            ).all()
+        )
+        story_by_key = {row.story_key: row for row in rows}
+        missing_story_keys = [story_key for story_key in story_keys if story_key not in story_by_key]
+        if missing_story_keys:
+            joined = ", ".join(missing_story_keys)
+            raise ValueError(f"missing story summary rows for digest report writing: {joined}")
+        return [
+            _StorySummaryInput(
+                story_key=story_key,
+                synopsis_zh=story_by_key[story_key].synopsis_zh.strip(),
+                event_type=story_by_key[story_key].event_type.strip() or "general",
+            )
+            for story_key in story_keys
+        ]
 
     def _load_article_sources(
         self,
@@ -107,13 +140,14 @@ class DigestReportWritingService:
     async def _write_report(
         self,
         plan: ResolvedDigestPlan,
+        story_summaries: list[_StorySummaryInput],
         article_sources: list[_ArticleSourceInput],
         *,
         run_id: str,
     ) -> DigestReportWritingSchema:
         agent = self._get_agent()
         system_prompt = build_digest_report_writing_prompt()
-        user_message = self._build_user_message(plan, article_sources)
+        user_message = self._build_user_message(plan, story_summaries, article_sources)
         invoke_payload = {
             "messages": [
                 {"role": "user", "content": user_message},
@@ -200,6 +234,7 @@ class DigestReportWritingService:
     def _build_user_message(
         self,
         plan: ResolvedDigestPlan,
+        story_summaries: list[_StorySummaryInput],
         article_sources: list[_ArticleSourceInput],
     ) -> str:
         payload = {
@@ -209,10 +244,16 @@ class DigestReportWritingService:
                 "story_keys": list(plan.story_keys),
                 "article_ids": list(plan.article_ids),
                 "editorial_angle": plan.editorial_angle,
-                "title_zh": plan.title_zh,
-                "dek_zh": plan.dek_zh,
                 "source_names": list(plan.source_names),
             },
+            "story_summaries": [
+                {
+                    "story_key": story.story_key,
+                    "synopsis_zh": story.synopsis_zh,
+                    "event_type": story.event_type,
+                }
+                for story in story_summaries
+            ],
             "source_articles": [
                 {
                     "article_id": article.article_id,
@@ -228,11 +269,10 @@ class DigestReportWritingService:
 
     def _get_agent(self):
         if self._agent is None:
-            self._agent = create_agent(
+            self._agent = StructuredOutputRunnable(
                 model=build_story_model(self._configuration),
-                tools=[],
+                schema=DigestReportWritingSchema,
                 system_prompt=build_digest_report_writing_prompt(),
-                response_format=DigestReportWritingSchema,
             )
         return self._agent
 
