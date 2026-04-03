@@ -47,12 +47,11 @@ class LlmContractsTest(unittest.TestCase):
 
     def test_digest_packaging_schema_parses_overlapping_story_plans(self) -> None:
         payload = (
-            '{"digests":[{"facet":"trend_summary","story_keys":["s1","s2"],"article_ids":'
-            '["a1","a2"],"editorial_angle":"秀场肩部轮廓趋势","title_zh":"肩部轮廓成为本季主线",'
-            '"dek_zh":"多场发布共同推高这一轮趋势"}]}'
+            '{"digests":[{"story_keys":["s1","s2"],"editorial_angle":"秀场肩部轮廓趋势"}]}'
         )
         parsed = DigestPackagingSchema.model_validate_json(payload)
         self.assertEqual(parsed.digests[0].story_keys, ["s1", "s2"])
+        self.assertEqual(parsed.digests[0].editorial_angle, "秀场肩部轮廓趋势")
 
     def test_digest_report_writing_schema_parses_report_payload(self) -> None:
         payload = (
@@ -66,7 +65,7 @@ class LlmContractsTest(unittest.TestCase):
         with patch.dict(os.environ, {}, clear=True):
             configuration = Configuration.from_runnable_config()
 
-        self.assertEqual(configuration.story_summarization_model, "kimi-k2.5")
+        self.assertEqual(configuration.story_summarization_model, "kimi/kimi-k2.5")
         self.assertEqual(configuration.story_summarization_temperature, 0.0)
         self.assertEqual(configuration.story_summarization_timeout_seconds, 600)
         self.assertEqual(configuration.story_summarization_model_max_tokens, 4000)
@@ -161,14 +160,17 @@ class LlmContractsTest(unittest.TestCase):
         self.assertEqual(configuration.rag_timeout_seconds, 44)
         self.assertEqual(configuration.max_react_tool_calls, 11)
 
-    @patch("backend.app.service.langchain_model_factory.ChatOpenAI")
-    def test_build_story_model_wires_chat_openai_without_wrapping_model(self, chat_openai_mock: MagicMock) -> None:
-        model_instance = MagicMock(name="chat-openai-instance")
-        chat_openai_mock.return_value = model_instance
+    @patch("backend.app.service.langchain_model_factory.init_chat_model")
+    def test_build_story_model_wires_init_chat_model_without_wrapping_model(
+        self,
+        init_chat_model_mock: MagicMock,
+    ) -> None:
+        model_instance = MagicMock(name="chat-model-instance")
+        init_chat_model_mock.return_value = model_instance
         configuration = Configuration(
             api_key="test-key",
             base_url="https://openai.example/v1",
-            story_summarization_model="kimi-k2.5",
+            story_summarization_model="kimi/kimi-k2.5",
             story_summarization_model_max_tokens=999,
             story_summarization_temperature=0.15,
             story_summarization_timeout_seconds=88,
@@ -183,21 +185,25 @@ class LlmContractsTest(unittest.TestCase):
         built_model = build_story_model(configuration)
 
         self.assertIs(built_model, model_instance)
-        chat_openai_mock.assert_called_once_with(
-            model="kimi-k2.5",
+        init_chat_model_mock.assert_called_once_with(
+            "kimi/kimi-k2.5",
+            model_provider="openai",
             api_key="test-key",
             base_url="https://openai.example/v1",
             temperature=0.15,
             max_completion_tokens=999,
             timeout=88,
             max_retries=6,
-            use_responses_api=True,
+            use_responses_api=False,
         )
 
-    @patch("backend.app.service.langchain_model_factory.ChatOpenAI")
-    def test_build_rag_model_wires_chat_openai_without_wrapping_model(self, chat_openai_mock: MagicMock) -> None:
-        model_instance = MagicMock(name="chat-openai-instance")
-        chat_openai_mock.return_value = model_instance
+    @patch("backend.app.service.langchain_model_factory.init_chat_model")
+    def test_build_rag_model_wires_init_chat_model_without_wrapping_model(
+        self,
+        init_chat_model_mock: MagicMock,
+    ) -> None:
+        model_instance = MagicMock(name="chat-model-instance")
+        init_chat_model_mock.return_value = model_instance
         configuration = Configuration(
             api_key="rag-key",
             base_url="https://rag-openai.example/v1",
@@ -216,8 +222,9 @@ class LlmContractsTest(unittest.TestCase):
         built_model = build_rag_model(configuration)
 
         self.assertIs(built_model, model_instance)
-        chat_openai_mock.assert_called_once_with(
-            model="rag-model",
+        init_chat_model_mock.assert_called_once_with(
+            "rag-model",
+            model_provider="openai",
             api_key="rag-key",
             base_url="https://rag-openai.example/v1",
             temperature=0.2,
