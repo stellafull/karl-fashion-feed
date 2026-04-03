@@ -105,6 +105,15 @@ For each packaging result:
 2. `article_ids = union(story_keys -> story_article.article_id)` preserving stable order
 3. `source_names = derived from article rows`
 
+Deterministic ordering rule:
+
+- iterate `story_keys` in returned order
+- for each story, iterate `StoryArticle` members in existing stable order:
+  `StoryArticle.rank ASC`, then `Article.article_id ASC`
+- append unseen article ids only
+
+`source_names` remains a derived field on `ResolvedDigestPlan`.
+
 This local resolution must be deterministic and fail fast if any referenced story is missing.
 
 ### `digest_report_writing`
@@ -117,6 +126,13 @@ Writer input becomes:
 - compact story synopsis list
 - resolved `article_ids`
 - source article raw title / summary / body markdown
+
+The compact story synopsis list is a new payload field, not something that exists in `_build_user_message(...)` today.
+It should contain only compact story-level constraints, for example:
+
+- `story_key`
+- `synopsis_zh`
+- `event_type`
 
 Writer output stays:
 
@@ -153,6 +169,8 @@ Writer output stays:
 - Writer result with unknown or duplicate `source_article_ids` is invalid.
 - If packaging has valid input stories but produces zero digest plans, the run fails.
 
+The zero-article rule is new implementation work. It does not exist today and must be added explicitly during implementation.
+
 ## Expected Benefits
 
 - Lower packaging output token volume
@@ -178,5 +196,36 @@ Minimal code changes should be limited to:
 - `backend/app/service/digest_generation_service.py`
 - `backend/app/service/digest_report_writing_service.py`
 - affected tests
+
+Specific implementation impact that must be called out up front:
+
+1. `ResolvedDigestPlan`
+   remove `title_zh` and `dek_zh`
+   keep `article_ids`, `facet`, `editorial_angle`, and derived `source_names`
+
+2. `DigestReportWritingService._build_user_message(...)`
+   stop sending `plan.title_zh` and `plan.dek_zh`
+   add the compact story synopsis list explicitly if retained in the final implementation
+
+3. `DigestPackagingService`
+   remove local validation for packaging-level `facet`, `article_ids`, `title_zh`, and `dek_zh`
+   add explicit fail-fast when local `story_keys -> article_ids` resolution yields zero articles
+
+4. Tests
+   updating `ResolvedDigestPlan` is broader than a small schema tweak
+   at minimum this touches the existing digest unit tests that construct plans directly, plus the story-digest integration test and its fake packaging agent
+
+5. Integration fake data
+   the fake digest packaging agent in `backend/tests/test_story_digest_runtime_integration.py` must stop returning
+   `facet`, `article_ids`, `title_zh`, and `dek_zh`
+   otherwise the integration test becomes a silent false-positive
+
+Prompt edits required:
+
+- remove `article_ids` from packaging rule text
+- remove `facet`, `article_ids`, `title_zh`, and `dek_zh` from the packaging JSON example
+
+`DigestGenerationService` business logic should remain mostly unchanged because it already consumes
+`ResolvedDigestPlan.article_ids` after local resolution. The main change there is adapting to the slimmer plan contract.
 
 No compatibility shim is needed. This is a direct contract replacement inside the current runtime path.
