@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -65,7 +66,7 @@ class DigestReportWritingService:
         *,
         run_id: str,
     ) -> Digest:
-        story_summaries = self._load_story_summaries(session, plan.story_keys)
+        story_summaries = self._load_story_summaries(session, plan.business_date, plan.story_keys)
         article_sources = self._load_article_sources(session, plan.article_ids)
         schema = await self._write_report(plan, story_summaries, article_sources, run_id=run_id)
         return self._resolve_written_digest(
@@ -78,6 +79,7 @@ class DigestReportWritingService:
     def _load_story_summaries(
         self,
         session: Session,
+        business_date: date,
         story_keys: tuple[str, ...],
     ) -> list[_StorySummaryInput]:
         rows = list(
@@ -92,14 +94,28 @@ class DigestReportWritingService:
         if missing_story_keys:
             joined = ", ".join(missing_story_keys)
             raise ValueError(f"missing story summary rows for digest report writing: {joined}")
-        return [
-            _StorySummaryInput(
-                story_key=story_key,
-                synopsis_zh=story_by_key[story_key].synopsis_zh.strip(),
-                event_type=story_by_key[story_key].event_type.strip() or "general",
+        loaded: list[_StorySummaryInput] = []
+        for story_key in story_keys:
+            story = story_by_key[story_key]
+            if story.business_date != business_date:
+                raise ValueError(
+                    "story summary business_date mismatch for digest report writing: "
+                    f"{story_key} expected {business_date.isoformat()} got {story.business_date.isoformat()}"
+                )
+            synopsis_zh = story.synopsis_zh.strip()
+            if not synopsis_zh:
+                raise ValueError(
+                    "story summary synopsis_zh cannot be blank for digest report writing: "
+                    f"{story_key}"
+                )
+            loaded.append(
+                _StorySummaryInput(
+                    story_key=story_key,
+                    synopsis_zh=synopsis_zh,
+                    event_type=story.event_type.strip() or "general",
+                )
             )
-            for story_key in story_keys
-        ]
+        return loaded
 
     def _load_article_sources(
         self,

@@ -41,16 +41,6 @@ class _FakeAgent:
         return {"structured_response": self._responses.pop(0)}
 
 
-class _FakeChatModel:
-    def __init__(self, structured_model: _FakeAgent) -> None:
-        self._structured_model = structured_model
-        self.structured_output_calls: list[tuple[type[object], str]] = []
-
-    def with_structured_output(self, schema: type[object], *, method: str):
-        self.structured_output_calls.append((schema, method))
-        return self._structured_model
-
-
 def _build_fake_rate_limiter() -> SimpleNamespace:
     return SimpleNamespace(lease=lambda *_: nullcontext())
 
@@ -143,7 +133,7 @@ class DigestReportWritingServiceTest(unittest.TestCase):
                     )
                 ]
             )
-            fake_model = _FakeChatModel(fake_agent)
+            fake_model = object()
             service = DigestReportWritingService(
                 markdown_root=Path(tmp_dir),
                 rate_limiter=_build_fake_rate_limiter(),
@@ -153,26 +143,31 @@ class DigestReportWritingServiceTest(unittest.TestCase):
                 "backend.app.service.digest_report_writing_service.build_story_model",
                 return_value=fake_model,
             ) as build_story_model_mock:
-                digest = asyncio.run(
-                    service.write_digest(
-                        session,
-                        run_id="run-1",
-                        plan=ResolvedDigestPlan(
-                            business_date=date(2026, 3, 30),
-                            facet="trend_summary",
-                            story_keys=("story-1", "story-2"),
-                            article_ids=("article-1", "article-2"),
-                            editorial_angle="用品牌动作解释趋势变化",
-                            source_names=("Vogue", "WWD"),
-                        ),
+                with patch(
+                    "backend.app.service.digest_report_writing_service.StructuredOutputRunnable",
+                    return_value=fake_agent,
+                ) as structured_output_runnable_mock:
+                    digest = asyncio.run(
+                        service.write_digest(
+                            session,
+                            run_id="run-1",
+                            plan=ResolvedDigestPlan(
+                                business_date=date(2026, 3, 30),
+                                facet="trend_summary",
+                                story_keys=("story-1", "story-2"),
+                                article_ids=("article-1", "article-2"),
+                                editorial_angle="用品牌动作解释趋势变化",
+                                source_names=("Vogue", "WWD"),
+                            ),
+                        )
                     )
-                )
 
         self.assertEqual("trend_summary", digest.facet)
         build_story_model_mock.assert_called_once_with(service._configuration)
-        self.assertEqual(
-            [(DigestReportWritingSchema, "json_schema")],
-            fake_model.structured_output_calls,
+        structured_output_runnable_mock.assert_called_once_with(
+            model=fake_model,
+            schema=DigestReportWritingSchema,
+            system_prompt=build_digest_report_writing_prompt(),
         )
 
     def test_write_digest_returns_digest_shaped_object_from_resolved_plan(self) -> None:
@@ -292,6 +287,66 @@ class DigestReportWritingServiceTest(unittest.TestCase):
             )
 
             with self.assertRaisesRegex(ValueError, "missing story summary rows"):
+                asyncio.run(
+                    service.write_digest(
+                        session,
+                        run_id="run-1",
+                        plan=ResolvedDigestPlan(
+                            business_date=date(2026, 3, 30),
+                            facet="trend_summary",
+                            story_keys=("story-1",),
+                            article_ids=("article-1",),
+                            editorial_angle="用品牌动作解释趋势变化",
+                            source_names=("Vogue",),
+                        ),
+                    )
+                )
+
+    def test_write_digest_fails_when_story_summary_business_date_mismatches_plan(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            session = _build_session(Path(tmp_dir))
+            self.addCleanup(session.close)
+            story = session.get(Story, "story-1")
+            assert story is not None
+            story.business_date = date(2026, 3, 29)
+            session.commit()
+            service = DigestReportWritingService(
+                agent=_FakeAgent([]),
+                markdown_root=Path(tmp_dir),
+                rate_limiter=_build_fake_rate_limiter(),
+            )
+
+            with self.assertRaisesRegex(ValueError, "story summary business_date mismatch"):
+                asyncio.run(
+                    service.write_digest(
+                        session,
+                        run_id="run-1",
+                        plan=ResolvedDigestPlan(
+                            business_date=date(2026, 3, 30),
+                            facet="trend_summary",
+                            story_keys=("story-1",),
+                            article_ids=("article-1",),
+                            editorial_angle="用品牌动作解释趋势变化",
+                            source_names=("Vogue",),
+                        ),
+                    )
+                )
+
+    def test_write_digest_fails_when_story_summary_synopsis_is_blank(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            session = _build_session(Path(tmp_dir))
+            self.addCleanup(session.close)
+            story = session.get(Story, "story-1")
+            assert story is not None
+            story.synopsis_zh = "   "
+            session.commit()
+            service = DigestReportWritingService(
+                agent=_FakeAgent([]),
+                markdown_root=Path(tmp_dir),
+                rate_limiter=_build_fake_rate_limiter(),
+            )
+
+            with self.assertRaisesRegex(ValueError, "story summary synopsis_zh cannot be blank"):
                 asyncio.run(
                     service.write_digest(
                         session,
