@@ -66,6 +66,7 @@ class DigestReportWritingService:
         *,
         run_id: str,
     ) -> Digest:
+        self._validate_plan_inputs(plan)
         story_summaries = self._load_story_summaries(session, plan.business_date, plan.story_keys)
         article_sources = self._load_article_sources(session, plan.article_ids)
         schema = await self._write_report(plan, story_summaries, article_sources, run_id=run_id)
@@ -75,6 +76,16 @@ class DigestReportWritingService:
             article_sources=article_sources,
             schema=schema,
         )
+
+    def _validate_plan_inputs(self, plan: ResolvedDigestPlan) -> None:
+        if not plan.story_keys:
+            raise ValueError("digest report writing plan.story_keys cannot be empty")
+        if len(set(plan.story_keys)) != len(plan.story_keys):
+            raise ValueError("digest report writing plan.story_keys contains duplicates")
+        if not plan.article_ids:
+            raise ValueError("digest report writing plan.article_ids cannot be empty")
+        if len(set(plan.article_ids)) != len(plan.article_ids):
+            raise ValueError("digest report writing plan.article_ids contains duplicates")
 
     def _load_story_summaries(
         self,

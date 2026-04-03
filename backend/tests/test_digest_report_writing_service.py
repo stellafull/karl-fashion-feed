@@ -8,7 +8,7 @@ from contextlib import nullcontext
 from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -43,6 +43,20 @@ class _FakeAgent:
 
 def _build_fake_rate_limiter() -> SimpleNamespace:
     return SimpleNamespace(lease=lambda *_: nullcontext())
+
+
+def _build_written_schema(
+    *,
+    source_article_ids: list[str] | None = None,
+) -> DigestReportWritingSchema:
+    return DigestReportWritingSchema.model_validate(
+        {
+            "title_zh": "本日品牌动作速写",
+            "dek_zh": "导语摘要",
+            "body_markdown": "# 正文\n\n聚合后的内容",
+            "source_article_ids": source_article_ids or ["article-1"],
+        }
+    )
 
 
 def _build_session(root_path: Path) -> Session:
@@ -301,6 +315,178 @@ class DigestReportWritingServiceTest(unittest.TestCase):
                         ),
                     )
                 )
+
+    def test_write_digest_fails_when_plan_story_keys_are_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            service = DigestReportWritingService(
+                markdown_root=Path(tmp_dir),
+                rate_limiter=_build_fake_rate_limiter(),
+            )
+            session = _build_session(Path(tmp_dir))
+            self.addCleanup(session.close)
+
+            with patch.object(service, "_load_story_summaries") as load_story_summaries_mock:
+                with patch.object(service, "_load_article_sources") as load_article_sources_mock:
+                    with patch.object(
+                        service,
+                        "_write_report",
+                        new_callable=AsyncMock,
+                        return_value=_build_written_schema(),
+                    ) as write_report_mock:
+                        with patch.object(
+                            service,
+                            "_resolve_written_digest",
+                            return_value=object(),
+                        ) as resolve_written_digest_mock:
+                            with self.assertRaisesRegex(ValueError, "plan.story_keys cannot be empty"):
+                                asyncio.run(
+                                    service.write_digest(
+                                        session,
+                                        run_id="run-1",
+                                        plan=ResolvedDigestPlan(
+                                            business_date=date(2026, 3, 30),
+                                            facet="trend_summary",
+                                            story_keys=(),
+                                            article_ids=("article-1",),
+                                            editorial_angle="用品牌动作解释趋势变化",
+                                            source_names=("Vogue",),
+                                        ),
+                                    )
+                                )
+
+        load_story_summaries_mock.assert_not_called()
+        load_article_sources_mock.assert_not_called()
+        write_report_mock.assert_not_called()
+        resolve_written_digest_mock.assert_not_called()
+
+    def test_write_digest_fails_when_plan_story_keys_contain_duplicates(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            service = DigestReportWritingService(
+                markdown_root=Path(tmp_dir),
+                rate_limiter=_build_fake_rate_limiter(),
+            )
+            session = _build_session(Path(tmp_dir))
+            self.addCleanup(session.close)
+
+            with patch.object(service, "_load_story_summaries") as load_story_summaries_mock:
+                with patch.object(service, "_load_article_sources") as load_article_sources_mock:
+                    with patch.object(
+                        service,
+                        "_write_report",
+                        new_callable=AsyncMock,
+                        return_value=_build_written_schema(),
+                    ) as write_report_mock:
+                        with patch.object(
+                            service,
+                            "_resolve_written_digest",
+                            return_value=object(),
+                        ) as resolve_written_digest_mock:
+                            with self.assertRaisesRegex(ValueError, "plan.story_keys contains duplicates"):
+                                asyncio.run(
+                                    service.write_digest(
+                                        session,
+                                        run_id="run-1",
+                                        plan=ResolvedDigestPlan(
+                                            business_date=date(2026, 3, 30),
+                                            facet="trend_summary",
+                                            story_keys=("story-1", "story-1"),
+                                            article_ids=("article-1",),
+                                            editorial_angle="用品牌动作解释趋势变化",
+                                            source_names=("Vogue",),
+                                        ),
+                                    )
+                                )
+
+        load_story_summaries_mock.assert_not_called()
+        load_article_sources_mock.assert_not_called()
+        write_report_mock.assert_not_called()
+        resolve_written_digest_mock.assert_not_called()
+
+    def test_write_digest_fails_when_plan_article_ids_are_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            service = DigestReportWritingService(
+                markdown_root=Path(tmp_dir),
+                rate_limiter=_build_fake_rate_limiter(),
+            )
+            session = _build_session(Path(tmp_dir))
+            self.addCleanup(session.close)
+
+            with patch.object(service, "_load_story_summaries") as load_story_summaries_mock:
+                with patch.object(service, "_load_article_sources") as load_article_sources_mock:
+                    with patch.object(
+                        service,
+                        "_write_report",
+                        new_callable=AsyncMock,
+                        return_value=_build_written_schema(),
+                    ) as write_report_mock:
+                        with patch.object(
+                            service,
+                            "_resolve_written_digest",
+                            return_value=object(),
+                        ) as resolve_written_digest_mock:
+                            with self.assertRaisesRegex(ValueError, "plan.article_ids cannot be empty"):
+                                asyncio.run(
+                                    service.write_digest(
+                                        session,
+                                        run_id="run-1",
+                                        plan=ResolvedDigestPlan(
+                                            business_date=date(2026, 3, 30),
+                                            facet="trend_summary",
+                                            story_keys=("story-1",),
+                                            article_ids=(),
+                                            editorial_angle="用品牌动作解释趋势变化",
+                                            source_names=("Vogue",),
+                                        ),
+                                    )
+                                )
+
+        load_story_summaries_mock.assert_not_called()
+        load_article_sources_mock.assert_not_called()
+        write_report_mock.assert_not_called()
+        resolve_written_digest_mock.assert_not_called()
+
+    def test_write_digest_fails_when_plan_article_ids_contain_duplicates(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            service = DigestReportWritingService(
+                markdown_root=Path(tmp_dir),
+                rate_limiter=_build_fake_rate_limiter(),
+            )
+            session = _build_session(Path(tmp_dir))
+            self.addCleanup(session.close)
+
+            with patch.object(service, "_load_story_summaries") as load_story_summaries_mock:
+                with patch.object(service, "_load_article_sources") as load_article_sources_mock:
+                    with patch.object(
+                        service,
+                        "_write_report",
+                        new_callable=AsyncMock,
+                        return_value=_build_written_schema(),
+                    ) as write_report_mock:
+                        with patch.object(
+                            service,
+                            "_resolve_written_digest",
+                            return_value=object(),
+                        ) as resolve_written_digest_mock:
+                            with self.assertRaisesRegex(ValueError, "plan.article_ids contains duplicates"):
+                                asyncio.run(
+                                    service.write_digest(
+                                        session,
+                                        run_id="run-1",
+                                        plan=ResolvedDigestPlan(
+                                            business_date=date(2026, 3, 30),
+                                            facet="trend_summary",
+                                            story_keys=("story-1",),
+                                            article_ids=("article-1", "article-1"),
+                                            editorial_angle="用品牌动作解释趋势变化",
+                                            source_names=("Vogue",),
+                                        ),
+                                    )
+                                )
+
+        load_story_summaries_mock.assert_not_called()
+        load_article_sources_mock.assert_not_called()
+        write_report_mock.assert_not_called()
+        resolve_written_digest_mock.assert_not_called()
 
     def test_write_digest_fails_when_story_summary_business_date_mismatches_plan(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
