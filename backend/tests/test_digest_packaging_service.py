@@ -247,7 +247,7 @@ class DigestPackagingServiceTest(unittest.TestCase):
             story_keys_by_call,
         )
 
-    def test_build_plans_for_day_fails_when_selected_story_group_resolves_zero_articles(self) -> None:
+    def test_build_plans_for_day_fails_when_selected_story_resolves_zero_articles(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
         session.query(StoryArticle).delete()
@@ -271,7 +271,7 @@ class DigestPackagingServiceTest(unittest.TestCase):
             rate_limiter=_FakeRateLimiter(),
         )
 
-        with self.assertRaisesRegex(ValueError, "resolved zero article_ids"):
+        with self.assertRaisesRegex(ValueError, "story_key story-1 resolved zero article_ids"):
             asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
 
     def test_build_plans_for_day_fails_when_any_selected_story_resolves_zero_articles(self) -> None:
@@ -306,6 +306,14 @@ class DigestPackagingServiceTest(unittest.TestCase):
         session = _build_session()
         self.addCleanup(session.close)
         session.query(StoryFacet).filter(StoryFacet.facet == "runway_series").delete()
+        session.query(StoryArticle).filter(
+            StoryArticle.story_key == "story-1",
+            StoryArticle.article_id == "article-2",
+        ).update({StoryArticle.rank: 0})
+        session.query(StoryArticle).filter(
+            StoryArticle.story_key == "story-1",
+            StoryArticle.article_id == "article-1",
+        ).update({StoryArticle.rank: 1})
         session.add(StoryArticle(story_key="story-2", article_id="article-2", rank=0))
         session.commit()
         service = DigestPackagingService(
@@ -329,7 +337,8 @@ class DigestPackagingServiceTest(unittest.TestCase):
 
         plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
         self.assertEqual(1, len(plans))
-        self.assertEqual(("article-1", "article-2", "article-3"), plans[0].article_ids)
+        self.assertEqual(("article-2", "article-1", "article-3"), plans[0].article_ids)
+        self.assertNotEqual(tuple(sorted(plans[0].article_ids)), plans[0].article_ids)
 
     def test_build_plans_for_day_returns_empty_when_no_faceted_stories(self) -> None:
         session = _build_session()
