@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class DigestPackagingPlan(BaseModel):
     """Plan for a single digest package."""
+
+    model_config = ConfigDict(extra="forbid")
 
     story_keys: list[str] = Field(min_length=1)
     editorial_angle: str = Field(min_length=1)
@@ -14,5 +16,7 @@ class DigestPackagingPlan(BaseModel):
 
 class DigestPackagingSchema(BaseModel):
     """Top-level structured output for digest packaging."""
+
+    model_config = ConfigDict(extra="forbid")
 
     digests: list[DigestPackagingPlan] = Field(default_factory=list)

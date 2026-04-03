@@ -253,7 +253,12 @@ class DigestPackagingService:
             ordered_article_ids: list[str] = []
             seen_article_ids: set[str] = set()
             for story_key in story_keys:
-                for article in story_by_key[story_key].articles:
+                story_articles = story_by_key[story_key].articles
+                if not story_articles:
+                    raise ValueError(
+                        f"digests[{index}] story_key {story_key} resolved zero article_ids"
+                    )
+                for article in story_articles:
                     if article.article_id in seen_article_ids:
                         continue
                     seen_article_ids.add(article.article_id)

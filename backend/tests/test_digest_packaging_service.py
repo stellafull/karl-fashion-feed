@@ -12,6 +12,7 @@ from unittest.mock import patch
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+from pydantic import ValidationError
 
 from backend.app.models import (
     Article,
@@ -150,6 +151,23 @@ def _build_session() -> Session:
 
 
 class DigestPackagingServiceTest(unittest.TestCase):
+    def test_digest_packaging_schema_rejects_obsolete_fields(self) -> None:
+        with self.assertRaises(ValidationError):
+            DigestPackagingSchema.model_validate(
+                {
+                    "digests": [
+                        {
+                            "facet": "runway_series",
+                            "story_keys": ["story-1"],
+                            "article_ids": ["article-1"],
+                            "editorial_angle": "测试",
+                            "title_zh": "测试标题",
+                            "dek_zh": "测试导语",
+                        }
+                    ]
+                }
+            )
+
     def test_build_plans_for_day_builds_structured_model_with_required_arguments(self) -> None:
         session = _build_session()
         self.addCleanup(session.close)
@@ -255,6 +273,63 @@ class DigestPackagingServiceTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "resolved zero article_ids"):
             asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+    def test_build_plans_for_day_fails_when_any_selected_story_resolves_zero_articles(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        session.query(StoryFacet).filter(StoryFacet.facet == "runway_series").delete()
+        session.query(StoryArticle).filter(StoryArticle.story_key == "story-1").delete()
+        session.commit()
+        service = DigestPackagingService(
+            agent=_build_fake_agent(
+                [
+                    DigestPackagingSchema.model_validate(
+                        {
+                            "digests": [
+                                {
+                                    "story_keys": ["story-1", "story-2"],
+                                    "editorial_angle": "包含空故事的非法组合",
+                                }
+                            ]
+                        }
+                    )
+                ],
+                call_log=[],
+            ),
+            rate_limiter=_FakeRateLimiter(),
+        )
+
+        with self.assertRaisesRegex(ValueError, "story_key story-1 resolved zero article_ids"):
+            asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
+
+    def test_build_plans_for_day_dedupes_shared_article_ids_with_first_seen_order(self) -> None:
+        session = _build_session()
+        self.addCleanup(session.close)
+        session.query(StoryFacet).filter(StoryFacet.facet == "runway_series").delete()
+        session.add(StoryArticle(story_key="story-2", article_id="article-2", rank=0))
+        session.commit()
+        service = DigestPackagingService(
+            agent=_build_fake_agent(
+                [
+                    DigestPackagingSchema.model_validate(
+                        {
+                            "digests": [
+                                {
+                                    "story_keys": ["story-1", "story-2"],
+                                    "editorial_angle": "测试跨故事共享文章去重",
+                                }
+                            ]
+                        }
+                    )
+                ],
+                call_log=[],
+            ),
+            rate_limiter=_FakeRateLimiter(),
+        )
+
+        plans = asyncio.run(service.build_plans_for_day(session, date(2026, 3, 30), run_id="run-1"))
+        self.assertEqual(1, len(plans))
+        self.assertEqual(("article-1", "article-2", "article-3"), plans[0].article_ids)
 
     def test_build_plans_for_day_returns_empty_when_no_faceted_stories(self) -> None:
         session = _build_session()
