@@ -93,28 +93,18 @@ def _build_fake_digest_packaging_agent(call_log: list[dict[str, object]]) -> _Fa
         messages = payload.get("messages")
         assert isinstance(messages, list)
         user_payload = json.loads(messages[0]["content"])
-        facet = str(user_payload["facet"])
         stories = user_payload.get("stories", [])
         story_keys: list[str] = []
-        article_ids: list[str] = []
         for story in stories:
             story_key = str(story["story_key"])
             if story_key not in story_keys:
                 story_keys.append(story_key)
-            for article_id in story.get("article_ids", []):
-                normalized_article_id = str(article_id)
-                if normalized_article_id not in article_ids:
-                    article_ids.append(normalized_article_id)
 
         response_payload = {
             "digests": [
                 {
-                    "facet": facet,
                     "story_keys": story_keys,
-                    "article_ids": article_ids,
                     "editorial_angle": "同日主事件聚焦",
-                    "title_zh": "同日事件摘要",
-                    "dek_zh": "聚焦当日单一主事件",
                 }
             ]
         }
@@ -259,7 +249,19 @@ class StoryDigestRuntimeIntegrationTest(unittest.TestCase):
         self.assertEqual(story_key, packaging_request["stories"][0]["story_key"])
         report_request = json.loads(report_call_log[0]["messages"][0]["content"])
         self.assertEqual([story_key], report_request["plan"]["story_keys"])
+        self.assertNotIn("title_zh", report_request["plan"])
+        self.assertNotIn("dek_zh", report_request["plan"])
         self.assertEqual(["article-1"], report_request["plan"]["article_ids"])
+        self.assertEqual(
+            [
+                {
+                    "story_key": story_key,
+                    "synopsis_zh": "Acme 同日秀场事件",
+                    "event_type": "runway_show",
+                }
+            ],
+            report_request["story_summaries"],
+        )
         self.assertIn("Acme released FW26 in Paris.", report_request["source_articles"][0]["body_markdown"])
         persisted_stories = session.scalars(select(Story).where(Story.business_date == business_day)).all()
         self.assertEqual(1, len(persisted_stories))
