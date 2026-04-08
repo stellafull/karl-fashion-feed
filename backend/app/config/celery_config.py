@@ -6,6 +6,7 @@ import os
 from typing import Any
 from urllib.parse import quote
 
+from celery.schedules import crontab
 from dotenv import find_dotenv, load_dotenv
 
 
@@ -37,9 +38,17 @@ def build_celery_settings() -> dict[str, Any]:
         "task_routes": {
             "aggregation.cluster_stories_for_day": {"queue": "aggregation"},
             "aggregation.generate_digests_for_day": {"queue": "aggregation"},
+            "scheduler.tick_daily_pipeline": {"queue": "scheduler"},
         },
         "imports": (
             "backend.app.tasks.content_tasks",
             "backend.app.tasks.aggregation_tasks",
+            "backend.app.tasks.scheduler_tasks",
         ),
+        "beat_schedule": {
+            "tick-daily-pipeline-every-5min": {
+                "task": "scheduler.tick_daily_pipeline",
+                "schedule": crontab(minute="*/5"),
+            },
+        },
     }

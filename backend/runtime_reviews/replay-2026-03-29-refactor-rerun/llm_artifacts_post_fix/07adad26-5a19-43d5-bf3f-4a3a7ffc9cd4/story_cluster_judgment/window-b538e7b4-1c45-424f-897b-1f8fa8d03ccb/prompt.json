@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"b538e7b4-1c45-424f-897b-1f8fa8d03ccb\", \"article_id\": \"af656710-fcd4-40a5-9907-55f48d885d1e\", \"source_name\": \"Glamour UK\", \"source_lang\": \"en\", \"event_type\": \"fashion_trend_forecast\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"There was a time — and not too long ago — when many people thought white skinny jeans were a questionable choice... That's exactly what is happening in spring 2026 with skinny jeans of all shades.\", \"For spring 2026, the key is to choose footwear that brings balance to the white trousers: soft loafers, minimal black sandals, dainty straps, polished mules, airy ballet flats, and grandma-core pumps are your chicest options.\"], \"anchor_json\": {\"trend_direction\": \"回归复兴（comeback）\", \"styling_philosophy\": \"平衡与精致（balance and polish）\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

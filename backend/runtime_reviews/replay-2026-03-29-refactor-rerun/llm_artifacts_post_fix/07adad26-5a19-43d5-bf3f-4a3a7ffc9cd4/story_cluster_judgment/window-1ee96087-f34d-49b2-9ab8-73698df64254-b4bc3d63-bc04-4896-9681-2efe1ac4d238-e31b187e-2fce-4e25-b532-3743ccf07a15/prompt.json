@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"1ee96087-f34d-49b2-9ab8-73698df64254\", \"article_id\": \"6bb4c215-787c-4996-828e-d017db96a05d\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"community_event\", \"brand\": \"lululemon\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"6月27日开业当天，lululemon举办了盛大的社区活动，超300位客人率先一览新店，并加入瑜伽、普拉提和热舞等活动\", \"2024年'夏日乐挑战'已正式启动\"], \"anchor_json\": {\"event_date\": \"6月27日\", \"participation_scale\": \"超300人\", \"annual_program\": \"夏日乐挑战\", \"brand\": \"lululemon\"}}, {\"event_frame_id\": \"b4bc3d63-bc04-4896-9681-2efe1ac4d238\", \"article_id\": \"6bb4c215-787c-4996-828e-d017db96a05d\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"store_opening\", \"brand\": \"lululemon\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"运动生活方式品牌lululemon在华北地区的最大门店——北京三里屯店近日焕新启幕\", \"新店迁址三里屯太古里南区\"], \"anchor_json\": {\"date_hint\": \"近日\", \"source_location\": \"北京三里屯太古里南区\", \"brand\": \"lululemon\"}}, {\"event_frame_id\": \"e31b187e-2fce-4e25-b532-3743ccf07a15\", \"article_id\": \"6bb4c215-787c-4996-828e-d017db96a05d\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"brand_collaboration\", \"brand\": \"lululemon\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"lululemon特邀年轻艺术家马小萌Toi和传统风筝手工艺人刘宾，共同创作以北京非遗'扎燕'和'运动'为灵感的艺术装置——《综合跃动》 和《无限奔跑》\", \"马小萌Toi基于艺术装置的概念，延展创作了六幅限定图案\"], \"anchor_json\": {\"collaboration_type\": \"艺术家联名\", \"cultural_element\": \"北京非遗扎燕风筝\", \"brand\": \"lululemon\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

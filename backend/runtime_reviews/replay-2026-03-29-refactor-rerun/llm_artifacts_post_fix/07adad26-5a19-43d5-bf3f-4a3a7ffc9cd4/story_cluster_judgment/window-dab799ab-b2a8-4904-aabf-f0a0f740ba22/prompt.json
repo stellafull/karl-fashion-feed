@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"dab799ab-b2a8-4904-aabf-f0a0f740ba22\", \"article_id\": \"8d0af566-224d-465d-a91e-d89fe4a21f54\", \"source_name\": \"Vogue Fashion\", \"source_lang\": \"en\", \"event_type\": \"outfit_repeat\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"prior to the Venice Film Festival she had already worn that particular Armani Privé look to the 2022 SAG Awards\"], \"anchor_json\": {\"wearer_habit\": \"frequent outfit repeater\", \"sustainability_recognition\": \"The Cate Blanchett Sustainability Award for Best Vintage or Archival Fashion\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

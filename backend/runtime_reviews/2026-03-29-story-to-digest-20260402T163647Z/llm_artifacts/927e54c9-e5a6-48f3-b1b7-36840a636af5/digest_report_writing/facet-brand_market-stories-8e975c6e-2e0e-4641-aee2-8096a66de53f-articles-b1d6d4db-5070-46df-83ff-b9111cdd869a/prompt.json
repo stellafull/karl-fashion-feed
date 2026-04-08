@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是时尚资讯主笔，负责输出一条 digest 的长文。\n\n输入包括 digest 计划与对应的 article 摘要/引用。你的任务是生成完整中文稿件：\n- title_zh、dek_zh 为中文标题与导语\n- body_markdown 为简洁可读的 Markdown 正文（不要包含 JSON）\n- source_article_ids 必须来自输入\n\n规则：\n- 只基于输入事实，不要编造\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"title_zh\": \"...\",\n  \"dek_zh\": \"...\",\n  \"body_markdown\": \"...\",\n  \"source_article_ids\": [\"...\"]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"plan\": {\"business_date\": \"2026-03-29\", \"facet\": \"brand_market\", \"story_keys\": [\"8e975c6e-2e0e-4641-aee2-8096a66de53f\"], \"article_ids\": [\"b1d6d4db-5070-46df-83ff-b9111cdd869a\"], \"editorial_angle\": \"表彰时尚媒体领域的重要声音，回顾Tim Blanks对当代时尚评论与报道的深远影响，以及权威 fashion criticism 在数字化时代的持续价值\", \"title_zh\": \"时尚评论泰斗Tim Blanks获颁加拿大艺术与时尚奖先锋奖\", \"dek_zh\": \"作为最具影响力的时尚评论家之一，Blanks将于四月年度盛典获此殊荣，肯定其数十年对时尚报道的贡献\", \"source_names\": [\"BOF\"]}, \"source_articles\": [{\"article_id\": \"b1d6d4db-5070-46df-83ff-b9111cdd869a\", \"source_name\": \"BOF\", \"title_raw\": \"Tim Blanks to Be Honoured at Canadian Arts & Fashion Awards\", \"summary_raw\": \"Blanks, one of the world’s top fashion authorities, will receive the CAFA Vanguard Award at the Canadian organisation’s annual gala in April.\", \"body_markdown\": \"# Tim Blanks to Be Honoured at Canadian Arts & Fashion Awards\\n\\nBlanks, one of the world’s top fashion authorities, will receive the CAFA Vanguard Award at the Canadian organisation’s annual gala in April.\\n\\nThe Canadian Arts & Fashion Awards will present fashion journalist and author\\n\\nPlease sign in to ensure you can read our agenda-setting intelligence, analysis and advice. Or get in touch at support@businessoffashion.com if you experience difficulties.\\n\"}]}"
+      }
+    ]
+  }
+}

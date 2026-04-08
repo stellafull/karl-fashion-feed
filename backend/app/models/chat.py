@@ -112,7 +112,7 @@ class ChatMessage(Base):
     response_json: Mapped[dict | None] = mapped_column(
         JSON,
         nullable=True,
-        comment="assistant完成后的完整RagAnswerResponse结构",
+        comment="assistant完成后的结构化响应；chat为RAG结果，deep research为线程元数据",
     )
     error_message: Mapped[str | None] = mapped_column(
         Text,

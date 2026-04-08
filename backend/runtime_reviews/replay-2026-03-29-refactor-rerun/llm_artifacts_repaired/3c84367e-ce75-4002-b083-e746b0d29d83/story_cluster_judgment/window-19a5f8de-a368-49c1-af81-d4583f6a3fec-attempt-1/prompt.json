@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"19a5f8de-a368-49c1-af81-d4583f6a3fec\", \"article_id\": \"ff158610-f7fa-44a1-891a-e3984ba23952\", \"source_name\": \"Vogue España\", \"source_lang\": \"es\", \"event_type\": \"designer_archive_contribution\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"los diseñadores abrieron sus respectivos archivos, seleccionaron piezas clave y proporcionaron contexto\", \"A cada diseñador se le asigna un espacio claramente definido, con su propia lógica estética, materiales y referencias\"], \"anchor_json\": {\"archive_access\": \"personal archives opened\", \"selection_involvement\": \"designers selected key pieces\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

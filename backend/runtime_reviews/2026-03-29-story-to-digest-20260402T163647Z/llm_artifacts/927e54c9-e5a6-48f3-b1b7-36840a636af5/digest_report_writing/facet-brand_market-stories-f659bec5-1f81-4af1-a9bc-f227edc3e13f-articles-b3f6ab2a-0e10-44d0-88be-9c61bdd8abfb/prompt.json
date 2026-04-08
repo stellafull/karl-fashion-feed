@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是时尚资讯主笔，负责输出一条 digest 的长文。\n\n输入包括 digest 计划与对应的 article 摘要/引用。你的任务是生成完整中文稿件：\n- title_zh、dek_zh 为中文标题与导语\n- body_markdown 为简洁可读的 Markdown 正文（不要包含 JSON）\n- source_article_ids 必须来自输入\n\n规则：\n- 只基于输入事实，不要编造\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"title_zh\": \"...\",\n  \"dek_zh\": \"...\",\n  \"body_markdown\": \"...\",\n  \"source_article_ids\": [\"...\"]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"plan\": {\"business_date\": \"2026-03-29\", \"facet\": \"brand_market\", \"story_keys\": [\"f659bec5-1f81-4af1-a9bc-f227edc3e13f\"], \"article_ids\": [\"b3f6ab2a-0e10-44d0-88be-9c61bdd8abfb\"], \"editorial_angle\": \"F1赛事营销打破常规，TGR哈斯车队与日本东宝株式会社达成全年战略合作，将国民级怪兽IP哥斯拉带上铃鹿赛道，以特别版赛车涂装诠释东方流行文化与西方赛车运动的碰撞。\", \"title_zh\": \"怪兽入侵围场：TGR哈斯F1车队联名哥斯拉出战日本大奖赛\", \"dek_zh\": \"车队将于2026年F1日本大奖赛期间亮相哥斯拉特别涂装，标志着赛车运动与经典电影IP的首次深度全年合作\", \"source_names\": [\"ELLE China\"]}, \"source_articles\": [{\"article_id\": \"b3f6ab2a-0e10-44d0-88be-9c61bdd8abfb\", \"source_name\": \"ELLE China\", \"title_raw\": \"TGR哈斯F1车队出战日本大奖赛 发布哥斯拉特别版赛车涂装\", \"summary_raw\": \"TGR哈斯F1车队将迎来2026年国际汽联一级方程式世界锦标赛第三站——日本大奖赛，比赛将在铃鹿国际赛车场举行。\", \"body_markdown\": \"# TGR哈斯F1车队出战日本大奖赛 发布哥斯拉特别版赛车涂装\\n\\nTGR哈斯F1车队将迎来2026年国际汽联一级方程式世界锦标赛第三站——日本大奖赛，比赛将在铃鹿国际赛车场举行。\\n\\n在日本大奖赛前夕，TGR哈斯F1车队宣布与哥斯拉的版权方——日本东宝株式会社达成全年合作，这一合作标志着车队历史上首次与娱乐 IP 展开合作。在东京中城日比谷举行的线下活动中，TGR哈斯F1车队车手埃斯特班·奥康、奥利·贝尔曼、车队领队小松礼雄与东宝株式会社常务执行董事兼首席哥斯拉官大田圭二共同揭晓了日本大奖赛特别版赛车涂装，“怪兽之王”哥斯拉正式亮相VF-26赛车。\\n\\n在2026赛季前两站比赛中均成功取得积分的TGR哈斯F1车队，正以强劲势头进入本赛季第三站。奥利·贝尔曼在上一站中国大奖赛中取得前五名成绩，车队目前以17分位列车队积分榜第四，仅落后卫冕冠军车队迈凯伦1分。\\n\\n文章图源：TM & © TOHO CO., LTD.\\n\"}]}"
+      }
+    ]
+  }
+}

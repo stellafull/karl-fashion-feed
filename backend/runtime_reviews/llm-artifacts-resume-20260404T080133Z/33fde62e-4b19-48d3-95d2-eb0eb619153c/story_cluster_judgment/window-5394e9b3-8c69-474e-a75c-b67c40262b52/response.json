@@ -1,0 +1,20 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "5394e9b3-8c69-474e-a75c-b67c40262b52",
+        "member_event_frame_ids": [
+          "5394e9b3-8c69-474e-a75c-b67c40262b52"
+        ],
+        "synopsis_zh": "发售慈善T恤，全部收益用于重建阿尔塔迪纳社区花园以支持野火灾后恢复",
+        "event_type": "charity_product_release",
+        "anchor_json": {
+          "charity_beneficiary": "Altadena-Community-Garden",
+          "product_type": "t-shirt",
+          "cause": "wildfire_reconstruction",
+          "event_date": "2026-04-03"
+        }
+      }
+    ]
+  }
+}

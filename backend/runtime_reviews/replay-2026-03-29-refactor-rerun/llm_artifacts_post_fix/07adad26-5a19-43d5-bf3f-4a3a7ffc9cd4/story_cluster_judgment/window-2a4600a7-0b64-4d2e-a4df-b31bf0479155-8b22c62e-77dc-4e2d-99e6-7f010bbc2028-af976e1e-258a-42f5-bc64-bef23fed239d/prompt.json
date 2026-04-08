@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"2a4600a7-0b64-4d2e-a4df-b31bf0479155\", \"article_id\": \"9e096f39-2b7f-453b-8989-5f593d537b14\", \"source_name\": \"GQ Japan\", \"source_lang\": \"ja\", \"event_type\": \"collection_debut\", \"brand\": \"JIL SANDER\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"今回のポップアップでは、ベロッティによるデビューコレクションとなる2026年春夏コレクションを展開\", \"理知的なテーラリング、軽やかで建築的なダブルフェイスのレザーとウール、身体性を定義するニットの表現 ー「純粋さ」を限界ではなくひとつの方法として探求した注目のコレクションだ\"], \"anchor_json\": {\"article_id\": \"9e096f39-2b7f-453b-8989-5f593d537b14\", \"source_name\": \"GQ Japan\", \"published_at\": \"2026-03-27T11:30:00\", \"brand\": \"JIL SANDER\"}}, {\"event_frame_id\": \"8b22c62e-77dc-4e2d-99e6-7f010bbc2028\", \"article_id\": \"9e096f39-2b7f-453b-8989-5f593d537b14\", \"source_name\": \"GQ Japan\", \"source_lang\": \"ja\", \"event_type\": \"limited_product_launch\", \"brand\": \"JIL SANDER\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"ベロッティ就任後初のプロジェクトとして手掛けたミュージックビデオ「WANDERLUST」に着想を得た「WANDERLUST T-SHIRT \\\"CHAIR\\\"」がピンクカラーの特別仕様でラインナップ\", \"ポップアップストアでは限定アイテムもラインナップ\"], \"anchor_json\": {\"article_id\": \"9e096f39-2b7f-453b-8989-5f593d537b14\", \"source_name\": \"GQ Japan\", \"published_at\": \"2026-03-27T11:30:00\", \"brand\": \"JIL SANDER\"}}, {\"event_frame_id\": \"af976e1e-258a-42f5-bc64-bef23fed239d\", \"article_id\": \"9e096f39-2b7f-453b-8989-5f593d537b14\", \"source_name\": \"GQ Japan\", \"source_lang\": \"ja\", \"event_type\": \"pop_up_store_opening\", \"brand\": \"JIL SANDER\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"ジル サンダー（JIL SANDER）は、新クリエイティブ・ディレクターのシモーネ・ベロッティによる初のポップアップストアを伊勢丹新宿店 本館1階 ザ・ステージに2026年4月1日（水）から4月7日（火）までオープンする\", \"ポップアップストアでは限定アイテムもラインナップ\"], \"anchor_json\": {\"article_id\": \"9e096f39-2b7f-453b-8989-5f593d537b14\", \"source_name\": \"GQ Japan\", \"published_at\": \"2026-03-27T11:30:00\", \"brand\": \"JIL SANDER\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

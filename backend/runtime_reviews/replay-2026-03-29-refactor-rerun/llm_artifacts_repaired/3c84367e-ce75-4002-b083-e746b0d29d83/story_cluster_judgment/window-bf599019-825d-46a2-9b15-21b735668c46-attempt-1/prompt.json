@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"bf599019-825d-46a2-9b15-21b735668c46\", \"article_id\": \"bfa8d879-a910-45b9-acb5-9f73341cbba1\", \"source_name\": \"Coveteur\", \"source_lang\": \"en\", \"event_type\": \"runway_nail_trend\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"For the Cinq á Sept show, a subtle, sophisticated look suitable for both day and night was the goal. \\\"The FW26 nail look is designed to support individuality, never uniformity,\\\" Amy Ling Lin, founder and CEO of Sundays Studios says. \\\"The look pairs matte and glossy finishes in a deep, understated red. Red is a color of confidence and strength, chosen to empower women to claim their space unapologetically and step into their power.\\\"\", \"For Pamella Roland's Fall/Winter 2026 show, nail artist Pattie Yankee opted for a ruby nail with a bit of a twist. Yankee chose to also make it a cat-eye nail, which allowed it to shimmer, shine, and defy depth depending on the angle and just where the light hit.\"], \"anchor_json\": {}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

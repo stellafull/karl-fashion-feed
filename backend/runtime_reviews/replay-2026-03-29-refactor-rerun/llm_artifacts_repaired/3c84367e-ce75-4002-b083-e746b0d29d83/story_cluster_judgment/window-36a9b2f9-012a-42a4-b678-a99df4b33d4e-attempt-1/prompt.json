@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"36a9b2f9-012a-42a4-b678-a99df4b33d4e\", \"article_id\": \"e349ae4f-78c0-457e-bb50-9e0ff8af773a\", \"source_name\": \"Fashionsnap\", \"source_lang\": \"ja\", \"event_type\": \"retail_expansion\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"2026年には8州にまたがって12店舗という新規出店を計画しているのだ\", \"新しい店舗には職人専用のチームが配置され、1店舗あたり150人以上の雇用を生み出す\"], \"anchor_json\": {\"employment_per_store\": \"150人以上\", \"strategic_focus\": \"オンライン注文処理・即日配送拠点\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

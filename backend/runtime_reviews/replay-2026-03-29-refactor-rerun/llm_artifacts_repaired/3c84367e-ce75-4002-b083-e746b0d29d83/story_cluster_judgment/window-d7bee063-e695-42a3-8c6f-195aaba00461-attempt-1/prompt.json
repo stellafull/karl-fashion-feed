@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"d7bee063-e695-42a3-8c6f-195aaba00461\", \"article_id\": \"9278e337-e9db-480a-8fd0-4fa34d48a24e\", \"source_name\": \"Vanity Fair\", \"source_lang\": \"en\", \"event_type\": \"broadcast_platform_change\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Not only will the show move from ABC to YouTube, but the event will also take place at a completely new location: LA Live.\", \"As previously announced, the Academy will move the Oscars off broadcast TV in 2029 and shift to YouTube\"], \"anchor_json\": {\"announcement_status\": \"previously announced\", \"expected_benefit\": \"help the show's viewership, as global audiences will have an easier time tuning in from all over the world\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

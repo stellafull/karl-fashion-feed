@@ -1,0 +1,27 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "054c644a-646d-4a97-9f48-f9833b64cb33",
+        "member_event_frame_ids": [
+          "054c644a-646d-4a97-9f48-f9833b64cb33"
+        ],
+        "synopsis_zh": "时尚编辑发布个人春季购物推荐清单，涵盖超大号太阳镜、彩色针织单品、围巾、小猫跟鞋等潮流单品，同时包含可长期穿着的经典基础款服饰",
+        "event_type": "editor_shopping_recommendation",
+        "anchor_json": {
+          "content_type": "shopping_list",
+          "season": "spring",
+          "editor_perspective": "personal",
+          "key_categories": [
+            "sunglasses",
+            "knitwear",
+            "accessories",
+            "footwear",
+            "staples"
+          ],
+          "source_publication": "Who What Wear"
+        }
+      }
+    ]
+  }
+}

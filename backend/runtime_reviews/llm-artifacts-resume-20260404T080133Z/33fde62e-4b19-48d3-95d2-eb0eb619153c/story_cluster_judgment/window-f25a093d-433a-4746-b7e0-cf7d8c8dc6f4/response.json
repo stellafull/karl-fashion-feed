@@ -1,0 +1,25 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "f25a093d-433a-4746-b7e0-cf7d8c8dc6f4",
+        "member_event_frame_ids": [
+          "f25a093d-433a-4746-b7e0-cf7d8c8dc6f4"
+        ],
+        "synopsis_zh": "Harper's Bazaar 发布2026年春季针织品购物指南，推荐 J.Crew、Khaite、Doen 等品牌的毛衣趋势以焕新春季衣橱",
+        "event_type": "shopping_guide",
+        "anchor_json": {
+          "content_type": "shopping recommendation",
+          "target_audience": "spring wardrobe refresh",
+          "season": "spring 2026",
+          "key_brands": [
+            "J.Crew",
+            "Khaite",
+            "Doen",
+            "Alex Mill"
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"91550565-87cb-411e-a4f6-b07365831456\", \"article_id\": \"62dedb15-12a2-4423-b01e-dd2e78bc632e\", \"source_name\": \"The Zoe Report\", \"source_lang\": \"en\", \"event_type\": \"celebrity_broadway_debut\", \"brand\": \"\", \"person\": \"Megan Thee Stallion\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Her latest? A stint playing a gender-bent Zidler in Broadway's Moulin Rouge! The Musical. After her Mar. 24 debut, the rapper-turned-actor left New York City's Al Hirschfeld Theater with her well-earned flowers\", \"Megan is set to star in Moulin Rouge! The Musical for eight weeks, with her last performance scheduled for May 17\"], \"anchor_json\": {\"person\": \"Megan Thee Stallion\", \"venue\": \"Broadway\", \"production\": \"Moulin Rouge! The Musical\", \"date\": \"2026-03-24\"}}, {\"event_frame_id\": \"f66cf8e2-9642-4ade-934a-66b371746324\", \"article_id\": \"62dedb15-12a2-4423-b01e-dd2e78bc632e\", \"source_name\": \"The Zoe Report\", \"source_lang\": \"en\", \"event_type\": \"celebrity_hairstyle_appearance\", \"brand\": \"\", \"person\": \"Megan Thee Stallion\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"while wearing a gorgeous blonde 'prom updo'\", \"In post-show photos taken right outside the theater, Megan was spotted wearing bouncy dark blonde curls piled at the top of her head, with face-framing curtain bangs and just the right amount of tousle\"], \"anchor_json\": {\"person\": \"Megan Thee Stallion\", \"hairstyle_type\": \"prom updo\", \"hair_color\": \"dark blonde\", \"occasion\": \"Broadway debut after-party\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

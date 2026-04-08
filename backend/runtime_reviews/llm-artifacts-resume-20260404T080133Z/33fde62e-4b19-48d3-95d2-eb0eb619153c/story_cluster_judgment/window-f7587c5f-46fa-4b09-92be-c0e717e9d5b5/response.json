@@ -1,0 +1,22 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "f7587c5f-46fa-4b09-92be-c0e717e9d5b5",
+        "member_event_frame_ids": [
+          "f7587c5f-46fa-4b09-92be-c0e717e9d5b5"
+        ],
+        "synopsis_zh": "Nordstrom举行季末促销活动，Mini Boden品牌商品低至五折",
+        "event_type": "retailer_seasonal_sale",
+        "anchor_json": {
+          "retailer": "Nordstrom",
+          "sale_type": "end_of_season",
+          "featured_brand": "Mini Boden",
+          "discount": "up_to_50_percent_off",
+          "timing": "spring_2026",
+          "category": "department_store"
+        }
+      }
+    ]
+  }
+}

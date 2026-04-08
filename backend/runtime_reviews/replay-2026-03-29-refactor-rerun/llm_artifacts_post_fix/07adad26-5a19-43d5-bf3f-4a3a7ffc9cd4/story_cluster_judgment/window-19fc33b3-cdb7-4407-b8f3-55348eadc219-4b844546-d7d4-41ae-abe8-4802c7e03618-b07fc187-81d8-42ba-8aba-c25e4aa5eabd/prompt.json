@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"19fc33b3-cdb7-4407-b8f3-55348eadc219\", \"article_id\": \"eb94d6e1-0651-410e-b760-b9d4c4e32b48\", \"source_name\": \"GQ Japan\", \"source_lang\": \"ja\", \"event_type\": \"product_launch\", \"brand\": \"ニューライトポタリー\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"新作「Como（コモ）」のシボネ別注商品\", \"日本の古い深編笠から着想を得た和紙張りのフロアスタンド\"], \"anchor_json\": {\"source_article_id\": \"eb94d6e1-0651-410e-b760-b9d4c4e32b48\", \"extraction_timestamp\": \"2026-03-28T11:30:00Z\", \"brand\": \"ニューライトポタリー\"}}, {\"event_frame_id\": \"4b844546-d7d4-41ae-abe8-4802c7e03618\", \"article_id\": \"eb94d6e1-0651-410e-b760-b9d4c4e32b48\", \"source_name\": \"GQ Japan\", \"source_lang\": \"ja\", \"event_type\": \"brand_exhibition\", \"brand\": \"ニューライトポタリー\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"2026年3月28日（土）〜4月12日（日）\", \"11:00〜20:00\"], \"anchor_json\": {\"source_article_id\": \"eb94d6e1-0651-410e-b760-b9d4c4e32b48\", \"extraction_timestamp\": \"2026-03-28T11:30:00Z\", \"brand\": \"ニューライトポタリー\"}}, {\"event_frame_id\": \"b07fc187-81d8-42ba-8aba-c25e4aa5eabd\", \"article_id\": \"eb94d6e1-0651-410e-b760-b9d4c4e32b48\", \"source_name\": \"GQ Japan\", \"source_lang\": \"ja\", \"event_type\": \"designer_appearance\", \"brand\": \"ニューライトポタリー\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"会期初日となる3月28日\", \"デザイナーの永富氏と奈良氏の両名がシボネに在廊\"], \"anchor_json\": {\"source_article_id\": \"eb94d6e1-0651-410e-b760-b9d4c4e32b48\", \"extraction_timestamp\": \"2026-03-28T11:30:00Z\", \"brand\": \"ニューライトポタリー\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

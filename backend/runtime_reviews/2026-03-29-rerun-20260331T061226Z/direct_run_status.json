@@ -1,0 +1,387 @@
+{
+  "business_day": "2026-03-29",
+  "run_id": "3ddbe4f0-32fe-45db-8a1c-9160351d8968",
+  "final_run": {
+    "run_id": "3ddbe4f0-32fe-45db-8a1c-9160351d8968",
+    "business_date": "2026-03-29",
+    "run_type": "digest_daily",
+    "status": "failed",
+    "story_status": "done",
+    "story_attempts": 0,
+    "story_error": null,
+    "story_updated_at": "2026-03-31T06:58:46.607678",
+    "story_token": 0,
+    "digest_status": "abandoned",
+    "digest_attempts": 3,
+    "digest_error": "ValueError: stories[0] unsupported runtime facet: product_launch",
+    "digest_updated_at": "2026-03-31T07:06:37.922708",
+    "digest_token": 0,
+    "started_at": "2026-03-31T06:52:38.096448",
+    "finished_at": "2026-03-31T07:06:37.922715",
+    "metadata_json": {
+      "parse_status_counts": {
+        "abandoned": 9,
+        "done": 689
+      },
+      "event_frame_status_counts": {
+        "abandoned": 101,
+        "done": 588,
+        "pending": 9
+      },
+      "story_count": 314,
+      "digest_count": 0,
+      "parse_round_logs": [
+        {
+          "round": 1,
+          "candidate_count": 11,
+          "result": {
+            "candidates": 11,
+            "parsed": 2,
+            "failed": 9,
+            "parsed_article_ids": [
+              "7444b0fc-1b0f-4efc-a45a-279903a97ed7",
+              "6bb4c215-787c-4996-828e-d017db96a05d"
+            ]
+          }
+        },
+        {
+          "round": 2,
+          "candidate_count": 9,
+          "result": {
+            "candidates": 9,
+            "parsed": 0,
+            "failed": 9,
+            "parsed_article_ids": []
+          }
+        }
+      ],
+      "event_round_logs": [
+        {
+          "round": 1,
+          "candidate_count": 689,
+          "success_count": 388,
+          "failure_count": 301,
+          "failure_samples": [
+            {
+              "article_id": "02787289-cd31-4a91-a34f-72f4f316a0ee",
+              "error": "RuntimeError: frame extraction did not complete for article 02787289-cd31-4a91-a34f-72f4f316a0ee: failed"
+            },
+            {
+              "article_id": "032438e8-e439-4b0d-a897-97ea9a5de8a7",
+              "error": "RuntimeError: frame extraction did not complete for article 032438e8-e439-4b0d-a897-97ea9a5de8a7: failed"
+            },
+            {
+              "article_id": "0453bf97-885c-43a9-a8c7-d6cadc7f9e6e",
+              "error": "RuntimeError: frame extraction did not complete for article 0453bf97-885c-43a9-a8c7-d6cadc7f9e6e: failed"
+            },
+            {
+              "article_id": "04cef619-cfcd-43a7-aa2b-6725a4257c4c",
+              "error": "RuntimeError: frame extraction did not complete for article 04cef619-cfcd-43a7-aa2b-6725a4257c4c: failed"
+            },
+            {
+              "article_id": "06030437-d1e0-4e28-9b8b-710d15188902",
+              "error": "RuntimeError: frame extraction did not complete for article 06030437-d1e0-4e28-9b8b-710d15188902: failed"
+            },
+            {
+              "article_id": "047ea481-8e46-44da-8abb-b295e23e90c5",
+              "error": "RuntimeError: frame extraction did not complete for article 047ea481-8e46-44da-8abb-b295e23e90c5: failed"
+            },
+            {
+              "article_id": "058c15e4-8f60-47a3-8703-be2a5f097bbc",
+              "error": "RuntimeError: frame extraction did not complete for article 058c15e4-8f60-47a3-8703-be2a5f097bbc: failed"
+            },
+            {
+              "article_id": "07f35fa8-b7cf-47b4-8d5a-53f932aa29e9",
+              "error": "RuntimeError: frame extraction did not complete for article 07f35fa8-b7cf-47b4-8d5a-53f932aa29e9: failed"
+            },
+            {
+              "article_id": "093e6401-99d4-4177-9ace-30467fcd2377",
+              "error": "RuntimeError: frame extraction did not complete for article 093e6401-99d4-4177-9ace-30467fcd2377: failed"
+            },
+            {
+              "article_id": "099e44bb-ef4c-43dc-b6b1-b714af51d704",
+              "error": "RuntimeError: frame extraction did not complete for article 099e44bb-ef4c-43dc-b6b1-b714af51d704: failed"
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "candidate_count": 301,
+          "success_count": 133,
+          "failure_count": 168,
+          "failure_samples": [
+            {
+              "article_id": "032438e8-e439-4b0d-a897-97ea9a5de8a7",
+              "error": "RuntimeError: frame extraction did not complete for article 032438e8-e439-4b0d-a897-97ea9a5de8a7: failed"
+            },
+            {
+              "article_id": "0453bf97-885c-43a9-a8c7-d6cadc7f9e6e",
+              "error": "RuntimeError: frame extraction did not complete for article 0453bf97-885c-43a9-a8c7-d6cadc7f9e6e: failed"
+            },
+            {
+              "article_id": "058c15e4-8f60-47a3-8703-be2a5f097bbc",
+              "error": "RuntimeError: frame extraction did not complete for article 058c15e4-8f60-47a3-8703-be2a5f097bbc: failed"
+            },
+            {
+              "article_id": "099e44bb-ef4c-43dc-b6b1-b714af51d704",
+              "error": "RuntimeError: frame extraction did not complete for article 099e44bb-ef4c-43dc-b6b1-b714af51d704: failed"
+            },
+            {
+              "article_id": "07f35fa8-b7cf-47b4-8d5a-53f932aa29e9",
+              "error": "RuntimeError: frame extraction did not complete for article 07f35fa8-b7cf-47b4-8d5a-53f932aa29e9: failed"
+            },
+            {
+              "article_id": "093e6401-99d4-4177-9ace-30467fcd2377",
+              "error": "RuntimeError: frame extraction did not complete for article 093e6401-99d4-4177-9ace-30467fcd2377: failed"
+            },
+            {
+              "article_id": "02787289-cd31-4a91-a34f-72f4f316a0ee",
+              "error": "RuntimeError: frame extraction did not complete for article 02787289-cd31-4a91-a34f-72f4f316a0ee: failed"
+            },
+            {
+              "article_id": "0a8de221-db8d-4a2e-a5e4-ae4206a9b967",
+              "error": "RuntimeError: frame extraction did not complete for article 0a8de221-db8d-4a2e-a5e4-ae4206a9b967: failed"
+            },
+            {
+              "article_id": "0a9fb569-79a0-40eb-b6bd-b1014e026714",
+              "error": "RuntimeError: frame extraction did not complete for article 0a9fb569-79a0-40eb-b6bd-b1014e026714: failed"
+            },
+            {
+              "article_id": "0e8fdce5-d235-4048-9ddf-3b903028a14e",
+              "error": "RuntimeError: frame extraction did not complete for article 0e8fdce5-d235-4048-9ddf-3b903028a14e: failed"
+            }
+          ]
+        },
+        {
+          "round": 3,
+          "candidate_count": 168,
+          "success_count": 67,
+          "failure_count": 101,
+          "failure_samples": [
+            {
+              "article_id": "058c15e4-8f60-47a3-8703-be2a5f097bbc",
+              "error": "RuntimeError: frame extraction did not complete for article 058c15e4-8f60-47a3-8703-be2a5f097bbc: abandoned"
+            },
+            {
+              "article_id": "0453bf97-885c-43a9-a8c7-d6cadc7f9e6e",
+              "error": "RuntimeError: frame extraction did not complete for article 0453bf97-885c-43a9-a8c7-d6cadc7f9e6e: abandoned"
+            },
+            {
+              "article_id": "099e44bb-ef4c-43dc-b6b1-b714af51d704",
+              "error": "RuntimeError: frame extraction did not complete for article 099e44bb-ef4c-43dc-b6b1-b714af51d704: abandoned"
+            },
+            {
+              "article_id": "0e8fdce5-d235-4048-9ddf-3b903028a14e",
+              "error": "RuntimeError: frame extraction did not complete for article 0e8fdce5-d235-4048-9ddf-3b903028a14e: abandoned"
+            },
+            {
+              "article_id": "0a9fb569-79a0-40eb-b6bd-b1014e026714",
+              "error": "RuntimeError: frame extraction did not complete for article 0a9fb569-79a0-40eb-b6bd-b1014e026714: abandoned"
+            },
+            {
+              "article_id": "144dfcee-4ed3-4ac7-b519-b9844c23c931",
+              "error": "RuntimeError: frame extraction did not complete for article 144dfcee-4ed3-4ac7-b519-b9844c23c931: abandoned"
+            },
+            {
+              "article_id": "1693d8f5-1457-4b96-b409-3d8b593b06ae",
+              "error": "RuntimeError: frame extraction did not complete for article 1693d8f5-1457-4b96-b409-3d8b593b06ae: abandoned"
+            },
+            {
+              "article_id": "109ef888-fde6-4e1e-89a1-18b688cb857b",
+              "error": "RuntimeError: frame extraction did not complete for article 109ef888-fde6-4e1e-89a1-18b688cb857b: abandoned"
+            },
+            {
+              "article_id": "16e4df1f-6789-4a4c-8a98-b0a3826d9337",
+              "error": "RuntimeError: frame extraction did not complete for article 16e4df1f-6789-4a4c-8a98-b0a3826d9337: abandoned"
+            },
+            {
+              "article_id": "170cda70-8aea-4eab-a536-7b38f659d4a1",
+              "error": "RuntimeError: frame extraction did not complete for article 170cda70-8aea-4eab-a536-7b38f659d4a1: abandoned"
+            }
+          ]
+        }
+      ],
+      "execution_notes": [
+        "Switched to direct service orchestration after coordinator+worker queue starvation between parse and event_frame.",
+        "Dev-only override: patched LlmRateLimiter.lease to a no-op during event_frame extraction to avoid Redis single-lease serialization.",
+        "Business logic, prompts, models, clustering, and digest generation still use the current service implementations."
+      ]
+    }
+  },
+  "parse_round_logs": [
+    {
+      "round": 1,
+      "candidate_count": 11,
+      "result": {
+        "candidates": 11,
+        "parsed": 2,
+        "failed": 9,
+        "parsed_article_ids": [
+          "7444b0fc-1b0f-4efc-a45a-279903a97ed7",
+          "6bb4c215-787c-4996-828e-d017db96a05d"
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "candidate_count": 9,
+      "result": {
+        "candidates": 9,
+        "parsed": 0,
+        "failed": 9,
+        "parsed_article_ids": []
+      }
+    }
+  ],
+  "event_round_logs": [
+    {
+      "round": 1,
+      "candidate_count": 689,
+      "success_count": 388,
+      "failure_count": 301,
+      "failure_samples": [
+        {
+          "article_id": "02787289-cd31-4a91-a34f-72f4f316a0ee",
+          "error": "RuntimeError: frame extraction did not complete for article 02787289-cd31-4a91-a34f-72f4f316a0ee: failed"
+        },
+        {
+          "article_id": "032438e8-e439-4b0d-a897-97ea9a5de8a7",
+          "error": "RuntimeError: frame extraction did not complete for article 032438e8-e439-4b0d-a897-97ea9a5de8a7: failed"
+        },
+        {
+          "article_id": "0453bf97-885c-43a9-a8c7-d6cadc7f9e6e",
+          "error": "RuntimeError: frame extraction did not complete for article 0453bf97-885c-43a9-a8c7-d6cadc7f9e6e: failed"
+        },
+        {
+          "article_id": "04cef619-cfcd-43a7-aa2b-6725a4257c4c",
+          "error": "RuntimeError: frame extraction did not complete for article 04cef619-cfcd-43a7-aa2b-6725a4257c4c: failed"
+        },
+        {
+          "article_id": "06030437-d1e0-4e28-9b8b-710d15188902",
+          "error": "RuntimeError: frame extraction did not complete for article 06030437-d1e0-4e28-9b8b-710d15188902: failed"
+        },
+        {
+          "article_id": "047ea481-8e46-44da-8abb-b295e23e90c5",
+          "error": "RuntimeError: frame extraction did not complete for article 047ea481-8e46-44da-8abb-b295e23e90c5: failed"
+        },
+        {
+          "article_id": "058c15e4-8f60-47a3-8703-be2a5f097bbc",
+          "error": "RuntimeError: frame extraction did not complete for article 058c15e4-8f60-47a3-8703-be2a5f097bbc: failed"
+        },
+        {
+          "article_id": "07f35fa8-b7cf-47b4-8d5a-53f932aa29e9",
+          "error": "RuntimeError: frame extraction did not complete for article 07f35fa8-b7cf-47b4-8d5a-53f932aa29e9: failed"
+        },
+        {
+          "article_id": "093e6401-99d4-4177-9ace-30467fcd2377",
+          "error": "RuntimeError: frame extraction did not complete for article 093e6401-99d4-4177-9ace-30467fcd2377: failed"
+        },
+        {
+          "article_id": "099e44bb-ef4c-43dc-b6b1-b714af51d704",
+          "error": "RuntimeError: frame extraction did not complete for article 099e44bb-ef4c-43dc-b6b1-b714af51d704: failed"
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "candidate_count": 301,
+      "success_count": 133,
+      "failure_count": 168,
+      "failure_samples": [
+        {
+          "article_id": "032438e8-e439-4b0d-a897-97ea9a5de8a7",
+          "error": "RuntimeError: frame extraction did not complete for article 032438e8-e439-4b0d-a897-97ea9a5de8a7: failed"
+        },
+        {
+          "article_id": "0453bf97-885c-43a9-a8c7-d6cadc7f9e6e",
+          "error": "RuntimeError: frame extraction did not complete for article 0453bf97-885c-43a9-a8c7-d6cadc7f9e6e: failed"
+        },
+        {
+          "article_id": "058c15e4-8f60-47a3-8703-be2a5f097bbc",
+          "error": "RuntimeError: frame extraction did not complete for article 058c15e4-8f60-47a3-8703-be2a5f097bbc: failed"
+        },
+        {
+          "article_id": "099e44bb-ef4c-43dc-b6b1-b714af51d704",
+          "error": "RuntimeError: frame extraction did not complete for article 099e44bb-ef4c-43dc-b6b1-b714af51d704: failed"
+        },
+        {
+          "article_id": "07f35fa8-b7cf-47b4-8d5a-53f932aa29e9",
+          "error": "RuntimeError: frame extraction did not complete for article 07f35fa8-b7cf-47b4-8d5a-53f932aa29e9: failed"
+        },
+        {
+          "article_id": "093e6401-99d4-4177-9ace-30467fcd2377",
+          "error": "RuntimeError: frame extraction did not complete for article 093e6401-99d4-4177-9ace-30467fcd2377: failed"
+        },
+        {
+          "article_id": "02787289-cd31-4a91-a34f-72f4f316a0ee",
+          "error": "RuntimeError: frame extraction did not complete for article 02787289-cd31-4a91-a34f-72f4f316a0ee: failed"
+        },
+        {
+          "article_id": "0a8de221-db8d-4a2e-a5e4-ae4206a9b967",
+          "error": "RuntimeError: frame extraction did not complete for article 0a8de221-db8d-4a2e-a5e4-ae4206a9b967: failed"
+        },
+        {
+          "article_id": "0a9fb569-79a0-40eb-b6bd-b1014e026714",
+          "error": "RuntimeError: frame extraction did not complete for article 0a9fb569-79a0-40eb-b6bd-b1014e026714: failed"
+        },
+        {
+          "article_id": "0e8fdce5-d235-4048-9ddf-3b903028a14e",
+          "error": "RuntimeError: frame extraction did not complete for article 0e8fdce5-d235-4048-9ddf-3b903028a14e: failed"
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "candidate_count": 168,
+      "success_count": 67,
+      "failure_count": 101,
+      "failure_samples": [
+        {
+          "article_id": "058c15e4-8f60-47a3-8703-be2a5f097bbc",
+          "error": "RuntimeError: frame extraction did not complete for article 058c15e4-8f60-47a3-8703-be2a5f097bbc: abandoned"
+        },
+        {
+          "article_id": "0453bf97-885c-43a9-a8c7-d6cadc7f9e6e",
+          "error": "RuntimeError: frame extraction did not complete for article 0453bf97-885c-43a9-a8c7-d6cadc7f9e6e: abandoned"
+        },
+        {
+          "article_id": "099e44bb-ef4c-43dc-b6b1-b714af51d704",
+          "error": "RuntimeError: frame extraction did not complete for article 099e44bb-ef4c-43dc-b6b1-b714af51d704: abandoned"
+        },
+        {
+          "article_id": "0e8fdce5-d235-4048-9ddf-3b903028a14e",
+          "error": "RuntimeError: frame extraction did not complete for article 0e8fdce5-d235-4048-9ddf-3b903028a14e: abandoned"
+        },
+        {
+          "article_id": "0a9fb569-79a0-40eb-b6bd-b1014e026714",
+          "error": "RuntimeError: frame extraction did not complete for article 0a9fb569-79a0-40eb-b6bd-b1014e026714: abandoned"
+        },
+        {
+          "article_id": "144dfcee-4ed3-4ac7-b519-b9844c23c931",
+          "error": "RuntimeError: frame extraction did not complete for article 144dfcee-4ed3-4ac7-b519-b9844c23c931: abandoned"
+        },
+        {
+          "article_id": "1693d8f5-1457-4b96-b409-3d8b593b06ae",
+          "error": "RuntimeError: frame extraction did not complete for article 1693d8f5-1457-4b96-b409-3d8b593b06ae: abandoned"
+        },
+        {
+          "article_id": "109ef888-fde6-4e1e-89a1-18b688cb857b",
+          "error": "RuntimeError: frame extraction did not complete for article 109ef888-fde6-4e1e-89a1-18b688cb857b: abandoned"
+        },
+        {
+          "article_id": "16e4df1f-6789-4a4c-8a98-b0a3826d9337",
+          "error": "RuntimeError: frame extraction did not complete for article 16e4df1f-6789-4a4c-8a98-b0a3826d9337: abandoned"
+        },
+        {
+          "article_id": "170cda70-8aea-4eab-a536-7b38f659d4a1",
+          "error": "RuntimeError: frame extraction did not complete for article 170cda70-8aea-4eab-a536-7b38f659d4a1: abandoned"
+        }
+      ]
+    }
+  ],
+  "execution_notes": [
+    "Switched to direct service orchestration after coordinator+worker queue starvation between parse and event_frame.",
+    "Dev-only override: patched LlmRateLimiter.lease to a no-op during event_frame extraction to avoid Redis single-lease serialization.",
+    "Business logic, prompts, models, clustering, and digest generation still use the current service implementations."
+  ]
+}

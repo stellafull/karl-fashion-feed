@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"0168b43d-49c8-4640-911c-5b899a221c31\", \"article_id\": \"57279fd2-49d7-463f-9af5-895043bd7223\", \"source_name\": \"Vogue Japan\", \"source_lang\": \"ja\", \"event_type\": \"market_expansion\", \"brand\": \"ファミリーマート\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"「コンビニエンスウェア」は現在、台湾をはじめ、マレーシアでの展開もスタートしました\", \"イギリスのBBCをはじめ、海外メディアにも取り上げられています\"], \"anchor_json\": {\"expansion_stage\": \"展開開始済み\", \"media_coverage\": \"BBC等海外メディア\", \"brand\": \"ファミリーマート\"}}, {\"event_frame_id\": \"affa577d-8b34-4591-90d0-6789b54f2728\", \"article_id\": \"57279fd2-49d7-463f-9af5-895043bd7223\", \"source_name\": \"Vogue Japan\", \"source_lang\": \"ja\", \"event_type\": \"product_launch\", \"brand\": \"ファミリーマート\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"ファミリーマートが展開する「コンビニエンスウェア」が2度目となる展示会を開催した。2026年春夏の新作は、デザイン性と機能性が融合したアイテムがより充実\", \"2026年春夏シーズンという現地点を次のように語る\"], \"anchor_json\": {\"event_date\": \"2026-03-27\", \"event_location\": \"展示会（場所未明記）\", \"season\": \"2026年春夏\", \"brand\": \"ファミリーマート\"}}, {\"event_frame_id\": \"f1f44290-fc1f-4d7f-8af4-964aa4e2228d\", \"article_id\": \"57279fd2-49d7-463f-9af5-895043bd7223\", \"source_name\": \"Vogue Japan\", \"source_lang\": \"ja\", \"event_type\": \"collaboration_release\", \"brand\": \"ファミリーマート\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"「どうぶつの森」コラボは3月31日発売\", \"「どうぶつの森」デザインの「タオルインポーチ」と「ラインソックス」が3月31日より発売\"], \"anchor_json\": {\"event_date\": \"2026-03-31\", \"collaboration_type\": \"ゲームIPコラボ\", \"sales_channel\": \"ファミマオンライン抽選受付\", \"brand\": \"ファミリーマート\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

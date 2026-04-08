@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"022ff79b-dc73-4e64-aaa0-af3f96c653eb\", \"article_id\": \"db429858-68c5-4d56-a222-1251cdb776de\", \"source_name\": \"The Cut\", \"source_lang\": \"en\", \"event_type\": \"awards_show_attendance\", \"brand\": \"\", \"person\": \"Taylor Swift\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Taylor Swift and Travis Kelce made their awards-show debut as a couple Thursday night at the iHeartRadio Awards\", \"On Thursday, the couple appeared at the iHeartRadio Awards in Los Angeles\"], \"anchor_json\": {\"event_name\": \"iHeartRadio Awards\", \"location\": \"Los Angeles\", \"relationship_status\": \"fiancé/fiancée\", \"person\": \"Taylor Swift\"}}, {\"event_frame_id\": \"5caa2cd6-30b1-446e-b2bb-5b0a6ee84dfd\", \"article_id\": \"682155fc-68c8-4d2b-8984-eb09664d44ba\", \"source_name\": \"Harper's Bazaar\", \"source_lang\": \"en\", \"event_type\": \"music_awards_win\", \"brand\": \"\", \"person\": \"Taylor Swift\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Swift absolutely dominated the awards, taking home seven prizes, including Artist of the Year, Album of the Year and Pop Album of the Year for The Life of a Showgirl, and Pop Song of the Year for \\\"The Fate of Ophelia\\\"\", \"She topped her own record for most total wins, as she is now at 41\"], \"anchor_json\": {\"event_date\": \"2026-03-26\", \"event_name\": \"2026 iHeartRadio Music Awards\", \"career_milestone\": \"41 total wins\", \"person\": \"Taylor Swift\"}}, {\"event_frame_id\": \"60f86fae-8310-4442-bb86-ddd89bf14e4e\", \"article_id\": \"682155fc-68c8-4d2b-8984-eb09664d44ba\", \"source_name\": \"Harper's Bazaar\", \"source_lang\": \"en\", \"event_type\": \"fashion_red_carpet_look\", \"brand\": \"\", \"person\": \"Taylor Swift\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"The \\\"Opalite\\\" singer put a grown-up spin on her showgirl style in a sage-green corset top and matching miniskirt from Wiederhoeft\", \"Crystal fringe adorned the silky top\"], \"anchor_json\": {\"event_date\": \"2026-03-26\", \"event_name\": \"2026 iHeartRadio Music Awards\", \"designer_brand\": \"Wiederhoeft\", \"look_type\": \"corset top and miniskirt\", \"person\": \"Taylor Swift\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

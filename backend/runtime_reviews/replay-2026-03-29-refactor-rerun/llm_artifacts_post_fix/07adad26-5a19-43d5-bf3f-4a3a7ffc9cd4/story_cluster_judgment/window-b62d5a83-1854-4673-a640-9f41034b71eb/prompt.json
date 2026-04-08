@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"b62d5a83-1854-4673-a640-9f41034b71eb\", \"article_id\": \"4471c7ac-852b-4890-88a7-7d5b520102e1\", \"source_name\": \"Vogue España\", \"source_lang\": \"es\", \"event_type\": \"celebrity_engagement_ring_reveal\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"En la fotografía número nueve de su última publicación de Instagram, la de Lake Placid enseña bajo un filtro vintage un diamante de gran tamaño coronando su dedo anular\", \"Se trata de una piedra de talla cojín que recuerda a los antiguos diamantes Old Mine, conocidos por sus facetas grandes, gruesas e imperfectas\"], \"anchor_json\": {\"publication\": \"Vogue España\", \"date\": \"2026-03-28\", \"url\": \"https://www.vogue.es/articulos/lana-del-rey-detalles-anillo-de-compromiso\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

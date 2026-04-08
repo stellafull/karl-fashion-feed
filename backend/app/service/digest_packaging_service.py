@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any
 
+from langchain.agents import create_agent
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -14,7 +15,7 @@ from backend.app.config.llm_config import Configuration
 from backend.app.models import Article, Story, StoryArticle, StoryFacet
 from backend.app.prompts.digest_packaging_prompt import build_digest_packaging_prompt
 from backend.app.schemas.llm.digest_packaging import DigestPackagingSchema
-from backend.app.service.langchain_model_factory import StructuredOutputRunnable, build_story_model
+from backend.app.service.langchain_model_factory import build_story_model
 from backend.app.service.llm_debug_artifact_service import (
     LlmDebugArtifactRecorder,
     build_llm_debug_artifact_recorder_from_env,
@@ -49,6 +50,8 @@ class ResolvedDigestPlan:
     story_keys: tuple[str, ...]
     article_ids: tuple[str, ...]
     editorial_angle: str
+    title_zh: str
+    dek_zh: str
     source_names: tuple[str, ...]
 
 
@@ -231,6 +234,21 @@ class DigestPackagingService:
         resolved: list[ResolvedDigestPlan] = []
 
         for index, plan in enumerate(schema.digests):
+            plan_facet = plan.facet.strip()
+            if not plan_facet:
+                raise ValueError(f"digests[{index}] facet cannot be blank")
+            if plan_facet not in RUNTIME_FACETS:
+                raise ValueError(f"digests[{index}] unsupported runtime facet: {plan_facet}")
+            if plan_facet != facet:
+                raise ValueError(
+                    f"digests[{index}] facet {plan_facet} does not match requested facet {facet}"
+                )
+            title_zh = plan.title_zh.strip()
+            if not title_zh:
+                raise ValueError(f"digests[{index}] title_zh cannot be blank")
+            dek_zh = plan.dek_zh.strip()
+            if not dek_zh:
+                raise ValueError(f"digests[{index}] dek_zh cannot be blank")
             editorial_angle = plan.editorial_angle.strip()
             if not editorial_angle:
                 raise ValueError(f"digests[{index}] editorial_angle cannot be blank")
@@ -250,33 +268,34 @@ class DigestPackagingService:
                         f"digests[{index}] facet {facet} not assigned to story_key {story_key}"
                     )
 
-            ordered_article_ids: list[str] = []
-            seen_article_ids: set[str] = set()
-            for story_key in story_keys:
-                story_articles = story_by_key[story_key].articles
-                if not story_articles:
-                    raise ValueError(
-                        f"digests[{index}] story_key {story_key} resolved zero article_ids"
-                    )
-                for article in story_articles:
-                    if article.article_id in seen_article_ids:
-                        continue
-                    seen_article_ids.add(article.article_id)
-                    ordered_article_ids.append(article.article_id)
-
-            if not ordered_article_ids:
-                raise ValueError(f"digests[{index}] resolved zero article_ids from story_keys")
-
-            source_names = tuple(
-                sorted({article_by_id[article_id].source_name for article_id in ordered_article_ids})
+            allowed_article_ids = [
+                article_id
+                for story_key in story_keys
+                for article_id in story_by_key[story_key].article_ids
+            ]
+            allowed_article_id_set = set(allowed_article_ids)
+            article_ids = [article_id.strip() for article_id in plan.article_ids]
+            if any(not article_id for article_id in article_ids):
+                raise ValueError(f"digests[{index}] article_ids contains blank value")
+            if len(set(article_ids)) != len(article_ids):
+                raise ValueError(f"digests[{index}] article_ids contains duplicates")
+            unknown_article_ids = sorted(
+                article_id for article_id in article_ids if article_id not in allowed_article_id_set
             )
+            if unknown_article_ids:
+                joined = ", ".join(unknown_article_ids)
+                raise ValueError(f"digests[{index}] unknown article_id(s): {joined}")
+
+            source_names = tuple(sorted({article_by_id[article_id].source_name for article_id in article_ids}))
             resolved.append(
                 ResolvedDigestPlan(
                     business_date=business_day,
-                    facet=facet,
+                    facet=plan_facet,
                     story_keys=tuple(story_keys),
-                    article_ids=tuple(ordered_article_ids),
+                    article_ids=tuple(article_ids),
                     editorial_angle=editorial_angle,
+                    title_zh=title_zh,
+                    dek_zh=dek_zh,
                     source_names=source_names,
                 )
             )
@@ -311,10 +330,11 @@ class DigestPackagingService:
 
     def _get_agent(self):
         if self._agent is None:
-            self._agent = StructuredOutputRunnable(
+            self._agent = create_agent(
                 model=build_story_model(self._configuration),
-                schema=DigestPackagingSchema,
+                tools=[],
                 system_prompt=build_digest_packaging_prompt(),
+                response_format=DigestPackagingSchema,
             )
         return self._agent
 

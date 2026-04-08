@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"35498b73-fd3a-498c-9aeb-d5bb3fc1ef0c\", \"article_id\": \"0a032329-4b30-434c-accf-9cfd832670a4\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"promotional_campaign\", \"brand\": \"ハルノブムラタ（HARUNOBUMURATA）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"4月1〜30日の期間中に元麻布の直営店で7万円以上購入した人に同キャンドルをプレゼントする\", \"先着順で、なくなり次第終了とする\"], \"anchor_json\": {\"occasion\": \"元麻布の直営店1周年記念\", \"brand\": \"ハルノブムラタ（HARUNOBUMURATA）\"}}, {\"event_frame_id\": \"5a08ff31-d7b3-4db5-b09d-c30a6d239b99\", \"article_id\": \"0a032329-4b30-434c-accf-9cfd832670a4\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"store_anniversary\", \"brand\": \"ハルノブムラタ（HARUNOBUMURATA）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"「ハルノブムラタ」が元麻布の直営店1周年を記念してキャンドルを発売\", \"ブティック1周年を記念して制作された香り\"], \"anchor_json\": {\"related_product_launch\": \"アフターグロウ フレームキャンドル\", \"brand\": \"ハルノブムラタ（HARUNOBUMURATA）\"}}, {\"event_frame_id\": \"826b920d-65e6-4b82-85e0-e9b6a70271fd\", \"article_id\": \"0a032329-4b30-434c-accf-9cfd832670a4\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"product_launch\", \"brand\": \"ハルノブムラタ（HARUNOBUMURATA）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"村田晴信デザイナーが手掛ける「ハルノブムラタ（HARUNOBUMURATA）」は4月1日、ブランド初のライフスタイルアイテムとなるキャンドル\\\"アフターグロウ フレーム\\\"（1万3200円）を発売する\", \"元麻布ブティックおよび公式オンラインストアで取り扱う\"], \"anchor_json\": {\"designer\": \"村田晴信\", \"scent\": \"エンバーウッド（EMBERWOOD）\", \"glass_feature\": \"手作業でひとつずつ色付けされたグラデーショングラス、グレーとオフホワイトのカラー、マットからクリアへと変化する質感\", \"brand\": \"ハルノブムラタ（HARUNOBUMURATA）\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

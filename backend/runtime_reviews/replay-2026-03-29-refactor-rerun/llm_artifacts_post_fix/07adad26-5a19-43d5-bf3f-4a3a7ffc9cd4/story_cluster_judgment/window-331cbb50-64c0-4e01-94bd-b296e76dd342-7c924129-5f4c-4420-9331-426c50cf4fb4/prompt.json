@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"331cbb50-64c0-4e01-94bd-b296e76dd342\", \"article_id\": \"b17287ac-3504-4be5-8820-1180fabc8ed2\", \"source_name\": \"Vogue España\", \"source_lang\": \"es\", \"event_type\": \"celebrity_wedding_rumors\", \"brand\": \"\", \"person\": \"Zendaya\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"los rumores sobre su propia boda con el también actor Tom Holland\", \"una fotografía de la actriz luciendo lo que parecía ser una alianza de boda\"], \"anchor_json\": {\"film\": \"The Drama\", \"stylist\": \"Law Roach\", \"engagement_anniversary\": \"March 2025\", \"person\": \"Zendaya\"}}, {\"event_frame_id\": \"7c924129-5f4c-4420-9331-426c50cf4fb4\", \"article_id\": \"b17287ac-3504-4be5-8820-1180fabc8ed2\", \"source_name\": \"Vogue España\", \"source_lang\": \"es\", \"event_type\": \"method_dressing_bridal_theme\", \"brand\": \"\", \"person\": \"Zendaya\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"llevando el 'method dressing' a otro nivel en la promoción de 'The Drama'\", \"reavivar la tradición nupcial del 'algo viejo, algo nuevo, algo prestado'\"], \"anchor_json\": {\"old_item\": \"Vivienne Westwood dress (Oscars 2015)\", \"new_item\": \"Louis Vuitton custom (Paris)\", \"borrowed_item\": \"Armani Privé dress from Cate Blanchett\", \"blue_item\": \"pending\", \"person\": \"Zendaya\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

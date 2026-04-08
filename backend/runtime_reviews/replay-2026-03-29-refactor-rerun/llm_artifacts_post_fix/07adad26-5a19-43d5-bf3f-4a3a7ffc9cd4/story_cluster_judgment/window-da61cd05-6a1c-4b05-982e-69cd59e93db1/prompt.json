@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"da61cd05-6a1c-4b05-982e-69cd59e93db1\", \"article_id\": \"c17db940-4d5e-47e4-860a-a51ca7f60446\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"collaboration_launch\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"「オブジェクツアイオー（OBJECTS.IO）」は4月18日、「ビューティフルピープル（BEAUTIFUL PEOPLE）」とのコラボレーションによるレザープロダクト3型を発売する\", \"本コレクションでは、「ビューティフルピープル」のアイコンバッグシリーズ\\\"オーバー エンジニアリング\\\"をテーマに、過去と現代のデバイスをクロスオーバーさせたレザープロダクト全3型を展開する\"], \"anchor_json\": {\"collaboration_type\": \"初コラボ\", \"launch_date_general\": \"2026-04-18\", \"pre_sale_date\": \"2026-04-01\", \"pre_sale_location\": \"伊勢丹新宿本店メンズ館\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

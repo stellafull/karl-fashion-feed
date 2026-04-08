@@ -1,0 +1,32 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "31ffb15c-3a9d-47a5-b351-d8daebb68453",
+        "member_event_frame_ids": [
+          "31ffb15c-3a9d-47a5-b351-d8daebb68453"
+        ],
+        "synopsis_zh": "Levi's推出春季促销活动，全场商品最高可享70%折扣，部分区域30%优惠",
+        "event_type": "promotion_sale",
+        "anchor_json": {
+          "extractor_version": "1.0",
+          "event_category": "commercial_promotion",
+          "brand": "Levi's"
+        }
+      },
+      {
+        "seed_event_frame_id": "bb4917bb-c916-470d-8a57-5e58007d3519",
+        "member_event_frame_ids": [
+          "bb4917bb-c916-470d-8a57-5e58007d3519"
+        ],
+        "synopsis_zh": "Levi's产品特色展示，重点介绍Ribcage牛仔裤、Wedgie版型等名人喜爱款式，以及受Carolyn Bessette-Kennedy风格启发的牛仔裙装系列",
+        "event_type": "product_feature",
+        "anchor_json": {
+          "extractor_version": "1.0",
+          "event_category": "editorial_content",
+          "brand": "Levi's"
+        }
+      }
+    ]
+  }
+}

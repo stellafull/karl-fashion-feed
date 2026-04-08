@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"5b03c437-f7d0-4717-8fa3-de60457defca\", \"article_id\": \"9a849919-1b21-4034-8ee2-8bbe786b4828\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"product_launch\", \"brand\": \"プリマヴィスタ（PRIMAVISTA）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"花王のベースメイクブランド「プリマヴィスタ（PRIMAVISTA）」は4月11日、部分用化粧下地\\\"ピンポイントセバムオフ スティック\\\"（全1種、2750円※編集部調べ）を全国で発売する\", \"ドラッグストアや大型スーパー、ECサイトで取り扱う\"], \"anchor_json\": {\"brand\": \"プリマヴィスタ（PRIMAVISTA）\"}}, {\"event_frame_id\": \"d6a363fe-cb36-4486-ad7b-e29e3b949be5\", \"article_id\": \"9a849919-1b21-4034-8ee2-8bbe786b4828\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"sales_performance\", \"brand\": \"プリマヴィスタ（PRIMAVISTA）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"同製品は2025年4月にマツモトキヨシグループおよびココカラファイングループの店舗で数量限定販売したところ、当初1年間の目標としていた出荷数6万本を発売から約1ヶ月で達成\", \"想定以上の反響を受けて品切れ状態となり、9月に増産再販売を行っていた\"], \"anchor_json\": {\"performance_outcome\": \"目標達成\", \"market_response\": \"想定以上の反響・品切れ\", \"subsequent_action\": \"9月増産再販\", \"implication\": \"全国発売へ拡大\", \"brand\": \"プリマヴィスタ（PRIMAVISTA）\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"candidate_frames\": [{\"event_frame_id\": \"3f8dc95f-834b-4acf-9b67-669789dee03c\", \"article_id\": \"0bfb8e64-fd46-4ec3-85f6-af3cec2f14a3\", \"source_name\": \"Vanity Fair\", \"source_lang\": \"en\", \"event_type\": \"domestic_violence_assault\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"on December 29, Heather was at the apartment they shared at Portofino Tower when she 'attempted to break off the relationship with the defendant and he became irate and grabbed her from behind causing her to fall to the ground, at which point he began to pull her by the hair and began to punch her in the head.'\", \"'He choked me,' she told the police. She said that Dodelson 'placed both hands on her neck and applied pressure causing her to lose conciensness [sic] and impeded her from breathing normally and allowing the circulation of blood flow.'\"], \"anchor_json\": {\"incident_date\": \"2025-12-29\", \"police_report_filed\": \"2026-01-08\", \"investigating_agency\": \"Miami Beach Police Department\", \"victim_deposition_date\": \"2026-01-22\"}}]}"
+      }
+    ]
+  }
+}

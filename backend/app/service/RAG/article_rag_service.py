@@ -153,7 +153,10 @@ class ArticleRagService:
             image_url if isinstance(image_url, str) and image_url.strip() else None
             for image_url in (record.get("image_url") for record in records)
         ]
-        dense_vectors = generate_dense_embedding(texts, image_inputs)
+        try:
+            dense_vectors = generate_dense_embedding(texts, image_inputs)
+        except Exception:
+            dense_vectors = generate_dense_embedding(texts, [None] * len(records))
         sparse_vectors = generate_sparse_embedding(texts)
 
         for record, dense_vector, sparse_vector in zip(records, dense_vectors, sparse_vectors, strict=True):

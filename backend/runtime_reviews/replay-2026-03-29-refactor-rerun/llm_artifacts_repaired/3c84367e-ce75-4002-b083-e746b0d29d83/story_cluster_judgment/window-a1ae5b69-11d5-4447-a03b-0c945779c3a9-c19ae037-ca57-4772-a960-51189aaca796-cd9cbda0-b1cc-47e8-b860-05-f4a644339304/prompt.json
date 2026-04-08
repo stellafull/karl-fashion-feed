@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"a1ae5b69-11d5-4447-a03b-0c945779c3a9\", \"article_id\": \"28edc930-ffa8-4e67-be98-c806388a036a\", \"source_name\": \"Allure\", \"source_lang\": \"en\", \"event_type\": \"brand_positioning_statement\", \"brand\": \"Reale Actives\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"They were all white bottles with black fonts... I always felt a little bored… I'm really excited to make acne sexy and hot\", \"packaged in sleek silver and mint\"], \"anchor_json\": {\"spokesperson\": \"Alix Earle\", \"personal_motivation\": \"struggles with cystic acne for five years\", \"brand\": \"Reale Actives\"}}, {\"event_frame_id\": \"c19ae037-ca57-4772-a960-51189aaca796\", \"article_id\": \"28edc930-ffa8-4e67-be98-c806388a036a\", \"source_name\": \"Allure\", \"source_lang\": \"en\", \"event_type\": \"trademark_filing_discovery\", \"brand\": \"Reale Actives\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Earlier this week, online sleuths discovered Earle had trademarked \\\"Reale Actives,\\\" and now, the cat is officially out of the bag\"], \"anchor_json\": {\"discovery_method\": \"online investigation\", \"brand\": \"Reale Actives\"}}, {\"event_frame_id\": \"cd9cbda0-b1cc-47e8-b860-058339278a05\", \"article_id\": \"28edc930-ffa8-4e67-be98-c806388a036a\", \"source_name\": \"Allure\", \"source_lang\": \"en\", \"event_type\": \"product_launch\", \"brand\": \"Reale Actives\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"The four products in the Reale Actives debut lineup—available to shop on March 31—are packaged in sleek silver and mint\", \"A mandelic acid serum priced at $39 is the breakout-reducing workhorse of the line; a ceramide- and hyaluronic acid-packed moisturizer ($36), makeup-removing cleansing balm ($29), and exfoliating gel cleanser ($28) round out the collection\"], \"anchor_json\": {\"founder\": \"Alix Earle\", \"collaborator\": \"Dr. Kiran Mian (dermatologist)\", \"development_duration\": \"about two years\", \"positioning\": \"acne-first skin-care line\", \"brand\": \"Reale Actives\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

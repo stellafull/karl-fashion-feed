@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"a7ac5a0e-0098-4653-ac1a-740175188972\", \"article_id\": \"153e8dda-e392-457e-966a-fe13fcf03847\", \"source_name\": \"BOF\", \"source_lang\": \"en\", \"event_type\": \"merger_acquisition\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Henkel to Acquire Olaplex For $1.4 Billion\", \"The German firm has entered a definitive agreement to buy Olaplex, the hair-care brand that developed a cult following for its shampoos and other treatments.\"], \"anchor_json\": {\"acquirer_type\": \"German_conglomerate\", \"target_category\": \"hair-care_brand\", \"deal_status\": \"definitive_agreement\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

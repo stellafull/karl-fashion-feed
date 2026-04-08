@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"0ab5b9b7-9e30-4598-a6cd-cd19ea96cfbc\", \"article_id\": \"ff158610-f7fa-44a1-891a-e3984ba23952\", \"source_name\": \"Vogue España\", \"source_lang\": \"es\", \"event_type\": \"fashion_exhibition_opening\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Ahora el MoMu (Mode Museum Antwerpen) inaugura una exposición, The Antwerp Six, que homenajea el seísmo que supuso la confluencia de estos seis talentos en el mismo espacio y tiempo\", \"La cita, que se podrá visitar del 28 de marzo de este año al 17 de enero de 2027\"], \"anchor_json\": {\"date_start\": \"2026-03-28\", \"date_end\": \"2027-01-17\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

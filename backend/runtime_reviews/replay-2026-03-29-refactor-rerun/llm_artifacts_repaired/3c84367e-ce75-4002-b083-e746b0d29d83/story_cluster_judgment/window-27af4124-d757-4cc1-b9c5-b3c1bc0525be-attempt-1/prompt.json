@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"27af4124-d757-4cc1-b9c5-b3c1bc0525be\", \"article_id\": \"fdbb0fa5-ee8c-4965-834a-c349f610fff5\", \"source_name\": \"Fashion Press\", \"source_lang\": \"ja\", \"event_type\": \"product_launch\", \"brand\": \"東京シティビュー × チ。 ー地球の運動についてー\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"会場内の特設ショップでは、イベントのキービジュアルを使用したアイテムをはじめとしたオリジナルグッズを販売。雑貨やステーショナリー、ファッショングッズに加えて、天文、宇宙、星空にまつわるアイテムも販売する\", \"「数量限定特典付きチケット」を購入のうえ来場した人に限り、『チ。 ー地球の運動についてー』の特製原作コマしおり(全8種)を、1回の来場につきランダムで1枚プレゼント\"], \"anchor_json\": {\"launch_timing\": \"2026年4月10日(イベント開催と同時)\", \"limited_item\": \"特製原作コマしおり(全8種・数量限定)\", \"product_theme\": \"天文・宇宙・星空・漫画原作\", \"brand\": \"東京シティビュー × チ。 ー地球の運動についてー\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

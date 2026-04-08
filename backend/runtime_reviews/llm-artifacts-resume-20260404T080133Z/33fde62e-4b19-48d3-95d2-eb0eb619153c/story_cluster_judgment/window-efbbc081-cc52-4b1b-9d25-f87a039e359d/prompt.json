@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"candidate_frames\": [{\"event_frame_id\": \"efbbc081-cc52-4b1b-9d25-f87a039e359d\", \"article_id\": \"5afe7df9-f150-49c1-8c2a-d08f239119a1\", \"source_name\": \"GQ Japan\", \"source_lang\": \"ja\", \"event_type\": \"footwear_release\", \"brand\": \"Nike\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"ナイキは「エア フォース 1 “Heat Map”」をリリースする。\", \"すでに発売されているグリーンのモデルに続き、ヒートマップ風のプリントを施した新たな一足が登場。\"], \"anchor_json\": {\"release_timing\": \"coming_soon\", \"japan_availability\": \"未确认\", \"brand\": \"Nike\"}}]}"
+      }
+    ]
+  }
+}

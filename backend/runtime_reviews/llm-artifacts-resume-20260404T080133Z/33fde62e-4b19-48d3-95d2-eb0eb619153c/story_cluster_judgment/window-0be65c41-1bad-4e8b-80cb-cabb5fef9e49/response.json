@@ -1,0 +1,24 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "0be65c41-1bad-4e8b-80cb-cabb5fef9e49",
+        "member_event_frame_ids": [
+          "0be65c41-1bad-4e8b-80cb-cabb5fef9e49"
+        ],
+        "synopsis_zh": "名人造型师Ursula Stephen使用Moroccanoil系列产品（包括Treatment Mist、Molding Cream及Luminous Hairspray）为明星打造湿发感背头造型",
+        "event_type": "celebrity_hairstyling",
+        "anchor_json": {
+          "stylist": "Ursula Stephen",
+          "brand_used": "Moroccanoil",
+          "technique": "湿发感背头（wet-look）",
+          "products": [
+            "Treatment Mist",
+            "Molding Cream",
+            "Luminous Hairspray Strong"
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"1eacc91a-2b9c-4188-9b46-8edb81ae3254\", \"article_id\": \"5729f09e-73dc-4ed2-8b8c-fee8fccd2c2e\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"celebrity_appearance\", \"brand\": \"TAG HEUER\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"26日には、「タグ・ホイヤー」が長年パートナーシップを結ぶオラクル・レッドブル・レーシングのリザーブドライバー、角田裕毅が「モナコ クロノグラフ」を身につけて来場\", \"会場を見学した角田は同ブランドの時計の魅力について「イブニングシーンにも着用できるエレガントさと、ピンクの差し色などの遊び心が同居している」と語った\"], \"anchor_json\": {\"event_date_precision\": \"exact\", \"brand\": \"TAG HEUER\"}}, {\"event_frame_id\": \"c559e22a-78e2-470b-bb37-c43df3944c2d\", \"article_id\": \"5729f09e-73dc-4ed2-8b8c-fee8fccd2c2e\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"brand_popup_store\", \"brand\": \"TAG HEUER\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"3月31日まで伊勢丹新宿本店本館1階 ザ・ステージでポップアップストアを開催している\", \"会期：3月25日〜31日\"], \"anchor_json\": {\"event_date_precision\": \"exact\", \"location_precision\": \"exact\", \"source_section\": \"全文\", \"brand\": \"TAG HEUER\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

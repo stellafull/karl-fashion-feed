@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是时尚资讯主笔，负责输出一条 digest 的长文。\n\n输入包括 digest 计划与对应的 article 摘要/引用。你的任务是生成完整中文稿件：\n- title_zh、dek_zh 为中文标题与导语\n- body_markdown 为简洁可读的 Markdown 正文（不要包含 JSON）\n- source_article_ids 必须来自输入\n\n规则：\n- 只基于输入事实，不要编造\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"title_zh\": \"...\",\n  \"dek_zh\": \"...\",\n  \"body_markdown\": \"...\",\n  \"source_article_ids\": [\"...\"]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"plan\": {\"business_date\": \"2026-03-29\", \"facet\": \"brand_market\", \"story_keys\": [\"6f8b9f5a-53fd-485f-84bd-27ff2f4c45b6\"], \"article_ids\": [\"9c80dc5a-b655-4df2-a9f9-f84fa8122dff\"], \"editorial_angle\": \"奢侈品牌以生肖文化为灵感，通过精湛工艺与符号化设计讲述中国新年故事，展现对本土文化的深度理解与尊重\", \"title_zh\": \"Roger Vivier 挚献 2026 新春甄礼系列，以赤马图腾传递祥瑞寓意\", \"dek_zh\": \"为迎接农历新年，品牌推出以赤马为主题的限定系列，将活力、勇气与进取精神融入经典设计，以文化符号与法式工艺的融合打造节日礼赠美学\", \"source_names\": [\"ELLE China\"]}, \"source_articles\": [{\"article_id\": \"9c80dc5a-b655-4df2-a9f9-f84fa8122dff\", \"source_name\": \"ELLE China\", \"title_raw\": \"ROGER VIVIER挚献2026年新春甄礼系列，以祥瑞赤马传递新年祝福\", \"summary_raw\": \"春节将至，ROGER VIVIER匠心呈献2026年新春甄礼系列，以赤马礼赞昂扬活力、无畏勇气与锐意进取的精神。品牌撷取赤马深远的象征意义，将文化意涵与精湛工艺凝于此次精选系列。\", \"body_markdown\": \"# ROGER VIVIER挚献2026年新春甄礼系列，以祥瑞赤马传递新年祝福\\n\\n春节将至，ROGER VIVIER匠心呈献2026年新春甄礼系列，以赤马礼赞昂扬活力、无畏勇气与锐意进取的精神。品牌撷取赤马深远的象征意义，将文化意涵与精湛工艺凝于此次精选系列。\\n\\n创意总监格拉多·费罗尼 (Gherardo Felloni) 以赤马年幸运朱红色为基调，为本系列添以蓬勃跃动的生命力。这抹深植于新春传统的明璨色彩，寄寓欢欣、繁盛与好运。ROGER VIVIER透过独到视角诠释这抹色彩，以新春红为笔，将纳福迎祥的寓意绘入节日盛装，为来年的顺遂如意庄重启幕。\\n\\n马术元素挂饰构筑精选系列的视觉核心。在ROGER VIVIER工匠指间，骏马化为满载希冀与欢悦的优雅图腾，将东方吉祥意蕴与品牌装饰工艺谐美交融。贯穿于不同文明的经典马蹄铁图案，历来象征护佑与丰饶，在此化作联结传统与现代的纽带。\\n\\n2026年新春甄礼系列涵盖Viv' Zag运动鞋、数款缀饰Pilgrim珠宝钻扣的手袋以及闪耀配饰——其美学语言，见于暗红、金色与柔雅中性色调的对话；其设计语汇，则凝练于雕塑感线条、珍珠装饰与精巧马术元素的邂逅。从璀璨扣饰至节庆装饰，喜悦气息在每处细节间流转，这不仅诉说着节庆的欢愉，更印证着ROGER VIVIER对匠心工艺的执着追求。新作承载着吉祥守护的美好寓意，邀您怀揣自信、绽放魅力，携隽永生活意趣（joie de vivre），共赴赤马年的祥瑞欢腾。\\n\\nROGER VIVIER 2026年新春甄礼系列将于2026年1月起于全球指定精品店及品牌官网发售。\\n\"}]}"
+      }
+    ]
+  }
+}

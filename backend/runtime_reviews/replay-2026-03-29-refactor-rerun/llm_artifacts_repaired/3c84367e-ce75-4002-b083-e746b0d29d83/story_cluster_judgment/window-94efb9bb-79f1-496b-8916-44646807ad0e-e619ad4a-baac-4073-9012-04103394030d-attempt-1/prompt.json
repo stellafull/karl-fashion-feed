@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"94efb9bb-79f1-496b-8916-44646807ad0e\", \"article_id\": \"66e5dc55-c263-4ed8-a93c-923b6c56feda\", \"source_name\": \"Fashionsnap\", \"source_lang\": \"ja\", \"event_type\": \"high_jewelry_collection_launch\", \"brand\": \"グラフ（GRAFF）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"最新ハイジュエリーは、その名に相応しい希少な31カラットものエメラルドカットのサファイアと、200カラットを超えるダイヤモンドをセットしたチョーカーとイヤリング\", \"静かに煌めく水面に、一滴の滴が落ちる瞬間にインスピレーションを得た本コレクション\"], \"anchor_json\": {\"craftsmanship\": \"熟練した職人が数百時間をかけて一つ一つ精緻に作り上げている\", \"brand\": \"グラフ（GRAFF）\"}}, {\"event_frame_id\": \"e619ad4a-baac-4073-9012-04103394030d\", \"article_id\": \"66e5dc55-c263-4ed8-a93c-923b6c56feda\", \"source_name\": \"Fashionsnap\", \"source_lang\": \"ja\", \"event_type\": \"fashion_week_presentation\", \"brand\": \"グラフ（GRAFF）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"パリで1月に開催されたオートクチュール・ファッションウィーク期間中、各メゾンやジュエラーからハイジュエリーの新作コレクションが発表された\"], \"anchor_json\": {\"location\": \"パリ\", \"season\": \"2026年春夏オートクチュール期間\", \"brand\": \"グラフ（GRAFF）\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

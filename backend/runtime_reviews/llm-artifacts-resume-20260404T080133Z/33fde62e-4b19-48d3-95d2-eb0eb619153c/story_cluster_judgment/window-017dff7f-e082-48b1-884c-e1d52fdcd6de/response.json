@@ -1,0 +1,32 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "017dff7f-e082-48b1-884c-e1d52fdcd6de",
+        "member_event_frame_ids": [
+          "017dff7f-e082-48b1-884c-e1d52fdcd6de"
+        ],
+        "synopsis_zh": "GQ杂志采访Fellow Barber纽约门店高级理发师Alex Hughes与Alyssa Bachowski，就须后水选购及理发护理提供专业建议",
+        "event_type": "expert_interview_feature",
+        "anchor_json": {
+          "expertise_domain": "barbering",
+          "consultation_context": "aftershave_buying_guide",
+          "interviewees": [
+            {
+              "name": "Alex Hughes",
+              "title": "senior barber",
+              "location": "Fellow Barber Seaport, south Manhattan"
+            },
+            {
+              "name": "Alyssa Bachowski",
+              "title": "senior barber",
+              "location": "Fellow Barber Williamsburg"
+            }
+          ],
+          "publication": "GQ",
+          "source_lang": "en"
+        }
+      }
+    ]
+  }
+}

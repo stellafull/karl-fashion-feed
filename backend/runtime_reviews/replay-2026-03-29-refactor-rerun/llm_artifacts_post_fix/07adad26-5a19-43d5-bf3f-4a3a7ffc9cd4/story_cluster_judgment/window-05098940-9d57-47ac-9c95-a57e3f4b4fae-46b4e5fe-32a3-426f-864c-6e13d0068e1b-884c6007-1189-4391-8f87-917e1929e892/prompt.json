@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"05098940-9d57-47ac-9c95-a57e3f4b4fae\", \"article_id\": \"afcef673-94cf-47a1-8b92-723d72886717\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"campaign_launch\", \"brand\": \"Alexander McQueen\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"McQueen 2024秋冬系列形象广告大片\", \"以伦敦东区为故事背景，形象广告大片捕捉了城市青年叛逆不羁的魅力\"], \"anchor_json\": {\"photographer\": \"Glen Luchford\", \"stylist\": \"Marie Chaix\", \"art_director\": \"Christopher Simmonds\", \"brand\": \"Alexander McQueen\"}}, {\"event_frame_id\": \"46b4e5fe-32a3-426f-864c-6e13d0068e1b\", \"article_id\": \"afcef673-94cf-47a1-8b92-723d72886717\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"product_feature_highlight\", \"brand\": \"Alexander McQueen\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"浓郁的牛血色皮革Sling斜挎包紧紧地裹住身躯，与超硬合金T 形扣的闪光形成鲜明对比\", \"同样的搭扣也系起了乐福鞋面上拖曳的流苏\"], \"anchor_json\": {\"brand\": \"Alexander McQueen\"}}, {\"event_frame_id\": \"884c6007-1189-4391-8f87-917e1929e892\", \"article_id\": \"afcef673-94cf-47a1-8b92-723d72886717\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"creative_director_appointment\", \"brand\": \"Alexander McQueen\", \"person\": \"Seán McGirr\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"2023年12月起，品牌在创意总监Seán McGirr的指导下持续拓展其影响力\", \"Seán McGirr为亚历山大麦昆品牌创意总监\"], \"anchor_json\": {\"education\": \"伦敦中央圣马丁学院服装艺术硕士学位\", \"brand\": \"Alexander McQueen\", \"person\": \"Seán McGirr\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"5cb6f21f-79d2-4624-b0ef-fff0f9ac6a94\", \"article_id\": \"853b02cb-7cbe-4555-adf9-c31a6545c5a4\", \"source_name\": \"Vogue Japan\", \"source_lang\": \"ja\", \"event_type\": \"fashion_show\", \"brand\": \"TAO\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"3月26日、コム デ ギャルソン（COMME des GARÇONS）の本社が入るビルの一室でタオ（TAO）の2026-27年秋冬コレクションのミニショーが開催された\", \"全43ルック\"], \"anchor_json\": {\"temporal_anchor\": \"2026-03-26\", \"spatial_anchor\": \"東京・南青山\", \"brand\": \"TAO\"}}, {\"event_frame_id\": \"7d8014fb-cb0d-4c41-baea-d614db41741b\", \"article_id\": \"853b02cb-7cbe-4555-adf9-c31a6545c5a4\", \"source_name\": \"Vogue Japan\", \"source_lang\": \"ja\", \"event_type\": \"design_theme\", \"brand\": \"TAO\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"丸やカーブを描いたフォルムを探求した\", \"「円」がテーマになっているようだった\"], \"anchor_json\": {\"temporal_anchor\": \"2026-27年秋冬\", \"design_focus\": \"幾何学的フォルムの探求\", \"brand\": \"TAO\"}}, {\"event_frame_id\": \"ba789005-bd09-42ea-9806-a9e8e56962af\", \"article_id\": \"853b02cb-7cbe-4555-adf9-c31a6545c5a4\", \"source_name\": \"Vogue Japan\", \"source_lang\": \"ja\", \"event_type\": \"artist_collaboration\", \"brand\": \"TAO\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"今季、オランダ出身のアーティスト、ルース・ファン・ビークとコラボし\", \"オランダ出身のアーティスト、ルース・ファン・ビークの作品へと行き着いた\"], \"anchor_json\": {\"temporal_anchor\": \"2026-27年秋冬\", \"collaboration_type\": \"アーティストコラボレーション\", \"brand\": \"TAO\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

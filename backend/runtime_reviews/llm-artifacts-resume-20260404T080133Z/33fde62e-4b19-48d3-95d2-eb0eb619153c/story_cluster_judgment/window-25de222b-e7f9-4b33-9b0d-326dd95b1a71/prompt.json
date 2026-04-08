@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"candidate_frames\": [{\"event_frame_id\": \"25de222b-e7f9-4b33-9b0d-326dd95b1a71\", \"article_id\": \"0bfb8e64-fd46-4ec3-85f6-af3cec2f14a3\", \"source_name\": \"Vanity Fair\", \"source_lang\": \"en\", \"event_type\": \"felony_arrest\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"At 9:27 p.m. on that late February 2026 night in Miami Beach... five officers from the major crimes unit of the Miami Beach Police Department... hightailing it to the 1 Hotel, looking for Aryeh Dodelson.\", \"Inside they found Dodelson, who had been going by another alias, Ary Davidssen, and placed him under arrest. He was hauled across the causeway and booked in a Miami-Dade County jail. On February 26 he was charged with battery by strangulation, a felony, and battery by domestic violence, a misdemeanor.\"], \"anchor_json\": {\"arrest_timestamp\": \"2026-02-25T21:27:00\", \"warrant_obtained\": \"January 2026\", \"charge_date\": \"2026-02-26\", \"arraignment_date\": \"2026-04-27T09:00:00\", \"court\": \"Eleventh Judicial Circuit of Florida, Richard E. Gerstein Justice Building\"}}]}"
+      }
+    ]
+  }
+}

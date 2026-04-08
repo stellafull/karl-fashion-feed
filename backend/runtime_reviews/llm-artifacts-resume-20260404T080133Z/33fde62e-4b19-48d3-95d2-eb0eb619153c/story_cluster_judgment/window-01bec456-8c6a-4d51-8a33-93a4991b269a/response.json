@@ -1,0 +1,22 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "01bec456-8c6a-4d51-8a33-93a4991b269a",
+        "member_event_frame_ids": [
+          "01bec456-8c6a-4d51-8a33-93a4991b269a"
+        ],
+        "synopsis_zh": "Dua Lipa 在纽约街头被拍到穿着黑色长款外套搭配白色连衣裙和高跟鞋，适合冬春交替天气",
+        "event_type": "celebrity_street_style",
+        "anchor_json": {
+          "celebrity": "Dua Lipa",
+          "location": "New York",
+          "garment_type": "transitional_jacket",
+          "garment_details": "long_sleek_black_coat",
+          "styling": "white_dress_and_matching_heels",
+          "seasonal_context": "winter_to_spring_transition"
+        }
+      }
+    ]
+  }
+}

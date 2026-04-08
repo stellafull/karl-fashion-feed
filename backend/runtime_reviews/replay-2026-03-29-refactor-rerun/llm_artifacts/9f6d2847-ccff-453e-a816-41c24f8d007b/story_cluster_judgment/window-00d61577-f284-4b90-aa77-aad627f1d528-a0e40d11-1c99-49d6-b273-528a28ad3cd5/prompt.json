@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"00d61577-f284-4b90-aa77-aad627f1d528\", \"article_id\": \"5d51e620-79ad-4e31-a2dd-584747fb077a\", \"source_name\": \"Vanity Fair\", \"source_lang\": \"en\", \"event_type\": \"brand_product_launch\", \"brand\": \"As Ever\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"last week it started selling a limited-edition gift set featuring As Ever tea and fresh gardenias from High Camp Supply\"], \"anchor_json\": {\"source\": \"Vanity Fair\", \"published_at\": \"2026-03-27T18:27:19\", \"article_id\": \"5d51e620-79ad-4e31-a2dd-584747fb077a\", \"brand\": \"As Ever\"}}, {\"event_frame_id\": \"a0e40d11-1c99-49d6-b273-528a28ad3cd5\", \"article_id\": \"5d51e620-79ad-4e31-a2dd-584747fb077a\", \"source_name\": \"Vanity Fair\", \"source_lang\": \"en\", \"event_type\": \"brand_product_launch\", \"brand\": \"As Ever\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"In late January, As Ever launched a collaboration with chocolatier Compartés\"], \"anchor_json\": {\"source\": \"Vanity Fair\", \"published_at\": \"2026-03-27T18:27:19\", \"article_id\": \"5d51e620-79ad-4e31-a2dd-584747fb077a\", \"brand\": \"As Ever\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

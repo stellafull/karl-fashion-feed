@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"1db27724-20ff-4c34-9122-a9ddcbc59a5d\", \"article_id\": \"548c5657-a243-489c-afcd-6266d22a9ec3\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"campaign_launch\", \"brand\": \"Loro Piana\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Loro Piana 2024-2025 秋冬广告大片由 Mario Sorrenti 于苏格兰掌镜拍摄\", \"摄影师：Mario Sorrenti\"], \"anchor_json\": {\"source_article_id\": \"548c5657-a243-489c-afcd-6266d22a9ec3\", \"source_name\": \"GQ China\", \"canonical_url\": \"https://www.gq.com.cn/fashion/news/news_12g1aa64775a89dd.html\", \"extraction_timestamp\": \"2024\", \"brand\": \"Loro Piana\"}}, {\"event_frame_id\": \"b3353aef-3ac5-46ba-81d9-defb3ee74048\", \"article_id\": \"548c5657-a243-489c-afcd-6266d22a9ec3\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"brand_anniversary\", \"brand\": \"Loro Piana\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"以期在品牌百年诞辰之际致敬其历史传承\", \"自 1951 年以来，蓟花一直是品牌纹章的一部分\"], \"anchor_json\": {\"source_article_id\": \"548c5657-a243-489c-afcd-6266d22a9ec3\", \"source_name\": \"GQ China\", \"canonical_url\": \"https://www.gq.com.cn/fashion/news/news_12g1aa64775a89dd.html\", \"extraction_timestamp\": \"2024\", \"brand\": \"Loro Piana\"}}, {\"event_frame_id\": \"d88108eb-b319-42e3-a1e2-21834397e97a\", \"article_id\": \"548c5657-a243-489c-afcd-6266d22a9ec3\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"collection_highlight\", \"brand\": \"Loro Piana\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Baby Cashmere小山羊绒、Vicuña骆马绒、羊绒、Sopra Visso羊毛、Pecora Nera®羊毛和Cheviot羊毛、蓟花等标志性细节\", \"充满质感的色彩如浅驼色、Loro Piana 中性苔原色、苔藓褐色、树皮黄褐色与深酒红色\"], \"anchor_json\": {\"source_article_id\": \"548c5657-a243-489c-afcd-6266d22a9ec3\", \"source_name\": \"GQ China\", \"canonical_url\": \"https://www.gq.com.cn/fashion/news/news_12g1aa64775a89dd.html\", \"extraction_timestamp\": \"2024\", \"brand\": \"Loro Piana\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

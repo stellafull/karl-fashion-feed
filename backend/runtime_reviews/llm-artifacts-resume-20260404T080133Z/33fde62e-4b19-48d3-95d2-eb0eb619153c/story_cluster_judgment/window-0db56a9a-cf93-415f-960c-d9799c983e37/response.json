@@ -1,0 +1,20 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "0db56a9a-cf93-415f-960c-d9799c983e37",
+        "member_event_frame_ids": [
+          "0db56a9a-cf93-415f-960c-d9799c983e37"
+        ],
+        "synopsis_zh": "电商平台Etsy宣布将从2026年8月11日起禁止在其网站销售所有动物皮草产品",
+        "event_type": "platform_fur_ban",
+        "anchor_json": {
+          "platform": "Etsy",
+          "policy_change": "fur_ban",
+          "effective_date": "2026-08-11",
+          "category": "sustainability"
+        }
+      }
+    ]
+  }
+}

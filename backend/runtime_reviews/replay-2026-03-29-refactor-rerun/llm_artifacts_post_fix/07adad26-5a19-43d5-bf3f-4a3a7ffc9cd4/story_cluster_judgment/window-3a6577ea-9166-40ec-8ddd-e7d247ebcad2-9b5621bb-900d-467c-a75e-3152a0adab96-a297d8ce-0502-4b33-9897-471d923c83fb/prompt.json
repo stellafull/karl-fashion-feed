@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"3a6577ea-9166-40ec-8ddd-e7d247ebcad2\", \"article_id\": \"528a231c-47bd-4e4a-aa3f-d4f3a21bb081\", \"source_name\": \"Refinery29\", \"source_lang\": \"en\", \"event_type\": \"product_collection_launch\", \"brand\": \"Skims\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"The Skims Wedding Shop just relaunched today\", \"offering Skims bestsellers like matching pajama sets... and Fits Everybody underwear (in new bridal colorways) as well as product debuts like sticky bras and invisible string thongs\"], \"anchor_json\": {\"published_date\": \"2026-03-19\", \"source\": \"Refinery29\", \"url\": \"https://www.refinery29.com/en-us/skims-wedding-shop\", \"brand\": \"Skims\"}}, {\"event_frame_id\": \"9b5621bb-900d-467c-a75e-3152a0adab96\", \"article_id\": \"528a231c-47bd-4e4a-aa3f-d4f3a21bb081\", \"source_name\": \"Refinery29\", \"source_lang\": \"en\", \"event_type\": \"product_debut\", \"brand\": \"Skims\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"product debuts like sticky bras and invisible string thongs\"], \"anchor_json\": {\"published_date\": \"2026-03-19\", \"source\": \"Refinery29\", \"url\": \"https://www.refinery29.com/en-us/skims-wedding-shop\", \"brand\": \"Skims\"}}, {\"event_frame_id\": \"a297d8ce-0502-4b33-9897-471d923c83fb\", \"article_id\": \"528a231c-47bd-4e4a-aa3f-d4f3a21bb081\", \"source_name\": \"Refinery29\", \"source_lang\": \"en\", \"event_type\": \"product_line_expansion\", \"brand\": \"Skims\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Skims has extended its mens' offerings to more than just boxers\", \"Pick from a satiny neutral shade or a baby blue with wedding doves\"], \"anchor_json\": {\"published_date\": \"2026-03-19\", \"source\": \"Refinery29\", \"url\": \"https://www.refinery29.com/en-us/skims-wedding-shop\", \"brand\": \"Skims\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

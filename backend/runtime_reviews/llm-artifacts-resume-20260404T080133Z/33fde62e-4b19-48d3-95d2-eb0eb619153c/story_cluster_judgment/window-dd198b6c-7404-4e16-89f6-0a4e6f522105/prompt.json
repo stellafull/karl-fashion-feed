@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"candidate_frames\": [{\"event_frame_id\": \"dd198b6c-7404-4e16-89f6-0a4e6f522105\", \"article_id\": \"0af518da-8d0e-4567-a87c-0ae6ef6d8609\", \"source_name\": \"Who What Wear\", \"source_lang\": \"en\", \"event_type\": \"seasonal_wardrobe_cleanout\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"every few months my wardrobe undergoes a refresh in which weather appropriate clothes come out of storage and the old ones are packed away\", \"Spring is underway with summer just on the horizon, so I've put together a handy guide on what this fussy fashion editor is shelving and saving this season\"], \"anchor_json\": {\"article_id\": \"0af518da-8d0e-4567-a87c-0ae6ef6d8609\", \"published_at\": \"2026-04-04T02:00:00\"}}]}"
+      }
+    ]
+  }
+}

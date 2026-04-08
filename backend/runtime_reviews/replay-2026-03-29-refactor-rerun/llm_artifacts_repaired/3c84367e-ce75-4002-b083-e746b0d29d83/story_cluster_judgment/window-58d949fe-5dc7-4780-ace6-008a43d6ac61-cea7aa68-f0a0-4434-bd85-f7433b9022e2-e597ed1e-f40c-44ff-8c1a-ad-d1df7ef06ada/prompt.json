@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"58d949fe-5dc7-4780-ace6-008a43d6ac61\", \"article_id\": \"c84320b0-e5ae-418d-aca5-a706b08dc224\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"product_launch\", \"brand\": \"ランコム（LANCOME）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"「ランコム（LANCOME）」は4月24日、アイコンフレグランス\\\"イドル\\\"の新作\\\"ピーチ＆ローズ オードゥ パルファン フルテ\\\"（25mL 1万1000円／50mL 1万8700円※編集部調べ）を発売する\", \"17日から公式オンラインショップで先行発売を行う\"], \"anchor_json\": {\"launch_date\": \"2026-04-24\", \"pre_sale_date\": \"2026-04-17\", \"pre_sale_channel\": \"公式オンラインショップ\", \"brand\": \"ランコム（LANCOME）\"}}, {\"event_frame_id\": \"cea7aa68-f0a0-4434-bd85-f7433b9022e2\", \"article_id\": \"c84320b0-e5ae-418d-aca5-a706b08dc224\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"product_feature\", \"brand\": \"ランコム（LANCOME）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"完熟したピーチを口にした瞬間にインスパイアされた香りで\", \"トップノートはスパークリングレッドベリー、ミドルノートは天然ピーチエキスを取り入れたジューシーピーチ、ラストノートは濃厚なダマスク ローズ アプソリュによるセンシュアルベルベットローズで、ジューシーでフローラルな香りに仕上げた\"], \"anchor_json\": {\"scent_family\": \"フルーティーフローラル\", \"brand\": \"ランコム（LANCOME）\"}}, {\"event_frame_id\": \"e597ed1e-f40c-44ff-8c1a-adaeae7bdef5\", \"article_id\": \"c84320b0-e5ae-418d-aca5-a706b08dc224\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"celebrity_endorsement\", \"brand\": \"ランコム（LANCOME）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"キービジュアルにはシンガーソングライターのオリヴィア・ロドリゴ（Olivia Rodrigo）を起用した\", \"ロドリゴを起用したビジュアルは桃やレコードなども取り入れ、製品やロドリゴが持つ世界観を表現している\"], \"anchor_json\": {\"brand\": \"ランコム（LANCOME）\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

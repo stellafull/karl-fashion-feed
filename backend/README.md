@@ -54,6 +54,10 @@
 8. `DailyRunCoordinatorService` + Celery
    协调 source collection、article stages、strict story packing 和 digest generation。
 
+9. `DeepResearchGraphService` + `DeepResearchService`
+   按需编译带 Postgres checkpoint 的 LangGraph deep research runtime，并把 deep research 请求持久化到现有
+   `chat_session` / `chat_message` 视图层。
+
 ## 关键实体
 
 ### `article`
@@ -130,7 +134,10 @@
 
 ## 当前边界
 
-- 当前 public API 只暴露 digest feed / detail
+- 当前 public API 暴露 auth / chat / memory / rag / digest，以及
+  `POST /api/v1/deep-research/messages/research`
+- deep research 不单独引入 research session 表；继续复用 `chat_session` /
+  `chat_message` 作为用户可见持久化层，LangGraph thread continuity 走 Postgres checkpoint
 - 旧 `story` / `story_article` 表不允许出现在 runtime schema bootstrap 中
 - 旧 story-era prompt、schema、service 模块不再参与当前代码路径
 

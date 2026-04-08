@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"096321a9-bf8d-4f68-8d32-553ce8ba9176\", \"article_id\": \"25877eb8-1478-4620-8572-9e586f516986\", \"source_name\": \"Refinery29\", \"source_lang\": \"en\", \"event_type\": \"trending_product_mention\", \"brand\": \"Madewell\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"trending Madewell styles like barrel jeans\", \"trending barrel-leg jeans\"], \"anchor_json\": {\"trend_season\": \"spring 2026\", \"product_variant\": \"barrel-leg / barrel jeans\", \"promotional_context\": \"featured in sale event\", \"brand\": \"Madewell\"}}, {\"event_frame_id\": \"28906a7b-f396-42ec-8fbd-207936da7fe4\", \"article_id\": \"25877eb8-1478-4620-8572-9e586f516986\", \"source_name\": \"Refinery29\", \"source_lang\": \"en\", \"event_type\": \"trending_product_mention\", \"brand\": \"Madewell\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"trending Madewell styles like... woven handbags\", \"woven handbags\"], \"anchor_json\": {\"trend_season\": \"spring 2026\", \"product_material\": \"woven\", \"product_type\": \"handbags\", \"promotional_context\": \"featured in sale event\", \"brand\": \"Madewell\"}}, {\"event_frame_id\": \"e43751e6-256b-45d7-a293-cf8e871a589c\", \"article_id\": \"25877eb8-1478-4620-8572-9e586f516986\", \"source_name\": \"Refinery29\", \"source_lang\": \"en\", \"event_type\": \"brand_sale_event\", \"brand\": \"Madewell\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"save 25% off nearly everything during the latest Madewell sale\", \"Madewell's Insiders Event\"], \"anchor_json\": {\"event_id\": \"madewell_insider_sale_2026_march\", \"temporal_scope\": \"bi-annual mega sale\", \"applicable_items\": \"new arrivals, bestsellers, trending styles like barrel jeans and woven handbags\", \"brand\": \"Madewell\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

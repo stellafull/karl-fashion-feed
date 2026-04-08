@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"candidate_frames\": [{\"event_frame_id\": \"0be65c41-1bad-4e8b-80cb-cabb5fef9e49\", \"article_id\": \"bee76c04-2b24-42f8-9198-0c15e014294b\", \"source_name\": \"Harper's Bazaar\", \"source_lang\": \"en\", \"event_type\": \"celebrity_hairstyling\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"crafted by celebrity stylist Ursula Stephen using Moroccanoil\", \"Stephen prepped the star’s hair with Moroccanoil Treatment Mist, then applied Moroccanoil Molding Cream from the nape up... used Moroccanoil Luminous Hairspray Strong to lock it in\"], \"anchor_json\": {\"stylist\": \"Ursula Stephen\", \"brand_used\": \"Moroccanoil\", \"technique\": \"湿发感背头（wet-look）\"}}]}"
+      }
+    ]
+  }
+}

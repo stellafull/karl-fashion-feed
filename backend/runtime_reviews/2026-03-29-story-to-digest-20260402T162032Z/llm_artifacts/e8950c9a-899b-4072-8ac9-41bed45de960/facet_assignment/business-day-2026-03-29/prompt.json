@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是 story facet 归类器。\n\n输入是一组 story 概览。你的任务是为每个 story 分配 0 到多个 facet。\n\n规则：\n- 只能使用输入提供的 story_key\n- 只能使用以下 facet，不能自造新 facet，也不能输出同义替代词：\n- runway_series: 秀场发布、系列解读、造型看点、季节性走秀报道\n- street_style: 街拍、场外造型、观众穿搭、城市风格观察\n- trend_summary: 跨品牌或跨故事的趋势提炼、审美主题、风格信号总结\n- brand_market: 品牌广告、产品发布、联名、组织与商业动作、市场层面动态\n- facets 需要是稳定的英文标识（snake_case）\n- 如果 story 更像品牌动作、广告大片、产品发布、组织变动、商业合作，归到 brand_market\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"stories\": [\n    {\n      \"story_key\": \"...\",\n      \"facets\": [\"...\"]\n    }\n  ]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"stories\": [{\"story_key\": \"1a825c6d-b27d-40a8-b670-07024b390f45\", \"synopsis_zh\": \"ウォーターフロントが展開する日傘ブランド「コカゲプラス（COKAGE＋）」から、高い遮熱性を持つ新作のキッズ用傘と長傘が登場した\", \"event_type\": \"product_launch\", \"source_names\": [\"Fashionsnap\"]}, {\"story_key\": \"1c3e626f-8eaa-436e-bc8a-74ccf22c0531\", \"synopsis_zh\": \"首席Bespoke定制总监William Adams此次也来到中国，亲自运用考究的定制技艺与深厚的制衣知识，为顾客打造专属定制佳作\", \"event_type\": \"bespoke_custom_service_event\", \"source_names\": [\"GQ China\"]}, {\"story_key\": \"1d3f5bf4-261b-4319-92c9-b92ee9980ad8\", \"synopsis_zh\": \"What was once the Naadam Essential $75 sweater has now become the Original Sweater after the brand increased the price to $98.\", \"event_type\": \"product_price_change\", \"source_names\": [\"PureWow Fashion\"]}, {\"story_key\": \"1dc21f17-e1db-465f-9765-07f4edfc2eaa\", \"synopsis_zh\": \"「サンディー リアン」の“KAWAII”を追求したスタイルは今季もブレることなく、会場の外でも「サンディ リアン」を体現する来場者たちで賑わった\", \"event_type\": \"brand_show_attendee_style\", \"source_names\": [\"WWD Japan\"]}, {\"story_key\": \"2047ff2c-5cbe-495f-b6b4-626bfc41c93e\", \"synopsis_zh\": \"AFAカテゴリーを中核であるアイウエアと同等もしくはそれ以上に拡大する狙いで\", \"event_type\": \"brand_expansion_strategy\", \"source_names\": [\"WWD Japan\"]}]}"
+      }
+    ]
+  }
+}

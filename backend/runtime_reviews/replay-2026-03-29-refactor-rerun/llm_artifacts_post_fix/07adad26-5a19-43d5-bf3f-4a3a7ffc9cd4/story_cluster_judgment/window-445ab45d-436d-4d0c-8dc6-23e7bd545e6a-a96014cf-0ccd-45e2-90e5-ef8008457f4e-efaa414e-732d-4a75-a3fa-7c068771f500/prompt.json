@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"445ab45d-436d-4d0c-8dc6-23e7bd545e6a\", \"article_id\": \"5957ddfc-fac9-429a-ba74-578ce4049fa3\", \"source_name\": \"Marie Claire Taiwan\", \"source_lang\": \"zh\", \"event_type\": \"celebrity_endorsement\", \"brand\": \"Louis Vuitton\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"冬奧滑冰金牌劉美賢 Alysa Liu\", \"首次參加時裝大秀的冬奧滑冰金牌劉美賢 Alysa Liu\"], \"anchor_json\": {\"endorsement_type\": \"organic_product_placement\", \"event_context\": \"Louis Vuitton 2026秋冬大秀\", \"debut_note\": \"首次參加時裝大秀\", \"brand\": \"Louis Vuitton\"}}, {\"event_frame_id\": \"a96014cf-0ccd-45e2-90e5-ef8008457f4e\", \"article_id\": \"5957ddfc-fac9-429a-ba74-578ce4049fa3\", \"source_name\": \"Marie Claire Taiwan\", \"source_lang\": \"zh\", \"event_type\": \"celebrity_endorsement\", \"brand\": \"Louis Vuitton\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"品牌大使 Felix\", \"精靈王子，LV品牌大使Stray Kids成員Felix這次以看秀嘉賓身分出席巴黎時裝週\"], \"anchor_json\": {\"endorsement_type\": \"organic_product_placement\", \"event_context\": \"Louis Vuitton 2026秋冬大秀\", \"brand\": \"Louis Vuitton\"}}, {\"event_frame_id\": \"efaa414e-732d-4a75-a3fa-7c068771f500\", \"article_id\": \"5957ddfc-fac9-429a-ba74-578ce4049fa3\", \"source_name\": \"Marie Claire Taiwan\", \"source_lang\": \"zh\", \"event_type\": \"product_launch\", \"brand\": \"Louis Vuitton\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"這款 Louis Vuitton Squire East-West，更是近期許多人心中的「想要清單」首選\", \"Squire East-West的靈感，其實可以追溯到品牌歷史中的一個經典原型\"], \"anchor_json\": {\"event_context\": \"Paris Fashion Week 2026\", \"trend_alignment\": \"East-West bag trend\", \"brand\": \"Louis Vuitton\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

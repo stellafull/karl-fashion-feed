@@ -1,0 +1,31 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "609c5710-6d2f-4581-abef-3b1d96d65f9e",
+        "member_event_frame_ids": [
+          "609c5710-6d2f-4581-abef-3b1d96d65f9e",
+          "f6f74bcf-a64b-4669-a8b2-87ff2f84e937"
+        ],
+        "synopsis_zh": "Zendaya于2026年4月2日在纽约出席电影《The Drama》首映活动，先身着Schiaparelli 2026春夏高级定制羽毛礼服亮相红毯，后换上Di Pesta 2026秋冬系列吊带裙参加庆功派对，两套装束均呼应蓝色主题。",
+        "event_type": "celebrity_movie_premiere_attendance",
+        "anchor_json": {
+          "event_date": "2026-04-02",
+          "location": "New York City",
+          "venue": "NYC Premiere of The Drama",
+          "person": "Zendaya",
+          "movie": "The Drama",
+          "designers": [
+            "Schiaparelli",
+            "Di Pesta"
+          ],
+          "collections": [
+            "spring 2026 haute couture",
+            "fall/winter 2026"
+          ],
+          "theme": "something_blue"
+        }
+      }
+    ]
+  }
+}

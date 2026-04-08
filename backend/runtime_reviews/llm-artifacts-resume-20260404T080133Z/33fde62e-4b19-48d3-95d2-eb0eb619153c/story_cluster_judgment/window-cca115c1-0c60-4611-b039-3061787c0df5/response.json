@@ -1,0 +1,27 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "cca115c1-0c60-4611-b039-3061787c0df5",
+        "member_event_frame_ids": [
+          "cca115c1-0c60-4611-b039-3061787c0df5"
+        ],
+        "synopsis_zh": "Emily B（Emily Bustamante）在世界自闭症意识日通过Instagram透露，她与说唱歌手Fabulous的女儿Journey Isabella患有自闭症且非语言交流，同时患有罕见的先天性PHACE综合征。",
+        "event_type": "celebrity_discloses_child_health_condition",
+        "anchor_json": {
+          "celebrity": "Emily Bustamante (Emily B)",
+          "child": "Journey Isabella",
+          "co_parent": "Fabulous",
+          "disclosure_date": "2026-04-02",
+          "disclosure_occasion": "World Autism Awareness Day",
+          "platform": "Instagram",
+          "conditions": [
+            "autism",
+            "non-verbal",
+            "PHACE syndrome"
+          ]
+        }
+      }
+    ]
+  }
+}

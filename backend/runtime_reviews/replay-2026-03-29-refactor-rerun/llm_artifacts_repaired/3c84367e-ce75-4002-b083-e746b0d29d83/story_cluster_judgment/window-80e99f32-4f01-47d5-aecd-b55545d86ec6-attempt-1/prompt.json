@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"80e99f32-4f01-47d5-aecd-b55545d86ec6\", \"article_id\": \"a28d5deb-d754-476c-beb5-b99ccad0438d\", \"source_name\": \"Marie Claire Taiwan\", \"source_lang\": \"zh\", \"event_type\": \"campaign_theme_reveal\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"以「四季無界，隨心而行」為主題，系列描繪暮春殘雪與新旅啟程之間的過渡時刻，在靜謐與期待之間展開\", \"設計師 Cecilie Bahnsen 表示，本季核心圍繞「輕盈感」，不僅來自穿著體驗，更是一種貼近內在的自在狀態\"], \"anchor_json\": {\"source_article_id\": \"a28d5deb-d754-476c-beb5-b99ccad0438d\", \"source_name\": \"Marie Claire Taiwan\", \"published_at\": \"2026-03-26T19:57:50\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

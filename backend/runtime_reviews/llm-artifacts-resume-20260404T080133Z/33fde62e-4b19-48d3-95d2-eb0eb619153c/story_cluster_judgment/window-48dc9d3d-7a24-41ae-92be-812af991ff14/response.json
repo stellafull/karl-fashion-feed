@@ -1,0 +1,20 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "48dc9d3d-7a24-41ae-92be-812af991ff14",
+        "member_event_frame_ids": [
+          "48dc9d3d-7a24-41ae-92be-812af991ff14"
+        ],
+        "synopsis_zh": "在二手店以5美元购买露背无肩带连衣裙，试穿后拍摄镜子自拍并发送给伴侣",
+        "event_type": "thrift_purchase",
+        "anchor_json": {
+          "price_tier": "budget/thrift",
+          "garment_feature": "backless, braless styling",
+          "purchase_motivation": "self-expression and confidence",
+          "digital_behavior": "mirror selfies shared with partner"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "9fc8057a-3cc9-4bcf-b274-fd9f6e6be0ee",
+        "member_event_frame_ids": [
+          "9fc8057a-3cc9-4bcf-b274-fd9f6e6be0ee"
+        ],
+        "synopsis_zh": "Nordstrom开展季末促销活动持续至4月15日，最高提供50%折扣，涵盖春季鞋履等商品",
+        "event_type": "retail_sale",
+        "anchor_json": {
+          "sale_type": "seasonal_clearance",
+          "discount_tier": "up_to_50_percent",
+          "currency_implied": "USD"
+        }
+      }
+    ]
+  }
+}

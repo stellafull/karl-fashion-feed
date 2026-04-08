@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"13bb2f81-c574-4e95-8332-b985fa269718\", \"article_id\": \"b26aa539-bb20-4186-9a9d-de8d085f8bb9\", \"source_name\": \"Coveteur\", \"source_lang\": \"en\", \"event_type\": \"red_carpet_appearance\", \"brand\": \"Chanel\", \"person\": \"Teyana Taylor\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Taylor opted for a semi-sheer black and white beaded dress with a dramatic ostrich feather train\", \"Both Kidman and Taylor arrived in custom Chanel gowns by Matthieu Blazy\"], \"anchor_json\": {\"person\": \"Teyana Taylor\", \"brand\": \"Chanel\", \"designer\": \"Matthieu Blazy\", \"key_detail\": \"black and white beaded dress with ostrich feather train\"}}, {\"event_frame_id\": \"23e4a10f-577f-43e3-81f1-57eede1c9adf\", \"article_id\": \"b26aa539-bb20-4186-9a9d-de8d085f8bb9\", \"source_name\": \"Coveteur\", \"source_lang\": \"en\", \"event_type\": \"red_carpet_appearance\", \"brand\": \"Chanel\", \"person\": \"Nicole Kidman\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Kidman wore an ivory strapless embellished peplum gown, with grey and silver beading and the bust and an ostrich feather hem\", \"Both Kidman and Taylor arrived in custom Chanel gowns by Matthieu Blazy\"], \"anchor_json\": {\"person\": \"Nicole Kidman\", \"brand\": \"Chanel\", \"designer\": \"Matthieu Blazy\", \"key_detail\": \"ivory gown with ostrich feather hem\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

@@ -207,13 +207,16 @@ class NewsCollectionService:
         cache: dict[str, str] = {}
         enriched: list[CollectedImage] = []
         for image in images:
-            enriched.append(
-                await self._attach_single_image_hash(
-                    image=image,
-                    fetch_bytes=fetch_bytes,
-                    cache=cache,
+            try:
+                enriched.append(
+                    await self._attach_single_image_hash(
+                        image=image,
+                        fetch_bytes=fetch_bytes,
+                        cache=cache,
+                    )
                 )
-            )
+            except Exception:
+                enriched.append(image)
         return tuple(enriched)
 
     async def _collect_articles_with_fetch(
@@ -552,6 +555,9 @@ class NewsCollectionService:
         fetch_bytes: FetchBytes,
         cache: dict[str, str],
     ) -> CollectedImage:
+        if urlparse(image.source_url).scheme.lower() not in {"http", "https"}:
+            return image
+
         image_hash = cache.get(image.normalized_url)
         if image_hash is None:
             payload = await fetch_bytes(image.source_url)

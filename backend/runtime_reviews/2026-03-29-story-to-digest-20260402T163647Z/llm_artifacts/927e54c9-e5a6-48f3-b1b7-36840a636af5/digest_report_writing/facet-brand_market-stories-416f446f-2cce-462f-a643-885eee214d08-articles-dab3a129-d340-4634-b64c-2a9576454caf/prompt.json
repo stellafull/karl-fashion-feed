@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是时尚资讯主笔，负责输出一条 digest 的长文。\n\n输入包括 digest 计划与对应的 article 摘要/引用。你的任务是生成完整中文稿件：\n- title_zh、dek_zh 为中文标题与导语\n- body_markdown 为简洁可读的 Markdown 正文（不要包含 JSON）\n- source_article_ids 必须来自输入\n\n规则：\n- 只基于输入事实，不要编造\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"title_zh\": \"...\",\n  \"dek_zh\": \"...\",\n  \"body_markdown\": \"...\",\n  \"source_article_ids\": [\"...\"]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"plan\": {\"business_date\": \"2026-03-29\", \"facet\": \"brand_market\", \"story_keys\": [\"416f446f-2cce-462f-a643-885eee214d08\"], \"article_ids\": [\"dab3a129-d340-4634-b64c-2a9576454caf\"], \"editorial_angle\": \"审视美妆零售面临的监管风险，儿童营销边界与商业伦理议题在奢侈品美妆领域的最新发展\", \"title_zh\": \"监管收紧：意大利调查Sephora与Benefit儿童营销合规性\", \"dek_zh\": \"反垄断机构关注美妆品牌向未成年人推销成人产品的商业行为\", \"source_names\": [\"BOF\"]}, \"source_articles\": [{\"article_id\": \"dab3a129-d340-4634-b64c-2a9576454caf\", \"source_name\": \"BOF\", \"title_raw\": \"Italy Investigates Sephora and Benefit Cosmetics Over Marketing to Children\", \"summary_raw\": \"An Italian competition authority has launched two investigations into LVMH-owned Sephora and Benefit Cosmetics over possible unfair commercial practices linked to the marketing of products for adults to children ​and ⁠adolescents.\", \"body_markdown\": \"# Italy Investigates Sephora and Benefit Cosmetics Over Marketing to Children\\n\\nAn Italian competition authority has launched two investigations into LVMH-owned Sephora and Benefit Cosmetics over possible unfair commercial practices linked to the marketing of products for adults to children ​and ⁠adolescents.\\n\\nThe Italian competition authority AGCM has launched two investigations into LVMH-owned Sephora and Benefit Cosmetics over possible unfair commercial practices linked to the marketing of products for adults to children and adolescents, it said on Friday.\\n\\nPlease sign in to ensure you can read our agenda-setting intelligence, analysis and advice. Or get in touch at support@businessoffashion.com if you experience difficulties.\\n\"}]}"
+      }
+    ]
+  }
+}

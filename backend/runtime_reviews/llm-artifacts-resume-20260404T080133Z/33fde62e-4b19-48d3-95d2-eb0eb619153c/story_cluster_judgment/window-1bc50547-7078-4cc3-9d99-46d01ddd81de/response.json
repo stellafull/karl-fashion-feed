@@ -1,0 +1,19 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "1bc50547-7078-4cc3-9d99-46d01ddd81de",
+        "member_event_frame_ids": [
+          "1bc50547-7078-4cc3-9d99-46d01ddd81de"
+        ],
+        "synopsis_zh": "Who What Wear 推荐促销中的多款品牌鞋履，涵盖 Camper、Salomon、Tory Burch 和 Vagabond 的玛丽珍鞋、运动鞋及平底鞋等",
+        "event_type": "product_recommendation",
+        "anchor_json": {
+          "recommendation_context": "sale_shopping_guide",
+          "product_category": "footwear",
+          "availability_status": "selling_out_fast"
+        }
+      }
+    ]
+  }
+}

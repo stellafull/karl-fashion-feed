@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"02812401-75ee-42be-9f75-42d7e29eed67\", \"article_id\": \"bb6f5e82-58bf-4bab-bc1f-dea986d8e69f\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"creative_director_appointment\", \"brand\": \"Lanvin\", \"person\": \"Peter Copping\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Lanvin 任命 Peter Copping为品牌艺术总监\", \"非常荣幸可以成为Lanvin的艺术总监\"], \"anchor_json\": {\"role_type\": \"artistic_director\", \"predecessor_context\": \"品牌过去两年转型期\", \"brand\": \"Lanvin\", \"person\": \"Peter Copping\"}}, {\"event_frame_id\": \"70b908ba-e1a4-4f93-b433-0437ad4ea4e8\", \"article_id\": \"bb6f5e82-58bf-4bab-bc1f-dea986d8e69f\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"creative_director_career_history\", \"brand\": \"\", \"person\": \"Peter Copping\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"从业伊始，他任职于Sonia Rykiel\", \"在Marc Jacobs执掌Louis Vuitton期间负责女装设计\"], \"anchor_json\": {\"career_trajectory\": \"luxury_fashion_houses\", \"geographic_scope\": \"Paris_New_York\", \"person\": \"Peter Copping\"}}, {\"event_frame_id\": \"7e137eac-4614-439e-b361-76bbf0ec4a35\", \"article_id\": \"bb6f5e82-58bf-4bab-bc1f-dea986d8e69f\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"creative_director_previous_role\", \"brand\": \"\", \"person\": \"Peter Copping\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Peter Copping 最近就职于Balenciaga主管高级定制系列，由他领导工坊进行高级定制系列的重启\"], \"anchor_json\": {\"role_status\": \"most_recent_position_prior_to_appointment\", \"specific_focus\": \"haute_couture\", \"person\": \"Peter Copping\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

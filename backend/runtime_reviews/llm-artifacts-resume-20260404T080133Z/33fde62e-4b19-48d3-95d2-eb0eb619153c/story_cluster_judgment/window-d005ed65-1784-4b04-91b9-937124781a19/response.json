@@ -1,0 +1,24 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "d005ed65-1784-4b04-91b9-937124781a19",
+        "member_event_frame_ids": [
+          "d005ed65-1784-4b04-91b9-937124781a19"
+        ],
+        "synopsis_zh": "剧集情节中，Lara Jean暗示她与Peter暂停恋爱关系，称两人生活目前不合拍，并提到单身的好处是有更多时间撰写书稿",
+        "event_type": "fictional_relationship_break",
+        "anchor_json": {
+          "characters": [
+            "Lara Jean",
+            "Peter"
+          ],
+          "relationship_status": "on a break",
+          "narrative_context": "episode 2",
+          "quoted_reason": "Our lives are just not compatible right now",
+          "mentioned_benefit": "more time to work on manuscript draft"
+        }
+      }
+    ]
+  }
+}

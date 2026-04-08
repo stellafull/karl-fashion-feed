@@ -1,0 +1,21 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "982cbaab-b056-4ee0-89a1-3df233df6bd1",
+        "member_event_frame_ids": [
+          "982cbaab-b056-4ee0-89a1-3df233df6bd1"
+        ],
+        "synopsis_zh": "BTS成员与Vogue合作开展韩语教学活动",
+        "event_type": "celebrity_media_collaboration",
+        "anchor_json": {
+          "media_outlet": "Vogue",
+          "celebrity_group": "BTS",
+          "activity": "Korean language teaching",
+          "extractor": "fashion-event-extractor",
+          "version": "1.0"
+        }
+      }
+    ]
+  }
+}

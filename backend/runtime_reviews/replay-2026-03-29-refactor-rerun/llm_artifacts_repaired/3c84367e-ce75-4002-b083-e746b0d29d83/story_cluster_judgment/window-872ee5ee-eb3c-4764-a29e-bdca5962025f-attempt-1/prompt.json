@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"872ee5ee-eb3c-4764-a29e-bdca5962025f\", \"article_id\": \"fa062bf2-ca12-4966-8987-7769bc4f901f\", \"source_name\": \"PopDaily Style\", \"source_lang\": \"zh\", \"event_type\": \"merchandise_pricing_controversy\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"就有粉絲認為Rei設計的外套實在太貴了，如果要買可能會有些負擔\", \"這些粉絲就把自己的想法放在了留言區\"], \"anchor_json\": {\"controversy_focus\": \"價格超出部分粉絲預算\", \"fan_reaction\": \"負擔不起的抱怨\", \"debate_outcome\": \"網友兩極討論\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

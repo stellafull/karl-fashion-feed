@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"982060e2-3124-424a-8201-3d444528754c\", \"article_id\": \"03e4597c-d86f-4a56-b082-e6c704ce78a4\", \"source_name\": \"Fashionsnap\", \"source_lang\": \"ja\", \"event_type\": \"exclusive_collection_launch\", \"brand\": \"ユウキ ハシモト（YUKI HASHIMOTO）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"GR8が、「ユウキ ハシモト（YUKI HASHIMOTO）」に別注したエクスクルーシブコレクションを3月31日に発売する\", \"GR8の店頭と公式オンラインストアで取り扱う\"], \"anchor_json\": {\"launch_date\": \"2026-03-31\", \"design_concept\": \"視覚的な歪みや重なりから生まれるイメージを起点に、異なるアプローチで「重なり」を表現\", \"brand\": \"ユウキ ハシモト（YUKI HASHIMOTO）\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "58c947c2-0531-4cf5-9f54-48c055bfc7d4",
+        "member_event_frame_ids": [
+          "58c947c2-0531-4cf5-9f54-48c055bfc7d4"
+        ],
+        "synopsis_zh": "受电影《穿普拉达的女王2》即将上映驱动，天蓝色（Cerulean Blue）成为新的流行色彩趋势",
+        "event_type": "color_trend_emergence",
+        "anchor_json": {
+          "trend_driver": "movie_release",
+          "color_code": "cerulean_blue",
+          "market_readiness": "immediate_availability"
+        }
+      }
+    ]
+  }
+}

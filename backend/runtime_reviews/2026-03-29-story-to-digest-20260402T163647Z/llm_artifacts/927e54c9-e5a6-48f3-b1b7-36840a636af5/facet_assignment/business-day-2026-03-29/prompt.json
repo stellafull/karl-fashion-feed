@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是 story facet 归类器。\n\n输入是一组 story 概览。你的任务是为每个 story 分配 0 到多个 facet。\n\n规则：\n- 只能使用输入提供的 story_key\n- 只能使用以下 facet，不能自造新 facet，也不能输出同义替代词：\n- runway_series: 秀场发布、系列解读、造型看点、季节性走秀报道\n- street_style: 街拍、场外造型、观众穿搭、城市风格观察\n- trend_summary: 跨品牌或跨故事的趋势提炼、审美主题、风格信号总结\n- brand_market: 品牌广告、产品发布、联名、组织与商业动作、市场层面动态\n- facets 需要是稳定的英文标识（snake_case）\n- 如果 story 更像品牌动作、广告大片、产品发布、组织变动、商业合作，归到 brand_market\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"stories\": [\n    {\n      \"story_key\": \"...\",\n      \"facets\": [\"...\"]\n    }\n  ]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"stories\": [{\"story_key\": \"bdc83f9a-ec16-4932-8017-725447876618\", \"synopsis_zh\": \"GR8が、「ユウキ ハシモト（YUKI HASHIMOTO）」に別注したエクスクルーシブコレクションを3月31日に発売する\", \"event_type\": \"collaboration_exclusive_collection_launch\", \"source_names\": [\"Fashionsnap\"]}, {\"story_key\": \"bf8adc6d-e5ae-4f70-9fde-3ab18dabc53e\", \"synopsis_zh\": \"Previously, Equinox stocked Grown Alchemist products in its locker rooms; previous to that, it was NYC-founded skincare brand Kiehl's\", \"event_type\": \"brand_switch\", \"source_names\": [\"Coveteur\"]}, {\"story_key\": \"c044d1a4-4420-480f-83e4-3ec1ac2f0077\", \"synopsis_zh\": \"For the Fall/Winter 2026 season, we spotted them all over London Fashion Week, both on the runways and on the streets\", \"event_type\": \"runway_trend_emergence\", \"source_names\": [\"Coveteur\"]}, {\"story_key\": \"c046cfe0-1300-4847-ba99-febdd4b78f25\", \"synopsis_zh\": \"ジル サンダー（JIL SANDER）は、新クリエイティブ・ディレクターのシモーネ・ベロッティによる初のポップアップストアを伊勢丹新宿店 本館1階 ザ・ステージに2026年4月1日（水）から4月7日（火）までオープンする\", \"event_type\": \"pop_up_store_opening\", \"source_names\": [\"GQ Japan\"]}, {\"story_key\": \"c04c9829-df69-4fcc-b214-d7ea76fd9be7\", \"synopsis_zh\": \"簇绒牛仔布的接缝和利落胸线上镶嵌着碎黑玉石的西装\", \"event_type\": \"product_showcase\", \"source_names\": [\"GQ China\"]}]}"
+      }
+    ]
+  }
+}

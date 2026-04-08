@@ -1,0 +1,21 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "09846ef9-c997-4398-837f-b88c217985e3",
+        "member_event_frame_ids": [
+          "09846ef9-c997-4398-837f-b88c217985e3"
+        ],
+        "synopsis_zh": "Vogue发布视频内容，邀请K-pop团体成员教授韩语基础知识",
+        "event_type": "video_content_release",
+        "anchor_json": {
+          "media_outlet": "Vogue",
+          "content_format": "video",
+          "activity": "language_tutorial",
+          "participants": "kpop_group_members",
+          "language": "korean"
+        }
+      }
+    ]
+  }
+}

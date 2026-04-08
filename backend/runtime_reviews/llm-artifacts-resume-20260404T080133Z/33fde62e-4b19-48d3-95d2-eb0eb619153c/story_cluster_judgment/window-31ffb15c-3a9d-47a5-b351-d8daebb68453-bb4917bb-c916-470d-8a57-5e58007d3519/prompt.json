@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"candidate_frames\": [{\"event_frame_id\": \"31ffb15c-3a9d-47a5-b351-d8daebb68453\", \"article_id\": \"f7d91373-458c-4fbe-a422-66ae943a31da\", \"source_name\": \"Harper's Bazaar\", \"source_lang\": \"en\", \"event_type\": \"promotion_sale\", \"brand\": \"Levi's\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Levi's sneaky-good spring sale includes up to 70 percent off celebrity-loved jeans\", \"the brand is quietly slashing prices up to 30 percent off sitewide\"], \"anchor_json\": {\"extractor_version\": \"1.0\", \"event_category\": \"commercial_promotion\", \"brand\": \"Levi's\"}}, {\"event_frame_id\": \"bb4917bb-c916-470d-8a57-5e58007d3519\", \"article_id\": \"f7d91373-458c-4fbe-a422-66ae943a31da\", \"source_name\": \"Harper's Bazaar\", \"source_lang\": \"en\", \"event_type\": \"product_feature\", \"brand\": \"Levi's\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"celebrity-loved staples like the Ribcage jeans and Wedgie fit—reminiscent of Carolyn Bessette-Kennedy's signature Levi's\", \"range of crisp, directional denim dresses (including a sheath style CBK would likely favor) and skirts\"], \"anchor_json\": {\"extractor_version\": \"1.0\", \"event_category\": \"editorial_content\", \"brand\": \"Levi's\"}}]}"
+      }
+    ]
+  }
+}

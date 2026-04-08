@@ -19,6 +19,7 @@ dependencies = [
     "langchain-openai>=1.1.12",
     "langchain-text-splitters>=1.1.1",
     "langgraph>=1.1.2",
+    "langgraph-checkpoint-postgres>=3.0.5",
     "llama-index>=0.14.16",
     "openai>=2.26.0",
     "pathlib>=1.0.1",
@@ -33,4 +34,13 @@ dependencies = [
     "scikit-learn>=1.8.0",
     "sqlalchemy>=2.0.48",
     "trafilatura>=2.0.0",
+    "world-fashion-daily",
 ]
+
+[tool.uv.workspace]
+members = [
+    "app/service/Karl-Fashion-Daily-RSS",
+]
+
+[tool.uv.sources]
+world-fashion-daily = { workspace = true }

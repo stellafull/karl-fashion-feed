@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"00652312-253d-4a89-a9fc-648f7496799b\", \"article_id\": \"beb2a459-11be-479c-a723-46da5ca46f66\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"product_collaboration_launch\", \"brand\": \"アトモス ピンク（ATMOS PINK）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"「アトモス ピンク（ATMOS PINK）」と「アディダス オリジナルス（ADIDAS ORIGINALS）」がコラボした人気モデル\", \"「アディダス オリジナルス」を象徴する人気モデル“スーパースター”をベースに、おしゃれを楽しむ女性のために、新しいブーツデザインを提案\"], \"anchor_json\": {\"source\": \"WWD Japan\", \"published_at\": \"2026-03-28T03:30:00\", \"article_id\": \"beb2a459-11be-479c-a723-46da5ca46f66\", \"brand\": \"アトモス ピンク（ATMOS PINK）\"}}, {\"event_frame_id\": \"13009920-2ed6-477b-a59b-ac58753945c5\", \"article_id\": \"beb2a459-11be-479c-a723-46da5ca46f66\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"campaign_visual_reveal\", \"brand\": \"アトモス ピンク（ATMOS PINK）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"俳優・モデルの桐谷美玲を起用した 「アトモス ピンク（ATMOS PINK）」と「アディダス オリジナルス（ADIDAS ORIGINALS）」がコラボした人気モデル“スーパースタープラットフォーム ブーツ（SUPERSTAR PLAT FOAM BOOTS）”（1万9000円）のキービジュアルが公開された\", \"キャンペーンビジュアルが公開された\"], \"anchor_json\": {\"source\": \"WWD Japan\", \"published_at\": \"2026-03-28T03:30:00\", \"article_id\": \"beb2a459-11be-479c-a723-46da5ca46f66\", \"brand\": \"アトモス ピンク（ATMOS PINK）\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

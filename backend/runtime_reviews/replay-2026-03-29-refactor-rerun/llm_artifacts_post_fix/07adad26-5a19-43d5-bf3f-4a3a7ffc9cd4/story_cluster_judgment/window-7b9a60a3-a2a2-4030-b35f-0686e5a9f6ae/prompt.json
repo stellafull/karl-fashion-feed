@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"7b9a60a3-a2a2-4030-b35f-0686e5a9f6ae\", \"article_id\": \"fdbb0fa5-ee8c-4965-834a-c349f610fff5\", \"source_name\": \"Fashion Press\", \"source_lang\": \"ja\", \"event_type\": \"collaboration_event\", \"brand\": \"東京シティビュー\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"イベント「『チ。 ー地球の運動についてー』×東京シティビュー ～世界の見方が変わる体験を、展望台で～」が、2026年4月10日(金)から6月8日(月)まで東京・六本木ヒルズ展望台の東京シティビューにて開催される\", \"会場：東京シティビュー(六本木ヒルズ森タワー52階) 住所：東京都港区六本木6-10-1\"], \"anchor_json\": {\"start_date\": \"2026-04-10\", \"end_date\": \"2026-06-08\", \"event_category\": \"体験型展示イベント\", \"ticket_price_range\": \"1,000円～2,600円\", \"special_feature\": \"プラネタリウム「星空シアター」、オリジナルグッズ販売\", \"brand\": \"東京シティビュー\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

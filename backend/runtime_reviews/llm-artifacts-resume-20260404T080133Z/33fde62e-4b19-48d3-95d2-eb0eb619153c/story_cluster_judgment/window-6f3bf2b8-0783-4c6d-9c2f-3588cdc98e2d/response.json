@@ -1,0 +1,20 @@
+{
+  "structured_response": {
+    "groups": [
+      {
+        "seed_event_frame_id": "6f3bf2b8-0783-4c6d-9c2f-3588cdc98e2d",
+        "member_event_frame_ids": [
+          "6f3bf2b8-0783-4c6d-9c2f-3588cdc98e2d"
+        ],
+        "synopsis_zh": "Tiger Woods在佛罗里达州因酒驾被捕，其车辆发生翻车事故，警方在现场发现其呈现意识模糊及醉酒迹象",
+        "event_type": "celebrity_dui_arrest",
+        "anchor_json": {
+          "person": "Tiger Woods",
+          "location": "Florida",
+          "legal_outcome": "arrested on DUI charges",
+          "incident_type": "vehicle crash"
+        }
+      }
+    ]
+  }
+}

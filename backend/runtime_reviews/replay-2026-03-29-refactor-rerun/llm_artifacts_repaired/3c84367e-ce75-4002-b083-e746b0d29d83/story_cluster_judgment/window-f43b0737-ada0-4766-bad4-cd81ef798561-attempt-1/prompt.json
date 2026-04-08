@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"f43b0737-ada0-4766-bad4-cd81ef798561\", \"article_id\": \"399f14cf-25b2-4831-825a-223f753c84fa\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"collaboration_launch\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"東急プラザ原宿「ハラカド」G階「コーナーショップ バイ カスバ（CORNER SHOP by CASBA）」は3月28日、恵比寿の会員制バー「カスバ（CASBA）」の30周年を記念したコラボレーションプロジェクトの第1弾として、「ネイバーフッド（NEIGHBORHOOD）」および「ヒステリックグラマー（HYSTERIC GLAMOUR）」とのスペシャルコラボレーションTシャツを限定販売する\", \"「ネイバーフッド × カスバ」のTシャツは1万1000円\"], \"anchor_json\": {\"anniversary\": \"30周年\", \"collaboration_round\": \"第1弾\", \"price_range\": \"11000円〜17160円\", \"release_date\": \"2026-03-28\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"9f1223f1-43ad-4d7b-8601-03733ea428c5\", \"article_id\": \"1d810c0e-9a66-484e-bc74-5b5344fd0ecd\", \"source_name\": \"GQ China\", \"source_lang\": \"zh\", \"event_type\": \"fashion_show\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"7月12日晚20:00，设计师联合发布以\\\"侠之大者\\\"为主题，在海宁会展中心二楼发布厅圆满落下帷幕\", \"ZUYAO SONG创始人兼艺术总监宋祖耀、ZIFEI WANG创始人兼创意总监王紫菲、陳宇STUDIO创始人兼设计总监陈宇三位设计师\"], \"anchor_json\": {\"source_article_id\": \"1d810c0e-9a66-484e-bc74-5b5344fd0ecd\", \"extraction_timestamp\": \"2024-01-15T00:00:00Z\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

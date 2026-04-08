@@ -1,0 +1,12 @@
+{
+  "model": "kimi/kimi-k2.5",
+  "system_prompt": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}",
+  "invoke_payload": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "{\"candidate_frames\": [{\"event_frame_id\": \"26704fdd-b078-46f8-835e-c6053116e670\", \"article_id\": \"ea7e0d84-f1f0-46fd-938c-41a44a6f5498\", \"source_name\": \"Fashionsnap\", \"source_lang\": \"ja\", \"event_type\": \"brand_artist_collaboration\", \"brand\": \"Gap\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"ギャップ（Gap）が、アーティスト キース・ヘリング（Keith Haring）と ジャン＝ミシェル・バスキア（Jean-Michel Basquiat）をフィーチャーしたコレクション「The Artist Series」を発売する\"], \"anchor_json\": {\"announcement_date\": \"2026-04-04\", \"source_publication\": \"Fashionsnap\", \"brand\": \"Gap\"}}, {\"event_frame_id\": \"35de7e09-87d1-4d07-ae92-6c3b5447babc\", \"article_id\": \"ea7e0d84-f1f0-46fd-938c-41a44a6f5498\", \"source_name\": \"Fashionsnap\", \"source_lang\": \"ja\", \"event_type\": \"collection_release\", \"brand\": \"Gap\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"ジャケットやTシャツなど全24型を発売\", \"4月4日から公式オンラインストアおよび「ゾゾタウン（ZOZOTOWN）」で取り扱う\"], \"anchor_json\": {\"release_date\": \"2026-04-04\", \"source_publication\": \"Fashionsnap\", \"brand\": \"Gap\"}}]}"
+      }
+    ]
+  }
+}

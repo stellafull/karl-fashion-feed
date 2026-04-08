@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"64f85348-6fbd-42b5-bc80-b0f52535ea22\", \"article_id\": \"705bdff1-b2fb-4253-8471-a0717a418a8f\", \"source_name\": \"Vogue Fashion\", \"source_lang\": \"en\", \"event_type\": \"celebrity_jewelry_upgrade\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"Back in June, Meghan Markle posted an Instagram tribute to her daughter, Lilibet, in honor of her fourth birthday... my eyes flew straight to the rock on Markle's pinkie finger.\", \"While nowadays, the Duchess of Sussex rocks a bezel-set emerald-cut diamond, she was wearing pinky rings even as a working royal.\"], \"anchor_json\": {\"upgrade_trigger\": \"stepping back from royal duties\", \"ring_evolution\": \"minimal sapphire → statement emerald-cut diamond\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

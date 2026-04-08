@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"37665f01-4a45-42bb-9d40-4f725783efa6\", \"article_id\": \"1c5bebd7-356b-4e91-a6c3-f11e4f1dee7e\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"brand_expansion_strategy\", \"brand\": \"オークリー（OAKLEY）\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"AFAカテゴリーを中核であるアイウエアと同等もしくはそれ以上に拡大する狙い\", \"当ブランドはアイウエアを土台としているため、AFA部門に注力することは難しかったが、デザインチームやアスリート主導で地道に開発を行ってきた。マシューを迎え、今後はさらなる成長とスケール化を促進していく\"], \"anchor_json\": {\"historical_context\": \"1990年代にアパレル・フットウエア進出、長期間注力困難だったAFA部門\", \"new_approach\": \"外部クリエイティブ・ディレクター任命による成長・スケール化促進\", \"brand\": \"オークリー（OAKLEY）\"}}, {\"event_frame_id\": \"a5119dd8-83ac-4b4d-8d23-212dd2485370\", \"article_id\": \"1c5bebd7-356b-4e91-a6c3-f11e4f1dee7e\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"creative_director_appointment\", \"brand\": \"オークリー（OAKLEY）\", \"person\": \"マシュー・M・ウィリアムズ（Matthew M. Williams）\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"アパレル、フットウエア、アクセサリー（以下、AFA）部門のクリエイティブ・ディレクターとして、マシュー・M・ウィリアムズ（Matthew M. Williams）「1017 アリックス 9SM（1017 ALYX 9SM）」創業デザイナーを任命した\", \"ウィリアムズ新AFA部門クリエイティブ・ディレクターによるアイテムは、早ければ6カ月後に一部を発売する可能性があり、全貌は1年～1年半で明らかになるという\"], \"anchor_json\": {\"appointment_date\": \"2026-03-28\", \"expected_product_timeline\": \"6ヶ月後に一部発売、1年～1年半で全貌公開\", \"collaboration_partner\": \"トラヴィス・スコット（Travis Scott）\", \"brand\": \"オークリー（OAKLEY）\", \"person\": \"マシュー・M・ウィリアムズ（Matthew M. Williams）\"}}, {\"event_frame_id\": \"c4df449a-fbaf-452f-af95-be05e12bd2ca\", \"article_id\": \"1c5bebd7-356b-4e91-a6c3-f11e4f1dee7e\", \"source_name\": \"WWD Japan\", \"source_lang\": \"ja\", \"event_type\": \"executive_collaboration\", \"brand\": \"オークリー（OAKLEY）\", \"person\": \"トラヴィス・スコット（Travis Scott）\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"2025年6月にチーフ・ビジョナリー・オフィサーに就任したラッパーのトラヴィス・スコット（Travis Scott）と緊密に連携していく\", \"トラヴィスやチームと共にブランドの新章を築いていくことを楽しみにしている\"], \"anchor_json\": {\"collaboration_type\": \"AFA部門拡大における緊密連携\", \"strategic_goal\": \"AFAカテゴリーを中核であるアイウエアと同等もしくはそれ以上に拡大\", \"brand\": \"オークリー（OAKLEY）\", \"person\": \"トラヴィス・スコット（Travis Scott）\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}

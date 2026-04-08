@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.5",
+  "temperature": 0,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 story 聚类复核器。\n\n输入是一组候选事件帧（含候选分组线索）。你的任务是输出最终聚类分组：\n- 每个分组必须给出 seed_event_frame_id 和 member_event_frame_ids\n- synopsis_zh 为简短中文摘要，只基于输入事实\n- event_type 使用稳定的英文标识（snake_case）\n- anchor_json 必须是 JSON 对象\n\n规则：\n- 只能使用输入提供的 event_frame_id\n- 可以输出空数组（表示不形成分组）\n- 输出必须是严格 JSON，符合 schema\n- 不要输出解释文本或 Markdown 代码块\n\n输出 JSON 结构：\n{\n  \"groups\": [\n    {\n      \"seed_event_frame_id\": \"...\",\n      \"member_event_frame_ids\": [\"...\"],\n      \"synopsis_zh\": \"...\",\n      \"event_type\": \"...\",\n      \"anchor_json\": {}\n    }\n  ]\n}"
+    },
+    {
+      "role": "user",
+      "content": "{\"candidate_frames\": [{\"event_frame_id\": \"7f5a5980-e072-4d86-aac2-db8cde33f550\", \"article_id\": \"c5b34a46-7303-409c-b7ba-67fbd5f243a4\", \"source_name\": \"Vogue Japan\", \"source_lang\": \"ja\", \"event_type\": \"magazine_cover_feature\", \"brand\": \"\", \"person\": \"\", \"collection\": \"\", \"season\": \"\", \"place\": \"\", \"action_text\": \"\", \"object_text\": \"\", \"evidence_snippets\": [\"4月1日（水）発売の『VOGUE JAPAN』5月号の表紙を飾るのは、「ファッション・アワード2025」でモデル・オブ・ザ・イヤーを受賞したスーパーモデルのアノック・ヤイ\", \"コジマプロダクションのシンボルキャラクター「ルーデンス」とともに、異次元の存在感を放つ\"], \"anchor_json\": {\"model_award\": \"ファッション・アワード2025 モデル・オブ・ザ・イヤー\", \"theme\": \"偏愛の時代\", \"release_date\": \"2026-04-01\"}}]}"
+    }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
+}
