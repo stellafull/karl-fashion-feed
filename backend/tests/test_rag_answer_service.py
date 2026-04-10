@@ -77,6 +77,7 @@ def _build_image_hit(
             source_name="Vogue",
             canonical_url=canonical_url,
         ),
+        source_url=f"https://images.example.com/{article_image_id}.jpg",
         caption_raw="green acetate rectangular sunglasses",
         grounding_texts=[
             GroundingText(
@@ -226,19 +227,96 @@ class _ToolCallingResearchAgent:
         return {"messages": [AIMessage(content="research complete")]}
 
 
-class _FakeSynthesisAgent:
-    def __init__(self, *, answer: str = "", stream_chunks: list[str] | None = None) -> None:
+class _ToolCallingChatAgent:
+    def __init__(
+        self,
+        tools: list[object],
+        tool_calls: list[tuple[str, dict[str, Any]]],
+        *,
+        answer: str = "",
+        stream_chunks: list[str] | None = None,
+        call_log: list[dict[str, object]] | None = None,
+    ) -> None:
+        self._tools = {tool.name: tool for tool in tools}
+        self._tool_calls = list(tool_calls)
         self._answer = answer
         self._stream_chunks = list(stream_chunks or [])
+        self._call_log = call_log if call_log is not None else []
         self.invoke_payloads: list[dict[str, object]] = []
         self.stream_payloads: list[dict[str, object]] = []
 
-    async def ainvoke(self, payload: dict[str, object]) -> dict[str, object]:
+    async def ainvoke(
+        self,
+        payload: dict[str, object],
+        config: dict[str, object] | None = None,
+    ) -> dict[str, object]:
         self.invoke_payloads.append(payload)
+        self._call_log.append({"payload": payload, "config": config})
+        for tool_name, tool_input in self._tool_calls:
+            await self._tools[tool_name].ainvoke(tool_input)
         return {"messages": [AIMessage(content=self._answer)]}
 
     async def astream_events(self, payload: dict[str, object], **kwargs: object):
         self.stream_payloads.append({"payload": payload, "kwargs": kwargs})
+        self._call_log.append({"payload": payload, "kwargs": kwargs})
+        for tool_name, tool_input in self._tool_calls:
+            await self._tools[tool_name].ainvoke(tool_input)
+        for chunk in self._stream_chunks:
+            yield {
+                "event": "on_chat_model_stream",
+                "data": {
+                    "chunk": AIMessageChunk(content=chunk),
+                },
+            }
+
+
+class _ToolCallingChatAgent:
+    def __init__(
+        self,
+        tools: list[object],
+        tool_calls: list[tuple[str, dict[str, Any]]],
+        *,
+        answer: str = "",
+        stream_chunks: list[str] | None = None,
+        call_log: list[dict[str, object]] | None = None,
+    ) -> None:
+        self._tools = {tool.name: tool for tool in tools}
+        self._tool_calls = list(tool_calls)
+        self._answer = answer
+        self._stream_chunks = list(stream_chunks or [])
+        self._call_log = call_log if call_log is not None else []
+        self.invoke_payloads: list[dict[str, object]] = []
+        self.stream_payloads: list[dict[str, object]] = []
+        self.tool_names = sorted(self._tools)
+
+    async def _run_tools(
+        self,
+        payload: dict[str, object],
+        config: dict[str, object] | None,
+    ) -> None:
+        self._call_log.append({"payload": payload, "config": config})
+        for tool_name, tool_input in self._tool_calls:
+            await self._tools[tool_name].ainvoke(tool_input)
+
+    async def ainvoke(
+        self,
+        payload: dict[str, object],
+        config: dict[str, object] | None = None,
+    ) -> dict[str, object]:
+        self.invoke_payloads.append({"payload": payload, "config": config})
+        await self._run_tools(payload, config)
+        return {"messages": [AIMessage(content=self._answer)]}
+
+    async def astream_events(
+        self,
+        payload: dict[str, object],
+        config: dict[str, object] | None = None,
+        **kwargs: object,
+    ):
+        self.stream_payloads.append(
+            {"payload": payload, "config": config, "kwargs": kwargs}
+        )
+        await self._run_tools(payload, config)
         for chunk in self._stream_chunks:
             yield {
                 "event": "on_chat_model_stream",
@@ -253,8 +331,31 @@ class _UnexpectedResearchAgent:
         raise AssertionError("research agent should not be invoked")
 
 
+def _build_chat_agent_factory(
+    tool_calls: list[tuple[str, dict[str, Any]]],
+    *,
+    answer: str = "",
+    stream_chunks: list[str] | None = None,
+    call_log: list[dict[str, object]] | None = None,
+    created_agents: list[_ToolCallingChatAgent] | None = None,
+):
+    def _factory(tools: list[object]) -> _ToolCallingChatAgent:
+        agent = _ToolCallingChatAgent(
+            tools,
+            tool_calls,
+            answer=answer,
+            stream_chunks=stream_chunks,
+            call_log=call_log,
+        )
+        if created_agents is not None:
+            created_agents.append(agent)
+        return agent
+
+    return _factory
+
+
 class RagAnswerServiceTest(unittest.TestCase):
-    def test_langchain_tools_collect_query_and_web_results(self) -> None:
+    def test_rag_langchain_tools_collect_internal_query_results_only(self) -> None:
         article_result = _build_article_result()
         query_service = _FakeQueryService(
             {
@@ -277,20 +378,24 @@ class RagAnswerServiceTest(unittest.TestCase):
         tools = {tool.name: tool for tool in rag_tools.build_langchain_tools()}
 
         article_payload = tools["search_fashion_articles"].invoke({"query": "silhouette"})
-        web_payload = asyncio.run(tools["search_web"].ainvoke({"query": "latest runway"}))
+        web_payload = asyncio.run(rag_tools.search_web(query="latest runway"))
 
         collected_rag_results, collected_web_results = rag_tools.get_collected_results()
 
         self.assertIn("article-1", article_payload)
-        self.assertIn("news.example.com/latest", web_payload)
+        self.assertEqual("https://news.example.com/latest", web_payload[0].url)
         self.assertEqual([article_result], collected_rag_results)
-        self.assertEqual(web_results, collected_web_results)
+        self.assertEqual([], collected_web_results)
+        self.assertEqual(
+            ["search_fashion_articles", "search_fashion_fusion", "search_fashion_images"],
+            sorted(tools),
+        )
 
     def test_answer_allows_multiple_tool_calls_in_single_turn_and_merges_results(self) -> None:
         article_result = _build_article_result()
         image_result = _build_image_result()
         research_call_log: list[dict[str, object]] = []
-        synthesis_agent = _FakeSynthesisAgent(answer="整理后的答案 [c1] [c2] [c3] [w1]")
+        chat_agent_holder: dict[str, _ToolCallingChatAgent] = {}
         request_context = RagRequestContext(limit=5)
         query_service = _FakeQueryService(
             {
@@ -317,11 +422,20 @@ class RagAnswerServiceTest(unittest.TestCase):
                 [
                     ("search_fashion_articles", {"query": "silhouette"}),
                     ("search_fashion_images", {"text_query": "silhouette detail"}),
-                    ("search_web", {"query": "latest fashion"}),
                 ],
                 call_log=research_call_log,
             ),
-            synthesis_agent=synthesis_agent,
+            chat_agent_factory=lambda tools: chat_agent_holder.setdefault(
+                "agent",
+                _ToolCallingChatAgent(
+                    tools,
+                    [
+                        ("rag_search", {"query": "帮我总结本季廓形"}),
+                        ("web_search", {"query": "latest fashion"}),
+                    ],
+                    answer="整理后的答案 [c1] [c2] [c3] [w1]",
+                ),
+            ),
         )
 
         response = asyncio.run(
@@ -339,6 +453,10 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertEqual(["text_only", "image_only"], [plan.plan_type for plan in response.query_plans])
         self.assertEqual(["C1", "C2", "C3", "W1"], [citation.marker for citation in response.citations])
         self.assertEqual(web_results, response.web_results)
+        self.assertEqual(1, len(response.image_results))
+        self.assertEqual("rag", response.image_results[0].source_type)
+        self.assertEqual({"rag_search", "web_search"}, set(created_chat_agents[0].tool_names))
+        self.assertEqual({"recursion_limit": 7}, chat_call_log[0]["config"])
         self.assertEqual({"recursion_limit": 7}, research_call_log[0]["config"])
         self.assertEqual(
             [
@@ -348,14 +466,8 @@ class RagAnswerServiceTest(unittest.TestCase):
             query_service.calls,
         )
 
-        content_blocks = synthesis_agent.invoke_payloads[0]["messages"][0]["content"]
-        self.assertIsInstance(content_blocks, list)
-        self.assertEqual("text", content_blocks[0]["type"])
-        self.assertIn('"user_query": "帮我总结本季廓形"', content_blocks[0]["text"])
-        self.assertIn('"marker": "C1"', content_blocks[0]["text"])
-        self.assertIn('"marker": "W1"', content_blocks[0]["text"])
-
     def test_answer_uses_three_iteration_recursion_limit(self) -> None:
+        chat_call_log: list[dict[str, object]] = []
         research_call_log: list[dict[str, object]] = []
         service = RagAnswerService(
             tools_factory=lambda context: RagTools(
@@ -368,7 +480,11 @@ class RagAnswerServiceTest(unittest.TestCase):
                 [],
                 call_log=research_call_log,
             ),
-            synthesis_agent=_FakeSynthesisAgent(answer="无工具回答"),
+            chat_agent_factory=lambda tools: _ToolCallingChatAgent(
+                tools,
+                [("rag_search", {"query": "只验证迭代上限"})],
+                answer="无工具回答",
+            ),
         )
 
         response = asyncio.run(
@@ -379,11 +495,13 @@ class RagAnswerServiceTest(unittest.TestCase):
         )
 
         self.assertEqual("无工具回答", response.answer)
+        self.assertEqual({"recursion_limit": 7}, chat_call_log[0]["config"])
         self.assertEqual({"recursion_limit": 7}, research_call_log[0]["config"])
 
     def test_answer_bypasses_react_loop_for_visual_text_query(self) -> None:
         article_result = _build_article_result()
         image_result = _build_image_result()
+        created_chat_agents: list[_ToolCallingChatAgent] = []
         query_service = _FakeQueryService(
             {
                 ("fusion", "找类似风格的绿色粗框眼镜", None): QueryResult(
@@ -413,15 +531,23 @@ class RagAnswerServiceTest(unittest.TestCase):
                 )
             }
         )
-        synthesis_agent = _FakeSynthesisAgent(answer="视觉答案 [c1] [c2] [c3]")
+        web_search_service = _FakeWebSearchService({})
+        chat_agent_holder: dict[str, _ToolCallingChatAgent] = {}
         service = RagAnswerService(
             tools_factory=lambda context: RagTools(
                 request_context=context,
                 query_service=query_service,
-                web_search_service=_FakeWebSearchService({}),
+                web_search_service=web_search_service,
             ),
             research_agent_factory=lambda _rag_tools: _UnexpectedResearchAgent(),
-            synthesis_agent=synthesis_agent,
+            chat_agent_factory=lambda tools: chat_agent_holder.setdefault(
+                "agent",
+                _ToolCallingChatAgent(
+                    tools,
+                    [("rag_search", {"query": "找类似风格的绿色粗框眼镜"})],
+                    answer="视觉答案 [c1] [c2] [c3]",
+                ),
+            ),
         )
 
         response = asyncio.run(
@@ -434,9 +560,12 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertEqual("视觉答案 [C1] [C2] [C3]", response.answer)
         self.assertEqual([("fusion", "找类似风格的绿色粗框眼镜", None)], query_service.calls)
         self.assertEqual(1, len(response.packages[0].image_hits))
+        self.assertEqual([], web_search_service.calls)
+        self.assertEqual([], web_search_service.visual_calls)
 
     def test_answer_bypasses_react_loop_for_uploaded_request_images(self) -> None:
         image_result = _build_image_result()
+        created_chat_agents: list[_ToolCallingChatAgent] = []
         query_service = _FakeQueryService(
             {
                 ("fusion", "请根据这张图推荐类似风格的眼镜", "request_image"): QueryResult(
@@ -455,7 +584,8 @@ class RagAnswerServiceTest(unittest.TestCase):
                 )
             }
         )
-        synthesis_agent = _FakeSynthesisAgent(answer="图片答案 [c1] [c2]")
+        web_search_service = _FakeWebSearchService({})
+        chat_agent_holder: dict[str, _ToolCallingChatAgent] = {}
         request_context = RagRequestContext(
             limit=5,
             request_images=[RequestImageInput(mime_type="image/jpeg", base64_data="aGVsbG8=")],
@@ -464,10 +594,17 @@ class RagAnswerServiceTest(unittest.TestCase):
             tools_factory=lambda context: RagTools(
                 request_context=context,
                 query_service=query_service,
-                web_search_service=_FakeWebSearchService({}),
+                web_search_service=web_search_service,
             ),
             research_agent_factory=lambda _rag_tools: _UnexpectedResearchAgent(),
-            synthesis_agent=synthesis_agent,
+            chat_agent_factory=lambda tools: chat_agent_holder.setdefault(
+                "agent",
+                _ToolCallingChatAgent(
+                    tools,
+                    [("rag_search", {"query": "请根据这张图推荐类似风格的眼镜"})],
+                    answer="图片答案 [c1] [c2]",
+                ),
+            ),
         )
 
         response = asyncio.run(
@@ -482,10 +619,86 @@ class RagAnswerServiceTest(unittest.TestCase):
             [("fusion", "请根据这张图推荐类似风格的眼镜", "request_image")],
             query_service.calls,
         )
-        content_blocks = synthesis_agent.invoke_payloads[0]["messages"][0]["content"]
-        self.assertTrue(all(block["type"] == "text" for block in content_blocks))
-        self.assertIn('"strong_image_hit_count": 1', content_blocks[0]["text"])
+        self.assertEqual(["image:image-1"], [hit.retrieval_unit_id for hit in response.packages[0].image_hits])
+        self.assertEqual([], response.packages[0].text_hits)
+        self.assertEqual([], web_search_service.calls)
+    def test_answer_bypasses_react_loop_for_uploaded_multimodal_request_and_keeps_text_and_image_hits(self) -> None:
+        article_result = _build_article_result()
+        image_result = _build_image_result()
+        query_service = _FakeQueryService(
+            {
+                (
+                    "fusion",
+                    "请根据这张图分析轮廓并推荐相似造型",
+                    "request_image",
+                ): QueryResult(
+                    query_plan=QueryPlan(
+                        plan_type="fusion",
+                        text_query="请根据这张图分析轮廓并推荐相似造型",
+                        image_query="request_image",
+                        filters=QueryFilters(),
+                        output_goal="reference_lookup",
+                        limit=5,
+                    ),
+                    text_results=article_result.text_results,
+                    image_results=image_result.image_results,
+                    packages=[
+                        ArticlePackage(
+                            article_id="article-1",
+                            title="秀场趋势",
+                            summary="本季轮廓摘要",
+                            text_hits=article_result.text_results,
+                            image_hits=image_result.image_results,
+                            combined_score=0.91,
+                        )
+                    ],
+                    citation_locators=[
+                        *article_result.citation_locators,
+                        *image_result.citation_locators,
+                    ],
+                )
+            }
+        )
+        web_search_service = _FakeWebSearchService({})
+        chat_agent_holder: dict[str, _ToolCallingChatAgent] = {}
+        request_context = RagRequestContext(
+            limit=5,
+            request_images=[RequestImageInput(mime_type="image/jpeg", base64_data="aGVsbG8=")],
+        )
+        service = RagAnswerService(
+            tools_factory=lambda context: RagTools(
+                request_context=context,
+                query_service=query_service,
+                web_search_service=web_search_service,
+            ),
+            research_agent_factory=lambda _rag_tools: _UnexpectedResearchAgent(),
+            chat_agent_factory=lambda tools: chat_agent_holder.setdefault(
+                "agent",
+                _ToolCallingChatAgent(
+                    tools,
+                    [("rag_search", {"query": "请根据这张图分析轮廓并推荐相似造型"})],
+                    answer="图文联合答案 [c1] [c2] [c3]",
+                ),
+            ),
+        )
 
+        response = asyncio.run(
+            service.answer(
+                request=RagQueryRequest(query="请根据这张图分析轮廓并推荐相似造型"),
+                request_context=request_context,
+            )
+        )
+
+        self.assertEqual("图文联合答案 [C1] [C2] [C3]", response.answer)
+        self.assertEqual(
+            [("fusion", "请根据这张图分析轮廓并推荐相似造型", "request_image")],
+            query_service.calls,
+        )
+        self.assertEqual(1, len(response.packages))
+        self.assertEqual(["text:a1:0"], [hit.retrieval_unit_id for hit in response.packages[0].text_hits])
+        self.assertEqual(["image:image-1"], [hit.retrieval_unit_id for hit in response.packages[0].image_hits])
+        self.assertEqual([], web_search_service.calls)
+        self.assertEqual([], web_search_service.visual_calls)
     def test_answer_adds_external_fallback_when_visual_hits_are_weak(self) -> None:
         weak_image_hit = RetrievalHit(
             retrieval_unit_id="image:weak-1",
@@ -541,10 +754,10 @@ class RagAnswerServiceTest(unittest.TestCase):
         )
         visual_results = [_build_external_visual_result()]
         web_search_service = _FakeWebSearchService(
-            {},
+            {"推荐类似风格的眼镜": []},
             visual_responses={"推荐类似风格的眼镜": visual_results},
         )
-        synthesis_agent = _FakeSynthesisAgent(answer="图片+外部补充 [c1] [v1]")
+        chat_agent_holder: dict[str, _ToolCallingChatAgent] = {}
         request_context = RagRequestContext(
             limit=5,
             request_images=[RequestImageInput(mime_type="image/jpeg", base64_data="aGVsbG8=")],
@@ -556,7 +769,17 @@ class RagAnswerServiceTest(unittest.TestCase):
                 web_search_service=web_search_service,
             ),
             research_agent_factory=lambda _rag_tools: _UnexpectedResearchAgent(),
-            synthesis_agent=synthesis_agent,
+            chat_agent_factory=lambda tools: chat_agent_holder.setdefault(
+                "agent",
+                _ToolCallingChatAgent(
+                    tools,
+                    [
+                        ("rag_search", {"query": "请根据这张图推荐类似风格的眼镜"}),
+                        ("web_search", {"query": "推荐类似风格的眼镜"}),
+                    ],
+                    answer="图片+外部补充 [c1] [v1]",
+                ),
+            ),
         )
 
         response = asyncio.run(
@@ -570,12 +793,6 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertEqual([("推荐类似风格的眼镜", 5)], web_search_service.visual_calls)
         self.assertEqual([], response.web_results)
         self.assertEqual(visual_results, response.external_visual_results)
-        content_blocks = synthesis_agent.invoke_payloads[0]["messages"][0]["content"]
-        self.assertIn('"visual_external_fallback_triggered": true', content_blocks[0]["text"])
-        self.assertIn('"strong_image_hit_count": 0', content_blocks[0]["text"])
-        self.assertIn('"suppressed_image_hits"', content_blocks[0]["text"])
-        self.assertIn('"external_visual_results"', content_blocks[0]["text"])
-
     def test_answer_does_not_add_external_visual_fallback_when_request_is_image_only(self) -> None:
         image_result = _build_image_result()
         query_service = _FakeQueryService(
@@ -599,7 +816,6 @@ class RagAnswerServiceTest(unittest.TestCase):
             {},
             visual_responses={"unused": [_build_external_visual_result()]},
         )
-        synthesis_agent = _FakeSynthesisAgent(answer="只用内部图片证据 [c1] [c2]")
         request_context = RagRequestContext(
             limit=5,
             request_images=[RequestImageInput(mime_type="image/jpeg", base64_data="aGVsbG8=")],
@@ -611,7 +827,11 @@ class RagAnswerServiceTest(unittest.TestCase):
                 web_search_service=web_search_service,
             ),
             research_agent_factory=lambda _rag_tools: _UnexpectedResearchAgent(),
-            synthesis_agent=synthesis_agent,
+            chat_agent_factory=lambda tools: _ToolCallingChatAgent(
+                tools,
+                [("rag_search", {"query": None})],
+                answer="只用内部图片证据 [c1] [c2]",
+            ),
         )
 
         response = asyncio.run(
@@ -623,6 +843,8 @@ class RagAnswerServiceTest(unittest.TestCase):
 
         self.assertEqual([], response.external_visual_results)
         self.assertEqual([], web_search_service.visual_calls)
+        self.assertEqual(1, len(response.image_results))
+        self.assertEqual("rag", response.image_results[0].source_type)
 
     def test_context_snippet_counts_as_strong_image_evidence(self) -> None:
         contextual_image_hit = RetrievalHit(
@@ -644,7 +866,13 @@ class RagAnswerServiceTest(unittest.TestCase):
             credit_raw="",
             context_snippet="Green rectangular sunglasses seen in the look recap.",
         )
-        service = RagAnswerService(synthesis_agent=_FakeSynthesisAgent(answer="ok"))
+        service = RagAnswerService(
+            chat_agent_factory=lambda tools: _ToolCallingChatAgent(
+                tools,
+                [("rag_search", {"query": "请推荐类似风格的绿色粗框眼镜"})],
+                answer="ok",
+            )
+        )
 
         strong_count, weak_count = service._summarize_image_hit_strength(
             [
@@ -684,7 +912,13 @@ class RagAnswerServiceTest(unittest.TestCase):
             ),
             title="Alana Haim Embraces Trending Greens With Versace in the Day and Louis Vuitton at Night",
         )
-        service = RagAnswerService(synthesis_agent=_FakeSynthesisAgent(answer="ok"))
+        service = RagAnswerService(
+            chat_agent_factory=lambda tools: _ToolCallingChatAgent(
+                tools,
+                [("rag_search", {"query": "请推荐类似风格的绿色粗框眼镜"})],
+                answer="ok",
+            )
+        )
 
         strong_count, weak_count = service._summarize_image_hit_strength(
             [
@@ -701,6 +935,7 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertEqual((0, 1), (strong_count, weak_count))
 
     def test_answer_uses_configuration_max_react_tool_calls_for_recursion_limit(self) -> None:
+        chat_call_log: list[dict[str, object]] = []
         research_call_log: list[dict[str, object]] = []
         service = RagAnswerService(
             configuration=Configuration(max_react_tool_calls=5),
@@ -714,7 +949,11 @@ class RagAnswerServiceTest(unittest.TestCase):
                 [],
                 call_log=research_call_log,
             ),
-            synthesis_agent=_FakeSynthesisAgent(answer="无工具回答"),
+            chat_agent_factory=lambda tools: _ToolCallingChatAgent(
+                tools,
+                [("rag_search", {"query": "只验证配置驱动迭代上限"})],
+                answer="无工具回答",
+            ),
         )
 
         response = asyncio.run(
@@ -725,15 +964,103 @@ class RagAnswerServiceTest(unittest.TestCase):
         )
 
         self.assertEqual("无工具回答", response.answer)
+        self.assertEqual({"recursion_limit": 11}, chat_call_log[0]["config"])
         self.assertEqual({"recursion_limit": 11}, research_call_log[0]["config"])
+
+    def test_answer_allows_optional_web_search_when_rag_is_weak(self) -> None:
+        weak_text_hit = _build_text_hit(
+            retrieval_unit_id="text:a1:0",
+            article_id="article-1",
+            chunk_index=0,
+            score=0.22,
+        )
+        weak_article_result = QueryResult(
+            query_plan=QueryPlan(
+                plan_type="text_only",
+                text_query="latest fashion week signals",
+                filters=QueryFilters(),
+                output_goal="reference_lookup",
+                limit=5,
+            ),
+            text_results=[weak_text_hit],
+            packages=[
+                ArticlePackage(
+                    article_id="article-1",
+                    title="秀场趋势",
+                    summary="内部摘要较弱",
+                    text_hits=[weak_text_hit],
+                    image_hits=[],
+                    combined_score=0.22,
+                )
+            ],
+            citation_locators=[weak_text_hit.citation_locator],
+        )
+        query_service = _FakeQueryService(
+            {
+                ("text_only", "latest fashion week signals", None): weak_article_result,
+            }
+        )
+        web_results = [
+            WebSearchResult(
+                title="Fresh Fashion Week Brief",
+                url="https://news.example.com/fashion-week-brief",
+                snippet="Latest external runway signal",
+            )
+        ]
+        web_search_service = _FakeWebSearchService(
+            {"latest fashion week signals": web_results}
+        )
+        chat_agent_holder: dict[str, _ToolCallingChatAgent] = {}
+        service = RagAnswerService(
+            tools_factory=lambda context: RagTools(
+                request_context=context,
+                query_service=query_service,
+                web_search_service=web_search_service,
+            ),
+            research_agent_factory=lambda rag_tools: _ToolCallingResearchAgent(
+                rag_tools.build_langchain_tools(),
+                [
+                    ("search_fashion_articles", {"query": "latest fashion week signals"}),
+                ],
+            ),
+            chat_agent_factory=lambda tools: chat_agent_holder.setdefault(
+                "agent",
+                _ToolCallingChatAgent(
+                    tools,
+                    [
+                        ("rag_search", {"query": "latest fashion week signals"}),
+                        ("web_search", {"query": "latest fashion week signals"}),
+                    ],
+                    answer="需要外部补充 [c1] [w1]",
+                ),
+            ),
+        )
+
+        response = asyncio.run(
+            service.answer(
+                request=RagQueryRequest(query="给我最新时装周动向"),
+                request_context=RagRequestContext(limit=5),
+            )
+        )
+
+        self.assertEqual("需要外部补充 [C1] [W1]", response.answer)
+        self.assertEqual(
+            [("text_only", "latest fashion week signals", None)],
+            query_service.calls,
+        )
+        self.assertEqual([("latest fashion week signals", 5)], web_search_service.calls)
+        self.assertEqual(web_results, response.web_results)
+        self.assertEqual(["C1", "W1"], [citation.marker for citation in response.citations])
 
     def test_answer_stream_forwards_deltas_and_returns_normalized_answer(self) -> None:
         article_result = _build_article_result()
+        created_chat_agents: list[_ToolCallingChatAgent] = []
         query_service = _FakeQueryService(
             {
                 ("text_only", "silhouette", None): article_result,
             }
         )
+        chat_agent_holder: dict[str, _ToolCallingChatAgent] = {}
         service = RagAnswerService(
             tools_factory=lambda context: RagTools(
                 request_context=context,
@@ -744,7 +1071,14 @@ class RagAnswerServiceTest(unittest.TestCase):
                 rag_tools.build_langchain_tools(),
                 [("search_fashion_articles", {"query": "silhouette"})],
             ),
-            synthesis_agent=_FakeSynthesisAgent(stream_chunks=["答案", " [c1]", " [c1]"]),
+            chat_agent_factory=lambda tools: chat_agent_holder.setdefault(
+                "agent",
+                _ToolCallingChatAgent(
+                    tools,
+                    [("rag_search", {"query": "给我一个结论"})],
+                    stream_chunks=["答案", " [c1]", " [c1]"],
+                ),
+            ),
         )
         deltas: list[str] = []
 
@@ -762,7 +1096,10 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertEqual(["答案", " [c1]", " [c1]"], deltas)
         self.assertEqual("答案 [C1]", response.answer)
         self.assertEqual(["C1"], [citation.marker for citation in response.citations])
-        self.assertEqual("v2", service._synthesis_agent.stream_payloads[0]["kwargs"]["version"])
+        self.assertEqual(
+            "v2",
+            chat_agent_holder["agent"].stream_payloads[0]["kwargs"]["version"],
+        )
 
     def test_build_answer_tool_exposes_rag_answer_path_for_future_agents(self) -> None:
         service = RagAnswerService()

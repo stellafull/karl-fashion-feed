@@ -45,7 +45,7 @@ class _SearchWebArgs(BaseModel):
 
 
 class RagTools:
-    """Expose deterministic retrieval tools to the answer-layer LLM."""
+    """Expose deterministic low-level retrieval tools to the nested rag agent."""
 
     def __init__(
         self,
@@ -63,7 +63,7 @@ class RagTools:
         self._web_results: list[WebSearchResult] = []
 
     def build_langchain_tools(self) -> list[StructuredTool]:
-        """Return LangChain tool adapters with in-memory result collection."""
+        """Return the low-level retrieval tools used only inside rag_search."""
         return [
             StructuredTool.from_function(
                 func=self._search_fashion_articles_tool,
@@ -90,12 +90,6 @@ class RagTools:
                     "matching references, or visually grounded fashion analysis."
                 ),
                 args_schema=_SearchFashionFusionArgs,
-            ),
-            StructuredTool.from_function(
-                coroutine=self._search_web_tool,
-                name="search_web",
-                description="Search the external web for latest information when internal RAG is insufficient.",
-                args_schema=_SearchWebArgs,
             ),
         ]
 

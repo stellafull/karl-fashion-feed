@@ -23,7 +23,13 @@ from backend.app.models import (  # noqa: E402
     User,
     ensure_auth_chat_schema,
 )
-from backend.app.schemas.rag_api import RagAnswerResponse  # noqa: E402
+from backend.app.schemas.rag_api import (  # noqa: E402
+    AnswerCitation,
+    ExternalVisualResult,
+    RagAnswerResponse,
+    WebSearchResult,
+)
+from backend.app.schemas.rag_query import QueryFilters, QueryPlan  # noqa: E402
 from backend.app.service.chat_worker_service import ChatWorkerService  # noqa: E402
 
 
@@ -33,14 +39,17 @@ class _CapturingRagService:
         *,
         answer_text: str,
         stream_chunks: list[str] | None = None,
+        response: RagAnswerResponse | None = None,
     ) -> None:
         self.answer_text = answer_text
         self.stream_chunks = list(stream_chunks or [])
+        self.response = response
         self.answer_calls: list[dict[str, object]] = []
         self.answer_stream_calls: list[dict[str, object]] = []
 
-    async def answer(self, **kwargs: object) -> RagAnswerResponse:
-        self.answer_calls.append(kwargs)
+    def _build_response(self) -> RagAnswerResponse:
+        if self.response is not None:
+            return self.response
         return RagAnswerResponse(
             answer=self.answer_text,
             citations=[],
@@ -48,18 +57,16 @@ class _CapturingRagService:
             query_plans=[],
             web_results=[],
         )
+
+    async def answer(self, **kwargs: object) -> RagAnswerResponse:
+        self.answer_calls.append(kwargs)
+        return self._build_response()
 
     async def answer_stream(self, *, on_delta, **kwargs: object) -> RagAnswerResponse:
         self.answer_stream_calls.append(kwargs)
         for chunk in self.stream_chunks:
             await on_delta(chunk)
-        return RagAnswerResponse(
-            answer=self.answer_text,
-            citations=[],
-            packages=[],
-            query_plans=[],
-            web_results=[],
-        )
+        return self._build_response()
 
 
 class _InterruptingRagService:
@@ -308,6 +315,7 @@ class ChatWorkerServiceTest(unittest.TestCase):
 
         self.assertEqual("done", final_message.status)
         self.assertEqual("有类似的秀场吗", rag_service.answer_calls[0]["request"].query)
+        self.assertNotIn("专题上下文（系统注入", final_message.content_text)
         self.assertIn(
             "专题上下文（系统注入，不属于用户显式提问）",
             rag_service.answer_calls[0]["conversation_compact"],
@@ -322,6 +330,110 @@ class ChatWorkerServiceTest(unittest.TestCase):
             self.assertEqual("专题追问回答", assistant_message.content_text)
             self.assertEqual("专题追问回答", assistant_message.response_json["answer"])
             self.assertIsNone(session.compact_context)
+
+    def test_process_message_by_id_persists_structured_response_payload(self) -> None:
+        session_factory = self._build_session_factory()
+        rag_service = _CapturingRagService(
+            answer_text="图文回答",
+            response=RagAnswerResponse(
+                answer="图文回答",
+                citations=[
+                    AnswerCitation(
+                        marker="C1",
+                        source_type="rag",
+                        title="内部秀场总结",
+                        source_name="Vogue",
+                        url="https://example.com/internal-story",
+                        snippet="紫色轮廓在多个品牌中反复出现。",
+                        article_id="article-1",
+                        chunk_index=2,
+                    )
+                ],
+                packages=[],
+                query_plans=[
+                    QueryPlan(
+                        plan_type="fusion",
+                        text_query="请结合这篇专题找相似造型",
+                        filters=QueryFilters(),
+                        output_goal="reference_lookup",
+                        limit=10,
+                    )
+                ],
+                web_results=[
+                    WebSearchResult(
+                        title="External roundup",
+                        url="https://news.example.com/roundup",
+                        snippet="External support for the runway trend.",
+                    )
+                ],
+                external_visual_results=[
+                    ExternalVisualResult(
+                        provider="brave_image",
+                        query="相似皇家紫造型",
+                        title="Runway reference",
+                        url="https://images.example.com/look.jpg",
+                        source_name="news.example.com",
+                        source_page_url="https://news.example.com/lookbook",
+                        image_url="https://images.example.com/look.jpg",
+                        thumbnail_url="https://images.example.com/look-thumb.jpg",
+                        snippet="Structured visual evidence",
+                        content="Royal purple runway reference with matching silhouette.",
+                    )
+                ],
+            ),
+        )
+
+        with session_factory() as db:
+            self._seed_user_and_session(db)
+            db.add_all(
+                [
+                    ChatMessage(
+                        chat_message_id="user-current",
+                        chat_session_id="session-1",
+                        role="user",
+                        content_text="请结合这篇专题找相似造型",
+                        status="done",
+                        created_at=datetime(2026, 4, 1, 9, 10, 0),
+                    ),
+                    ChatMessage(
+                        chat_message_id="assistant-current",
+                        chat_session_id="session-1",
+                        role="assistant",
+                        content_text="",
+                        status="queued",
+                        reply_to_message_id="user-current",
+                        created_at=datetime(2026, 4, 1, 9, 10, 1),
+                    ),
+                ]
+            )
+            db.commit()
+
+        with patch("backend.app.service.chat_worker_service.SessionLocal", session_factory):
+            final_message = asyncio.run(
+                ChatWorkerService(rag_service=rag_service).process_message_by_id(
+                    "assistant-current"
+                )
+            )
+
+        self.assertEqual("done", final_message.status)
+        self.assertEqual("图文回答", final_message.content_text)
+        self.assertEqual("图文回答", final_message.response_json["answer"])
+        self.assertEqual(
+            "https://news.example.com/lookbook",
+            final_message.response_json["external_visual_results"][0]["source_page_url"],
+        )
+        self.assertEqual(
+            "https://news.example.com/roundup",
+            final_message.response_json["web_results"][0]["url"],
+        )
+        self.assertEqual(
+            "fusion",
+            final_message.response_json["query_plans"][0]["plan_type"],
+        )
+        self.assertEqual(
+            "C1",
+            final_message.response_json["citations"][0]["marker"],
+        )
 
     def test_process_message_by_id_streams_image_only_requests_with_current_attachment(self) -> None:
         session_factory = self._build_session_factory()

@@ -122,6 +122,21 @@ class AnswerCitation(BaseModel):
     chunk_index: int | None = None
 
 
+class AssistantImageResult(BaseModel):
+    """One assistant-visible image result returned with the answer payload."""
+
+    id: str
+    source_type: Literal["rag", "external"]
+    image_url: str
+    title: str | None = None
+    source_name: str | None = None
+    source_page_url: str | None = None
+    snippet: str | None = None
+    article_id: str | None = None
+    article_image_id: str | None = None
+    citation_marker: str | None = None
+
+
 class RagAnswerResponse(BaseModel):
     """Final HTTP response returned by the single-entry answer API."""
 
@@ -131,3 +146,4 @@ class RagAnswerResponse(BaseModel):
     query_plans: list[QueryPlan] = Field(default_factory=list)
     web_results: list[WebSearchResult] = Field(default_factory=list)
     external_visual_results: list[ExternalVisualResult] = Field(default_factory=list)
+    image_results: list[AssistantImageResult] = Field(default_factory=list)

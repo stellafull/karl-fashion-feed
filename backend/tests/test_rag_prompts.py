@@ -18,7 +18,7 @@ class RagPromptContractsTest(unittest.TestCase):
         self.assertIn("单品类别、形状/廓形、颜色、材质、装饰细节", RAG_ANSWER_SYNTHESIS_PROMPT)
         self.assertIn("visual_external_fallback_triggered", RAG_ANSWER_SYNTHESIS_PROMPT)
         self.assertIn("不要武断下结论", RAG_ANSWER_SYNTHESIS_PROMPT)
-        self.assertIn("answer-visible filtered evidence", RAG_ANSWER_SYNTHESIS_PROMPT)
+        self.assertIn("answer-visible internal evidence", RAG_ANSWER_SYNTHESIS_PROMPT)
         self.assertIn("external visual evidence", RAG_ANSWER_SYNTHESIS_PROMPT)
 
 

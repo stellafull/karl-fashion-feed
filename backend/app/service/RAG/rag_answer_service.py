@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Awaitable, Callable
+from dataclasses import dataclass, field
 from typing import Any
 from urllib.parse import urlparse
 
@@ -19,13 +20,14 @@ from backend.app.schemas.rag_api import (
     AnswerVisibleEvidence,
     AnswerVisiblePackage,
     AnswerCitation,
+    AssistantImageResult,
     ExternalVisualResult,
     RagAnswerResponse,
     RagQueryRequest,
     RagRequestContext,
     WebSearchResult,
 )
-from backend.app.schemas.rag_query import ArticlePackage, QueryResult, RetrievalHit
+from backend.app.schemas.rag_query import ArticlePackage, QueryPlan, QueryResult, RetrievalHit
 from backend.app.service.RAG.rag_tools import RagTools
 from backend.app.service.langchain_model_factory import build_rag_model
 
@@ -146,6 +148,30 @@ class _RagAnswerToolArgs(BaseModel):
     )
 
 
+class _WebSearchToolArgs(BaseModel):
+    query: str = Field(description="External web search query used after rag_search.")
+
+
+class _RagSearchArtifact(BaseModel):
+    query: str | None = None
+    packages: list[ArticlePackage] = Field(default_factory=list)
+    query_plans: list[QueryPlan] = Field(default_factory=list)
+    answer_visible_evidence: AnswerVisibleEvidence = Field(
+        default_factory=AnswerVisibleEvidence
+    )
+    external_visual_results: list[ExternalVisualResult] = Field(default_factory=list)
+    citations: list[AnswerCitation] = Field(default_factory=list)
+    image_results: list[AssistantImageResult] = Field(default_factory=list)
+    strong_image_hit_count: int = 0
+    weak_image_hit_count: int = 0
+
+
+@dataclass(slots=True)
+class _ChatRunState:
+    rag_artifact: _RagSearchArtifact | None = None
+    web_results: list[WebSearchResult] = field(default_factory=list)
+
+
 class RagAnswerService:
     """Run retrieval agents and synthesize one final grounded answer."""
 
@@ -155,6 +181,7 @@ class RagAnswerService:
         configuration: Configuration | None = None,
         tools_factory: Callable[[RagRequestContext], RagTools] | None = None,
         research_agent_factory: Callable[[RagTools], Any] | None = None,
+        chat_agent_factory: Callable[[list[StructuredTool]], Any] | None = None,
         synthesis_agent: Any | None = None,
     ) -> None:
         self._configuration = configuration or Configuration.from_runnable_config()
@@ -164,7 +191,8 @@ class RagAnswerService:
             else tools_factory
         )
         self._research_agent_factory = research_agent_factory
-        self._synthesis_agent = synthesis_agent
+        self._chat_agent_factory = chat_agent_factory
+        self._chat_agent = synthesis_agent
 
     async def answer(
         self,
@@ -175,42 +203,26 @@ class RagAnswerService:
         recent_messages: list[dict] | None = None,
         user_memories: list[dict] | None = None,
     ) -> RagAnswerResponse:
-        """Execute retrieval tools and synthesize one final Chinese answer."""
-        (
-            packages,
-            query_plans,
-            unique_web_results,
-            external_visual_results,
-            citations,
-        ) = await self._collect_answer_materials(
+        """Run the outer chat agent over rag_search and optional web_search."""
+        state = await self._run_chat_agent(
             request=request,
             request_context=request_context,
             conversation_compact=conversation_compact,
             recent_messages=recent_messages,
             user_memories=user_memories,
         )
-        answer_visible_evidence = self._build_answer_visible_evidence(
-            packages=packages,
-            query=request.query,
-            external_visual_results=external_visual_results,
+        answer = self._normalize_answer_citation_markers(
+            state["answer"],
+            state["citations"],
         )
-        answer = await self._synthesize_answer(
-            request=request,
-            request_context=request_context,
-            packages=packages,
-            answer_visible_evidence=answer_visible_evidence,
-            web_results=unique_web_results,
-            external_visual_results=external_visual_results,
-            citations=citations,
-        )
-        answer = self._normalize_answer_citation_markers(answer, citations)
         return RagAnswerResponse(
             answer=answer,
-            citations=citations,
-            packages=packages,
-            query_plans=query_plans,
-            web_results=unique_web_results,
-            external_visual_results=external_visual_results,
+            citations=state["citations"],
+            packages=state["packages"],
+            query_plans=state["query_plans"],
+            web_results=state["web_results"],
+            external_visual_results=state["external_visual_results"],
+            image_results=state["image_results"],
         )
 
     async def answer_stream(
@@ -223,43 +235,27 @@ class RagAnswerService:
         user_memories: list[dict] | None = None,
         on_delta: AsyncDeltaHandler,
     ) -> RagAnswerResponse:
-        """Execute retrieval first, then stream answer synthesis deltas."""
-        (
-            packages,
-            query_plans,
-            unique_web_results,
-            external_visual_results,
-            citations,
-        ) = await self._collect_answer_materials(
+        """Run the outer chat agent and stream the final answer deltas."""
+        state = await self._run_chat_agent_stream(
             request=request,
             request_context=request_context,
             conversation_compact=conversation_compact,
             recent_messages=recent_messages,
             user_memories=user_memories,
-        )
-        answer_visible_evidence = self._build_answer_visible_evidence(
-            packages=packages,
-            query=request.query,
-            external_visual_results=external_visual_results,
-        )
-        answer = await self._synthesize_answer_stream(
-            request=request,
-            request_context=request_context,
-            packages=packages,
-            answer_visible_evidence=answer_visible_evidence,
-            web_results=unique_web_results,
-            external_visual_results=external_visual_results,
-            citations=citations,
             on_delta=on_delta,
         )
-        answer = self._normalize_answer_citation_markers(answer, citations)
+        answer = self._normalize_answer_citation_markers(
+            state["answer"],
+            state["citations"],
+        )
         return RagAnswerResponse(
             answer=answer,
-            citations=citations,
-            packages=packages,
-            query_plans=query_plans,
-            web_results=unique_web_results,
-            external_visual_results=external_visual_results,
+            citations=state["citations"],
+            packages=state["packages"],
+            query_plans=state["query_plans"],
+            web_results=state["web_results"],
+            external_visual_results=state["external_visual_results"],
+            image_results=state["image_results"],
         )
 
     def build_answer_tool(
@@ -302,7 +298,7 @@ class RagAnswerService:
             response_format="content_and_artifact",
         )
 
-    async def _collect_answer_materials(
+    async def _run_chat_agent(
         self,
         *,
         request: RagQueryRequest,
@@ -310,62 +306,391 @@ class RagAnswerService:
         conversation_compact: str | None,
         recent_messages: list[dict] | None,
         user_memories: list[dict] | None,
-    ) -> tuple[
-        list[ArticlePackage],
-        list[Any],
-        list[WebSearchResult],
-        list[ExternalVisualResult],
-        list[AnswerCitation],
-    ]:
-        forced_results = self._collect_forced_rag_results(
-            request=request,
+    ) -> dict[str, Any]:
+        self._ensure_query_or_request_images(
+            query=request.query,
             request_context=request_context,
         )
-        if forced_results is not None:
-            packages = self._merge_rag_packages(forced_results)
-            query_plans = [result.query_plan for result in forced_results]
-            external_visual_results = await self._collect_external_visual_fallback(
+        state = _ChatRunState()
+        chat_agent = self._build_chat_agent(
+            self._build_chat_agent_tools(
                 request=request,
                 request_context=request_context,
-                packages=packages,
+                conversation_compact=conversation_compact,
+                recent_messages=recent_messages,
+                user_memories=user_memories,
+                state=state,
             )
-            citations = self._build_citations(
-                packages=packages,
-                web_results=[],
-                external_visual_results=external_visual_results,
-            )
-            return packages, query_plans, [], external_visual_results, citations
-
-        rag_tools = self._tools_factory(request_context)
-        research_agent = self._build_research_agent(rag_tools)
-        await research_agent.ainvoke(
+        )
+        result = await chat_agent.ainvoke(
             {
-                "messages": self._build_research_messages(
+                "messages": self._build_chat_messages(
                     request=request,
                     request_context=request_context,
                     conversation_compact=conversation_compact,
                     recent_messages=recent_messages,
                     user_memories=user_memories,
-                ),
+                )
             },
             config={"recursion_limit": self._research_recursion_limit()},
         )
+        answer = self._extract_agent_answer(result).strip()
+        if not answer:
+            raise ValueError("chat agent returned empty content")
+        return self._build_response_state(answer=answer, state=state)
 
-        rag_results, web_results = rag_tools.get_collected_results()
+    async def _run_chat_agent_stream(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        conversation_compact: str | None,
+        recent_messages: list[dict] | None,
+        user_memories: list[dict] | None,
+        on_delta: AsyncDeltaHandler,
+    ) -> dict[str, Any]:
+        self._ensure_query_or_request_images(
+            query=request.query,
+            request_context=request_context,
+        )
+        state = _ChatRunState()
+        chat_agent = self._build_chat_agent(
+            self._build_chat_agent_tools(
+                request=request,
+                request_context=request_context,
+                conversation_compact=conversation_compact,
+                recent_messages=recent_messages,
+                user_memories=user_memories,
+                state=state,
+            )
+        )
+        answer_parts: list[str] = []
+        async for event in chat_agent.astream_events(
+            {
+                "messages": self._build_chat_messages(
+                    request=request,
+                    request_context=request_context,
+                    conversation_compact=conversation_compact,
+                    recent_messages=recent_messages,
+                    user_memories=user_memories,
+                )
+            },
+            config={"recursion_limit": self._research_recursion_limit()},
+            version="v2",
+        ):
+            delta_text = self._extract_stream_delta_text(event)
+            if not delta_text:
+                continue
+            answer_parts.append(delta_text)
+            await on_delta(delta_text)
+
+        answer = "".join(answer_parts).strip()
+        if not answer:
+            raise ValueError("chat agent returned empty content")
+        return self._build_response_state(answer=answer, state=state)
+
+    def _build_response_state(
+        self,
+        *,
+        answer: str,
+        state: _ChatRunState,
+    ) -> dict[str, Any]:
+        if state.rag_artifact is None:
+            raise ValueError("chat agent must call rag_search before answering")
+        return {
+            "answer": answer,
+            "citations": state.rag_artifact.citations,
+            "packages": state.rag_artifact.packages,
+            "query_plans": state.rag_artifact.query_plans,
+            "web_results": list(state.web_results),
+            "external_visual_results": state.rag_artifact.external_visual_results,
+            "image_results": state.rag_artifact.image_results,
+        }
+
+    def _build_chat_agent_tools(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        conversation_compact: str | None,
+        recent_messages: list[dict] | None,
+        user_memories: list[dict] | None,
+        state: _ChatRunState,
+    ) -> list[StructuredTool]:
+        return [
+            self._build_rag_search_tool(
+                request=request,
+                request_context=request_context,
+                conversation_compact=conversation_compact,
+                recent_messages=recent_messages,
+                user_memories=user_memories,
+                state=state,
+            ),
+            self._build_web_search_tool(
+                request_context=request_context,
+                state=state,
+            ),
+        ]
+
+    def _build_chat_agent(self, tools: list[StructuredTool]):
+        if self._chat_agent_factory is not None:
+            return self._chat_agent_factory(tools)
+        if self._chat_agent is not None:
+            return self._chat_agent
+        return create_agent(
+            model=build_rag_model(self._configuration),
+            tools=tools,
+            system_prompt=RAG_ANSWER_SYNTHESIS_PROMPT,
+        )
+
+    def _build_rag_agent(self, rag_tools: RagTools):
+        if self._research_agent_factory is not None:
+            return self._research_agent_factory(rag_tools)
+        return create_agent(
+            model=build_rag_model(self._configuration),
+            tools=rag_tools.build_langchain_tools(),
+            system_prompt=RAG_TOOL_LOOP_PROMPT,
+        )
+
+    def _build_rag_search_tool(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        conversation_compact: str | None,
+        recent_messages: list[dict] | None,
+        user_memories: list[dict] | None,
+        state: _ChatRunState,
+    ) -> StructuredTool:
+        async def _run(query: str | None = None) -> tuple[str, dict[str, Any]]:
+            if state.rag_artifact is None:
+                effective_query = self._normalize_optional_query(query)
+                if effective_query is None:
+                    effective_query = request.query
+                state.rag_artifact = await self._run_rag_search(
+                    request=RagQueryRequest(
+                        query=effective_query,
+                        filters=request.filters,
+                        limit=request.limit,
+                    ),
+                    request_context=request_context,
+                    conversation_compact=conversation_compact,
+                    recent_messages=recent_messages,
+                    user_memories=user_memories,
+                )
+            return (
+                self._build_rag_search_summary(state.rag_artifact),
+                state.rag_artifact.model_dump(mode="json"),
+            )
+
+        return StructuredTool.from_function(
+            coroutine=_run,
+            name="rag_search",
+            description=(
+                "Inspect internal fashion RAG evidence first. This tool already handles "
+                "text, image, fusion retrieval, citations, and assistant-visible image results."
+            ),
+            args_schema=_RagAnswerToolArgs,
+            response_format="content_and_artifact",
+        )
+
+    def _build_web_search_tool(
+        self,
+        *,
+        request_context: RagRequestContext,
+        state: _ChatRunState,
+    ) -> StructuredTool:
+        async def _run(query: str) -> tuple[str, dict[str, Any]]:
+            if state.rag_artifact is None:
+                raise ValueError("web_search requires rag_search first")
+
+            rag_tools = self._tools_factory(request_context)
+            next_results = await rag_tools.search_web(
+                query=self._require_non_empty_query(query)
+            )
+            state.web_results = self._deduplicate_web_results(
+                [*state.web_results, *next_results]
+            )
+            state.rag_artifact.citations = self._build_citations(
+                packages=state.rag_artifact.packages,
+                web_results=state.web_results,
+                external_visual_results=state.rag_artifact.external_visual_results,
+            )
+            state.rag_artifact.image_results = self._build_image_results(
+                answer_visible_evidence=state.rag_artifact.answer_visible_evidence,
+                external_visual_results=state.rag_artifact.external_visual_results,
+                citations=state.rag_artifact.citations,
+            )
+            return (
+                self._build_web_search_summary(state.web_results, state.rag_artifact.citations),
+                {
+                    "web_results": [
+                        result.model_dump() for result in state.web_results
+                    ],
+                    "citations": [
+                        citation.model_dump()
+                        for citation in state.rag_artifact.citations
+                    ],
+                },
+            )
+
+        return StructuredTool.from_function(
+            coroutine=_run,
+            name="web_search",
+            description=(
+                "Search the external web only after rag_search when the internal RAG "
+                "evidence is insufficient or the user explicitly needs fresh external updates."
+            ),
+            args_schema=_WebSearchToolArgs,
+            response_format="content_and_artifact",
+        )
+
+    def _build_chat_messages(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        conversation_compact: str | None,
+        recent_messages: list[dict] | None,
+        user_memories: list[dict] | None,
+    ) -> list[dict[str, object]]:
+        messages: list[dict[str, object]] = []
+        context_message = self._build_optional_context_message(
+            conversation_compact=conversation_compact,
+            recent_messages=recent_messages,
+            user_memories=user_memories,
+        )
+        if context_message is not None:
+            messages.append(context_message)
+        messages.append(
+            {
+                "role": "user",
+                "content": self._build_chat_user_content(
+                    request=request,
+                    request_context=request_context,
+                ),
+            }
+        )
+        return messages
+
+    def _build_rag_search_messages(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        conversation_compact: str | None,
+        recent_messages: list[dict] | None,
+        user_memories: list[dict] | None,
+    ) -> list[dict[str, object]]:
+        messages: list[dict[str, object]] = []
+        context_message = self._build_optional_context_message(
+            conversation_compact=conversation_compact,
+            recent_messages=recent_messages,
+            user_memories=user_memories,
+        )
+        if context_message is not None:
+            messages.append(context_message)
+        messages.append(
+            {
+                "role": "user",
+                "content": self._build_tool_loop_user_content(
+                    request=request,
+                    request_context=request_context,
+                ),
+            }
+        )
+        return messages
+
+    def _build_chat_user_content(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+    ) -> list[dict[str, object]]:
+        text_parts = [
+            "请先调用 rag_search 检查内部时尚资料，再决定是否需要 web_search。",
+            f"用户文本问题：{request.query or '（无文本，仅图片）'}",
+        ]
+        content: list[dict[str, object]] = [
+            {"type": "text", "text": "\n".join(text_parts)},
+        ]
+        for request_image in request_context.request_images:
+            content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": request_image.to_data_url()},
+                }
+            )
+        return content
+
+    async def _run_rag_search(
+        self,
+        *,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        conversation_compact: str | None,
+        recent_messages: list[dict] | None,
+        user_memories: list[dict] | None,
+    ) -> _RagSearchArtifact:
+        forced_results = self._collect_forced_rag_results(
+            request=request,
+            request_context=request_context,
+        )
+        if forced_results is None:
+            rag_tools = self._tools_factory(request_context)
+            rag_agent = self._build_rag_agent(rag_tools)
+            await rag_agent.ainvoke(
+                {
+                    "messages": self._build_rag_search_messages(
+                        request=request,
+                        request_context=request_context,
+                        conversation_compact=conversation_compact,
+                        recent_messages=recent_messages,
+                        user_memories=user_memories,
+                    ),
+                },
+                config={"recursion_limit": self._research_recursion_limit()},
+            )
+            rag_results, _unused_web_results = rag_tools.get_collected_results()
+        else:
+            rag_results = forced_results
+
         packages = self._merge_rag_packages(rag_results)
         query_plans = [result.query_plan for result in rag_results]
-        unique_web_results = self._deduplicate_web_results(web_results)
         external_visual_results = await self._collect_external_visual_fallback(
             request=request,
             request_context=request_context,
             packages=packages,
         )
-        citations = self._build_citations(
+        answer_visible_evidence = self._build_answer_visible_evidence(
             packages=packages,
-            web_results=unique_web_results,
+            query=request.query,
             external_visual_results=external_visual_results,
         )
-        return packages, query_plans, unique_web_results, external_visual_results, citations
+        citations = self._build_citations(
+            packages=packages,
+            web_results=[],
+            external_visual_results=external_visual_results,
+        )
+        strong_image_hit_count, weak_image_hit_count = self._summarize_image_hit_strength(
+            packages,
+            query=request.query,
+        )
+        return _RagSearchArtifact(
+            query=request.query,
+            packages=packages,
+            query_plans=query_plans,
+            answer_visible_evidence=answer_visible_evidence,
+            external_visual_results=external_visual_results,
+            citations=citations,
+            image_results=self._build_image_results(
+                answer_visible_evidence=answer_visible_evidence,
+                external_visual_results=external_visual_results,
+                citations=citations,
+            ),
+            strong_image_hit_count=strong_image_hit_count,
+            weak_image_hit_count=weak_image_hit_count,
+        )
 
     def _collect_forced_rag_results(
         self,
@@ -455,34 +780,6 @@ class RagAnswerService:
             for term in VISUAL_QUERY_TERMS
         )
 
-    def _build_research_messages(
-        self,
-        *,
-        request: RagQueryRequest,
-        request_context: RagRequestContext,
-        conversation_compact: str | None,
-        recent_messages: list[dict] | None,
-        user_memories: list[dict] | None,
-    ) -> list[dict[str, object]]:
-        messages: list[dict[str, object]] = []
-        context_message = self._build_optional_context_message(
-            conversation_compact=conversation_compact,
-            recent_messages=recent_messages,
-            user_memories=user_memories,
-        )
-        if context_message is not None:
-            messages.append(context_message)
-        messages.append(
-            {
-                "role": "user",
-                "content": self._build_tool_loop_user_content(
-                    request=request,
-                    request_context=request_context,
-                ),
-            }
-        )
-        return messages
-
     def _build_optional_context_message(
         self,
         *,
@@ -505,7 +802,7 @@ class RagAnswerService:
             messages_text = "\n".join([f"{msg['role']}: {msg['content']}" for msg in recent_messages])
             context_parts.append(f"最近对话：\n{messages_text}")
         return {
-            "role": "user",
+            "role": "system",
             "content": "\n\n".join(context_parts),
         }
 
@@ -531,57 +828,32 @@ class RagAnswerService:
             )
         return content
 
-    def _build_synthesis_user_content(
+    def _build_rag_search_summary(self, artifact: _RagSearchArtifact) -> str:
+        summary_payload = {
+            "query": artifact.query or "",
+            "query_plan_types": [plan.plan_type for plan in artifact.query_plans],
+            "package_count": len(artifact.packages),
+            "strong_image_hit_count": artifact.strong_image_hit_count,
+            "weak_image_hit_count": artifact.weak_image_hit_count,
+            "image_result_count": len(artifact.image_results),
+            "citation_markers": [citation.marker for citation in artifact.citations],
+            "visual_external_fallback_triggered": bool(artifact.external_visual_results),
+        }
+        return json.dumps(summary_payload, ensure_ascii=False, sort_keys=True)
+
+    def _build_web_search_summary(
         self,
-        *,
-        request: RagQueryRequest,
-        request_context: RagRequestContext,
-        packages: list[ArticlePackage],
-        answer_visible_evidence: AnswerVisibleEvidence,
         web_results: list[WebSearchResult],
-        external_visual_results: list[ExternalVisualResult],
         citations: list[AnswerCitation],
-    ) -> list[dict[str, object]]:
-        strong_image_hit_count, weak_image_hit_count = self._summarize_image_hit_strength(
-            packages,
-            query=request.query,
-        )
-        synthesis_payload = {
-            "user_query": request.query or "",
-            "has_request_images": request_context.has_request_images,
-            "request_image_count": len(request_context.request_images),
-            "strong_image_hit_count": strong_image_hit_count,
-            "weak_image_hit_count": weak_image_hit_count,
-            "visual_external_fallback_triggered": bool(external_visual_results),
-            "raw_rag_packages": [package.model_dump() for package in packages],
-            "answer_visible_evidence": answer_visible_evidence.model_dump(),
-            "external_visual_results": [
-                result.model_dump() for result in external_visual_results
-            ],
-            "web_results": [result.model_dump() for result in web_results],
-            "citations": [
-                {
-                    "marker": citation.marker,
-                    "title": citation.title,
-                    "source_name": citation.source_name,
-                    "url": citation.url,
-                    "snippet": citation.snippet,
-                }
-                for citation in citations
+    ) -> str:
+        summary_payload = {
+            "web_result_count": len(web_results),
+            "web_titles": [result.title for result in web_results],
+            "citation_markers": [
+                citation.marker for citation in citations if citation.source_type == "web"
             ],
         }
-        content: list[dict[str, object]] = [
-            {
-                "type": "text",
-                "text": json.dumps(
-                    synthesis_payload,
-                    ensure_ascii=False,
-                    indent=2,
-                    sort_keys=True,
-                ),
-            }
-        ]
-        return content
+        return json.dumps(summary_payload, ensure_ascii=False, sort_keys=True)
 
     def _build_answer_visible_evidence(
         self,
@@ -625,6 +897,104 @@ class RagAnswerService:
             suppressed_image_hits=suppressed_image_hits,
             external_visual_results=[result.model_copy(deep=True) for result in external_visual_results],
         )
+
+    def _build_image_results(
+        self,
+        *,
+        answer_visible_evidence: AnswerVisibleEvidence,
+        external_visual_results: list[ExternalVisualResult],
+        citations: list[AnswerCitation],
+    ) -> list[AssistantImageResult]:
+        image_results: list[AssistantImageResult] = []
+        seen_keys: set[str] = set()
+
+        for package in answer_visible_evidence.packages:
+            for hit in package.image_hits:
+                image_url = (hit.source_url or "").strip()
+                if not image_url:
+                    continue
+                result_key = f"rag:{hit.article_image_id or hit.retrieval_unit_id}"
+                if result_key in seen_keys:
+                    continue
+                seen_keys.add(result_key)
+                image_results.append(
+                    AssistantImageResult(
+                        id=result_key,
+                        source_type="rag",
+                        image_url=image_url,
+                        title=package.title or hit.title,
+                        source_name=hit.citation_locator.source_name,
+                        source_page_url=hit.citation_locator.canonical_url,
+                        snippet=(
+                            (hit.caption_raw or "").strip()
+                            or (hit.alt_text or "").strip()
+                            or (hit.context_snippet or "").strip()
+                            or None
+                        ),
+                        article_id=hit.article_id,
+                        article_image_id=hit.article_image_id,
+                        citation_marker=self._find_citation_marker_for_rag_hit(
+                            hit=hit,
+                            citations=citations,
+                        ),
+                    )
+                )
+
+        for visual_result in external_visual_results:
+            image_url = (visual_result.image_url or visual_result.url).strip()
+            if not image_url:
+                continue
+            result_key = f"external:{visual_result.source_page_url or visual_result.url}"
+            if result_key in seen_keys:
+                continue
+            seen_keys.add(result_key)
+            image_results.append(
+                AssistantImageResult(
+                    id=result_key,
+                    source_type="external",
+                    image_url=image_url,
+                    title=visual_result.title,
+                    source_name=visual_result.source_name,
+                    source_page_url=visual_result.source_page_url or visual_result.url,
+                    snippet=(visual_result.snippet or visual_result.content or "").strip() or None,
+                    citation_marker=self._find_citation_marker_for_external_visual(
+                        visual_result=visual_result,
+                        citations=citations,
+                    ),
+                )
+            )
+
+        return image_results
+
+    def _find_citation_marker_for_rag_hit(
+        self,
+        *,
+        hit: RetrievalHit,
+        citations: list[AnswerCitation],
+    ) -> str | None:
+        for citation in citations:
+            if citation.source_type != "rag":
+                continue
+            if citation.article_id != hit.citation_locator.article_id:
+                continue
+            if citation.article_image_id != hit.citation_locator.article_image_id:
+                continue
+            if citation.chunk_index != hit.citation_locator.chunk_index:
+                continue
+            return citation.marker
+        return None
+
+    def _find_citation_marker_for_external_visual(
+        self,
+        *,
+        visual_result: ExternalVisualResult,
+        citations: list[AnswerCitation],
+    ) -> str | None:
+        citation_url = visual_result.source_page_url or visual_result.url
+        for citation in citations:
+            if citation.source_type == "web" and citation.url == citation_url:
+                return citation.marker
+        return None
 
     def _summarize_image_hit_strength(
         self,
@@ -739,103 +1109,6 @@ class RagAnswerService:
         normalized_value = re.sub(r"\s+", " ", value).strip().casefold()
         return normalized_value
 
-    async def _synthesize_answer(
-        self,
-        *,
-        request: RagQueryRequest,
-        request_context: RagRequestContext,
-        packages: list[ArticlePackage],
-        answer_visible_evidence: AnswerVisibleEvidence,
-        web_results: list[WebSearchResult],
-        external_visual_results: list[ExternalVisualResult],
-        citations: list[AnswerCitation],
-    ) -> str:
-        synthesis_agent = self._get_synthesis_agent()
-        result = await synthesis_agent.ainvoke(
-            {
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": self._build_synthesis_user_content(
-                            request=request,
-                            request_context=request_context,
-                            packages=packages,
-                            answer_visible_evidence=answer_visible_evidence,
-                            web_results=web_results,
-                            external_visual_results=external_visual_results,
-                            citations=citations,
-                        ),
-                    }
-                ]
-            }
-        )
-        answer = self._extract_agent_answer(result).strip()
-        if not answer:
-            raise ValueError("rag answer synthesis returned empty content")
-        return answer
-
-    async def _synthesize_answer_stream(
-        self,
-        *,
-        request: RagQueryRequest,
-        request_context: RagRequestContext,
-        packages: list[ArticlePackage],
-        answer_visible_evidence: AnswerVisibleEvidence,
-        web_results: list[WebSearchResult],
-        external_visual_results: list[ExternalVisualResult],
-        citations: list[AnswerCitation],
-        on_delta: AsyncDeltaHandler,
-    ) -> str:
-        synthesis_agent = self._get_synthesis_agent()
-        answer_parts: list[str] = []
-        async for event in synthesis_agent.astream_events(
-            {
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": self._build_synthesis_user_content(
-                            request=request,
-                            request_context=request_context,
-                            packages=packages,
-                            answer_visible_evidence=answer_visible_evidence,
-                            web_results=web_results,
-                            external_visual_results=external_visual_results,
-                            citations=citations,
-                        ),
-                    }
-                ]
-            },
-            version="v2",
-        ):
-            delta_text = self._extract_stream_delta_text(event)
-            if not delta_text:
-                continue
-            answer_parts.append(delta_text)
-            await on_delta(delta_text)
-
-        answer = "".join(answer_parts).strip()
-        if not answer:
-            raise ValueError("rag answer synthesis returned empty content")
-        return answer
-
-    def _build_research_agent(self, rag_tools: RagTools):
-        if self._research_agent_factory is not None:
-            return self._research_agent_factory(rag_tools)
-        return create_agent(
-            model=build_rag_model(self._configuration),
-            tools=rag_tools.build_langchain_tools(),
-            system_prompt=RAG_TOOL_LOOP_PROMPT,
-        )
-
-    def _get_synthesis_agent(self):
-        if self._synthesis_agent is None:
-            self._synthesis_agent = create_agent(
-                model=build_rag_model(self._configuration),
-                tools=[],
-                system_prompt=RAG_ANSWER_SYNTHESIS_PROMPT,
-            )
-        return self._synthesis_agent
-
     def _research_recursion_limit(self) -> int:
         return (self._configuration.max_react_tool_calls * 2) + 1
 
@@ -854,6 +1127,13 @@ class RagAnswerService:
             return None
         normalized_query = query.strip()
         return normalized_query or None
+
+    @staticmethod
+    def _require_non_empty_query(query: str) -> str:
+        normalized_query = query.strip()
+        if not normalized_query:
+            raise ValueError("query must be a non-empty string")
+        return normalized_query
 
     def _extract_agent_answer(self, result: Any) -> str:
         messages = self._extract_result_messages(result)
