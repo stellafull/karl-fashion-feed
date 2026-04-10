@@ -4,6 +4,8 @@ import type { FeedData, SortMode, Topic } from "@/hooks/useFeedData";
 import { Button } from "@/components/ui/button";
 import { formatChinaDateTimeShort } from "@/lib/time";
 import DiscoverRail from "@/components/DiscoverRail";
+import CategoryNav from "@/components/CategoryNav";
+import FilterBar from "@/components/FilterBar";
 
 const INITIAL_LIST_STORIES = 12;
 const LIST_STORY_CHUNK = 12;
@@ -64,7 +66,7 @@ function LeadStoryCard({
           </span>
           <span className="flex items-center gap-1.5">
             <Layers3 className="h-4 w-4 text-[#9f7d45]" />
-            {topic.article_count} sources
+            {topic.article_count} 篇原文
           </span>
           <span>{uniqueSources.slice(0, 3).join(" · ")}</span>
         </div>
@@ -125,7 +127,7 @@ function GridStoryCard({
         <div className="mt-auto flex items-center gap-2 pt-4 text-xs text-[#7d766d]">
           <span>{uniqueSources.slice(0, 2).join(" · ")}</span>
           <span className="text-[#c1b5a4]">•</span>
-          <span>{topic.article_count} sources</span>
+          <span>{topic.article_count} 篇原文</span>
         </div>
       </div>
     </button>
@@ -175,9 +177,9 @@ function RowStoryCard({
         <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-[#746d63]">
           <span>{uniqueSources.slice(0, 3).join(" · ")}</span>
           <span className="text-[#c1b5a4]">•</span>
-          <span>{topic.article_count} sources</span>
+          <span>{topic.article_count} 篇原文</span>
           <span className="ml-auto flex items-center gap-1.5 text-[#9f7d45]">
-            Open story
+            查看专题
             <ArrowUpRight className="h-4 w-4" />
           </span>
         </div>
@@ -185,12 +187,6 @@ function RowStoryCard({
     </button>
   );
 }
-
-const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
-  { value: "newest", label: "Latest" },
-  { value: "oldest", label: "Oldest" },
-  { value: "most-sources", label: "Most sources" },
-];
 
 export default function DiscoverPage({
   data,
@@ -252,66 +248,32 @@ export default function DiscoverPage({
       <header className="shrink-0 border-b border-[#e4dccf] bg-[#f7f3eb]/90 backdrop-blur">
         <div className="flex h-16 items-center justify-between px-5 md:px-8">
           <div>
-            <p className="text-sm font-medium text-[#7f786f]">Discover</p>
+            <p className="text-sm font-medium text-[#7f786f]">资讯总览</p>
           </div>
           <Button variant="outline" className="rounded-full bg-white">
             <Share2 className="h-4 w-4" />
-            Share
+            分享
           </Button>
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-4 py-5 md:px-8">
-        <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-3">
-            <div className="flex flex-wrap gap-2">
-              {data.categories.map((category) => {
-                const active = activeCategory === category.id;
-                return (
-                  <button
-                    key={category.id}
-                    type="button"
-                    onClick={() => onCategoryChange(category.id)}
-                    className={`rounded-full border px-4 py-2 text-sm transition-colors ${
-                      active
-                        ? "border-[#1f1c18] bg-[#1f1c18] text-[#f4efe5]"
-                        : "border-[#ddd4c7] bg-white text-[#6e665d] hover:border-[#bfa57b] hover:text-[#1f1c18]"
-                    }`}
-                  >
-                    {category.name}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="flex flex-wrap items-center gap-3 text-sm text-[#786f64]">
-              <span>{filteredTopics.length} stories</span>
-              {selectedSources.length > 0 && (
-                <span className="rounded-full bg-[#efe7d8] px-3 py-1 text-xs text-[#695d49]">
-                  {selectedSources.join(" · ")}
-                </span>
-              )}
-            </div>
-          </div>
+      <CategoryNav
+        categories={data.categories}
+        activeCategory={activeCategory}
+        onCategoryChange={onCategoryChange}
+      />
 
-          <div className="flex flex-wrap gap-2">
-            {SORT_OPTIONS.map((option) => {
-              const active = sortMode === option.value;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => onSortChange(option.value)}
-                  className={`rounded-full border px-3 py-2 text-sm transition-colors ${
-                    active
-                      ? "border-[#c8b18a] bg-[#efe7d8] text-[#1f1c18]"
-                      : "border-[#ddd4c7] bg-white text-[#786f64] hover:border-[#c8b18a] hover:text-[#1f1c18]"
-                  }`}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
-          </div>
+      <div className="flex-1 overflow-y-auto px-4 py-5 md:px-8">
+        <div className="mb-6 xl:hidden">
+          <FilterBar
+            sortMode={sortMode}
+            onSortChange={onSortChange}
+            availableSources={availableSources}
+            selectedSources={selectedSources}
+            onToggleSource={onToggleSource}
+            onClearSources={onClearSources}
+            totalCount={filteredTopics.length}
+          />
         </div>
 
         <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -323,7 +285,7 @@ export default function DiscoverPage({
               />
             ) : (
               <div className="rounded-[28px] border border-dashed border-[#d6ccb9] px-8 py-20 text-center text-[#7c756b]">
-                当前筛选下暂无 story。
+                当前筛选下暂无专题。
               </div>
             )}
 
@@ -353,7 +315,7 @@ export default function DiscoverPage({
                     ref={loadMoreRef}
                     className="rounded-[24px] border border-dashed border-[#ddd4c7] bg-[#faf7f1] px-4 py-5 text-center text-sm text-[#7c756b]"
                   >
-                    Loading more stories...
+                    正在加载更多专题...
                   </div>
                 )}
               </div>
@@ -365,8 +327,10 @@ export default function DiscoverPage({
               <DiscoverRail
                 meta={data.meta}
                 topics={filteredTopics}
+                sortMode={sortMode}
                 availableSources={availableSources}
                 selectedSources={selectedSources}
+                onSortChange={onSortChange}
                 onToggleSource={onToggleSource}
                 onClearSources={onClearSources}
               />

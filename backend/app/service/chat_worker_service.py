@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import traceback
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
@@ -17,6 +18,11 @@ from backend.app.schemas.rag_api import RagQueryRequest, RagRequestContext, Requ
 from backend.app.schemas.rag_query import QueryFilters
 from backend.app.schemas.chat import MessageResponse
 from backend.app.service.RAG.rag_answer_service import RagAnswerService
+from backend.app.service.chat_session_service import (
+    build_interrupted_response_json,
+    extract_story_context_text,
+    mark_message_interrupted,
+)
 
 AsyncDeltaHandler = Callable[[str], Awaitable[None]]
 
@@ -90,6 +96,8 @@ class ChatWorkerService:
         if not session:
             raise ValueError("Session not found")
 
+        streamed_answer_parts: list[str] = []
+
         try:
             # Get current user message
             user_message = db.get(ChatMessage, message.reply_to_message_id)
@@ -121,6 +129,13 @@ class ChatWorkerService:
             )
 
             conversation_compact = session.compact_context
+            story_context_text = extract_story_context_text(user_message)
+            if story_context_text:
+                conversation_compact = (
+                    f"{story_context_text}\n\n{conversation_compact}"
+                    if conversation_compact
+                    else story_context_text
+                )
             recent_messages_data = [
                 {"role": chat_message.role, "content": chat_message.content_text}
                 for chat_message in recent_messages
@@ -146,6 +161,11 @@ class ChatWorkerService:
                 request_images=request_images,
             )
 
+            async def handle_delta(delta: str) -> None:
+                streamed_answer_parts.append(delta)
+                if on_delta is not None:
+                    await on_delta(delta)
+
             if on_delta is None:
                 response = await self.rag_service.answer(
                     request=request,
@@ -161,7 +181,7 @@ class ChatWorkerService:
                     conversation_compact=conversation_compact,
                     recent_messages=recent_messages_data,
                     user_memories=user_memories_data,
-                    on_delta=on_delta,
+                    on_delta=handle_delta,
                 )
 
             message.content_text = response.answer
@@ -184,6 +204,17 @@ class ChatWorkerService:
                     f"Previous conversation with {done_count - 5} messages"
                 )
 
+        except asyncio.CancelledError:
+            partial_answer = "".join(streamed_answer_parts).strip()
+            if partial_answer:
+                message.content_text = partial_answer
+            mark_message_interrupted(
+                message,
+                response_json=build_interrupted_response_json(
+                    message,
+                    default_message_type="chat",
+                ),
+            )
         except Exception as error:
             message.status = "failed"
             message.error_message = (

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from contextlib import suppress
 import json
 from datetime import UTC, datetime
 from typing import Annotated
@@ -26,11 +27,16 @@ from backend.app.core.auth_dependencies import get_current_user
 from backend.app.core.database import get_db
 from backend.app.models.chat import ChatMessage, ChatSession
 from backend.app.models.user import User
-from backend.app.schemas.chat import StreamMessageStartResponse
+from backend.app.schemas.chat import MessageResponse, StreamMessageStartResponse
+from backend.app.service.chat_run_registry import get_chat_run_registry
 from backend.app.service.chat_session_service import (
+    build_user_message_response_json,
+    build_interrupted_response_json,
     build_message_response,
     create_message_round,
+    mark_message_interrupted,
     normalize_optional_text,
+    parse_story_context_json,
 )
 from backend.app.service.deep_research_service import DeepResearchService
 
@@ -44,11 +50,12 @@ def get_deep_research_service() -> DeepResearchService:
     return _deep_research_service
 
 
-@router.post("/messages/research")
+@router.post("/messages/stream")
 async def create_deep_research_stream(
     request: Request,
     chat_session_id: Annotated[str | None, Form()] = None,
     content_text: Annotated[str | None, Form()] = None,
+    story_context_json: Annotated[str | None, Form()] = None,
     images: Annotated[list[UploadFile] | None, File()] = None,
     thread_id: Annotated[str | None, Form()] = None,
     current_user: User = Depends(get_current_user),
@@ -66,6 +73,7 @@ async def create_deep_research_stream(
     created_new_session = chat_session_id is None
     normalized_content_text = normalize_optional_text(content_text)
     normalized_images = images or []
+    story_context = parse_story_context_json(story_context_json)
     resolved_thread_id = thread_id or str(uuid4())
     session, user_message, assistant_message = await create_message_round(
         db=db,
@@ -74,6 +82,9 @@ async def create_deep_research_stream(
         content_text=normalized_content_text,
         images=normalized_images,
         assistant_status="running",
+        user_response_json=build_user_message_response_json(
+            story_context=story_context,
+        ),
     )
     if created_new_session:
         session.title = _prefix_research_session_title(session.title)
@@ -96,6 +107,8 @@ async def create_deep_research_stream(
 
     async def event_stream():
         queue: asyncio.Queue[tuple[str, dict] | None] = asyncio.Queue()
+        disconnected = False
+        chat_run_registry = get_chat_run_registry()
 
         async def on_event(event_name: str, payload: dict) -> None:
             await queue.put((event_name, payload))
@@ -109,12 +122,25 @@ async def create_deep_research_stream(
                     reuse_thread=thread_id is not None,
                     on_event=on_event,
                 )
-                event_name = (
-                    "message_complete"
-                    if final_message.status == "done"
-                    else "message_error"
-                )
+                if final_message.status == "done":
+                    event_name = "message_complete"
+                elif final_message.status == "interrupted":
+                    event_name = "message_interrupted"
+                else:
+                    event_name = "message_error"
                 await queue.put((event_name, final_message.model_dump(mode="json")))
+            except asyncio.CancelledError:
+                interrupted_message = _finalize_interrupted_message(
+                    db=db,
+                    assistant_message_id=assistant_message.chat_message_id,
+                    thread_id=resolved_thread_id,
+                )
+                await queue.put(
+                    (
+                        "message_interrupted",
+                        interrupted_message.model_dump(mode="json"),
+                    )
+                )
             except Exception as error:
                 await queue.put(
                     (
@@ -126,14 +152,37 @@ async def create_deep_research_stream(
                 await queue.put(None)
 
         processing_task = asyncio.create_task(run_processing())
-        yield _format_sse("message_start", start_payload.model_dump(mode="json"))
-        while True:
-            event = await queue.get()
-            if event is None:
-                break
-            event_name, payload = event
-            yield _format_sse(event_name, payload)
-        await processing_task
+        chat_run_registry.register(
+            assistant_message.chat_message_id,
+            processing_task.cancel,
+        )
+        try:
+            yield _format_sse("message_start", start_payload.model_dump(mode="json"))
+            while True:
+                try:
+                    event = await asyncio.wait_for(queue.get(), timeout=0.2)
+                except TimeoutError:
+                    if await request.is_disconnected():
+                        disconnected = True
+                        break
+                    continue
+                if event is None:
+                    break
+                event_name, payload = event
+                yield _format_sse(event_name, payload)
+        finally:
+            chat_run_registry.unregister(assistant_message.chat_message_id)
+            if not processing_task.done():
+                disconnected = True
+                processing_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await processing_task
+            if disconnected:
+                _finalize_interrupted_message(
+                    db=db,
+                    assistant_message_id=assistant_message.chat_message_id,
+                    thread_id=resolved_thread_id,
+                )
 
     return StreamingResponse(
         event_stream(),
@@ -183,19 +232,74 @@ def _validate_existing_research_thread(
             ChatMessage.role == "assistant",
         )
     ).scalars()
-    if any(
+    thread_exists = any(
         isinstance(payload, dict)
         and payload.get("message_type") == "deep_research"
         and payload.get("thread_id") == thread_id
         for payload in assistant_payloads
-    ):
+    )
+    if not thread_exists:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Deep research thread not found in this chat session",
+        )
+
+    latest_message = db.execute(
+        select(ChatMessage)
+        .where(ChatMessage.chat_session_id == chat_session_id)
+        .order_by(ChatMessage.created_at.desc())
+        .limit(1)
+    ).scalar_one_or_none()
+    if _is_pending_research_interrupt(latest_message, thread_id):
         return
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Deep research thread not found in this chat session",
+        status_code=status.HTTP_409_CONFLICT,
+        detail="Deep research thread is not awaiting clarification in this chat session",
+    )
+
+
+def _is_pending_research_interrupt(
+    message: ChatMessage | None,
+    thread_id: str,
+) -> bool:
+    if message is None or message.role != "assistant" or message.status != "done":
+        return False
+
+    payload = message.response_json
+    return (
+        isinstance(payload, dict)
+        and payload.get("message_type") == "deep_research"
+        and payload.get("thread_id") == thread_id
+        and payload.get("phase") == "clarification"
     )
 
 
 def _format_sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+def _finalize_interrupted_message(
+    *,
+    db: Session,
+    assistant_message_id: str,
+    thread_id: str,
+) -> MessageResponse:
+    message = db.get(ChatMessage, assistant_message_id)
+    if message is None:
+        raise ValueError(f"Assistant message not found: {assistant_message_id}")
+
+    if message.status in {"done", "failed"}:
+        return build_message_response(db, message)
+
+    interrupted_payload = build_interrupted_response_json(
+        message,
+        default_message_type="deep_research",
+    )
+    interrupted_payload["thread_id"] = thread_id
+    mark_message_interrupted(
+        message,
+        response_json=interrupted_payload,
+    )
+    db.commit()
+    return build_message_response(db, message)

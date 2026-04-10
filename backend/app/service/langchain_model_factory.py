@@ -47,6 +47,6 @@ def _build_model(
         max_completion_tokens=max_completion_tokens,
         timeout=timeout_seconds,
         max_retries=configuration.max_structured_output_retries,
-        use_responses_api=True,
+        use_responses_api=configuration.use_responses_api,
     )
     return model

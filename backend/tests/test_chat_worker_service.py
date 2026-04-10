@@ -62,6 +62,19 @@ class _CapturingRagService:
         )
 
 
+class _InterruptingRagService:
+    def __init__(self, *, stream_chunks: list[str]) -> None:
+        self.stream_chunks = list(stream_chunks)
+
+    async def answer(self, **kwargs: object) -> RagAnswerResponse:
+        raise AssertionError("streaming test should not call answer()")
+
+    async def answer_stream(self, *, on_delta, **kwargs: object) -> RagAnswerResponse:
+        for chunk in self.stream_chunks:
+            await on_delta(chunk)
+        raise asyncio.CancelledError()
+
+
 class ChatWorkerServiceTest(unittest.TestCase):
     def _build_session_factory(self):
         engine = create_engine(
@@ -248,14 +261,67 @@ class ChatWorkerServiceTest(unittest.TestCase):
             base64.b64decode(request_context.request_images[0].base64_data),
         )
 
+    def test_process_message_by_id_injects_hidden_story_context_without_polluting_user_query(self) -> None:
+        session_factory = self._build_session_factory()
+        rag_service = _CapturingRagService(answer_text="专题追问回答")
+
+        with session_factory() as db:
+            self._seed_user_and_session(db)
+            db.add_all(
+                [
+                    ChatMessage(
+                        chat_message_id="user-current",
+                        chat_session_id="session-1",
+                        role="user",
+                        content_text="有类似的秀场吗",
+                        status="done",
+                        response_json={
+                            "story_context": {
+                                "title": "皇家紫趋势总览",
+                                "summary": "Chanel、Celine 与 Loewe 确立皇家紫主导权。",
+                                "key_points": ["品牌色系统一", "秋冬继续延展"],
+                                "body_markdown": "皇家紫在 2026 春夏被反复强调。",
+                                "source_names": ["Chanel", "Celine", "Loewe"],
+                            }
+                        },
+                        created_at=datetime(2026, 4, 1, 9, 10, 0),
+                    ),
+                    ChatMessage(
+                        chat_message_id="assistant-current",
+                        chat_session_id="session-1",
+                        role="assistant",
+                        content_text="",
+                        status="queued",
+                        reply_to_message_id="user-current",
+                        created_at=datetime(2026, 4, 1, 9, 10, 1),
+                    ),
+                ]
+            )
+            db.commit()
+
+        with patch("backend.app.service.chat_worker_service.SessionLocal", session_factory):
+            final_message = asyncio.run(
+                ChatWorkerService(rag_service=rag_service).process_message_by_id(
+                    "assistant-current"
+                )
+            )
+
+        self.assertEqual("done", final_message.status)
+        self.assertEqual("有类似的秀场吗", rag_service.answer_calls[0]["request"].query)
+        self.assertIn(
+            "专题上下文（系统注入，不属于用户显式提问）",
+            rag_service.answer_calls[0]["conversation_compact"],
+        )
+        self.assertIn("皇家紫趋势总览", rag_service.answer_calls[0]["conversation_compact"])
+
         with session_factory() as verify_db:
             assistant_message = verify_db.get(ChatMessage, "assistant-current")
             session = verify_db.get(ChatSession, "session-1")
             self.assertIsNotNone(assistant_message)
             self.assertEqual("done", assistant_message.status)
-            self.assertEqual("深入分析", assistant_message.content_text)
-            self.assertEqual("深入分析", assistant_message.response_json["answer"])
-            self.assertEqual("Earlier summary for the stylist.", session.compact_context)
+            self.assertEqual("专题追问回答", assistant_message.content_text)
+            self.assertEqual("专题追问回答", assistant_message.response_json["answer"])
+            self.assertIsNone(session.compact_context)
 
     def test_process_message_by_id_streams_image_only_requests_with_current_attachment(self) -> None:
         session_factory = self._build_session_factory()
@@ -364,3 +430,66 @@ class ChatWorkerServiceTest(unittest.TestCase):
             self.assertEqual("done", assistant_message.status)
             self.assertEqual("图像研究结论", assistant_message.content_text)
             self.assertEqual("图像研究结论", assistant_message.response_json["answer"])
+
+    def test_process_message_by_id_marks_stream_interrupt_and_keeps_partial_answer(self) -> None:
+        session_factory = self._build_session_factory()
+        rag_service = _InterruptingRagService(stream_chunks=["部分", "回答"])
+        deltas: list[str] = []
+
+        async def on_delta(delta: str) -> None:
+            deltas.append(delta)
+
+        with session_factory() as db:
+            self._seed_user_and_session(db)
+            db.add_all(
+                [
+                    ChatMessage(
+                        chat_message_id="user-current",
+                        chat_session_id="session-1",
+                        role="user",
+                        content_text="请分析这个趋势",
+                        status="done",
+                        created_at=datetime(2026, 4, 1, 9, 10, 0),
+                    ),
+                    ChatMessage(
+                        chat_message_id="assistant-current",
+                        chat_session_id="session-1",
+                        role="assistant",
+                        content_text="",
+                        status="queued",
+                        reply_to_message_id="user-current",
+                        created_at=datetime(2026, 4, 1, 9, 10, 1),
+                    ),
+                ]
+            )
+            db.commit()
+
+        with session_factory() as verify_db:
+            assistant_message = verify_db.get(ChatMessage, "assistant-current")
+            self.assertIsNotNone(assistant_message)
+            assert assistant_message is not None
+            assistant_message.status = "running"
+            assistant_message.started_at = datetime(2026, 4, 1, 9, 10, 2)
+            verify_db.commit()
+
+        with patch("backend.app.service.chat_worker_service.SessionLocal", session_factory):
+            final_message = asyncio.run(
+                ChatWorkerService(rag_service=rag_service).process_message_by_id(
+                    "assistant-current",
+                    on_delta=on_delta,
+                )
+            )
+
+        self.assertEqual(["部分", "回答"], deltas)
+        self.assertEqual("interrupted", final_message.status)
+        self.assertEqual("部分回答", final_message.content_text)
+        self.assertIsNone(final_message.error_message)
+
+        with session_factory() as verify_db:
+            assistant_message = verify_db.get(ChatMessage, "assistant-current")
+            self.assertIsNotNone(assistant_message)
+            assert assistant_message is not None
+            self.assertEqual("interrupted", assistant_message.status)
+            self.assertEqual("部分回答", assistant_message.content_text)
+            self.assertIsNone(assistant_message.error_message)
+            self.assertIsNotNone(assistant_message.completed_at)

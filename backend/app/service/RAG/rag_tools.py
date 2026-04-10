@@ -8,7 +8,7 @@ from typing import Literal
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field
 
-from backend.app.schemas.rag_api import RagRequestContext, WebSearchResult
+from backend.app.schemas.rag_api import ExternalVisualResult, RagRequestContext, WebSearchResult
 from backend.app.schemas.rag_query import QueryPlan, QueryResult, REQUEST_IMAGE_REF
 from backend.app.service.RAG.query_service import QueryService
 from backend.app.service.RAG.web_search_service import WebSearchService
@@ -74,13 +74,21 @@ class RagTools:
             StructuredTool.from_function(
                 func=self._search_fashion_images_tool,
                 name="search_fashion_images",
-                description="Search fashion images either by text or by the uploaded request image.",
+                description=(
+                    "Search fashion images either by text or by the uploaded request image. "
+                    "Use this for visual style, accessory, outfit, silhouette, color, material, "
+                    "or similar-look queries such as glasses, bags, shoes, and apparel references."
+                ),
                 args_schema=_SearchFashionImagesArgs,
             ),
             StructuredTool.from_function(
                 func=self._search_fashion_fusion_tool,
                 name="search_fashion_fusion",
-                description="Run text+image fusion retrieval over fashion evidence packages.",
+                description=(
+                    "Run text+image fusion retrieval over fashion evidence packages. "
+                    "Default when the user uploads an image and asks for similar style, "
+                    "matching references, or visually grounded fashion analysis."
+                ),
                 args_schema=_SearchFashionFusionArgs,
             ),
             StructuredTool.from_function(
@@ -156,6 +164,10 @@ class RagTools:
     async def search_web(self, *, query: str) -> list[WebSearchResult]:
         """Search Brave for external evidence."""
         return await self._web_search_service.search(query=query, limit=self._request_context.limit)
+
+    async def search_external_visuals(self, *, query: str) -> list[ExternalVisualResult]:
+        """Search Brave image/LLM-context endpoints for visual fallback evidence."""
+        return await self._web_search_service.search_visual(query=query, limit=self._request_context.limit)
 
     def _search_fashion_articles_tool(self, query: str) -> str:
         result = self.search_fashion_articles(query=self._require_query(query, field_name="query"))

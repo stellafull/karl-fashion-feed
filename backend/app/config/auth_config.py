@@ -2,7 +2,14 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def _default_chat_attachment_root() -> str:
+    """Return the workspace-local default attachment storage path."""
+    return str(Path(__file__).resolve().parents[2] / "data" / "chat_attachments")
 
 
 class AuthSettings(BaseSettings):
@@ -24,7 +31,7 @@ class AuthSettings(BaseSettings):
     CORS_ALLOWED_ORIGINS: str = "http://localhost:3000"
 
     # Chat attachment storage
-    CHAT_ATTACHMENT_ROOT: str = "/root/karl-fashion-feed/backend/data/chat_attachments"
+    CHAT_ATTACHMENT_ROOT: str = _default_chat_attachment_root()
 
     @property
     def cors_origins_list(self) -> list[str]:

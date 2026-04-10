@@ -45,6 +45,105 @@ export interface FeedData {
   topics: Topic[];
 }
 
+interface DigestFeedItem {
+  id: string;
+  facet: string;
+  title: string;
+  dek: string;
+  image: string;
+  published: string;
+  article_count: number;
+  source_count: number;
+  source_names: string[];
+}
+
+interface DigestFeedResponse {
+  digests: DigestFeedItem[];
+}
+
+const DIGEST_CATEGORY_CONFIG: Record<
+  string,
+  { name: string; icon: string }
+> = {
+  runway_series: { name: "秀场/系列", icon: "Sparkles" },
+  street_style: { name: "街拍/造型", icon: "Camera" },
+  trend_summary: { name: "趋势总结", icon: "TrendingUp" },
+  brand_market: { name: "品牌/市场", icon: "Building2" },
+};
+
+function buildCategories(digests: DigestFeedItem[]): Category[] {
+  const categories: Category[] = [{ id: "all", name: "全部", icon: "Newspaper" }];
+  const seen = new Set<string>();
+
+  for (const digest of digests) {
+    if (seen.has(digest.facet)) {
+      continue;
+    }
+    seen.add(digest.facet);
+    const config = DIGEST_CATEGORY_CONFIG[digest.facet] ?? {
+      name: digest.facet,
+      icon: "Newspaper",
+    };
+    categories.push({
+      id: digest.facet,
+      name: config.name,
+      icon: config.icon,
+    });
+  }
+
+  return categories;
+}
+
+function mapDigestToTopic(digest: DigestFeedItem): Topic {
+  const categoryConfig = DIGEST_CATEGORY_CONFIG[digest.facet] ?? {
+    name: digest.facet,
+    icon: "Newspaper",
+  };
+  const uniqueSourceNames = Array.from(new Set(digest.source_names));
+
+  return {
+    id: digest.id,
+    title: digest.title,
+    summary: digest.dek,
+    key_points: [
+      digest.dek,
+      `综合 ${digest.article_count} 篇报道，覆盖 ${digest.source_count} 个来源。`,
+    ],
+    tags: [categoryConfig.name, ...uniqueSourceNames.slice(0, 3)],
+    category: digest.facet,
+    category_name: categoryConfig.name,
+    image: digest.image,
+    published: digest.published,
+    article_count: digest.article_count,
+    sources: uniqueSourceNames.map((sourceName) => ({
+      name: sourceName,
+      title: `${sourceName} 报道`,
+      link: "#",
+      lang: "",
+    })),
+  };
+}
+
+function mapDigestFeedToFeedData(payload: DigestFeedResponse): FeedData {
+  const digests = payload.digests ?? [];
+  const topics = digests.map(mapDigestToTopic);
+  const sources = Array.from(
+    new Set(digests.flatMap((digest) => digest.source_names ?? []))
+  );
+
+  return {
+    meta: {
+      generated_at: new Date().toISOString(),
+      total_topics: topics.length,
+      total_articles: topics.reduce((sum, topic) => sum + topic.article_count, 0),
+      sources_count: sources.length,
+      sources,
+    },
+    categories: buildCategories(digests),
+    topics,
+  };
+}
+
 export type SortMode = "newest" | "oldest" | "most-sources";
 
 // ─── Hook ──────────────────────────────────────────────────────────────────
@@ -61,8 +160,8 @@ export function useFeedData() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await apiClient.get<FeedData>("/stories/feed");
-        setData(response.data);
+        const response = await apiClient.get<DigestFeedResponse>("/digests/feed");
+        setData(mapDigestFeedToFeedData(response.data));
       } catch (e) {
         setError(e instanceof Error ? e.message : "Unknown error");
       } finally {

@@ -1,12 +1,14 @@
-import { Clock3, Filter, Layers3, Sparkles } from "lucide-react";
-import type { FeedMeta, Topic } from "@/hooks/useFeedData";
+import { Clock3, Filter, Layers3, Sparkles, ArrowUpDown } from "lucide-react";
+import type { FeedMeta, SortMode, Topic } from "@/hooks/useFeedData";
 import { formatChinaDateTimeFull } from "@/lib/time";
 
 interface DiscoverRailProps {
   meta: FeedMeta;
   topics: Topic[];
+  sortMode: SortMode;
   availableSources: string[];
   selectedSources: string[];
+  onSortChange: (mode: SortMode) => void;
   onToggleSource: (source: string) => void;
   onClearSources: () => void;
 }
@@ -28,12 +30,17 @@ function buildTopTags(topics: Topic[]) {
 export default function DiscoverRail({
   meta,
   topics,
+  sortMode,
   availableSources,
   selectedSources,
+  onSortChange,
   onToggleSource,
   onClearSources,
 }: DiscoverRailProps) {
   const topTags = buildTopTags(topics);
+  const isPublishedSort = sortMode === "newest" || sortMode === "oldest";
+  const publishedSortLabel =
+    sortMode === "oldest" ? "发布时间 ↑" : "发布时间 ↓";
 
   return (
     <aside className="space-y-4">
@@ -59,6 +66,41 @@ export default function DiscoverRail({
             <p className="mt-1 text-xs leading-relaxed">
               {formatChinaDateTimeFull(meta.generated_at)}
             </p>
+          </div>
+        </div>
+
+        <div className="mt-5 border-t border-[#ece3d7] pt-5">
+          <div className="flex items-center gap-2 text-sm font-medium text-[#1f1c18]">
+          <ArrowUpDown className="h-4 w-4 text-[#9f7d45]" />
+          排序方式
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() =>
+                onSortChange(sortMode === "oldest" ? "newest" : "oldest")
+              }
+              className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs transition-colors ${
+                isPublishedSort
+                  ? "border-[#ceb083] bg-[#f2e7d6] text-[#2b241d]"
+                  : "border-[#ddd4c7] bg-[#fffdfa] text-[#6f685f] hover:border-[#c8b18a] hover:text-[#1f1c18]"
+              }`}
+            >
+              <ArrowUpDown className="h-3.5 w-3.5" />
+              <span>{publishedSortLabel}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onSortChange("most-sources")}
+              className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs transition-colors ${
+                sortMode === "most-sources"
+                  ? "border-[#ceb083] bg-[#f2e7d6] text-[#2b241d]"
+                  : "border-[#ddd4c7] bg-[#fffdfa] text-[#6f685f] hover:border-[#c8b18a] hover:text-[#1f1c18]"
+              }`}
+            >
+              <Layers3 className="h-3.5 w-3.5" />
+              <span>来源最多</span>
+            </button>
           </div>
         </div>
       </section>

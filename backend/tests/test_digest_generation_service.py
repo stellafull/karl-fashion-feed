@@ -179,6 +179,8 @@ class DigestGenerationServiceTest(unittest.TestCase):
                     story_keys=("story-1",),
                     article_ids=("article-1",),
                     editorial_angle="秀场单稿",
+                    title_zh="秀场标题",
+                    dek_zh="秀场导语",
                     source_names=("Vogue",),
                 ),
                 ResolvedDigestPlan(
@@ -187,6 +189,8 @@ class DigestGenerationServiceTest(unittest.TestCase):
                     story_keys=("story-1", "story-2"),
                     article_ids=("article-2",),
                     editorial_angle="趋势综合稿",
+                    title_zh="趋势标题",
+                    dek_zh="趋势导语",
                     source_names=("WWD",),
                 ),
             ]
@@ -238,6 +242,8 @@ class DigestGenerationServiceTest(unittest.TestCase):
                     story_keys=("story-1",),
                     article_ids=("article-1", "article-2"),
                     editorial_angle="秀场单稿",
+                    title_zh="秀场标题",
+                    dek_zh="秀场导语",
                     source_names=("Vogue", "WWD"),
                 ),
                 ResolvedDigestPlan(
@@ -246,6 +252,8 @@ class DigestGenerationServiceTest(unittest.TestCase):
                     story_keys=("story-1", "story-2"),
                     article_ids=("article-2",),
                     editorial_angle="趋势综合稿",
+                    title_zh="趋势标题",
+                    dek_zh="趋势导语",
                     source_names=("WWD",),
                 ),
             ]
@@ -357,6 +365,8 @@ class DigestGenerationServiceTest(unittest.TestCase):
                     story_keys=("story-1",),
                     article_ids=("article-1",),
                     editorial_angle="秀场单稿",
+                    title_zh="秀场标题",
+                    dek_zh="秀场导语",
                     source_names=("Vogue",),
                 )
             ]
@@ -385,6 +395,8 @@ class DigestGenerationServiceTest(unittest.TestCase):
                     story_keys=("story-1",),
                     article_ids=("article-1",),
                     editorial_angle="秀场单稿",
+                    title_zh="秀场标题",
+                    dek_zh="秀场导语",
                     source_names=("Vogue",),
                 )
             ]

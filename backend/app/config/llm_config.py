@@ -21,6 +21,7 @@ class Configuration(BaseModel):
 
     base_url: str = DEFAULT_OPENAI_BASE_URL
     api_key: str | None = None
+    use_responses_api: bool = False
     max_structured_output_retries: int = 3
     story_summarization_model: str = "kimi-k2.5"
     story_summarization_model_max_tokens: int = 4000
@@ -47,6 +48,12 @@ class Configuration(BaseModel):
                 configurable=configurable,
                 configurable_keys=("api_key",),
                 default=None,
+            ),
+            "use_responses_api": _resolve_bool(
+                env_keys=("USE_RESPONSES_API", "OPENAI_USE_RESPONSES_API"),
+                configurable=configurable,
+                configurable_keys=("use_responses_api",),
+                default=False,
             ),
             "max_structured_output_retries": _resolve_numeric(
                 env_keys=("MAX_STRUCTURED_OUTPUT_RETRIES", "STORY_SUMMARIZATION_MAX_STRUCTURED_OUTPUT_RETRIES"),
@@ -166,6 +173,40 @@ def _resolve_numeric(
         value = configurable.get(key)
         if value is not None:
             return value
+    return default
+
+
+def _resolve_bool(
+    *,
+    env_keys: tuple[str, ...],
+    configurable: dict[str, Any],
+    configurable_keys: tuple[str, ...],
+    default: bool,
+) -> bool:
+    true_values = {"1", "true", "yes", "on"}
+    false_values = {"0", "false", "no", "off"}
+
+    for env_key in env_keys:
+        value = os.getenv(env_key)
+        if value is None:
+            continue
+        normalized = value.strip().lower()
+        if normalized in true_values:
+            return True
+        if normalized in false_values:
+            return False
+
+    for key in configurable_keys:
+        value = configurable.get(key)
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if normalized in true_values:
+                return True
+            if normalized in false_values:
+                return False
+
     return default
 
 

@@ -14,7 +14,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app.config.llm_config import Configuration
-from backend.app.models import Article, Digest, PipelineRun, ensure_article_storage_schema
+from backend.app.models import (
+    Article,
+    ArticleImage,
+    Digest,
+    PipelineRun,
+    ensure_article_storage_schema,
+)
 from backend.app.prompts.digest_report_writing_prompt import build_digest_report_writing_prompt
 from backend.app.schemas.llm.digest_report_writing import DigestReportWritingSchema
 from backend.app.service.digest_packaging_service import ResolvedDigestPlan
@@ -65,6 +71,7 @@ def _build_session(root_path: Path) -> Session:
                 title_raw="Article 1",
                 summary_raw="Summary 1",
                 markdown_rel_path="2026/03/30/article-1.md",
+                hero_image_id="image-1",
             ),
             Article(
                 article_id="article-2",
@@ -77,6 +84,23 @@ def _build_session(root_path: Path) -> Session:
                 title_raw="Article 2",
                 summary_raw="Summary 2",
                 markdown_rel_path="2026/03/30/article-2.md",
+                hero_image_id="image-2",
+            ),
+            ArticleImage(
+                image_id="image-1",
+                article_id="article-1",
+                source_url="https://img.example.com/article-1-hero.jpg",
+                normalized_url="https://img.example.com/article-1-hero.jpg",
+                role="hero",
+                position=0,
+            ),
+            ArticleImage(
+                image_id="image-2",
+                article_id="article-2",
+                source_url="https://img.example.com/article-2-hero.jpg",
+                normalized_url="https://img.example.com/article-2-hero.jpg",
+                role="hero",
+                position=0,
             ),
         ]
     )
@@ -198,6 +222,10 @@ class DigestReportWritingServiceTest(unittest.TestCase):
         self.assertEqual("本日品牌动作速写", written.title_zh)
         self.assertEqual("导语摘要", written.dek_zh)
         self.assertEqual("# 正文\n\n聚合后的内容", written.body_markdown)
+        self.assertEqual(
+            "https://img.example.com/article-2-hero.jpg",
+            written.hero_image_url,
+        )
         self.assertEqual(["Vogue", "WWD"], written.source_names_json)
         self.assertEqual(2, written.source_article_count)
         self.assertEqual(
@@ -286,3 +314,60 @@ class DigestReportWritingServiceTest(unittest.TestCase):
             self.assertEqual("user", prompt_payload["invoke_payload"]["messages"][0]["role"])
             self.assertIn("structured_response", response_payload)
             self.assertEqual("本日品牌动作速写", response_payload["structured_response"]["title_zh"])
+
+    def test_write_digest_falls_back_to_first_article_image_when_hero_image_id_is_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            session = _build_session(Path(tmp_dir))
+            self.addCleanup(session.close)
+            article = session.get(Article, "article-1")
+            self.assertIsNotNone(article)
+            article.hero_image_id = None
+            session.add(
+                ArticleImage(
+                    image_id="image-1-inline",
+                    article_id="article-1",
+                    source_url="https://img.example.com/article-1-inline.jpg",
+                    normalized_url="https://img.example.com/article-1-inline.jpg",
+                    role="inline",
+                    position=1,
+                )
+            )
+            session.commit()
+            service = DigestReportWritingService(
+                agent=_FakeAgent(
+                    [
+                        DigestReportWritingSchema.model_validate(
+                            {
+                                "title_zh": "本日品牌动作速写",
+                                "dek_zh": "导语摘要",
+                                "body_markdown": "# 正文\n\n聚合后的内容",
+                                "source_article_ids": ["article-1"],
+                            }
+                        )
+                    ]
+                ),
+                markdown_root=Path(tmp_dir),
+                rate_limiter=_build_fake_rate_limiter(),
+            )
+
+            written = asyncio.run(
+                service.write_digest(
+                    session,
+                    run_id="run-1",
+                    plan=ResolvedDigestPlan(
+                        business_date=date(2026, 3, 30),
+                        facet="trend_summary",
+                        story_keys=("story-1",),
+                        article_ids=("article-1",),
+                        editorial_angle="用品牌动作解释趋势变化",
+                        title_zh="包装阶段标题",
+                        dek_zh="包装阶段导语",
+                        source_names=("Vogue",),
+                    ),
+                )
+            )
+
+        self.assertEqual(
+            "https://img.example.com/article-1-hero.jpg",
+            written.hero_image_url,
+        )

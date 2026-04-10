@@ -97,7 +97,7 @@ class ChatMessage(Base):
         String(16),
         nullable=False,
         default="done",
-        comment="消息状态：done/queued/running/failed",
+        comment="消息状态：done/queued/running/interrupted/failed",
     )
 
     # Message relationships

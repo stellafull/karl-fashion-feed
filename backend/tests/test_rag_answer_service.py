@@ -9,6 +9,7 @@ from langchain_core.messages import AIMessage, AIMessageChunk
 
 from backend.app.config.llm_config import Configuration
 from backend.app.schemas.rag_api import (
+    ExternalVisualResult,
     RagAnswerResponse,
     RagQueryRequest,
     RagRequestContext,
@@ -76,6 +77,7 @@ def _build_image_hit(
             source_name="Vogue",
             canonical_url=canonical_url,
         ),
+        caption_raw="green acetate rectangular sunglasses",
         grounding_texts=[
             GroundingText(
                 chunk_index=3,
@@ -154,6 +156,25 @@ def _build_image_result() -> QueryResult:
     )
 
 
+def _build_external_visual_result(
+    *,
+    title: str = "External glasses guide",
+    source_page_url: str = "https://news.example.com/glasses",
+) -> ExternalVisualResult:
+    return ExternalVisualResult(
+        provider="brave_image",
+        query="推荐类似风格的眼镜",
+        title=title,
+        url="https://images.example.com/glasses.jpg",
+        source_name="news.example.com",
+        source_page_url=source_page_url,
+        image_url="https://images.example.com/glasses.jpg",
+        thumbnail_url="https://images.example.com/thumb.jpg",
+        snippet="Rectangular acetate sunglasses guide",
+        content="Rectangular acetate sunglasses with bold color frames.",
+    )
+
+
 class _FakeQueryService:
     def __init__(self, responses: dict[tuple[str, str | None, str | None], QueryResult]) -> None:
         self._responses = responses
@@ -166,11 +187,24 @@ class _FakeQueryService:
 
 
 class _FakeWebSearchService:
-    def __init__(self, responses: dict[str, list[WebSearchResult]]) -> None:
+    def __init__(
+        self,
+        responses: dict[str, list[WebSearchResult]],
+        *,
+        visual_responses: dict[str, list[ExternalVisualResult]] | None = None,
+    ) -> None:
         self._responses = responses
+        self._visual_responses = visual_responses or {}
+        self.calls: list[tuple[str, int]] = []
+        self.visual_calls: list[tuple[str, int]] = []
 
     async def search(self, *, query: str, limit: int) -> list[WebSearchResult]:
+        self.calls.append((query, limit))
         return self._responses[query][:limit]
+
+    async def search_visual(self, *, query: str, limit: int) -> list[ExternalVisualResult]:
+        self.visual_calls.append((query, limit))
+        return self._visual_responses[query][:limit]
 
 
 class _ToolCallingResearchAgent:
@@ -212,6 +246,11 @@ class _FakeSynthesisAgent:
                     "chunk": AIMessageChunk(content=chunk),
                 },
             }
+
+
+class _UnexpectedResearchAgent:
+    async def ainvoke(self, payload: dict[str, object], config: dict[str, object] | None = None):
+        raise AssertionError("research agent should not be invoked")
 
 
 class RagAnswerServiceTest(unittest.TestCase):
@@ -341,6 +380,325 @@ class RagAnswerServiceTest(unittest.TestCase):
 
         self.assertEqual("无工具回答", response.answer)
         self.assertEqual({"recursion_limit": 7}, research_call_log[0]["config"])
+
+    def test_answer_bypasses_react_loop_for_visual_text_query(self) -> None:
+        article_result = _build_article_result()
+        image_result = _build_image_result()
+        query_service = _FakeQueryService(
+            {
+                ("fusion", "找类似风格的绿色粗框眼镜", None): QueryResult(
+                    query_plan=QueryPlan(
+                        plan_type="fusion",
+                        text_query="找类似风格的绿色粗框眼镜",
+                        filters=QueryFilters(),
+                        output_goal="reference_lookup",
+                        limit=5,
+                    ),
+                    text_results=article_result.text_results,
+                    image_results=image_result.image_results,
+                    packages=[
+                        ArticlePackage(
+                            article_id="article-1",
+                            title="秀场趋势",
+                            summary="本季轮廓摘要",
+                            text_hits=article_result.text_results,
+                            image_hits=image_result.image_results,
+                            combined_score=0.91,
+                        )
+                    ],
+                    citation_locators=[
+                        *article_result.citation_locators,
+                        *image_result.citation_locators,
+                    ],
+                )
+            }
+        )
+        synthesis_agent = _FakeSynthesisAgent(answer="视觉答案 [c1] [c2] [c3]")
+        service = RagAnswerService(
+            tools_factory=lambda context: RagTools(
+                request_context=context,
+                query_service=query_service,
+                web_search_service=_FakeWebSearchService({}),
+            ),
+            research_agent_factory=lambda _rag_tools: _UnexpectedResearchAgent(),
+            synthesis_agent=synthesis_agent,
+        )
+
+        response = asyncio.run(
+            service.answer(
+                request=RagQueryRequest(query="找类似风格的绿色粗框眼镜"),
+                request_context=RagRequestContext(limit=5),
+            )
+        )
+
+        self.assertEqual("视觉答案 [C1] [C2] [C3]", response.answer)
+        self.assertEqual([("fusion", "找类似风格的绿色粗框眼镜", None)], query_service.calls)
+        self.assertEqual(1, len(response.packages[0].image_hits))
+
+    def test_answer_bypasses_react_loop_for_uploaded_request_images(self) -> None:
+        image_result = _build_image_result()
+        query_service = _FakeQueryService(
+            {
+                ("fusion", "请根据这张图推荐类似风格的眼镜", "request_image"): QueryResult(
+                    query_plan=QueryPlan(
+                        plan_type="fusion",
+                        text_query="请根据这张图推荐类似风格的眼镜",
+                        image_query="request_image",
+                        filters=QueryFilters(),
+                        output_goal="reference_lookup",
+                        limit=5,
+                    ),
+                    text_results=[],
+                    image_results=image_result.image_results,
+                    packages=image_result.packages,
+                    citation_locators=image_result.citation_locators,
+                )
+            }
+        )
+        synthesis_agent = _FakeSynthesisAgent(answer="图片答案 [c1] [c2]")
+        request_context = RagRequestContext(
+            limit=5,
+            request_images=[RequestImageInput(mime_type="image/jpeg", base64_data="aGVsbG8=")],
+        )
+        service = RagAnswerService(
+            tools_factory=lambda context: RagTools(
+                request_context=context,
+                query_service=query_service,
+                web_search_service=_FakeWebSearchService({}),
+            ),
+            research_agent_factory=lambda _rag_tools: _UnexpectedResearchAgent(),
+            synthesis_agent=synthesis_agent,
+        )
+
+        response = asyncio.run(
+            service.answer(
+                request=RagQueryRequest(query="请根据这张图推荐类似风格的眼镜"),
+                request_context=request_context,
+            )
+        )
+
+        self.assertEqual("图片答案 [C1] [C2]", response.answer)
+        self.assertEqual(
+            [("fusion", "请根据这张图推荐类似风格的眼镜", "request_image")],
+            query_service.calls,
+        )
+        content_blocks = synthesis_agent.invoke_payloads[0]["messages"][0]["content"]
+        self.assertTrue(all(block["type"] == "text" for block in content_blocks))
+        self.assertIn('"strong_image_hit_count": 1', content_blocks[0]["text"])
+
+    def test_answer_adds_external_fallback_when_visual_hits_are_weak(self) -> None:
+        weak_image_hit = RetrievalHit(
+            retrieval_unit_id="image:weak-1",
+            modality="image",
+            article_id="article-1",
+            article_image_id="image-1",
+            content="Only generic article title",
+            score=0.7,
+            citation_locator=CitationLocator(
+                article_id="article-1",
+                article_image_id="image-1",
+                chunk_index=None,
+                source_name="Vogue",
+                canonical_url="https://example.com/articles/a1",
+            ),
+            caption_raw="",
+            alt_text="",
+            credit_raw="",
+            context_snippet=(
+                "Celebrity Celebrity News Alana Haim Embraces Trending Greens With Versace "
+                "in the Day and Louis Vuitton at Night"
+            ),
+            title="Weak image evidence",
+            summary="summary",
+        )
+        fusion_result = QueryResult(
+            query_plan=QueryPlan(
+                plan_type="fusion",
+                text_query="请推荐类似风格的眼镜",
+                image_query="request_image",
+                filters=QueryFilters(),
+                output_goal="reference_lookup",
+                limit=5,
+            ),
+            text_results=[],
+            image_results=[weak_image_hit],
+            packages=[
+                ArticlePackage(
+                    article_id="article-1",
+                    title="Weak image evidence",
+                    summary="summary",
+                    text_hits=[],
+                    image_hits=[weak_image_hit],
+                    combined_score=0.7,
+                )
+            ],
+            citation_locators=[weak_image_hit.citation_locator],
+        )
+        query_service = _FakeQueryService(
+            {
+                ("fusion", "请根据这张图推荐类似风格的眼镜", "request_image"): fusion_result,
+            }
+        )
+        visual_results = [_build_external_visual_result()]
+        web_search_service = _FakeWebSearchService(
+            {},
+            visual_responses={"推荐类似风格的眼镜": visual_results},
+        )
+        synthesis_agent = _FakeSynthesisAgent(answer="图片+外部补充 [c1] [v1]")
+        request_context = RagRequestContext(
+            limit=5,
+            request_images=[RequestImageInput(mime_type="image/jpeg", base64_data="aGVsbG8=")],
+        )
+        service = RagAnswerService(
+            tools_factory=lambda context: RagTools(
+                request_context=context,
+                query_service=query_service,
+                web_search_service=web_search_service,
+            ),
+            research_agent_factory=lambda _rag_tools: _UnexpectedResearchAgent(),
+            synthesis_agent=synthesis_agent,
+        )
+
+        response = asyncio.run(
+            service.answer(
+                request=RagQueryRequest(query="请根据这张图推荐类似风格的眼镜"),
+                request_context=request_context,
+            )
+        )
+
+        self.assertEqual("图片+外部补充 [C1] [V1]", response.answer)
+        self.assertEqual([("推荐类似风格的眼镜", 5)], web_search_service.visual_calls)
+        self.assertEqual([], response.web_results)
+        self.assertEqual(visual_results, response.external_visual_results)
+        content_blocks = synthesis_agent.invoke_payloads[0]["messages"][0]["content"]
+        self.assertIn('"visual_external_fallback_triggered": true', content_blocks[0]["text"])
+        self.assertIn('"strong_image_hit_count": 0', content_blocks[0]["text"])
+        self.assertIn('"suppressed_image_hits"', content_blocks[0]["text"])
+        self.assertIn('"external_visual_results"', content_blocks[0]["text"])
+
+    def test_answer_does_not_add_external_visual_fallback_when_request_is_image_only(self) -> None:
+        image_result = _build_image_result()
+        query_service = _FakeQueryService(
+            {
+                ("image_only", None, "request_image"): QueryResult(
+                    query_plan=QueryPlan(
+                        plan_type="image_only",
+                        image_query="request_image",
+                        filters=QueryFilters(),
+                        output_goal="similarity_search",
+                        limit=5,
+                    ),
+                    text_results=[],
+                    image_results=image_result.image_results,
+                    packages=image_result.packages,
+                    citation_locators=image_result.citation_locators,
+                )
+            }
+        )
+        web_search_service = _FakeWebSearchService(
+            {},
+            visual_responses={"unused": [_build_external_visual_result()]},
+        )
+        synthesis_agent = _FakeSynthesisAgent(answer="只用内部图片证据 [c1] [c2]")
+        request_context = RagRequestContext(
+            limit=5,
+            request_images=[RequestImageInput(mime_type="image/jpeg", base64_data="aGVsbG8=")],
+        )
+        service = RagAnswerService(
+            tools_factory=lambda context: RagTools(
+                request_context=context,
+                query_service=query_service,
+                web_search_service=web_search_service,
+            ),
+            research_agent_factory=lambda _rag_tools: _UnexpectedResearchAgent(),
+            synthesis_agent=synthesis_agent,
+        )
+
+        response = asyncio.run(
+            service.answer(
+                request=RagQueryRequest(query=None),
+                request_context=request_context,
+            )
+        )
+
+        self.assertEqual([], response.external_visual_results)
+        self.assertEqual([], web_search_service.visual_calls)
+
+    def test_context_snippet_counts_as_strong_image_evidence(self) -> None:
+        contextual_image_hit = RetrievalHit(
+            retrieval_unit_id="image:contextual-1",
+            modality="image",
+            article_id="article-1",
+            article_image_id="image-1",
+            content="context only",
+            score=0.7,
+            citation_locator=CitationLocator(
+                article_id="article-1",
+                article_image_id="image-1",
+                chunk_index=None,
+                source_name="Vogue",
+                canonical_url="https://example.com/articles/a1",
+            ),
+            caption_raw="",
+            alt_text="",
+            credit_raw="",
+            context_snippet="Green rectangular sunglasses seen in the look recap.",
+        )
+        service = RagAnswerService(synthesis_agent=_FakeSynthesisAgent(answer="ok"))
+
+        strong_count, weak_count = service._summarize_image_hit_strength(
+            [
+                ArticlePackage(
+                    article_id="article-1",
+                    image_hits=[contextual_image_hit],
+                    text_hits=[],
+                    combined_score=0.7,
+                )
+            ],
+            query="请推荐类似风格的绿色粗框眼镜",
+        )
+
+        self.assertEqual((1, 0), (strong_count, weak_count))
+
+    def test_boilerplate_context_snippet_remains_weak_image_evidence(self) -> None:
+        boilerplate_image_hit = RetrievalHit(
+            retrieval_unit_id="image:boilerplate-1",
+            modality="image",
+            article_id="article-1",
+            article_image_id="image-1",
+            content="context only",
+            score=0.7,
+            citation_locator=CitationLocator(
+                article_id="article-1",
+                article_image_id="image-1",
+                chunk_index=None,
+                source_name="Vogue",
+                canonical_url="https://example.com/articles/a1",
+            ),
+            caption_raw="",
+            alt_text="",
+            credit_raw="",
+            context_snippet=(
+                "Celebrity Celebrity News Alana Haim Embraces Trending Greens With Versace "
+                "in the Day and Louis Vuitton at Night"
+            ),
+            title="Alana Haim Embraces Trending Greens With Versace in the Day and Louis Vuitton at Night",
+        )
+        service = RagAnswerService(synthesis_agent=_FakeSynthesisAgent(answer="ok"))
+
+        strong_count, weak_count = service._summarize_image_hit_strength(
+            [
+                ArticlePackage(
+                    article_id="article-1",
+                    image_hits=[boilerplate_image_hit],
+                    text_hits=[],
+                    combined_score=0.7,
+                )
+            ],
+            query="请推荐类似风格的绿色粗框眼镜",
+        )
+
+        self.assertEqual((0, 1), (strong_count, weak_count))
 
     def test_answer_uses_configuration_max_react_tool_calls_for_recursion_limit(self) -> None:
         research_call_log: list[dict[str, object]] = []

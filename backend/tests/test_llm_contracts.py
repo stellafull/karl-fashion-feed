@@ -191,7 +191,7 @@ class LlmContractsTest(unittest.TestCase):
             max_completion_tokens=999,
             timeout=88,
             max_retries=6,
-            use_responses_api=True,
+            use_responses_api=False,
         )
 
     @patch("backend.app.service.langchain_model_factory.ChatOpenAI")
@@ -224,7 +224,7 @@ class LlmContractsTest(unittest.TestCase):
             max_completion_tokens=444,
             timeout=33,
             max_retries=3,
-            use_responses_api=True,
+            use_responses_api=False,
         )
 
     def test_build_story_model_returns_agent_compatible_model(self) -> None:

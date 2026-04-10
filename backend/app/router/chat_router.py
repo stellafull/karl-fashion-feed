@@ -5,11 +5,12 @@ from __future__ import annotations
 import asyncio
 import json
 from collections.abc import AsyncIterator
+from contextlib import suppress
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
 from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -28,9 +29,15 @@ from backend.app.schemas.chat import (
     StreamMessageStartResponse,
 )
 from backend.app.service.chat_worker_service import ChatWorkerService
+from backend.app.service.chat_run_registry import get_chat_run_registry
 from backend.app.service.chat_session_service import (
+    build_user_message_response_json,
+    build_interrupted_response_json,
     build_message_response,
     create_message_round,
+    parse_story_context_json,
+    is_terminal_message_status,
+    mark_message_interrupted,
     normalize_optional_text,
 )
 
@@ -41,6 +48,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 async def create_message(
     chat_session_id: Annotated[str | None, Form()] = None,
     content_text: Annotated[str | None, Form()] = None,
+    story_context_json: Annotated[str | None, Form()] = None,
     images: Annotated[list[UploadFile] | None, File()] = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -48,6 +56,7 @@ async def create_message(
     """Create a new message in a chat session."""
     normalized_content_text = normalize_optional_text(content_text)
     normalized_images = images or []
+    story_context = parse_story_context_json(story_context_json)
 
     session, user_message, assistant_message = await create_message_round(
         db=db,
@@ -56,6 +65,9 @@ async def create_message(
         content_text=normalized_content_text,
         images=normalized_images,
         assistant_status="queued",
+        user_response_json=build_user_message_response_json(
+            story_context=story_context,
+        ),
     )
 
     return CreateMessageResponse(
@@ -67,8 +79,10 @@ async def create_message(
 
 @router.post("/messages/stream")
 async def create_message_stream(
+    request: Request,
     chat_session_id: Annotated[str | None, Form()] = None,
     content_text: Annotated[str | None, Form()] = None,
+    story_context_json: Annotated[str | None, Form()] = None,
     images: Annotated[list[UploadFile] | None, File()] = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -76,6 +90,7 @@ async def create_message_stream(
     """Create a message and stream the assistant answer over SSE."""
     normalized_content_text = normalize_optional_text(content_text)
     normalized_images = images or []
+    story_context = parse_story_context_json(story_context_json)
     session, user_message, assistant_message = await create_message_round(
         db=db,
         current_user=current_user,
@@ -83,6 +98,9 @@ async def create_message_stream(
         content_text=normalized_content_text,
         images=normalized_images,
         assistant_status="running",
+        user_response_json=build_user_message_response_json(
+            story_context=story_context,
+        ),
     )
     assistant_message.started_at = datetime.now(UTC).replace(tzinfo=None)
     db.commit()
@@ -98,8 +116,12 @@ async def create_message_stream(
     async def event_stream() -> AsyncIterator[str]:
         queue: asyncio.Queue[tuple[str, dict] | None] = asyncio.Queue()
         chat_worker_service = ChatWorkerService()
+        chat_run_registry = get_chat_run_registry()
+        assistant_chunks: list[str] = []
+        disconnected = False
 
         async def on_delta(delta: str) -> None:
+            assistant_chunks.append(delta)
             await queue.put(
                 (
                     "assistant_delta",
@@ -113,15 +135,29 @@ async def create_message_stream(
                     assistant_message.chat_message_id,
                     on_delta=on_delta,
                 )
-                event_name = (
-                    "message_complete"
-                    if final_message.status == "done"
-                    else "message_error"
-                )
+                if final_message.status == "done":
+                    event_name = "message_complete"
+                elif final_message.status == "interrupted":
+                    event_name = "message_interrupted"
+                else:
+                    event_name = "message_error"
                 await queue.put(
                     (
                         event_name,
                         final_message.model_dump(mode="json"),
+                    )
+                )
+            except asyncio.CancelledError:
+                interrupted_message = _finalize_interrupted_message(
+                    db=db,
+                    assistant_message_id=assistant_message.chat_message_id,
+                    partial_content="".join(assistant_chunks),
+                    default_message_type="chat",
+                )
+                await queue.put(
+                    (
+                        "message_interrupted",
+                        interrupted_message.model_dump(mode="json"),
                     )
                 )
             except Exception as error:
@@ -135,17 +171,41 @@ async def create_message_stream(
                 await queue.put(None)
 
         processing_task = asyncio.create_task(run_processing())
-        yield _format_sse(
-            "message_start",
-            start_payload.model_dump(mode="json"),
+        chat_run_registry.register(
+            assistant_message.chat_message_id,
+            processing_task.cancel,
         )
-        while True:
-            event = await queue.get()
-            if event is None:
-                break
-            event_name, payload = event
-            yield _format_sse(event_name, payload)
-        await processing_task
+        try:
+            yield _format_sse(
+                "message_start",
+                start_payload.model_dump(mode="json"),
+            )
+            while True:
+                try:
+                    event = await asyncio.wait_for(queue.get(), timeout=0.2)
+                except TimeoutError:
+                    if await request.is_disconnected():
+                        disconnected = True
+                        break
+                    continue
+                if event is None:
+                    break
+                event_name, payload = event
+                yield _format_sse(event_name, payload)
+        finally:
+            chat_run_registry.unregister(assistant_message.chat_message_id)
+            if not processing_task.done():
+                disconnected = True
+                processing_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await processing_task
+            if disconnected:
+                _finalize_interrupted_message(
+                    db=db,
+                    assistant_message_id=assistant_message.chat_message_id,
+                    partial_content="".join(assistant_chunks),
+                    default_message_type="chat",
+                )
 
     return StreamingResponse(
         event_stream(),
@@ -181,6 +241,60 @@ async def get_message(
         )
 
     return build_message_response(db, message)
+
+
+@router.post("/messages/{message_id}/interrupt", response_model=MessageResponse)
+async def interrupt_message(
+    message_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> MessageResponse:
+    """Interrupt one active assistant message for the current user."""
+    message = _get_owned_message(db, message_id=message_id, current_user=current_user)
+    if message.role != "assistant":
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Only assistant messages can be interrupted",
+        )
+
+    if is_terminal_message_status(message.status):
+        return build_message_response(db, message)
+
+    if message.status == "queued":
+        mark_message_interrupted(
+            message,
+            response_json=build_interrupted_response_json(
+                message,
+                default_message_type=_infer_message_type(message),
+            ),
+        )
+        db.commit()
+        return build_message_response(db, message)
+
+    if get_chat_run_registry().cancel(message_id):
+        interrupted_message = await _wait_for_terminal_message(db, message_id=message_id)
+        if interrupted_message is not None:
+            return build_message_response(db, interrupted_message)
+
+    db.expire_all()
+    refreshed_message = db.get(ChatMessage, message_id)
+    if refreshed_message is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Message not found",
+        )
+
+    if not is_terminal_message_status(refreshed_message.status):
+        mark_message_interrupted(
+            refreshed_message,
+            response_json=build_interrupted_response_json(
+                refreshed_message,
+                default_message_type=_infer_message_type(refreshed_message),
+            ),
+        )
+        db.commit()
+
+    return build_message_response(db, refreshed_message)
 
 
 @router.get("/sessions", response_model=SessionListResponse)
@@ -304,3 +418,82 @@ async def get_attachment_content(
 def _format_sse(event: str, data: dict) -> str:
     """Serialize one SSE event frame."""
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+def _finalize_interrupted_message(
+    *,
+    db: Session,
+    assistant_message_id: str,
+    partial_content: str | None = None,
+    default_message_type: str | None = None,
+) -> MessageResponse:
+    message = db.get(ChatMessage, assistant_message_id)
+    if message is None:
+        raise ValueError(f"Assistant message not found: {assistant_message_id}")
+
+    if message.status in {"done", "failed"}:
+        return build_message_response(db, message)
+
+    if partial_content is not None and message.content_text != partial_content:
+        message.content_text = partial_content
+
+    message_type = default_message_type or _infer_message_type(message)
+    mark_message_interrupted(
+        message,
+        response_json=build_interrupted_response_json(
+            message,
+            default_message_type=message_type,
+        ),
+    )
+    db.commit()
+    return build_message_response(db, message)
+
+
+def _get_owned_message(
+    db: Session,
+    *,
+    message_id: str,
+    current_user: User,
+) -> ChatMessage:
+    message = db.get(ChatMessage, message_id)
+    if message is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Message not found",
+        )
+
+    session = db.get(ChatSession, message.chat_session_id)
+    if session is None or session.user_id != current_user.user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied to this message",
+        )
+    return message
+
+
+def _infer_message_type(message: ChatMessage) -> str:
+    if isinstance(message.response_json, dict):
+        message_type = message.response_json.get("message_type")
+        if isinstance(message_type, str) and message_type.strip():
+            return message_type.strip()
+    return "chat"
+
+
+async def _wait_for_terminal_message(
+    db: Session,
+    *,
+    message_id: str,
+    timeout_seconds: float = 1.0,
+    poll_interval_seconds: float = 0.05,
+) -> ChatMessage | None:
+    elapsed_seconds = 0.0
+    while elapsed_seconds < timeout_seconds:
+        await asyncio.sleep(poll_interval_seconds)
+        elapsed_seconds += poll_interval_seconds
+        db.expire_all()
+        message = db.get(ChatMessage, message_id)
+        if message is None:
+            return None
+        if is_terminal_message_status(message.status):
+            return message
+    return None

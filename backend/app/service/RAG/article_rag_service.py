@@ -28,7 +28,7 @@ class RagInsertResult:
 
 
 def build_image_retrieval_content(_article: Article, image: ArticleImage) -> str:
-    """Build image-lane retrieval content from source-provided text signals."""
+    """Build image-lane retrieval content from source-provided image text only."""
     parts = [
         image.caption_raw,
         image.alt_text,

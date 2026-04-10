@@ -4,10 +4,16 @@ import ChatAnswerContent from "@/components/ChatAnswerContent";
 import { Button } from "@/components/ui/button";
 import ChatComposer from "@/components/ChatComposer";
 import { useImageAttachments } from "@/hooks/useImageAttachments";
-import type { ChatSession, ChatUploadAttachment } from "@/lib/chat";
+import {
+  buildAssistantPendingLabel,
+  findPendingDeepResearchInterrupt,
+  type ChatSession,
+  type ChatUploadAttachment,
+} from "@/lib/chat";
 import {
   buildChatViewportSpacing,
   buildLastMessageScrollKey,
+  findLatestRunningAssistantMessageId,
 } from "@/lib/chat-stream";
 import { cn } from "@/lib/utils";
 import { formatChinaDateTimeShort } from "@/lib/time";
@@ -19,22 +25,44 @@ interface ChatPageProps {
     question: string,
     attachments?: ChatUploadAttachment[]
   ) => Promise<string | null>;
+  onCreateDeepResearchSession: (
+    question: string,
+    attachments?: ChatUploadAttachment[]
+  ) => Promise<string | null>;
   onSendMessage: (
     sessionId: string,
     question: string,
     attachments?: ChatUploadAttachment[]
   ) => Promise<void>;
+  onSendDeepResearchMessage: (
+    sessionId: string,
+    question: string,
+    attachments?: ChatUploadAttachment[]
+  ) => Promise<void>;
+  canInterruptMessage: (
+    sessionId: string,
+    assistantMessageId: string
+  ) => boolean;
+  onInterruptMessage: (
+    sessionId: string,
+    assistantMessageId: string
+  ) => void | Promise<void>;
 }
 
 export default function ChatPage({
   sessionId,
   sessions,
   onCreateSession,
+  onCreateDeepResearchSession,
   onSendMessage,
+  onSendDeepResearchMessage,
+  canInterruptMessage,
+  onInterruptMessage,
 }: ChatPageProps) {
   const [, setLocation] = useLocation();
   const [draft, setDraft] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeepResearchMode, setIsDeepResearchMode] = useState(false);
   const [composerHeight, setComposerHeight] = useState(0);
   const composerRef = useRef<HTMLDivElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -46,10 +74,37 @@ export default function ChatPage({
     resetAttachments,
   } = useImageAttachments();
   const session = sessionId
-    ? sessions.find((item) => item.id === sessionId) ?? null
+    ? (sessions.find(item => item.id === sessionId) ?? null)
     : null;
+  const pendingDeepResearchInterrupt =
+    findPendingDeepResearchInterrupt(session);
   const lastMessage = session?.messages[session.messages.length - 1];
-  const scrollKey = session ? buildLastMessageScrollKey(session.messages) : "empty";
+  const runningAssistantMessage = session
+    ? [...session.messages]
+        .reverse()
+        .find(
+          message =>
+            message.role === "assistant" && message.status === "running"
+        ) ?? null
+    : null;
+  const runningAssistantMessageId = session
+    ? findLatestRunningAssistantMessageId(session.messages)
+    : null;
+  const isAssistantRunning = runningAssistantMessage !== null;
+  const isDeepResearchRunning =
+    isAssistantRunning &&
+    runningAssistantMessage?.responseJson?.["message_type"] === "deep_research";
+  const canInterrupt = Boolean(
+    sessionId &&
+      runningAssistantMessageId &&
+      canInterruptMessage(sessionId, runningAssistantMessageId)
+  );
+  const useDeepResearchSubmit =
+    pendingDeepResearchInterrupt !== null || isDeepResearchMode;
+  const isComposerBusy = isSubmitting || isAssistantRunning;
+  const scrollKey = session
+    ? buildLastMessageScrollKey(session.messages)
+    : "empty";
   const viewportSpacing = buildChatViewportSpacing(composerHeight);
 
   useEffect(() => {
@@ -59,7 +114,9 @@ export default function ChatPage({
     }
 
     const syncComposerHeight = () => {
-      setComposerHeight(Math.ceil(composerElement.getBoundingClientRect().height));
+      setComposerHeight(
+        Math.ceil(composerElement.getBoundingClientRect().height)
+      );
     };
 
     syncComposerHeight();
@@ -88,7 +145,7 @@ export default function ChatPage({
 
   const handleSubmit = async () => {
     const question = draft.trim();
-    if ((!question && attachments.length === 0) || isSubmitting) {
+    if ((!question && attachments.length === 0) || isComposerBusy) {
       return;
     }
 
@@ -97,7 +154,9 @@ export default function ChatPage({
       const attachments = buildOutgoingAttachments();
 
       if (!sessionId) {
-        const nextSessionId = await onCreateSession(question, attachments);
+        const nextSessionId = useDeepResearchSubmit
+          ? await onCreateDeepResearchSession(question, attachments)
+          : await onCreateSession(question, attachments);
         if (nextSessionId) {
           setLocation(`/chat/${nextSessionId}`);
         }
@@ -105,7 +164,11 @@ export default function ChatPage({
         return;
       }
 
-      await onSendMessage(sessionId, question, attachments);
+      if (useDeepResearchSubmit) {
+        await onSendDeepResearchMessage(sessionId, question, attachments);
+      } else {
+        await onSendMessage(sessionId, question, attachments);
+      }
       resetComposer();
     } finally {
       setIsSubmitting(false);
@@ -116,11 +179,15 @@ export default function ChatPage({
     return (
       <div className="flex h-full min-h-0 items-center justify-center bg-[#f7f3eb] px-6 text-center">
         <div className="max-w-md space-y-4">
-          <p className="font-display text-4xl text-[#2b241d]">Session not found</p>
+          <p className="font-display text-4xl text-[#2b241d]">
+            Session not found
+          </p>
           <p className="text-base leading-7 text-[#675f56]">
             当前历史会话不存在，可能已被清空。你可以直接开启一个新会话。
           </p>
-          <Button onClick={() => setLocation("/chat/new")}>Start new chat</Button>
+          <Button onClick={() => setLocation("/chat/new")}>
+            Start new chat
+          </Button>
         </div>
       </div>
     );
@@ -152,8 +219,8 @@ export default function ChatPage({
                 What&apos;s on your mind today?
               </h1>
               <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-[#6a6258]">
-                Ask about trends, brands, market signals, or use the existing story feed
-                as company knowledge.
+                Ask about trends, brands, market signals, or use the existing
+                story feed as company knowledge.
               </p>
             </div>
           </div>
@@ -161,10 +228,14 @@ export default function ChatPage({
 
         {session && (
           <div className="mx-auto w-full max-w-[56rem] space-y-6 py-3">
-            {session.messages.map((message) => (
+            {session.messages.map(message => (
               <div
                 key={message.id}
-                className={message.role === "user" ? "flex justify-end" : "flex justify-start"}
+                className={
+                  message.role === "user"
+                    ? "flex justify-end"
+                    : "flex justify-start"
+                }
               >
                 <div
                   className={cn(
@@ -177,10 +248,16 @@ export default function ChatPage({
                   <div className="mb-2 text-[11px] uppercase tracking-[0.18em] text-[#8a8379]">
                     {message.role === "user" ? "You" : "Fashion Feed AI"}
                   </div>
-                  <div className={message.role === "assistant" ? "" : "whitespace-pre-line text-[15px] leading-7"}>
+                  <div
+                    className={
+                      message.role === "assistant"
+                        ? ""
+                        : "whitespace-pre-line text-[15px] leading-7"
+                    }
+                  >
                     {message.attachments.length > 0 && (
                       <div className="mb-2.5 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                        {message.attachments.map((attachment) => (
+                        {message.attachments.map(attachment => (
                           <div
                             key={attachment.id}
                             className="overflow-hidden rounded-[18px] border border-black/10 bg-black/5"
@@ -195,8 +272,8 @@ export default function ChatPage({
                         ))}
                       </div>
                     )}
-                    {message.content && (
-                      message.role === "assistant" ? (
+                    {message.content &&
+                      (message.role === "assistant" ? (
                         <ChatAnswerContent
                           content={message.content}
                           citations={message.citations}
@@ -205,15 +282,24 @@ export default function ChatPage({
                         <div className="whitespace-pre-line text-[15px] leading-7">
                           {message.content}
                         </div>
-                      )
-                    )}
+                      ))}
                     {!message.content && message.role === "assistant" && (
                       <div className="text-[15px] leading-7 text-[#6d655b]">
                         {message.status === "failed"
                           ? message.errorMessage || "回答失败，请稍后重试。"
-                          : "正在生成回答..."}
+                          : message.status === "interrupted"
+                            ? message.errorMessage || "已停止生成。"
+                            : buildAssistantPendingLabel(message) ||
+                              "正在生成回答..."}
                       </div>
                     )}
+                    {message.content &&
+                      message.role === "assistant" &&
+                      message.status === "interrupted" && (
+                        <div className="mt-3 text-sm text-[#7d766d]">
+                          {message.errorMessage || "已停止生成。"}
+                        </div>
+                      )}
                   </div>
                   <div className="mt-2.5 text-[11px] text-[#8a8379]">
                     {formatChinaDateTimeShort(message.createdAt)}
@@ -237,13 +323,31 @@ export default function ChatPage({
         placeholder={
           "Ask anything about fashion trends, brands, or recent signals..."
         }
-        statusLabel="Thinking"
+        statusLabel={
+          pendingDeepResearchInterrupt
+            ? "继续深度研究"
+            : isDeepResearchRunning || useDeepResearchSubmit
+              ? "深度研究模式"
+              : "Thinking"
+        }
         submitLabel="Send"
-        submittingLabel="Sending"
-        isSubmitting={isSubmitting}
+        submittingLabel={isAssistantRunning && !canInterrupt ? "Stopping" : "Sending"}
+        isSubmitting={isComposerBusy}
+        isInterruptible={canInterrupt}
+        interruptLabel={isDeepResearchRunning ? "停止研究" : "停止生成"}
+        onInterrupt={() => {
+          if (sessionId && runningAssistantMessageId) {
+            return onInterruptMessage(sessionId, runningAssistantMessageId);
+          }
+        }}
         attachments={attachments}
         onAppendFiles={appendFiles}
         onRemoveAttachment={removeAttachment}
+        isDeepResearchMode={useDeepResearchSubmit}
+        onToggleDeepResearch={() => setIsDeepResearchMode(current => !current)}
+        disableDeepResearchToggle={
+          pendingDeepResearchInterrupt !== null || isAssistantRunning
+        }
       />
     </div>
   );

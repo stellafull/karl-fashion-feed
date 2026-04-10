@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useFeedData } from "@/hooks/useFeedData";
 import { useChatSessions } from "@/hooks/useChatSessions";
-import type { ChatUploadAttachment } from "@/lib/chat";
+import type { ChatUploadAttachment, StoryChatContext } from "@/lib/chat";
 import DiscoverPage from "@/pages/DiscoverPage";
 import ChatPage from "@/pages/ChatPage";
 import StoryPage from "@/pages/StoryPage";
@@ -50,8 +50,13 @@ export default function AppShell() {
     error: chatError,
     sessions,
     createSession,
+    createDeepResearchSession,
     createStorySession,
+    createStoryDeepResearchSession,
     sendMessage,
+    sendDeepResearchMessage,
+    canInterruptMessage,
+    interruptMessage,
   } = useChatSessions();
 
   const currentTitle = useMemo(() => {
@@ -76,10 +81,16 @@ export default function AppShell() {
   ) => sendMessage(sessionId, question, attachments);
 
   const createStorySessionWithAttachments = async (
-    topic: (typeof topics)[number],
     question: string,
-    attachments: ChatUploadAttachment[] = []
-  ) => createStorySession(topic, question, attachments);
+    attachments: ChatUploadAttachment[] = [],
+    storyContext?: StoryChatContext
+  ) => createStorySession(question, attachments, storyContext);
+
+  const createStoryDeepResearchSessionWithAttachments = async (
+    question: string,
+    attachments: ChatUploadAttachment[] = [],
+    storyContext?: StoryChatContext
+  ) => createStoryDeepResearchSession(question, attachments, storyContext);
 
   const openDiscover = () => {
     setLocation("/discover");
@@ -207,7 +218,11 @@ export default function AppShell() {
               <ChatPage
                 sessions={sessions}
                 onCreateSession={createSessionWithAttachments}
+                onCreateDeepResearchSession={createDeepResearchSession}
                 onSendMessage={sendMessageWithAttachments}
+                onSendDeepResearchMessage={sendDeepResearchMessage}
+                canInterruptMessage={canInterruptMessage}
+                onInterruptMessage={interruptMessage}
               />
             </Route>
             <Route path="/chat/:sessionId">
@@ -216,15 +231,21 @@ export default function AppShell() {
                   sessionId={params.sessionId}
                   sessions={sessions}
                   onCreateSession={createSessionWithAttachments}
+                  onCreateDeepResearchSession={createDeepResearchSession}
                   onSendMessage={sendMessageWithAttachments}
+                  onSendDeepResearchMessage={sendDeepResearchMessage}
+                  canInterruptMessage={canInterruptMessage}
+                  onInterruptMessage={interruptMessage}
                 />
               )}
             </Route>
             <Route path="/stories/:storyId">
               {(params) => (
                 <StoryPage
+                  storyId={params.storyId}
                   topic={data.topics.find((topic) => topic.id === params.storyId) ?? null}
                   onStartStoryChat={createStorySessionWithAttachments}
+                  onStartStoryDeepResearch={createStoryDeepResearchSessionWithAttachments}
                 />
               )}
             </Route>

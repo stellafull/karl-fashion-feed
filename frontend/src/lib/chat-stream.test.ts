@@ -4,6 +4,8 @@ import {
   appendAssistantDeltaToSessions,
   buildChatViewportSpacing,
   buildLastMessageScrollKey,
+  findLatestRunningAssistantMessageId,
+  interruptAssistantMessageInSessions,
 } from "./chat-stream";
 
 function createSession(): ChatSession {
@@ -20,6 +22,7 @@ function createSession(): ChatSession {
         createdAt: "2026-03-24T09:00:00.000Z",
         status: "done",
         errorMessage: null,
+        responseJson: null,
         citations: [],
         attachments: [],
       },
@@ -30,6 +33,7 @@ function createSession(): ChatSession {
         createdAt: "2026-03-24T09:00:01.000Z",
         status: "done",
         errorMessage: null,
+        responseJson: null,
         citations: [],
         attachments: [],
       },
@@ -40,6 +44,7 @@ function createSession(): ChatSession {
         createdAt: "2026-03-24T09:00:02.000Z",
         status: "done",
         errorMessage: null,
+        responseJson: null,
         citations: [],
         attachments: [],
       },
@@ -50,6 +55,10 @@ function createSession(): ChatSession {
         createdAt: "2026-03-24T09:00:03.000Z",
         status: "running",
         errorMessage: null,
+        responseJson: {
+          message_type: "chat",
+          phase: "retrieving",
+        },
         citations: [],
         attachments: [],
       },
@@ -71,6 +80,10 @@ describe("appendAssistantDeltaToSessions", () => {
     expect(nextSessions[0]?.messages[1]?.content).toBe("Earlier answer");
     expect(nextSessions[0]?.messages[3]?.content).toBe("Hello");
     expect(nextSessions[0]?.messages[3]?.status).toBe("running");
+    expect(nextSessions[0]?.messages[3]?.responseJson).toEqual({
+      message_type: "chat",
+      phase: "answering",
+    });
   });
 });
 
@@ -88,6 +101,28 @@ describe("buildLastMessageScrollKey", () => {
     const after = buildLastMessageScrollKey(nextSessions[0]!.messages);
 
     expect(after).not.toBe(before);
+  });
+});
+
+describe("interruptAssistantMessageInSessions", () => {
+  it("marks the active assistant as interrupted", () => {
+    const nextSessions = interruptAssistantMessageInSessions(
+      [createSession()],
+      "session-1",
+      "assistant-new"
+    );
+
+    expect(nextSessions[0]?.messages[1]?.status).toBe("done");
+    expect(nextSessions[0]?.messages[3]?.status).toBe("interrupted");
+    expect(nextSessions[0]?.messages[3]?.errorMessage).toBe("回答已中断。");
+  });
+});
+
+describe("findLatestRunningAssistantMessageId", () => {
+  it("returns the latest running assistant id", () => {
+    expect(findLatestRunningAssistantMessageId(createSession().messages)).toBe(
+      "assistant-new"
+    );
   });
 });
 

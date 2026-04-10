@@ -14,7 +14,7 @@
 - `backend/app/scripts/run_chat_worker.py`  
   启动聊天消息 worker。
 - `backend/app/scripts/init_root_user.py`  
-  初始化 root 用户。
+  初始化本地联调账号：`root/root`、`ROOT1/ROOT1`、`ROOT2/ROOT2`。
 - `backend/app/scripts/压测.py`  
   压测脚本。
 

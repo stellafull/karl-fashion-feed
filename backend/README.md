@@ -135,7 +135,7 @@
 ## 当前边界
 
 - 当前 public API 暴露 auth / chat / memory / rag / digest，以及
-  `POST /api/v1/deep-research/messages/research`
+  `POST /api/v1/deep-research/messages/stream`
 - deep research 不单独引入 research session 表；继续复用 `chat_session` /
   `chat_message` 作为用户可见持久化层，LangGraph thread continuity 走 Postgres checkpoint
 - 旧 `story` / `story_article` 表不允许出现在 runtime schema bootstrap 中

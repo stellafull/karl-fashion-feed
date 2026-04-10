@@ -7,7 +7,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
-from backend.app.schemas.rag_query import ArticlePackage, QueryFilters, QueryPlan
+from backend.app.schemas.rag_query import ArticlePackage, QueryFilters, QueryPlan, RetrievalHit
 
 
 class RequestImageInput(BaseModel):
@@ -71,6 +71,41 @@ class WebSearchResult(BaseModel):
     title: str
     url: str
     snippet: str
+    content: str = ""
+
+
+class ExternalVisualResult(BaseModel):
+    """One normalized external visual evidence result."""
+
+    provider: Literal["brave_image", "brave_llm_context"]
+    query: str
+    title: str
+    url: str
+    source_name: str | None = None
+    source_page_url: str | None = None
+    image_url: str | None = None
+    thumbnail_url: str | None = None
+    snippet: str = ""
+    content: str = ""
+
+
+class AnswerVisiblePackage(BaseModel):
+    """Filtered evidence package used only for answer synthesis."""
+
+    article_id: str
+    title: str | None = None
+    summary: str | None = None
+    text_hits: list[RetrievalHit] = Field(default_factory=list)
+    image_hits: list[RetrievalHit] = Field(default_factory=list)
+    combined_score: float
+
+
+class AnswerVisibleEvidence(BaseModel):
+    """Filtered answer-visible evidence separate from raw retrieval output."""
+
+    packages: list[AnswerVisiblePackage] = Field(default_factory=list)
+    suppressed_image_hits: list[RetrievalHit] = Field(default_factory=list)
+    external_visual_results: list[ExternalVisualResult] = Field(default_factory=list)
 
 
 class AnswerCitation(BaseModel):
@@ -95,3 +130,4 @@ class RagAnswerResponse(BaseModel):
     packages: list[ArticlePackage] = Field(default_factory=list)
     query_plans: list[QueryPlan] = Field(default_factory=list)
     web_results: list[WebSearchResult] = Field(default_factory=list)
+    external_visual_results: list[ExternalVisualResult] = Field(default_factory=list)

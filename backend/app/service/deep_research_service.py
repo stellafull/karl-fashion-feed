@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import traceback
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
@@ -17,7 +18,12 @@ from backend.app.core.database import SessionLocal
 from backend.app.models.chat import ChatAttachment, ChatMessage, ChatSession
 from backend.app.schemas.chat import MessageResponse
 from backend.app.schemas.rag_api import RequestImageInput
-from backend.app.service.chat_session_service import build_message_response
+from backend.app.service.chat_session_service import (
+    build_interrupted_response_json,
+    build_message_response,
+    extract_story_context_text,
+    mark_message_interrupted,
+)
 
 AsyncEventHandler = Callable[[str, dict[str, Any]], Awaitable[None]]
 
@@ -82,6 +88,10 @@ class DeepResearchService:
         if session is None:
             raise ValueError("Session not found")
 
+        clarification_question: str | None = None
+        full_report = ""
+        final_result: dict[str, Any] | None = None
+
         try:
             user_message = db.get(ChatMessage, message.reply_to_message_id)
             if user_message is None:
@@ -103,10 +113,6 @@ class DeepResearchService:
                 ),
                 "object_context": object_context,
             }
-
-            clarification_question: str | None = None
-            full_report = ""
-            final_result: dict[str, Any] | None = None
 
             async for mode, data in graph.astream(
                 input_state,
@@ -171,6 +177,17 @@ class DeepResearchService:
             message.status = "done"
             message.error_message = None
             message.completed_at = datetime.now(UTC).replace(tzinfo=None)
+        except asyncio.CancelledError:
+            message.content_text = full_report or clarification_question or message.content_text
+            interrupted_payload = build_interrupted_response_json(
+                message,
+                default_message_type="deep_research",
+            )
+            interrupted_payload["thread_id"] = thread_id
+            mark_message_interrupted(
+                message,
+                response_json=interrupted_payload,
+            )
         except Exception as error:
             message.status = "failed"
             message.error_message = (
@@ -204,10 +221,14 @@ class DeepResearchService:
         user_message: ChatMessage,
         reuse_thread: bool,
     ) -> list[HumanMessage | AIMessage | SystemMessage]:
+        story_context_text = extract_story_context_text(user_message)
         if reuse_thread:
+            prefix_messages: list[HumanMessage | AIMessage | SystemMessage] = []
+            if story_context_text:
+                prefix_messages.append(SystemMessage(content=story_context_text))
             if user_message.content_text:
-                return [HumanMessage(content=user_message.content_text)]
-            return [HumanMessage(content="请继续刚才的深度研究。")]
+                return prefix_messages + [HumanMessage(content=user_message.content_text)]
+            return prefix_messages + [HumanMessage(content="请继续刚才的深度研究。")]
 
         recent_messages = list(
             reversed(
@@ -225,6 +246,8 @@ class DeepResearchService:
         )
 
         messages: list[HumanMessage | AIMessage | SystemMessage] = []
+        if story_context_text:
+            messages.append(SystemMessage(content=story_context_text))
         if session.compact_context:
             messages.append(
                 SystemMessage(content=f"会话历史摘要：{session.compact_context}")

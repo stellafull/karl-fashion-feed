@@ -1,5 +1,5 @@
 import { useRef, useState, type Ref } from "react";
-import { Plus, Sparkles, X } from "lucide-react";
+import { Microscope, Plus, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { PendingImageAttachment } from "@/hooks/useImageAttachments";
@@ -14,10 +14,16 @@ interface ChatComposerProps {
   submitLabel: string;
   submittingLabel: string;
   isSubmitting?: boolean;
+  isInterruptible?: boolean;
+  interruptLabel?: string;
+  onInterrupt?: () => void | Promise<void>;
   attachments: PendingImageAttachment[];
   onAppendFiles: (files: File[]) => void;
   onRemoveAttachment: (attachmentId: string) => void;
   onResetFileInput?: () => void;
+  isDeepResearchMode?: boolean;
+  onToggleDeepResearch?: () => void;
+  disableDeepResearchToggle?: boolean;
   containerRef?: Ref<HTMLDivElement>;
   className?: string;
   shellClassName?: string;
@@ -33,10 +39,16 @@ export default function ChatComposer({
   submitLabel,
   submittingLabel,
   isSubmitting = false,
+  isInterruptible = false,
+  interruptLabel = "停止",
+  onInterrupt,
   attachments,
   onAppendFiles,
   onRemoveAttachment,
   onResetFileInput,
+  isDeepResearchMode = false,
+  onToggleDeepResearch,
+  disableDeepResearchToggle = false,
   containerRef,
   className,
   shellClassName,
@@ -59,7 +71,10 @@ export default function ChatComposer({
   return (
     <div
       ref={containerRef}
-      className={cn("pointer-events-none absolute inset-x-0 bottom-0 z-20 px-4 pb-5 pt-2 md:px-8", className)}
+      className={cn(
+        "pointer-events-none absolute inset-x-0 bottom-0 z-20 px-4 pb-5 pt-2 md:px-8",
+        className
+      )}
     >
       <div className="mx-auto max-w-4xl pointer-events-auto">
         <div
@@ -70,15 +85,19 @@ export default function ChatComposer({
               : "border-[#e7decf]",
             shellClassName
           )}
-          onDragEnter={(event) => {
-            if (!Array.from(event.dataTransfer.items).some((item) => item.kind === "file")) {
+          onDragEnter={event => {
+            if (
+              !Array.from(event.dataTransfer.items).some(
+                item => item.kind === "file"
+              )
+            ) {
               return;
             }
 
             dragDepthRef.current += 1;
             setIsDraggingFiles(true);
           }}
-          onDragOver={(event) => {
+          onDragOver={event => {
             event.preventDefault();
           }}
           onDragLeave={() => {
@@ -87,7 +106,7 @@ export default function ChatComposer({
               setIsDraggingFiles(false);
             }
           }}
-          onDrop={(event) => {
+          onDrop={event => {
             event.preventDefault();
             dragDepthRef.current = 0;
             setIsDraggingFiles(false);
@@ -100,7 +119,7 @@ export default function ChatComposer({
             accept="image/*"
             multiple
             className="hidden"
-            onChange={(event) => {
+            onChange={event => {
               onAppendFiles(Array.from(event.target.files ?? []));
               onResetFileInput?.();
               if (fileInputRef.current) {
@@ -110,7 +129,7 @@ export default function ChatComposer({
           />
           {attachments.length > 0 && (
             <div className="grid grid-cols-3 gap-2 px-2 pb-3 sm:grid-cols-5">
-              {attachments.map((attachment) => (
+              {attachments.map(attachment => (
                 <div
                   key={attachment.id}
                   className="group ff-motion-soft relative overflow-hidden rounded-2xl border border-[#e4dccf] bg-[#faf7f1]"
@@ -134,9 +153,9 @@ export default function ChatComposer({
           )}
           <Textarea
             value={draft}
-            onChange={(event) => onDraftChange(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
+            onChange={event => onDraftChange(event.target.value)}
+            onKeyDown={event => {
+              if (event.key === "Enter" && !event.shiftKey && !isInterruptible) {
                 event.preventDefault();
                 void onSubmit();
               }
@@ -154,18 +173,48 @@ export default function ChatComposer({
               >
                 <Plus className="h-4 w-4" />
               </button>
-              <span className="rounded-full bg-[#f4efe5] px-3 py-1">{attachmentLabel}</span>
+              <span className="rounded-full bg-[#f4efe5] px-3 py-1">
+                {attachmentLabel}
+              </span>
+              {onToggleDeepResearch && (
+                <button
+                  type="button"
+                  onClick={onToggleDeepResearch}
+                  disabled={disableDeepResearchToggle}
+                  className={cn(
+                    "ff-motion-soft flex items-center gap-2 rounded-full border px-3 py-1 text-sm transition-colors",
+                    isDeepResearchMode
+                      ? "border-[#ceb083] bg-[#f2e7d6] text-[#2b241d]"
+                      : "border-[#ddd4c7] bg-white/80 text-[#7a7369] hover:border-[#c8b18a] hover:text-[#2b241d]",
+                    disableDeepResearchToggle && "cursor-not-allowed opacity-70"
+                  )}
+                  aria-pressed={isDeepResearchMode}
+                >
+                  <Microscope className="h-4 w-4" />
+                  <span>深度研究</span>
+                </button>
+              )}
             </div>
             <Button
               className={cn(
                 "ff-motion-soft rounded-full bg-[#1f1c18] px-5 text-[#f7f3eb] hover:bg-[#2c2721]",
                 submitButtonClassName
               )}
-              onClick={() => void onSubmit()}
-              disabled={isSubmitting}
+              onClick={() => {
+                if (isInterruptible) {
+                  void onInterrupt?.();
+                  return;
+                }
+                void onSubmit();
+              }}
+              disabled={isSubmitting && !isInterruptible}
             >
               <Sparkles className="h-4 w-4" />
-              {isSubmitting ? submittingLabel : submitLabel}
+              {isInterruptible
+                ? interruptLabel
+                : isSubmitting
+                  ? submittingLabel
+                  : submitLabel}
             </Button>
           </div>
         </div>

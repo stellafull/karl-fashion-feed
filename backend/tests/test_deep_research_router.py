@@ -34,6 +34,9 @@ from backend.app.router.deep_research_router import (  # noqa: E402
     router as deep_research_router,
 )
 from backend.app.schemas.chat import MessageResponse  # noqa: E402
+from backend.app.service.chat_interrupt_service import (  # noqa: E402
+    mark_message_interrupted as finalize_interrupted_message,
+)
 from backend.app.service.deep_research_graph_service import DeepResearchGraphService  # noqa: E402
 from backend.app.service.deep_research_service import DeepResearchService  # noqa: E402
 
@@ -117,6 +120,76 @@ class _CapturingRouterService:
             created_at=datetime.now(UTC).replace(tzinfo=None),
             completed_at=datetime.now(UTC).replace(tzinfo=None),
         )
+
+
+class _ClarifyingRouterService:
+    async def process_message_by_id(
+        self,
+        assistant_message_id: str,
+        *,
+        graph,
+        thread_id: str,
+        reuse_thread: bool,
+        on_event,
+    ) -> MessageResponse:
+        await on_event("clarification", {"question": "请确认要聚焦的品牌"})
+        return MessageResponse(
+            chat_message_id=assistant_message_id,
+            role="assistant",
+            content_text="请确认要聚焦的品牌",
+            status="done",
+            response_json={
+                "message_type": "deep_research",
+                "thread_id": thread_id,
+                "phase": "clarification",
+                "final_result": None,
+            },
+            error_message=None,
+            attachments=[],
+            created_at=datetime.now(UTC).replace(tzinfo=None),
+            completed_at=datetime.now(UTC).replace(tzinfo=None),
+        )
+
+
+class _InterruptedRouterService:
+    async def process_message_by_id(
+        self,
+        assistant_message_id: str,
+        *,
+        graph,
+        thread_id: str,
+        reuse_thread: bool,
+        on_event,
+    ) -> MessageResponse:
+        return MessageResponse(
+            chat_message_id=assistant_message_id,
+            role="assistant",
+            content_text="",
+            status="interrupted",
+            response_json={
+                "message_type": "deep_research",
+                "thread_id": thread_id,
+                "phase": "interrupted",
+                "final_result": None,
+            },
+            error_message=None,
+            attachments=[],
+            created_at=datetime.now(UTC).replace(tzinfo=None),
+            completed_at=datetime.now(UTC).replace(tzinfo=None),
+        )
+
+
+class _FailingRouterService:
+    async def process_message_by_id(
+        self,
+        assistant_message_id: str,
+        *,
+        graph,
+        thread_id: str,
+        reuse_thread: bool,
+        on_event,
+    ) -> MessageResponse:
+        raise RuntimeError("boom")
 
 
 class DeepResearchGraphServiceTest(unittest.TestCase):
@@ -455,6 +528,71 @@ class DeepResearchServiceTest(unittest.TestCase):
                 assistant_message.response_json,
             )
 
+    def test_process_message_by_id_marks_interrupt_when_graph_is_cancelled(self) -> None:
+        session_factory = self._build_session_factory()
+        service = DeepResearchService()
+
+        class _InterruptingGraph:
+            async def astream(self, input_state, *, config, stream_mode):
+                yield ("updates", {"planner": {}})
+                raise asyncio.CancelledError()
+
+        with session_factory() as db:
+            self._seed_user_and_session(db)
+            db.add_all(
+                [
+                    ChatMessage(
+                        chat_message_id="user-current",
+                        chat_session_id="session-1",
+                        role="user",
+                        content_text="继续研究",
+                        status="done",
+                        created_at=datetime(2026, 4, 1, 9, 5, 0),
+                    ),
+                    ChatMessage(
+                        chat_message_id="assistant-current",
+                        chat_session_id="session-1",
+                        role="assistant",
+                        content_text="",
+                        status="queued",
+                        reply_to_message_id="user-current",
+                        created_at=datetime(2026, 4, 1, 9, 5, 1),
+                    ),
+                ]
+            )
+            db.commit()
+
+        with patch("backend.app.service.deep_research_service.SessionLocal", session_factory):
+            result = asyncio.run(
+                service.process_message_by_id(
+                    "assistant-current",
+                    graph=_InterruptingGraph(),
+                    thread_id="thread-interrupted",
+                    reuse_thread=False,
+                )
+            )
+
+        self.assertEqual("interrupted", result.status)
+        self.assertEqual("", result.content_text)
+        self.assertEqual("interrupted", result.response_json["phase"])
+        self.assertEqual("thread-interrupted", result.response_json["thread_id"])
+
+        with session_factory() as verify_db:
+            assistant_message = verify_db.get(ChatMessage, "assistant-current")
+            self.assertIsNotNone(assistant_message)
+            assert assistant_message is not None
+            self.assertEqual("interrupted", assistant_message.status)
+            self.assertEqual(
+                {
+                    "message_type": "deep_research",
+                    "thread_id": "thread-interrupted",
+                    "phase": "interrupted",
+                },
+                assistant_message.response_json,
+            )
+            self.assertIsNone(assistant_message.error_message)
+            self.assertIsNotNone(assistant_message.completed_at)
+
 
 class DeepResearchRouterTest(unittest.TestCase):
     def _build_session_factory(self):
@@ -482,13 +620,13 @@ class DeepResearchRouterTest(unittest.TestCase):
         db.commit()
         return user
 
-    def test_stream_endpoint_prefixes_new_session_and_forwards_service_events(self) -> None:
-        session_factory = self._build_session_factory()
-        fake_service = _CapturingRouterService()
-
-        with session_factory() as db:
-            self._seed_user(db)
-
+    def _build_app(
+        self,
+        session_factory,
+        *,
+        current_user_id: str = "user-1",
+        deep_research_service=None,
+    ) -> FastAPI:
         app = FastAPI()
         app.include_router(deep_research_router)
         app.state.deep_research_graph_service = SimpleNamespace(graph="graph-instance")
@@ -498,8 +636,23 @@ class DeepResearchRouterTest(unittest.TestCase):
                 yield db
 
         app.dependency_overrides[get_db] = override_get_db
-        app.dependency_overrides[get_current_user] = lambda: SimpleNamespace(user_id="user-1")
-        app.dependency_overrides[get_deep_research_service] = lambda: fake_service
+        app.dependency_overrides[get_current_user] = lambda: SimpleNamespace(
+            user_id=current_user_id
+        )
+        if deep_research_service is not None:
+            app.dependency_overrides[get_deep_research_service] = (
+                lambda: deep_research_service
+            )
+        return app
+
+    def test_stream_endpoint_prefixes_new_session_and_forwards_service_events(self) -> None:
+        session_factory = self._build_session_factory()
+        fake_service = _CapturingRouterService()
+
+        with session_factory() as db:
+            self._seed_user(db)
+
+        app = self._build_app(session_factory, deep_research_service=fake_service)
 
         with (
             patch(
@@ -545,4 +698,307 @@ class DeepResearchRouterTest(unittest.TestCase):
                 "reuse_thread": False,
             },
             fake_service.calls[0],
+        )
+
+    def test_stream_endpoint_emits_clarification_event(self) -> None:
+        session_factory = self._build_session_factory()
+
+        with session_factory() as db:
+            self._seed_user(db)
+
+        app = self._build_app(
+            session_factory,
+            deep_research_service=_ClarifyingRouterService(),
+        )
+
+        with (
+            patch(
+                "backend.app.router.deep_research_router.uuid4",
+                return_value="thread-clarify",
+            ),
+            TestClient(app) as client,
+        ):
+            response = client.post(
+                "/deep-research/messages/stream",
+                data={"content_text": "请帮我继续深度研究"},
+            )
+
+        self.assertEqual(200, response.status_code)
+        events = _parse_sse_events(response.text)
+        self.assertEqual(
+            ["message_start", "clarification", "message_complete"],
+            [event_name for event_name, _ in events],
+        )
+        clarification_payload = events[1][1]
+        self.assertEqual("请确认要聚焦的品牌", clarification_payload["question"])
+        final_payload = events[2][1]
+        self.assertEqual("clarification", final_payload["response_json"]["phase"])
+        self.assertEqual("thread-clarify", final_payload["response_json"]["thread_id"])
+
+    def test_stream_endpoint_emits_message_interrupted_for_interrupted_service(self) -> None:
+        session_factory = self._build_session_factory()
+
+        with session_factory() as db:
+            self._seed_user(db)
+
+        app = self._build_app(
+            session_factory,
+            deep_research_service=_InterruptedRouterService(),
+        )
+
+        with TestClient(app) as client:
+            response = client.post(
+                "/deep-research/messages/stream",
+                data={"content_text": "中断用例"},
+            )
+
+        self.assertEqual(200, response.status_code)
+        events = _parse_sse_events(response.text)
+        self.assertEqual(
+            ["message_start", "message_interrupted"],
+            [event_name for event_name, _ in events],
+        )
+        interrupted_payload = events[1][1]
+        self.assertEqual("interrupted", interrupted_payload["status"])
+        self.assertEqual("interrupted", interrupted_payload["response_json"]["phase"])
+
+    def test_stream_endpoint_emits_message_error_when_service_raises(self) -> None:
+        session_factory = self._build_session_factory()
+
+        with session_factory() as db:
+            self._seed_user(db)
+
+        app = self._build_app(
+            session_factory,
+            deep_research_service=_FailingRouterService(),
+        )
+
+        with TestClient(app) as client:
+            response = client.post(
+                "/deep-research/messages/stream",
+                data={"content_text": "失败用例"},
+            )
+
+        self.assertEqual(200, response.status_code)
+        events = _parse_sse_events(response.text)
+        self.assertEqual(
+            ["message_start", "message_error"],
+            [event_name for event_name, _ in events],
+        )
+        self.assertEqual(
+            {"detail": "RuntimeError: boom"},
+            events[1][1],
+        )
+
+    def test_finalize_interrupted_message_marks_deep_research_phase_interrupted(
+        self,
+    ) -> None:
+        session_factory = self._build_session_factory()
+
+        with session_factory() as db:
+            self._seed_user(db)
+            db.add(
+                ChatSession(
+                    chat_session_id="session-interrupt",
+                    user_id="user-1",
+                    title="Deep Research",
+                    created_at=datetime(2026, 4, 1, 11, 0, 0),
+                    updated_at=datetime(2026, 4, 1, 11, 0, 0),
+                )
+            )
+            db.add(
+                ChatMessage(
+                    chat_message_id="assistant-interrupt",
+                    chat_session_id="session-interrupt",
+                    role="assistant",
+                    content_text="",
+                    status="running",
+                    response_json={
+                        "message_type": "deep_research",
+                        "thread_id": "thread-interrupt",
+                        "phase": "running",
+                    },
+                    created_at=datetime(2026, 4, 1, 11, 0, 1),
+                )
+            )
+            db.commit()
+
+        with patch("backend.app.service.chat_interrupt_service.SessionLocal", session_factory):
+            result = finalize_interrupted_message(
+                "assistant-interrupt",
+                default_message_type="deep_research",
+            )
+
+        self.assertEqual("interrupted", result.status)
+        self.assertIsNone(result.error_message)
+        self.assertEqual(
+            {
+                "message_type": "deep_research",
+                "thread_id": "thread-interrupt",
+                "phase": "interrupted",
+            },
+            result.response_json,
+        )
+
+    def test_stream_endpoint_rejects_reused_thread_without_session_id(self) -> None:
+        session_factory = self._build_session_factory()
+
+        with session_factory() as db:
+            self._seed_user(db)
+
+        app = self._build_app(session_factory)
+
+        with TestClient(app) as client:
+            response = client.post(
+                "/deep-research/messages/stream",
+                data={"content_text": "继续研究", "thread_id": "thread-existing"},
+            )
+
+        self.assertEqual(422, response.status_code)
+        self.assertEqual(
+            {"detail": "chat_session_id is required when reusing a deep research thread"},
+            response.json(),
+        )
+
+    def test_stream_endpoint_rejects_foreign_session_access(self) -> None:
+        session_factory = self._build_session_factory()
+
+        with session_factory() as db:
+            self._seed_user(db)
+            db.add(
+                User(
+                    user_id="user-2",
+                    login_name="other",
+                    display_name="Other",
+                    email="other@example.com",
+                    password_hash="hash",
+                    auth_source="local",
+                    is_active=True,
+                    is_admin=False,
+                )
+            )
+            db.add(
+                ChatSession(
+                    chat_session_id="foreign-session",
+                    user_id="user-2",
+                    title="Foreign",
+                    created_at=datetime(2026, 4, 1, 10, 0, 0),
+                    updated_at=datetime(2026, 4, 1, 10, 0, 0),
+                )
+            )
+            db.commit()
+
+        app = self._build_app(session_factory)
+
+        with TestClient(app) as client:
+            response = client.post(
+                "/deep-research/messages/stream",
+                data={
+                    "chat_session_id": "foreign-session",
+                    "content_text": "继续研究",
+                    "thread_id": "thread-existing",
+                },
+            )
+
+        self.assertEqual(403, response.status_code)
+        self.assertEqual({"detail": "Access denied to this chat session"}, response.json())
+
+    def test_stream_endpoint_rejects_unknown_thread_in_owned_session(self) -> None:
+        session_factory = self._build_session_factory()
+
+        with session_factory() as db:
+            self._seed_user(db, )
+            db.add(
+                ChatSession(
+                    chat_session_id="session-existing",
+                    user_id="user-1",
+                    title="Existing session",
+                    created_at=datetime(2026, 4, 1, 10, 0, 0),
+                    updated_at=datetime(2026, 4, 1, 10, 0, 0),
+                )
+            )
+            db.commit()
+
+        app = self._build_app(session_factory)
+
+        with TestClient(app) as client:
+            response = client.post(
+                "/deep-research/messages/stream",
+                data={
+                    "chat_session_id": "session-existing",
+                    "content_text": "继续研究",
+                    "thread_id": "thread-missing",
+                },
+            )
+
+        self.assertEqual(404, response.status_code)
+        self.assertEqual(
+            {"detail": "Deep research thread not found in this chat session"},
+            response.json(),
+        )
+
+    def test_stream_endpoint_rejects_stale_thread_reuse_without_pending_clarification(self) -> None:
+        session_factory = self._build_session_factory()
+
+        with session_factory() as db:
+            self._seed_user(db)
+            db.add(
+                ChatSession(
+                    chat_session_id="session-existing",
+                    user_id="user-1",
+                    title="Existing session",
+                    created_at=datetime(2026, 4, 1, 10, 0, 0),
+                    updated_at=datetime(2026, 4, 1, 10, 3, 0),
+                )
+            )
+            db.add_all(
+                [
+                    ChatMessage(
+                        chat_message_id="assistant-clarify",
+                        chat_session_id="session-existing",
+                        role="assistant",
+                        content_text="请确认聚焦品牌",
+                        status="done",
+                        response_json={
+                            "message_type": "deep_research",
+                            "thread_id": "thread-existing",
+                            "phase": "clarification",
+                        },
+                        created_at=datetime(2026, 4, 1, 10, 1, 0),
+                        completed_at=datetime(2026, 4, 1, 10, 1, 30),
+                    ),
+                    ChatMessage(
+                        chat_message_id="assistant-final",
+                        chat_session_id="session-existing",
+                        role="assistant",
+                        content_text="最终报告",
+                        status="done",
+                        response_json={
+                            "message_type": "deep_research",
+                            "thread_id": "thread-existing",
+                            "phase": "final_report",
+                        },
+                        created_at=datetime(2026, 4, 1, 10, 2, 0),
+                        completed_at=datetime(2026, 4, 1, 10, 2, 30),
+                    ),
+                ]
+            )
+            db.commit()
+
+        app = self._build_app(session_factory)
+
+        with TestClient(app) as client:
+            response = client.post(
+                "/deep-research/messages/stream",
+                data={
+                    "chat_session_id": "session-existing",
+                    "content_text": "继续研究",
+                    "thread_id": "thread-existing",
+                },
+            )
+
+        self.assertEqual(409, response.status_code)
+        self.assertEqual(
+            {"detail": "Deep research thread is not awaiting clarification in this chat session"},
+            response.json(),
         )

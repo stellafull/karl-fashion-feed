@@ -12,7 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from backend.app.config.llm_config import Configuration
-from backend.app.models import Article, Digest
+from backend.app.models import Article, ArticleImage, Digest
 from backend.app.prompts.digest_report_writing_prompt import build_digest_report_writing_prompt
 from backend.app.schemas.llm.digest_report_writing import DigestReportWritingSchema
 from backend.app.service.article_parse_service import ArticleMarkdownService
@@ -32,6 +32,7 @@ class _ArticleSourceInput:
     title_raw: str
     summary_raw: str
     body_markdown: str
+    hero_image_url: str | None
 
 
 class DigestReportWritingService:
@@ -86,11 +87,28 @@ class DigestReportWritingService:
             joined = ", ".join(missing_article_ids)
             raise ValueError(f"missing article source rows for digest report writing: {joined}")
 
+        image_rows = list(
+            session.scalars(
+                select(ArticleImage)
+                .where(ArticleImage.article_id.in_(article_ids))
+                .order_by(ArticleImage.article_id.asc(), ArticleImage.position.asc(), ArticleImage.image_id.asc())
+            ).all()
+        )
+        images_by_article: dict[str, list[ArticleImage]] = {}
+        image_by_id = {image.image_id: image for image in image_rows}
+        for image in image_rows:
+            images_by_article.setdefault(image.article_id, []).append(image)
+
         loaded: list[_ArticleSourceInput] = []
         for article_id in article_ids:
             article = article_by_id[article_id]
             if not article.markdown_rel_path:
                 raise ValueError(f"markdown_rel_path is required for digest report writing: {article_id}")
+            hero_image_url = self._resolve_article_hero_image_url(
+                article=article,
+                image_by_id=image_by_id,
+                images_by_article=images_by_article,
+            )
             loaded.append(
                 _ArticleSourceInput(
                     article_id=article.article_id,
@@ -100,9 +118,26 @@ class DigestReportWritingService:
                     body_markdown=self._markdown_service.read_markdown(
                         relative_path=article.markdown_rel_path
                     ),
+                    hero_image_url=hero_image_url,
                 )
             )
         return loaded
+
+    def _resolve_article_hero_image_url(
+        self,
+        *,
+        article: Article,
+        image_by_id: dict[str, ArticleImage],
+        images_by_article: dict[str, list[ArticleImage]],
+    ) -> str | None:
+        hero_image = image_by_id.get(article.hero_image_id or "")
+        if hero_image is not None and hero_image.source_url.strip():
+            return hero_image.source_url.strip()
+
+        for image in images_by_article.get(article.article_id, []):
+            if image.source_url.strip():
+                return image.source_url.strip()
+        return None
 
     async def _write_report(
         self,
@@ -181,13 +216,26 @@ class DigestReportWritingService:
         source_name_by_article = {
             article.article_id: article.source_name for article in article_sources
         }
+        hero_image_by_article = {
+            article.article_id: article.hero_image_url for article in article_sources
+        }
         source_names = sorted({source_name_by_article[article_id] for article_id in requested_article_ids})
+        hero_image_url = next(
+            (
+                image_url
+                for article_id in requested_article_ids
+                for image_url in [hero_image_by_article.get(article_id)]
+                if isinstance(image_url, str) and image_url.strip()
+            ),
+            None,
+        )
         digest = Digest(
             business_date=plan.business_date,
             facet=plan.facet,
             title_zh=title_zh,
             dek_zh=dek_zh,
             body_markdown=body_markdown,
+            hero_image_url=hero_image_url,
             source_article_count=len(requested_article_ids),
             source_names_json=source_names,
             created_run_id=run_id,
