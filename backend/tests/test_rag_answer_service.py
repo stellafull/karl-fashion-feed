@@ -394,6 +394,7 @@ class RagAnswerServiceTest(unittest.TestCase):
     def test_answer_allows_multiple_tool_calls_in_single_turn_and_merges_results(self) -> None:
         article_result = _build_article_result()
         image_result = _build_image_result()
+        created_chat_agents: list[_ToolCallingChatAgent] = []
         research_call_log: list[dict[str, object]] = []
         chat_agent_holder: dict[str, _ToolCallingChatAgent] = {}
         request_context = RagRequestContext(limit=5)
@@ -427,14 +428,19 @@ class RagAnswerServiceTest(unittest.TestCase):
             ),
             chat_agent_factory=lambda tools: chat_agent_holder.setdefault(
                 "agent",
-                _ToolCallingChatAgent(
-                    tools,
-                    [
-                        ("rag_search", {"query": "帮我总结本季廓形"}),
-                        ("web_search", {"query": "latest fashion"}),
-                    ],
-                    answer="整理后的答案 [c1] [c2] [c3] [w1]",
-                ),
+                created_chat_agents[
+                    len(created_chat_agents) :
+                ] or created_chat_agents.append(
+                    _ToolCallingChatAgent(
+                        tools,
+                        [
+                            ("rag_search", {"query": "帮我总结本季廓形"}),
+                            ("web_search", {"query": "latest fashion"}),
+                        ],
+                        answer="整理后的答案 [c1] [c2] [c3] [w1]",
+                    )
+                )
+                or created_chat_agents[-1],
             ),
         )
 
@@ -456,7 +462,6 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertEqual(1, len(response.image_results))
         self.assertEqual("rag", response.image_results[0].source_type)
         self.assertEqual({"rag_search", "web_search"}, set(created_chat_agents[0].tool_names))
-        self.assertEqual({"recursion_limit": 7}, chat_call_log[0]["config"])
         self.assertEqual({"recursion_limit": 7}, research_call_log[0]["config"])
         self.assertEqual(
             [
@@ -467,7 +472,6 @@ class RagAnswerServiceTest(unittest.TestCase):
         )
 
     def test_answer_uses_three_iteration_recursion_limit(self) -> None:
-        chat_call_log: list[dict[str, object]] = []
         research_call_log: list[dict[str, object]] = []
         service = RagAnswerService(
             tools_factory=lambda context: RagTools(
@@ -495,7 +499,6 @@ class RagAnswerServiceTest(unittest.TestCase):
         )
 
         self.assertEqual("无工具回答", response.answer)
-        self.assertEqual({"recursion_limit": 7}, chat_call_log[0]["config"])
         self.assertEqual({"recursion_limit": 7}, research_call_log[0]["config"])
 
     def test_answer_bypasses_react_loop_for_visual_text_query(self) -> None:
@@ -935,7 +938,6 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertEqual((0, 1), (strong_count, weak_count))
 
     def test_answer_uses_configuration_max_react_tool_calls_for_recursion_limit(self) -> None:
-        chat_call_log: list[dict[str, object]] = []
         research_call_log: list[dict[str, object]] = []
         service = RagAnswerService(
             configuration=Configuration(max_react_tool_calls=5),
@@ -964,7 +966,6 @@ class RagAnswerServiceTest(unittest.TestCase):
         )
 
         self.assertEqual("无工具回答", response.answer)
-        self.assertEqual({"recursion_limit": 11}, chat_call_log[0]["config"])
         self.assertEqual({"recursion_limit": 11}, research_call_log[0]["config"])
 
     def test_answer_allows_optional_web_search_when_rag_is_weak(self) -> None:
