@@ -24,6 +24,7 @@ function createSession(): ChatSession {
         errorMessage: null,
         responseJson: null,
         citations: [],
+        imageResults: [],
         attachments: [],
       },
       {
@@ -35,6 +36,7 @@ function createSession(): ChatSession {
         errorMessage: null,
         responseJson: null,
         citations: [],
+        imageResults: [],
         attachments: [],
       },
       {
@@ -46,6 +48,7 @@ function createSession(): ChatSession {
         errorMessage: null,
         responseJson: null,
         citations: [],
+        imageResults: [],
         attachments: [],
       },
       {
@@ -60,6 +63,7 @@ function createSession(): ChatSession {
           phase: "retrieving",
         },
         citations: [],
+        imageResults: [],
         attachments: [],
       },
     ],
@@ -100,6 +104,29 @@ describe("buildLastMessageScrollKey", () => {
     );
     const after = buildLastMessageScrollKey(nextSessions[0]!.messages);
 
+    expect(after).not.toBe(before);
+  });
+
+  it("changes when the last assistant gains image results", () => {
+    const session = createSession();
+    const before = buildLastMessageScrollKey(session.messages);
+
+    session.messages[3] = {
+      ...session.messages[3]!,
+      imageResults: [
+        {
+          id: "image-1",
+          imageUrl: "https://example.com/look.jpg",
+          previewUrl: "https://example.com/look.jpg",
+          href: "https://example.com/story",
+          title: "Look",
+          sourceName: "Vogue",
+          snippet: "visual evidence",
+        },
+      ],
+    };
+
+    const after = buildLastMessageScrollKey(session.messages);
     expect(after).not.toBe(before);
   });
 });

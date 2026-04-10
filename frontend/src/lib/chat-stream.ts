@@ -133,6 +133,7 @@ export function buildLastMessageScrollKey(messages: ChatMessage[]) {
     lastMessage.status,
     lastMessage.content.length,
     lastMessage.attachments.length,
+    lastMessage.imageResults.length,
   ].join(":");
 }
 

@@ -293,7 +293,7 @@ export default function StoryPage({
         draft={draft}
         onDraftChange={setDraft}
         onSubmit={handleSubmit}
-        placeholder="Ask follow-up about this story..."
+        placeholder="继续追问这篇专题的细节、品牌或搭配..."
         statusLabel={isDeepResearchMode ? "深度研究模式" : "专题追问"}
         submitLabel="提问"
         submittingLabel="发送中"

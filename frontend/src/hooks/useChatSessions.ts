@@ -7,8 +7,10 @@ import apiClient, { apiBaseUrl, getStoredAuthToken } from "@/lib/api-client";
 import {
   buildSessionDescription,
   findPendingDeepResearchInterrupt,
+  mapAssistantImageResults,
   sortChatSessions,
   type ChatAttachment,
+  type ChatAssistantImageResult,
   type ChatCitation,
   type ChatMessage,
   type ChatSession,
@@ -190,6 +192,9 @@ async function mapMessage(message: MessageResponse): Promise<ChatMessage> {
     errorMessage: message.error_message,
     responseJson: message.response_json,
     citations: mapCitations(message.response_json),
+    imageResults: mapAssistantImageResults(
+      message.response_json
+    ) as ChatAssistantImageResult[],
     attachments: await Promise.all(
       message.attachments.map(mapAttachmentResponse)
     ),
@@ -242,6 +247,7 @@ function createAssistantPlaceholderMessage(messageId: string): ChatMessage {
     errorMessage: null,
     responseJson: null,
     citations: [],
+    imageResults: [],
     attachments: [],
   };
 }

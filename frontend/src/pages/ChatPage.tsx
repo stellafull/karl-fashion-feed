@@ -248,13 +248,21 @@ export default function ChatPage({
                   <div className="mb-2 text-[11px] uppercase tracking-[0.18em] text-[#8a8379]">
                     {message.role === "user" ? "You" : "Fashion Feed AI"}
                   </div>
-                  <div
-                    className={
-                      message.role === "assistant"
-                        ? ""
-                        : "whitespace-pre-line text-[15px] leading-7"
-                    }
-                  >
+                <div
+                  className={
+                    message.role === "assistant"
+                      ? ""
+                      : "whitespace-pre-line text-[15px] leading-7"
+                  }
+                >
+                    {message.role === "assistant" &&
+                      (message.content || message.imageResults.length > 0) && (
+                        <ChatAnswerContent
+                          content={message.content}
+                          citations={message.citations}
+                          imageResults={message.imageResults}
+                        />
+                      )}
                     {message.attachments.length > 0 && (
                       <div className="mb-2.5 grid grid-cols-2 gap-2 sm:grid-cols-3">
                         {message.attachments.map(attachment => (
@@ -273,17 +281,14 @@ export default function ChatPage({
                       </div>
                     )}
                     {message.content &&
-                      (message.role === "assistant" ? (
-                        <ChatAnswerContent
-                          content={message.content}
-                          citations={message.citations}
-                        />
-                      ) : (
+                      message.role !== "assistant" && (
                         <div className="whitespace-pre-line text-[15px] leading-7">
                           {message.content}
                         </div>
-                      ))}
-                    {!message.content && message.role === "assistant" && (
+                      )}
+                    {!message.content &&
+                      message.imageResults.length === 0 &&
+                      message.role === "assistant" && (
                       <div className="text-[15px] leading-7 text-[#6d655b]">
                         {message.status === "failed"
                           ? message.errorMessage || "回答失败，请稍后重试。"

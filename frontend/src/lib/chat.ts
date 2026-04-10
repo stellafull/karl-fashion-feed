@@ -15,6 +15,16 @@ export interface ChatAttachment {
   url: string;
 }
 
+export interface ChatAssistantImageResult {
+  id: string;
+  title: string;
+  imageUrl: string;
+  previewUrl: string;
+  sourceName: string;
+  href: string;
+  snippet: string;
+}
+
 export interface ChatUploadAttachment {
   id: string;
   file: File;
@@ -41,6 +51,7 @@ export interface ChatMessage {
   errorMessage: string | null;
   responseJson: Record<string, unknown> | null;
   citations: ChatCitation[];
+  imageResults: ChatAssistantImageResult[];
   attachments: ChatAttachment[];
 }
 
@@ -178,6 +189,153 @@ export function buildAssistantPendingLabel(message: ChatMessage) {
   return "正在生成回答...";
 }
 
+function normalizeNonEmptyString(value: unknown) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const normalized = value.trim();
+  return normalized || null;
+}
+
+function normalizeRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function normalizeRecordArray(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.flatMap(item => {
+    const record = normalizeRecord(item);
+    return record ? [record] : [];
+  });
+}
+
+function buildSourceLabel(url: string | null, fallback: string) {
+  if (url) {
+    try {
+      return new URL(url).hostname || fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  return fallback;
+}
+
+function extractPackageImageResults(
+  responseJson: Record<string, unknown>
+): ChatAssistantImageResult[] {
+  const packages = normalizeRecordArray(responseJson.packages);
+
+  return packages.flatMap((pkg, packageIndex) => {
+    const packageTitle = normalizeNonEmptyString(pkg.title);
+    const packageSummary = normalizeNonEmptyString(pkg.summary) ?? "";
+
+    return normalizeRecordArray(pkg.image_hits).flatMap((hit, hitIndex) => {
+      const imageUrl = normalizeNonEmptyString(hit.source_url);
+      if (!imageUrl) {
+        return [];
+      }
+
+      const citationLocator = normalizeRecord(hit.citation_locator);
+      const href =
+        normalizeNonEmptyString(citationLocator?.canonical_url) ?? imageUrl;
+      const sourceName =
+        normalizeNonEmptyString(citationLocator?.source_name) ??
+        buildSourceLabel(href, "内部资料");
+      const title =
+        normalizeNonEmptyString(hit.caption_raw) ??
+        normalizeNonEmptyString(hit.alt_text) ??
+        packageTitle ??
+        "内部参考图";
+      const snippet =
+        normalizeNonEmptyString(hit.context_snippet) ?? packageSummary;
+      const retrievalUnitId =
+        normalizeNonEmptyString(hit.retrieval_unit_id) ??
+        `package-${packageIndex}-image-${hitIndex}`;
+
+      return [
+        {
+          id: `rag-${retrievalUnitId}`,
+          imageUrl,
+          previewUrl: imageUrl,
+          href,
+          title,
+          sourceName,
+          snippet,
+        },
+      ];
+    });
+  });
+}
+
+function extractExternalImageResults(
+  responseJson: Record<string, unknown>
+): ChatAssistantImageResult[] {
+  return normalizeRecordArray(responseJson.external_visual_results).flatMap(
+    (result, index) => {
+      const imageUrl =
+        normalizeNonEmptyString(result.image_url) ??
+        normalizeNonEmptyString(result.thumbnail_url) ??
+        normalizeNonEmptyString(result.url);
+      if (!imageUrl) {
+        return [];
+      }
+
+      const href =
+        normalizeNonEmptyString(result.source_page_url) ??
+        normalizeNonEmptyString(result.url) ??
+        imageUrl;
+      const sourceName =
+        normalizeNonEmptyString(result.source_name) ??
+        buildSourceLabel(href, "站外来源");
+      const title = normalizeNonEmptyString(result.title) ?? "站外灵感图";
+      const snippet =
+        normalizeNonEmptyString(result.snippet) ??
+        normalizeNonEmptyString(result.content) ??
+        "";
+
+      return [
+        {
+          id: `web-${index}-${href}`,
+          imageUrl,
+          previewUrl: imageUrl,
+          href,
+          title,
+          sourceName,
+          snippet,
+        },
+      ];
+    }
+  );
+}
+
+export function extractChatImageResults(
+  responseJson: Record<string, unknown> | null
+): ChatAssistantImageResult[] {
+  if (!responseJson) {
+    return [];
+  }
+
+  const deduped = new Map<string, ChatAssistantImageResult>();
+  for (const result of [
+    ...extractPackageImageResults(responseJson),
+    ...extractExternalImageResults(responseJson),
+  ]) {
+    const key = `${result.imageUrl}::${result.href}`;
+    if (!deduped.has(key)) {
+      deduped.set(key, result);
+    }
+  }
+
+  return Array.from(deduped.values());
+}
+
 function escapeMarkdownLinkTitle(value: string) {
   return value.replace(/"/g, "'").replace(/\s+/g, " ").trim();
 }
@@ -266,6 +424,144 @@ function normalizeAssistantMarkdown(content: string) {
 
 function buildCitationDisplayKey(citation: ChatCitation) {
   return citation.href.trim();
+}
+
+function normalizeText(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeObjectArray(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter(
+    (item): item is Record<string, unknown> =>
+      Boolean(item) && typeof item === "object"
+  );
+}
+
+function buildAssistantImageSnippet(
+  ...values: Array<string | undefined>
+) {
+  for (const value of values) {
+    if (value && value.trim()) {
+      return value.trim();
+    }
+  }
+
+  return "查看图片参考";
+}
+
+function dedupeAssistantImageResults(results: ChatAssistantImageResult[]) {
+  const seen = new Set<string>();
+  return results.filter(result => {
+    const key = `${result.imageUrl}::${result.href}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}
+
+function mapExternalVisualImageResults(
+  responseJson: Record<string, unknown> | null
+) {
+  const rawResults = normalizeObjectArray(responseJson?.external_visual_results);
+
+  return rawResults.flatMap((result, index) => {
+    const imageUrl =
+      normalizeText(result.image_url) ||
+      normalizeText(result.thumbnail_url) ||
+      normalizeText(result.url);
+    if (!imageUrl) {
+      return [];
+    }
+
+    const title = normalizeText(result.title) || `图片参考 ${index + 1}`;
+    const sourceName = normalizeText(result.source_name) || "外部图片参考";
+    const href = normalizeText(result.source_page_url) || normalizeText(result.url) || imageUrl;
+    const snippet = buildAssistantImageSnippet(
+      normalizeText(result.snippet),
+      normalizeText(result.content),
+      title
+    );
+
+    return [
+      {
+        id: `external-${normalizeText(result.provider) || "visual"}-${index}-${imageUrl}`,
+        title,
+        imageUrl,
+        previewUrl: normalizeText(result.thumbnail_url) || imageUrl,
+        sourceName,
+        href,
+        snippet,
+      },
+    ];
+  });
+}
+
+function mapPackageImageResults(
+  responseJson: Record<string, unknown> | null
+) {
+  const rawPackages = normalizeObjectArray(responseJson?.packages);
+
+  return rawPackages.flatMap((pkg, packageIndex) => {
+    const packageTitle = normalizeText(pkg.title);
+    const packageSummary = normalizeText(pkg.summary);
+    const rawImageHits = normalizeObjectArray(pkg.image_hits);
+
+    return rawImageHits.flatMap((hit, imageIndex) => {
+      const imageUrl = normalizeText(hit.source_url);
+      if (!imageUrl) {
+        return [];
+      }
+
+      const citationLocator =
+        hit.citation_locator && typeof hit.citation_locator === "object"
+          ? (hit.citation_locator as Record<string, unknown>)
+          : null;
+      const title =
+        normalizeText(hit.title) ||
+        packageTitle ||
+        `内部图片参考 ${packageIndex + 1}-${imageIndex + 1}`;
+      const sourceName =
+        normalizeText(citationLocator?.source_name) || "内部图片参考";
+      const href =
+        normalizeText(citationLocator?.canonical_url) || imageUrl;
+      const snippet = buildAssistantImageSnippet(
+        normalizeText(hit.caption_raw),
+        normalizeText(hit.alt_text),
+        normalizeText(hit.context_snippet),
+        packageSummary,
+        title
+      );
+
+      return [
+        {
+          id: `rag-${packageIndex}-${imageIndex}-${imageUrl}`,
+          title,
+          imageUrl,
+          previewUrl: imageUrl,
+          sourceName,
+          href,
+          snippet,
+        },
+      ];
+    });
+  });
+}
+
+export function mapAssistantImageResults(
+  responseJson: Record<string, unknown> | null
+) {
+  const externalResults = mapExternalVisualImageResults(responseJson);
+  if (externalResults.length > 0) {
+    return dedupeAssistantImageResults(externalResults);
+  }
+
+  return dedupeAssistantImageResults(mapPackageImageResults(responseJson));
 }
 
 export function buildCitationAwareMarkdown(

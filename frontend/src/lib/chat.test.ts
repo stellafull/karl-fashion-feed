@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   buildAssistantPendingLabel,
   buildCitationAwareMarkdown,
+  extractChatImageResults,
   findPendingDeepResearchInterrupt,
+  type ChatAssistantImageResult,
   type ChatMessage,
   type ChatSession,
 } from "./chat";
@@ -17,6 +19,7 @@ function createMessage(overrides: Partial<ChatMessage>): ChatMessage {
     errorMessage: overrides.errorMessage ?? null,
     responseJson: overrides.responseJson ?? null,
     citations: overrides.citations ?? [],
+    imageResults: overrides.imageResults ?? [],
     attachments: overrides.attachments ?? [],
   };
 }
@@ -136,5 +139,77 @@ describe("buildCitationAwareMarkdown", () => {
     expect(markdown.match(/\[1\]\(<https:\/\/example\.com\/story>/g)?.length).toBe(1);
     expect(markdown).toContain("[2](<https://example.com/other>");
     expect(markdown).not.toContain("[3](<https://example.com/story>");
+  });
+});
+
+describe("extractChatImageResults", () => {
+  it("collects internal image hits before external visual results", () => {
+    const imageResults = extractChatImageResults({
+      packages: [
+        {
+          title: "Runway look",
+          summary: "A strong accessories direction",
+          image_hits: [
+            {
+              retrieval_unit_id: "image:image-1",
+              source_url: "https://images.example.com/internal-look.jpg",
+              caption_raw: "Green acetate sunglasses",
+              context_snippet: "Rectangular frames from the runway look.",
+              citation_locator: {
+                canonical_url: "https://example.com/internal-story",
+                source_name: "Vogue",
+              },
+            },
+          ],
+        },
+      ],
+      external_visual_results: [
+        {
+          title: "Street style match",
+          image_url: "https://images.example.com/external-look.jpg",
+          source_page_url: "https://news.example.com/external-story",
+          source_name: "news.example.com",
+          snippet: "Related street style inspiration",
+        },
+      ],
+    });
+
+    expect(imageResults).toEqual<ChatAssistantImageResult[]>([
+      {
+        id: "rag-image:image-1",
+        imageUrl: "https://images.example.com/internal-look.jpg",
+        previewUrl: "https://images.example.com/internal-look.jpg",
+        href: "https://example.com/internal-story",
+        title: "Green acetate sunglasses",
+        sourceName: "Vogue",
+        snippet: "Rectangular frames from the runway look.",
+      },
+      {
+        id: "web-0-https://news.example.com/external-story",
+        imageUrl: "https://images.example.com/external-look.jpg",
+        previewUrl: "https://images.example.com/external-look.jpg",
+        href: "https://news.example.com/external-story",
+        title: "Street style match",
+        sourceName: "news.example.com",
+        snippet: "Related street style inspiration",
+      },
+    ]);
+  });
+
+  it("skips entries without a renderable image url", () => {
+    expect(
+      extractChatImageResults({
+        packages: [
+          {
+            image_hits: [
+              {
+                retrieval_unit_id: "image:image-1",
+                caption_raw: "Missing source url",
+              },
+            ],
+          },
+        ],
+      })
+    ).toEqual([]);
   });
 });
