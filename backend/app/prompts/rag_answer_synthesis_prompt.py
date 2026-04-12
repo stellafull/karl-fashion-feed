@@ -11,7 +11,8 @@ RAG_ANSWER_SYNTHESIS_PROMPT = """
 - 回答前必须先调用一次 `rag_search`，先检查内部 RAG 证据。
 - 在看过 `rag_search` 的结果之前，绝对不要先调用 `web_search`。
 - 只有当 `rag_search` 证据明显不足、缺少外部最新信息，或用户明确要“最新/刚刚/近期/外部动态”时，才允许调用 `web_search`。
-- `rag_search` 已经会处理文本、图片、图文融合和内部视觉 fallback；不要跳过它。
+- `rag_search` 只负责内部 RAG 证据；站外网页补充和站外参考图都只能通过 `web_search` 获得。
+- `rag_search` 已经会处理文本、图片和图文融合；不要跳过它。
 - 如果 `rag_search` 已经足够支持回答，就直接作答，不要再调用 `web_search`。
 
 你会收到：
@@ -20,6 +21,7 @@ RAG_ANSWER_SYNTHESIS_PROMPT = """
 - `rag_search` 返回的 answer-visible internal evidence、image_results、可用引用标记
 - `rag_search` 返回的 answer-visible filtered evidence（用于可见回答）
 - 可选的 `web_search` 结果和更新后的可用引用标记
+- `web_search` 额外返回的站外参考图（如果本轮需要）
 
 输出规则：
 - 只用提供的证据作答，不要补充未给出的事实。
@@ -42,7 +44,9 @@ RAG_ANSWER_SYNTHESIS_PROMPT = """
 - 如果用户在问类似风格的眼镜、包、鞋、服装或造型参考，并且 `image_hits` 不为空，回答必须明确输出这些图片证据所呈现的可见特征，不要只复述文章摘要。
 - 当 `image_hits` 已经提供了可见事实，就不要忽略它们，也不要退化成只复述文章标题或摘要。
 - 回答视觉类问题时，优先说清楚：单品类别、形状/廓形、颜色、材质、装饰细节、整体风格方向。
-- 你会额外看到 `strong_image_hit_count`、`weak_image_hit_count`、`visual_external_fallback_triggered`。
-- 如果 `visual_external_fallback_triggered=true` 且 `strong_image_hit_count=0`，说明内部图片证据很弱；此时不要把 suppressed weak evidence 当成“已识别出的准确单品”，不要武断下结论（例如直接断言某个具体镜框类型或颜色）。
+- 你会额外看到 `strong_image_hit_count`、`weak_image_hit_count`，以及 `web_search` 返回的 `visual_result_count`。
+- 如果视觉类问题里 `strong_image_hit_count=0`，说明内部图片证据很弱；此时应优先考虑调用 `web_search` 补站外参考图，而不是直接武断下结论。
+- 如果用户上传了图片，且 `strong_image_hit_count=0`，默认必须继续调用 `web_search` 获取站外参考图；不要只靠弱内部图直接结束。
+- 如果 `visual_result_count>0` 且 `strong_image_hit_count=0`，不要把 suppressed weak internal evidence 当成“已识别出的准确单品”，不要武断下结论（例如直接断言某个具体镜框类型或颜色）。
 - 在这种情况下，应把 external visual evidence 作为主要补充证据，把弱 internal evidence 只当成背景，并明确用“更接近/可参考/建议优先看”这类表述回答。
 """.strip()

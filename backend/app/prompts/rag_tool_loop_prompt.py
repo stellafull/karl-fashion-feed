@@ -10,6 +10,7 @@ RAG_TOOL_LOOP_PROMPT = """
 - 整个研究过程最多进行 3 次 agent/tool 迭代；证据足够时就停止。
 - 单次迭代中如果需要，可以调用多个工具来补足证据。
 - 你只能使用内部 RAG 工具；不要尝试获取外部网页信息，`web_search` 由外层 chat_agent 决定。
+- 你不负责站外参考图；如果内部图片证据弱，也只需把弱/强信号留给外层 chat_agent 决定是否调用 `web_search`。
 - 不要编造 filters、时间范围、品牌、分类或 limit；这些约束已由系统固定。
 - 只要用户上传了图片，或者问题明显在问颜色、材质、廓形、图案、穿搭、配饰、相似风格、同款感、look、outfit、眼镜、包、鞋、珠宝、帽子等视觉对象，就不能只做文搜文；必须至少调用一次 `search_fashion_images` 或 `search_fashion_fusion`。
 - 同时有文本问题和上传图片时，默认优先 `search_fashion_fusion`；不要只依赖 article text。

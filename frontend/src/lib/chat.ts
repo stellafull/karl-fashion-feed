@@ -453,6 +453,80 @@ function buildAssistantImageSnippet(
   return "查看图片参考";
 }
 
+function cleanAssistantImageSnippet(
+  snippet: string,
+  {
+    title,
+    sourceName,
+  }: {
+    title: string;
+    sourceName: string;
+  }
+) {
+  const normalizedSnippet = normalizeText(snippet);
+  if (!normalizedSnippet) {
+    return buildAssistantImageSnippet();
+  }
+
+  const lowerSnippet = normalizedSnippet.toLowerCase();
+  const lowerTitle = normalizeText(title).toLowerCase();
+  const lowerSourceName = normalizeText(sourceName).toLowerCase();
+
+  if (
+    (lowerTitle && lowerSnippet.startsWith(lowerTitle)) ||
+    (lowerSourceName && lowerSnippet.startsWith(lowerSourceName)) ||
+    normalizedSnippet.length > 140
+  ) {
+    return sourceName ? `点击查看 ${sourceName} 原始报道` : "点击查看原始报道";
+  }
+
+  return normalizedSnippet;
+}
+
+function mapExplicitAssistantImageResults(
+  responseJson: Record<string, unknown> | null
+) {
+  const rawResults = normalizeObjectArray(responseJson?.image_results);
+
+  return rawResults.flatMap((result, index) => {
+    const imageUrl = normalizeText(result.image_url);
+    if (!imageUrl) {
+      return [];
+    }
+
+    const previewUrl =
+      normalizeText(result.preview_url) ||
+      imageUrl;
+    const title = normalizeText(result.title) || `图片参考 ${index + 1}`;
+    const sourceName = normalizeText(result.source_name) || "图片参考";
+    const href =
+      normalizeText(result.source_page_url) ||
+      imageUrl;
+    const snippet = cleanAssistantImageSnippet(
+      buildAssistantImageSnippet(
+        normalizeText(result.snippet),
+        title
+      ),
+      {
+        title,
+        sourceName,
+      }
+    );
+
+    return [
+      {
+        id: normalizeText(result.id) || `image-result-${index}-${href}`,
+        title,
+        imageUrl,
+        previewUrl,
+        sourceName,
+        href,
+        snippet,
+      },
+    ];
+  });
+}
+
 function dedupeAssistantImageResults(results: ChatAssistantImageResult[]) {
   const seen = new Set<string>();
   return results.filter(result => {
@@ -482,10 +556,16 @@ function mapExternalVisualImageResults(
     const title = normalizeText(result.title) || `图片参考 ${index + 1}`;
     const sourceName = normalizeText(result.source_name) || "外部图片参考";
     const href = normalizeText(result.source_page_url) || normalizeText(result.url) || imageUrl;
-    const snippet = buildAssistantImageSnippet(
-      normalizeText(result.snippet),
-      normalizeText(result.content),
-      title
+    const snippet = cleanAssistantImageSnippet(
+      buildAssistantImageSnippet(
+        normalizeText(result.snippet),
+        normalizeText(result.content),
+        title
+      ),
+      {
+        title,
+        sourceName,
+      }
     );
 
     return [
@@ -530,12 +610,18 @@ function mapPackageImageResults(
         normalizeText(citationLocator?.source_name) || "内部图片参考";
       const href =
         normalizeText(citationLocator?.canonical_url) || imageUrl;
-      const snippet = buildAssistantImageSnippet(
-        normalizeText(hit.caption_raw),
-        normalizeText(hit.alt_text),
-        normalizeText(hit.context_snippet),
-        packageSummary,
-        title
+      const snippet = cleanAssistantImageSnippet(
+        buildAssistantImageSnippet(
+          normalizeText(hit.caption_raw),
+          normalizeText(hit.alt_text),
+          normalizeText(hit.context_snippet),
+          packageSummary,
+          title
+        ),
+        {
+          title,
+          sourceName,
+        }
       );
 
       return [
@@ -556,6 +642,13 @@ function mapPackageImageResults(
 export function mapAssistantImageResults(
   responseJson: Record<string, unknown> | null
 ) {
+  const explicitResults = dedupeAssistantImageResults(
+    mapExplicitAssistantImageResults(responseJson)
+  );
+  if (explicitResults.length > 0) {
+    return explicitResults;
+  }
+
   const externalResults = mapExternalVisualImageResults(responseJson);
   if (externalResults.length > 0) {
     return dedupeAssistantImageResults(externalResults);

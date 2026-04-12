@@ -128,6 +128,7 @@ class AssistantImageResult(BaseModel):
     id: str
     source_type: Literal["rag", "external"]
     image_url: str
+    preview_url: str | None = None
     title: str | None = None
     source_name: str | None = None
     source_page_url: str | None = None

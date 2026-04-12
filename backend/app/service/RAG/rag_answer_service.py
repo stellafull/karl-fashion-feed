@@ -131,6 +131,36 @@ BOILERPLATE_CONTEXT_TERMS = (
     "culture celebrity news",
     "runway every major trend",
 )
+MAX_ASSISTANT_IMAGE_RESULTS = 5
+MAX_NON_VISUAL_ASSISTANT_IMAGE_RESULTS = 3
+NON_VISUAL_IMAGE_PACKAGE_SCORE_RATIO = 0.75
+MIN_CONTEXT_ONLY_IMAGE_SCORE_FOR_STRONG = 0.35
+EDITORIAL_VISUAL_SOURCE_TERMS = (
+    "vogue",
+    "elle",
+    "harpersbazaar",
+    "whowhatwear",
+    "wwd",
+    "hypebeast",
+    "highsnobiety",
+    "fashionsnap",
+    "fashionnetwork",
+    "thezoereport",
+    "anothermagazine",
+    "dazed",
+    "i-d",
+)
+MARKETPLACE_VISUAL_SOURCE_TERMS = (
+    "amazon",
+    "ebay",
+    "etsy",
+    "walmart",
+    "aliexpress",
+    "temu",
+    "taobao",
+    "mercari",
+    "poshmark",
+)
 VISUAL_FOCUS_GROUPS = {
     "eyewear": ("眼镜", "墨镜", "太阳镜", "glasses", "sunglasses", "eyewear", "frame"),
     "bag": ("包", "手袋", "tote", "bag", "handbag", "purse", "clutch"),
@@ -215,6 +245,13 @@ class RagAnswerService:
             state["answer"],
             state["citations"],
         )
+        image_results = self._filter_image_results_for_answer(
+            answer=answer,
+            image_results=state["image_results"],
+            citations=state["citations"],
+            query=request.query,
+            has_request_images=request_context.has_request_images,
+        )
         return RagAnswerResponse(
             answer=answer,
             citations=state["citations"],
@@ -222,7 +259,7 @@ class RagAnswerService:
             query_plans=state["query_plans"],
             web_results=state["web_results"],
             external_visual_results=state["external_visual_results"],
-            image_results=state["image_results"],
+            image_results=image_results,
         )
 
     async def answer_stream(
@@ -248,6 +285,13 @@ class RagAnswerService:
             state["answer"],
             state["citations"],
         )
+        image_results = self._filter_image_results_for_answer(
+            answer=answer,
+            image_results=state["image_results"],
+            citations=state["citations"],
+            query=request.query,
+            has_request_images=request_context.has_request_images,
+        )
         return RagAnswerResponse(
             answer=answer,
             citations=state["citations"],
@@ -255,7 +299,7 @@ class RagAnswerService:
             query_plans=state["query_plans"],
             web_results=state["web_results"],
             external_visual_results=state["external_visual_results"],
-            image_results=state["image_results"],
+            image_results=image_results,
         )
 
     def build_answer_tool(
@@ -427,6 +471,7 @@ class RagAnswerService:
                 state=state,
             ),
             self._build_web_search_tool(
+                request=request,
                 request_context=request_context,
                 state=state,
             ),
@@ -473,6 +518,7 @@ class RagAnswerService:
                         filters=request.filters,
                         limit=request.limit,
                     ),
+                    user_query=request.query,
                     request_context=request_context,
                     conversation_compact=conversation_compact,
                     recent_messages=recent_messages,
@@ -497,6 +543,7 @@ class RagAnswerService:
     def _build_web_search_tool(
         self,
         *,
+        request: RagQueryRequest,
         request_context: RagRequestContext,
         state: _ChatRunState,
     ) -> StructuredTool:
@@ -504,12 +551,32 @@ class RagAnswerService:
             if state.rag_artifact is None:
                 raise ValueError("web_search requires rag_search first")
 
+            normalized_query = self._require_non_empty_query(query)
             rag_tools = self._tools_factory(request_context)
-            next_results = await rag_tools.search_web(
-                query=self._require_non_empty_query(query)
-            )
+            next_results = await rag_tools.search_web(query=normalized_query)
             state.web_results = self._deduplicate_web_results(
                 [*state.web_results, *next_results]
+            )
+            if self._should_fetch_external_visuals(
+                query=normalized_query,
+                request=request,
+                request_context=request_context,
+                artifact=state.rag_artifact,
+            ):
+                next_visual_results = await rag_tools.search_external_visuals(
+                    query=self._build_external_visual_query(normalized_query)
+                )
+                state.rag_artifact.external_visual_results = self._deduplicate_external_visual_results(
+                    [
+                        *state.rag_artifact.external_visual_results,
+                        *next_visual_results,
+                    ]
+                )
+
+            state.rag_artifact.answer_visible_evidence = self._build_answer_visible_evidence(
+                packages=state.rag_artifact.packages,
+                query=state.rag_artifact.query,
+                external_visual_results=state.rag_artifact.external_visual_results,
             )
             state.rag_artifact.citations = self._build_citations(
                 packages=state.rag_artifact.packages,
@@ -517,6 +584,8 @@ class RagAnswerService:
                 external_visual_results=state.rag_artifact.external_visual_results,
             )
             state.rag_artifact.image_results = self._build_image_results(
+                query=state.rag_artifact.query,
+                has_request_images=request_context.has_request_images,
                 answer_visible_evidence=state.rag_artifact.answer_visible_evidence,
                 external_visual_results=state.rag_artifact.external_visual_results,
                 citations=state.rag_artifact.citations,
@@ -527,9 +596,17 @@ class RagAnswerService:
                     "web_results": [
                         result.model_dump() for result in state.web_results
                     ],
+                    "external_visual_results": [
+                        result.model_dump()
+                        for result in state.rag_artifact.external_visual_results
+                    ],
                     "citations": [
                         citation.model_dump()
                         for citation in state.rag_artifact.citations
+                    ],
+                    "image_results": [
+                        result.model_dump()
+                        for result in state.rag_artifact.image_results
                     ],
                 },
             )
@@ -539,7 +616,8 @@ class RagAnswerService:
             name="web_search",
             description=(
                 "Search the external web only after rag_search when the internal RAG "
-                "evidence is insufficient or the user explicitly needs fresh external updates."
+                "evidence is insufficient, the user explicitly needs fresh external updates, "
+                "or a visual query needs external reference images after internal RAG inspection."
             ),
             args_schema=_WebSearchToolArgs,
             response_format="content_and_artifact",
@@ -627,6 +705,7 @@ class RagAnswerService:
         self,
         *,
         request: RagQueryRequest,
+        user_query: str | None,
         request_context: RagRequestContext,
         conversation_compact: str | None,
         recent_messages: list[dict] | None,
@@ -657,14 +736,10 @@ class RagAnswerService:
 
         packages = self._merge_rag_packages(rag_results)
         query_plans = [result.query_plan for result in rag_results]
-        external_visual_results = await self._collect_external_visual_fallback(
-            request=request,
-            request_context=request_context,
-            packages=packages,
-        )
+        external_visual_results: list[ExternalVisualResult] = []
         answer_visible_evidence = self._build_answer_visible_evidence(
             packages=packages,
-            query=request.query,
+            query=user_query,
             external_visual_results=external_visual_results,
         )
         citations = self._build_citations(
@@ -674,16 +749,18 @@ class RagAnswerService:
         )
         strong_image_hit_count, weak_image_hit_count = self._summarize_image_hit_strength(
             packages,
-            query=request.query,
+            query=user_query,
         )
         return _RagSearchArtifact(
-            query=request.query,
+            query=user_query,
             packages=packages,
             query_plans=query_plans,
             answer_visible_evidence=answer_visible_evidence,
             external_visual_results=external_visual_results,
             citations=citations,
             image_results=self._build_image_results(
+                query=user_query,
+                has_request_images=request_context.has_request_images,
                 answer_visible_evidence=answer_visible_evidence,
                 external_visual_results=external_visual_results,
                 citations=citations,
@@ -716,43 +793,9 @@ class RagAnswerService:
         rag_tools = self._tools_factory(request_context)
         return [rag_tools.search_fashion_fusion(query=normalized_query)]
 
-    async def _collect_external_visual_fallback(
-        self,
-        *,
-        request: RagQueryRequest,
-        request_context: RagRequestContext,
-        packages: list[ArticlePackage],
-    ) -> list[ExternalVisualResult]:
-        fallback_query = self._build_external_fallback_query(
-            request=request,
-            request_context=request_context,
-            packages=packages,
-        )
-        if fallback_query is None:
-            return []
-
-        rag_tools = self._tools_factory(request_context)
-        return await rag_tools.search_external_visuals(query=fallback_query)
-
-    def _build_external_fallback_query(
-        self,
-        *,
-        request: RagQueryRequest,
-        request_context: RagRequestContext,
-        packages: list[ArticlePackage],
-    ) -> str | None:
-        normalized_query = self._normalize_optional_query(request.query)
-        is_visual_request = request_context.has_request_images or (
-            normalized_query is not None and self._is_visual_query(normalized_query)
-        )
-        if not is_visual_request or normalized_query is None:
-            return None
-
-        if not self._needs_external_visual_fallback(packages, query=normalized_query):
-            return None
-
+    def _build_external_visual_query(self, query: str) -> str:
         simplified_query = (
-            normalized_query.replace("根据这张图", "")
+            query.replace("根据这张图", "")
             .replace("这张图", "")
             .replace("图里", "")
             .replace("图片里", "")
@@ -761,15 +804,27 @@ class RagAnswerService:
         )
         if simplified_query.startswith("请"):
             simplified_query = simplified_query.removeprefix("请").strip("，。 ")
-        return simplified_query or normalized_query
+        return simplified_query or query
 
-    def _needs_external_visual_fallback(
+    def _should_fetch_external_visuals(
         self,
-        packages: list[ArticlePackage],
         *,
-        query: str | None,
+        query: str,
+        request: RagQueryRequest,
+        request_context: RagRequestContext,
+        artifact: _RagSearchArtifact,
     ) -> bool:
-        return not self._has_strong_image_evidence(packages, query=query)
+        if artifact.strong_image_hit_count > 0:
+            return False
+        if request_context.has_request_images:
+            return True
+
+        normalized_query = self._normalize_optional_query(query)
+        if normalized_query is None:
+            normalized_query = request.query
+        if normalized_query is None:
+            return False
+        return self._is_visual_query(normalized_query)
 
     @staticmethod
     def _is_visual_query(query: str) -> bool:
@@ -852,6 +907,13 @@ class RagAnswerService:
             "citation_markers": [
                 citation.marker for citation in citations if citation.source_type == "web"
             ],
+            "visual_result_count": len(
+                [
+                    citation
+                    for citation in citations
+                    if citation.source_type == "web" and citation.marker.startswith("V")
+                ]
+            ),
         }
         return json.dumps(summary_payload, ensure_ascii=False, sort_keys=True)
 
@@ -901,15 +963,47 @@ class RagAnswerService:
     def _build_image_results(
         self,
         *,
+        query: str | None,
+        has_request_images: bool,
         answer_visible_evidence: AnswerVisibleEvidence,
         external_visual_results: list[ExternalVisualResult],
         citations: list[AnswerCitation],
     ) -> list[AssistantImageResult]:
         image_results: list[AssistantImageResult] = []
         seen_keys: set[str] = set()
+        seen_rag_articles: set[str] = set()
+        seen_rag_source_pages: set[str] = set()
+        visual_request = has_request_images or (
+            query is not None and self._is_visual_query(query)
+        )
+        top_package_score = (
+            answer_visible_evidence.packages[0].combined_score
+            if answer_visible_evidence.packages
+            else 0.0
+        )
+        max_results = (
+            MAX_ASSISTANT_IMAGE_RESULTS
+            if visual_request
+            else MAX_NON_VISUAL_ASSISTANT_IMAGE_RESULTS
+        )
 
         for package in answer_visible_evidence.packages:
+            if not visual_request:
+                if not package.text_hits:
+                    continue
+                if (
+                    top_package_score > 0
+                    and package.combined_score
+                    < top_package_score * NON_VISUAL_IMAGE_PACKAGE_SCORE_RATIO
+                ):
+                    continue
             for hit in package.image_hits:
+                source_page_url = (hit.citation_locator.canonical_url or "").strip()
+                if not visual_request and (
+                    hit.article_id in seen_rag_articles
+                    or (source_page_url and source_page_url in seen_rag_source_pages)
+                ):
+                    continue
                 image_url = (hit.source_url or "").strip()
                 if not image_url:
                     continue
@@ -922,7 +1016,13 @@ class RagAnswerService:
                         id=result_key,
                         source_type="rag",
                         image_url=image_url,
-                        title=package.title or hit.title,
+                        preview_url=image_url,
+                        title=(
+                            (hit.caption_raw or "").strip()
+                            or (hit.alt_text or "").strip()
+                            or package.title
+                            or hit.title
+                        ),
                         source_name=hit.citation_locator.source_name,
                         source_page_url=hit.citation_locator.canonical_url,
                         snippet=(
@@ -939,8 +1039,16 @@ class RagAnswerService:
                         ),
                     )
                 )
+                seen_rag_articles.add(hit.article_id)
+                if source_page_url:
+                    seen_rag_source_pages.add(source_page_url)
+                if len(image_results) >= max_results:
+                    return image_results
 
-        for visual_result in external_visual_results:
+        for visual_result in self._sort_external_visual_results(
+            external_visual_results,
+            query=query,
+        ):
             image_url = (visual_result.image_url or visual_result.url).strip()
             if not image_url:
                 continue
@@ -953,6 +1061,7 @@ class RagAnswerService:
                     id=result_key,
                     source_type="external",
                     image_url=image_url,
+                    preview_url=(visual_result.thumbnail_url or image_url).strip() or None,
                     title=visual_result.title,
                     source_name=visual_result.source_name,
                     source_page_url=visual_result.source_page_url or visual_result.url,
@@ -963,8 +1072,124 @@ class RagAnswerService:
                     ),
                 )
             )
+            if len(image_results) >= max_results:
+                return image_results
 
         return image_results
+
+    def _filter_image_results_for_answer(
+        self,
+        *,
+        answer: str,
+        image_results: list[AssistantImageResult],
+        citations: list[AnswerCitation],
+        query: str | None,
+        has_request_images: bool,
+    ) -> list[AssistantImageResult]:
+        visual_request = has_request_images or (
+            query is not None and self._is_visual_query(query)
+        )
+        if visual_request or not image_results:
+            return image_results
+
+        used_markers = {
+            match.group(1).upper()
+            for match in CITATION_MARKER_PATTERN.finditer(answer)
+        }
+        if not used_markers:
+            return image_results
+
+        cited_urls = {
+            citation.url
+            for citation in citations
+            if citation.marker in used_markers and citation.url
+        }
+        filtered_results = [
+            result
+            for result in image_results
+            if (
+                result.citation_marker in used_markers
+                or (
+                    result.source_page_url is not None
+                    and result.source_page_url in cited_urls
+                )
+            )
+        ]
+        return filtered_results or image_results
+
+    def _sort_external_visual_results(
+        self,
+        external_visual_results: list[ExternalVisualResult],
+        *,
+        query: str | None,
+    ) -> list[ExternalVisualResult]:
+        return sorted(
+            external_visual_results,
+            key=lambda result: self._score_external_visual_result(result, query=query),
+            reverse=True,
+        )
+
+    def _score_external_visual_result(
+        self,
+        result: ExternalVisualResult,
+        *,
+        query: str | None,
+    ) -> tuple[int, int, int, int]:
+        source_text = self._normalize_text_for_match(
+            " ".join(
+                value
+                for value in (
+                    result.source_name,
+                    result.source_page_url,
+                    result.url,
+                )
+                if isinstance(value, str)
+            )
+        )
+        content_text = self._normalize_text_for_match(
+            " ".join(
+                value
+                for value in (
+                    result.title,
+                    result.snippet,
+                    result.content,
+                )
+                if isinstance(value, str)
+            )
+        )
+        quality_score = 0
+        if any(term in source_text for term in EDITORIAL_VISUAL_SOURCE_TERMS):
+            quality_score += 4
+        if any(term in source_text for term in MARKETPLACE_VISUAL_SOURCE_TERMS):
+            quality_score -= 8
+        if result.source_page_url:
+            quality_score += 1
+        if result.thumbnail_url:
+            quality_score += 1
+        if "image 1 of" in content_text or "image 1 of 4" in content_text:
+            quality_score -= 3
+        if "&#" in (result.title or ""):
+            quality_score -= 1
+
+        focus_score = 0
+        focus_terms = self._extract_visual_focus_terms(query)
+        if focus_terms and any(term in content_text for term in focus_terms):
+            focus_score += 2
+        elif query is not None and self._normalize_text_for_match(query) in content_text:
+            focus_score += 1
+
+        text_quality_score = 0
+        if len((result.title or "").strip()) <= 90:
+            text_quality_score += 1
+        if (result.snippet or "").strip():
+            text_quality_score += 1
+
+        return (
+            quality_score,
+            focus_score,
+            text_quality_score,
+            1 if result.image_url else 0,
+        )
 
     def _find_citation_marker_for_rag_hit(
         self,
@@ -996,6 +1221,18 @@ class RagAnswerService:
                 return citation.marker
         return None
 
+    def _deduplicate_external_visual_results(
+        self,
+        results: list[ExternalVisualResult],
+    ) -> list[ExternalVisualResult]:
+        unique_by_url: dict[str, ExternalVisualResult] = {}
+        for result in results:
+            key = (result.source_page_url or result.url).strip()
+            if not key:
+                continue
+            unique_by_url.setdefault(key, result)
+        return list(unique_by_url.values())
+
     def _summarize_image_hit_strength(
         self,
         packages: list[ArticlePackage],
@@ -1011,18 +1248,6 @@ class RagAnswerService:
                 else:
                     weak_image_hit_count += 1
         return strong_image_hit_count, weak_image_hit_count
-
-    def _has_strong_image_evidence(
-        self,
-        packages: list[ArticlePackage],
-        *,
-        query: str | None,
-    ) -> bool:
-        return any(
-            self._is_strong_image_hit(hit, query=query)
-            for package in packages
-            for hit in package.image_hits
-        )
 
     def _is_strong_image_hit(
         self,
@@ -1055,6 +1280,8 @@ class RagAnswerService:
             return True
         if self._is_descriptive_support_text(hit.credit_raw):
             return True
+        if float(hit.score) < MIN_CONTEXT_ONLY_IMAGE_SCORE_FOR_STRONG:
+            return False
         return self._is_descriptive_context_snippet(
             context_snippet=hit.context_snippet,
             title=hit.title,
