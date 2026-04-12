@@ -1,116 +1,112 @@
-# 产品概览
+# 产品与功能总览
 
 ## 产品定位
 
-Fashion Feed 是面向企业内部团队的时尚情报产品。
+KARL Fashion Feed 面向中国区内部同事，目标是把多语言时尚资讯整理成中文可读、可追问、可深挖的工作台。
 
-它的核心价值是：
+它不是简单的 RSS 阅读器。当前实现已经包含：
 
-- 聚合全球时尚与相关产业内容
-- 以首页信息流方式高效展示重点信号
-- 以 story 形式汇总多来源报道
-- 提供全局 AI 与上下文 AI 辅助分析
-- 通过长期记忆提升后续问答质量
+- 每日 digest 聚合阅读
+- 基于 digest / article 的上下文问答
+- 图文混合检索
+- 带阶段事件的 deep research
 
-## 目标用户
+## 当前用户可见功能
 
-主要用户包括：
+## 1. 登录
 
-- 品牌战略团队
-- 内容与编辑团队
-- 研究与情报团队
-- 商品与产品团队
-- 需要快速把握行业动态的管理层
+- 本地账号密码登录
+- 登录后前端把 JWT 存在浏览器 `localStorage`
+- 当前代码没有接 Feishu / SSO 主路径
 
-## 核心使用场景
+## 2. Discover
 
-### 首页信息流
+Discover 页是默认阅读入口，数据来自 `GET /api/v1/digests/feed`。
 
-用户进入系统后，首先看到：
+支持：
 
-- 默认收起的左侧导航 rail
-- 精选 story
-- 来源数量
-- 原文数量
-- 分类导航
-- 来源筛选与排序
-- 桌面右侧情报 rail
+- 按 facet 浏览 digest
+- 按来源筛选
+- 按时间 / 覆盖文章数排序
+- 查看 digest 主图、标题、摘要、来源覆盖度
 
-首页仍然是产品最核心的主入口。
+## 3. Digest 详情
 
-### Story 详情
+Story 页实际读取的是 digest detail。
 
-打开 story 后，用户可以看到：
+支持：
 
-- 独立 story 阅读页
-- story 标题
-- 综合摘要
-- 核心要点
-- 标签
-- 来源列表
-- 可用媒体内容
+- 查看中文标题、摘要、正文 markdown
+- 查看来源列表和原始链接
+- 直接从当前 digest 发起普通 chat
+- 直接从当前 digest 发起 deep research
+- 上传图片辅助提问
 
-story 详情页是人类阅读视角下的聚合结果主界面。
+## 4. Chat
 
-### Story 内 AI
+Chat 页支持：
 
-在独立 story 页底部，用户可以通过浮动 follow-up dock 继续提问。
+- 新建会话
+- 历史会话恢复
+- 普通 RAG 问答
+- 图片附件上传
+- 流式回答
+- 手动中断运行中的 assistant
 
-当前前端分支已经提供底部浮动 follow-up 输入 dock；提交后会打开完整 Chat 画布，并带入当前 story 上下文。后续再接入正式 chat API、session 持久化与 citation 回溯。
+## 5. Deep Research
 
-当前 story follow-up dock 也支持图片输入：
+Deep Research 与普通 chat 共用 session 持久化层，但运行时不同。
 
-- 点击 `+` 按钮选择本地图片
-- 直接把图片拖入底部浮动输入框
+支持：
 
-图片会先在 dock 中本地预览，并在进入 story scoped chat 后作为用户消息附件展示。
+- graph 执行阶段事件流
+- clarification thread 复用
+- 从普通 digest 上下文切入研究
 
-预期行为：
+## 6. Memory
 
-- 系统自动带入当前 story 上下文
-- 再结合用户问题补充检索
-- 回答带 citation
-- 会话可以继续延续
+后端提供长时记忆 CRUD 接口，当前主要是能力已具备，前端未做完整独立工作台。
 
-### 全局 Chat Workspace
+## 7. RAG 与图文检索
 
-全局 AI 不再局限为首页侧栏，而是通过左侧导航进入完整 Chat workspace。
+系统当前支持：
 
-当前前端分支已经提供 `New chat` 与历史会话入口，点击后进入独立 Chat 主视图；其中 `New chat` 会保持左侧导航当前的展开或收起状态。
+- 文本问答
+- 图像辅助问答
+- 以图找相似视觉证据
+- 视觉查询证据不足时，追加外部 web/image 搜索
 
-Discover 首页当前采用分批加载 story 列表的方式，优先保证首屏加载和滚动过程的流畅度。
+## 当前后端能力边界
 
-Story 阅读页当前只保留一处统一的来源列表，避免顶部来源卡片与下方 source list 重复展示相同信息。
+### 已落地
 
-当前交互上，Chat 输入框固定在主视图底部；左侧历史栏默认收起，只有进入 chat 或主动展开时才显示。
+- digest feed / detail
+- chat / deep research
+- memory CRUD
+- article/image Qdrant upsert
+- daily runtime 协调
 
-当前前端分支中的 Chat composer 已支持两种图片输入方式：
+### 尚未统一收口
 
-- 点击输入框左下角 `+` 按钮选择本地图片
-- 直接把图片拖入对话输入框区域
+- “北京时间 8 点运行”还是目标，代码当前门槛是 Sydney 9 点
+- 用户态 memory 的完整前端管理页面还不完整
+- 根目录 Node build 流程仍有历史残留
 
-图片会先以前端本地附件形式预览并随消息一起展示；正式版本再接入后端文件处理与多模态问答链路。
+## 重要术语
 
-预期行为：
+- `article`：事实真相源
+- `article_image`：文章图片事实层
+- `article_event_frame`：结构化事件片段
+- `story`：内部聚合层
+- `digest`：公开阅读模型
+- `chat session`：问答会话
+- `deep research thread`：研究线程，挂在 chat session 内
 
-- 从 Discover 一键进入新会话
-- 可以新建 session
-- 可以恢复历史 session
-- 可以跨全库提问与比较
+## 不再适用的旧描述
 
-## 产品原则
+以下说法已经不适用于当前项目：
 
-- 首页必须保持信息流优先，而不是聊天优先
-- AI 必须尽量基于证据回答
-- citation 必须可追溯
-- story 标识必须稳定，便于继续讨论和引用
-- session 历史与长期记忆需要形成连续体验
-
-## 成功标准
-
-- 用户可以通过 Feishu 正常登录
-- 首页浏览体验稳定、快速、清晰
-- story 详情足以支持快速阅读与决策
-- AI 回答具备上下文和 citation
-- 用户可以恢复历史对话
-- 长期记忆可以提升后续问答相关性
+- “前端直接读取 feed-data.json”
+- “Feishu 是唯一登录入口”
+- “Milvus 是当前向量库”
+- “旧 story 页就是唯一 public model”

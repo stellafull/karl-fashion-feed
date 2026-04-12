@@ -1,187 +1,197 @@
 # 系统架构
 
-## 1. 总体架构
+本文档只描述当前代码已经实现并仍在主路径上的架构。
 
-Fashion Feed 正在从“静态 JSON 信息流”升级为“前后端分离 + 持久化 + RAG”的系统。
-
-目标运行拓扑：
+## 1. 总览
 
 ```text
-Feishu 登录
-   |
-前端（React/Vite）
-   |
-FastAPI
-   |-- PostgreSQL
-   |-- Milvus
-   |-- Redis
-   |-- Celery Worker
-   |
-采集 / 清洗 / 聚类 / 发布 / 检索 / AI
+frontend (React + Vite)
+    |
+    |  /api/v1
+    v
+backend (FastAPI)
+    |-- PostgreSQL        # article/story/digest/chat/memory/runtime 真相源
+    |-- Redis             # Celery broker / locks / coordination
+    |-- Celery Worker     # content + aggregation + scheduler tasks
+    |-- Qdrant            # text/image retrieval 副本
+    |-- LangGraph runtime # deep research graph
+    |
+    +-- local file storage
+         |- data/articles          # article markdown
+         |- backend/data/chat_attachments
 ```
 
-## 2. 运行组件
+## 2. 前端架构
 
-### 前端
+入口：
 
-职责：
+- [frontend/src/main.tsx](/home/czy/karl-fashion-feed/frontend/src/main.tsx)
+- [frontend/src/App.tsx](/home/czy/karl-fashion-feed/frontend/src/App.tsx)
+- [frontend/src/components/AppShell.tsx](/home/czy/karl-fashion-feed/frontend/src/components/AppShell.tsx)
 
-- 首页信息流展示
-- story 独立阅读页展示
-- 来源筛选与排序
-- 左侧可收缩导航与 Chat workspace
-- story 底部上下文问答入口
+当前实际路由：
 
-### FastAPI
+- `/discover`
+- `/stories/:storyId`
+- `/chat/new`
+- `/chat/:sessionId`
+- `/`
 
-职责：
+页面职责：
 
-- 认证接口
-- 首页与 topic API
-- chat API
-- citation 组装
-- session 持久化
-- 检索与回答编排
+- `DiscoverPage`：digest feed 浏览、分类、来源筛选、排序
+- `StoryPage`：digest detail、来源列表、就地追问 / deep research
+- `ChatPage`：普通 chat / deep research 会话
 
-代码承载约定：
+状态组织：
 
-- `backend/app/` 是 FastAPI 应用主目录
-- `backend/server/` 只保留迁移期静态托管职责
-- `backend/test/` 是后端统一测试目录
+- `useAuth()`：JWT 登录态
+- `useFeedData()`：digest feed 读取与前端映射
+- `useChatSessions()`：session、message、SSE streaming、中断
 
-### PostgreSQL
+## 3. 后端架构
 
-职责：
+入口：
 
-- 用户与认证
-- 原始文档与资产
-- story 稳定身份与发布快照
-- chat 状态
-- citation 持久化
-- memory 主记录
-- pipeline 元数据
+- [backend/app/app_main.py](/home/czy/karl-fashion-feed/backend/app/app_main.py)
 
-### Milvus
+模块边界：
 
-职责：
+- `router/`：HTTP 层
+- `service/`：业务编排
+- `models/`：ORM
+- `schemas/`：Pydantic 契约
+- `tasks/`：Celery task 边界
+- `scripts/`：本地运维 / review / worker 启动
 
-- `content_unit` 检索
-- `user_memory` 检索
-- `user_profile_memory` 检索
+### 公开路由
 
-Milvus 不负责 story 历史真相源，也不负责短期 session 状态。
+- `auth_router`
+- `digest_router`
+- `chat_router`
+- `deep_research_router`
+- `memory_router`
+- `rag_router`
 
-### Redis + Celery
+### 核心服务
 
-职责：
+- `DailyRunCoordinatorService`
+- `StoryClusteringService`
+- `StoryFacetAssignmentService`
+- `DigestPackagingService`
+- `DigestReportWritingService`
+- `ChatWorkerService`
+- `DeepResearchService`
+- `RagAnswerService`
+- `ArticleRagService`
 
-- 异步任务队列
-- 采集与清洗拆分
-- embedding 任务
-- story 发布任务
-
-## 3. 后端目录约定
+## 4. 内容生产链路
 
 ```text
-backend/
-├─ app/
-├─ test/
-├─ scripts/
-├─ server/
-├─ schema.md
-└─ product.md
+sources.yaml
+  -> NewsCollectionService
+  -> ArticleCollectionService
+  -> ArticleParseService
+  -> EventFrameExtractionService
+  -> StoryClusteringService
+  -> StoryFacetAssignmentService
+  -> DigestPackagingService
+  -> DigestReportWritingService
+  -> Digest
 ```
 
-目录边界：
+说明：
 
-- `app/`：放 API、domain service、repository、任务入口与配置
-- `test/`：统一存放 API、数据模型、脚本与发布回归测试
-- `scripts/`：迁移期脚本保留区，后续逐步拆入 Celery 任务
-- `server/`：遗留 Node 托管层，不再作为长期后端真相源
-- `schema.md`：后端数据模型设计文档
-- `product.md`：面向后端开发者的产品文档
+- `article` 是事实真相源
+- `story` 是同 business day 聚合层
+- `digest` 是对外阅读层
+- `ArticleRagService` 在 pipeline 完成后把内容写入 Qdrant
 
-## 4. 主要数据流
+## 5. Chat / Research 架构
 
-### 内容生产链路
+### 普通聊天
 
-1. 读取 `sources.yaml`
-2. 拉取 RSS / crawl 来源
-3. 标准化并去重文档
-4. 做摘要、分类与基础清洗
-5. 写入 `document` 和 `document_asset`
-6. 生成 retrieval units
-7. 写入 Milvus 向量
-8. 生成并发布 story 快照
-9. 更新 feed API 和迁移期 JSON 产物
+```text
+POST /chat/messages/stream
+  -> create_message_round
+  -> ChatWorkerService
+  -> RagAnswerService
+  -> SSE delta / complete / interrupted
+```
 
-### Story 发布链路
+能力：
 
-1. 创建 `pipeline_run`
-2. 生成 cluster
-3. 解析 `story_key` 连续性
-4. 写入 `story_cluster_snapshot`
-5. 写入 `story_cluster_member_snapshot`
-6. 执行校验
-7. 切换 `published_run`
+- 复用会话上下文
+- 支持图片附件
+- 支持 story context 隐式注入
+- 支持中断
 
-### Story AI 链路
+### Deep Research
 
-1. 用户打开 story
-2. 用户在 story 内发问
-3. 后端先读取 story 上下文
-4. 再从 Milvus 检索相关 `content_unit`
-5. 调用模型生成回答
-6. 写入 `chat_message`、`message_citation` 与 memory 记录
+```text
+POST /deep-research/messages/stream
+  -> create_message_round
+  -> DeepResearchService
+  -> DeepResearchGraphService.graph
+  -> SSE phase events + final answer
+```
 
-### 全局 AI 链路
+特点：
 
-1. 用户通过左侧导航进入 `New chat` 或历史 session
-2. 新建或恢复 session
-3. 后端执行全局检索与 memory 检索
-4. 生成带 citation 的回答
-5. 将 session 历史写入 PostgreSQL
+- 使用独立 `message_type=deep_research`
+- 支持复用 thread_id 做 clarification loop
+- 仍然持久化到现有 `chat_session` / `chat_message`
 
-## 5. Story 身份模型
+## 6. RAG 架构
 
-必须引入稳定 story 身份，因为：
+Qdrant 中使用单共享 collection，靠 `modality` 区分 text / image。
 
-- 用户可能收藏或继续讨论某个 story
-- story 范围内聊天需要跨 run 连续
-- citation 与 session 回放必须稳定
+### 内部检索
 
-模型定义：
+- dense embedding
+- sparse embedding
+- hybrid retrieval
+- rerank
+- article / image package 组装
 
-- `story_key`：稳定 story 标识
-- `run_id`：某次发布版本标识
-- `published_run`：当前生效的发布版本
+### 外部补充
 
-## 6. 更新节奏
+- Tavily：通用 web search
+- Brave：web / image / llm context search
 
-### 每日重聚类
+使用场景：
 
-- 时间：`08:00`
-- 范围：最近 72 小时 active window
-- 目的：修正 story 归并质量并保持 story continuity
+- 普通文本问答
+- 视觉导向问答
+- 上传图片后做 image-assisted retrieval
+- 内部证据不足时追加 web fallback
 
-### 日间增量更新
+## 7. 运行与调度
 
-- 时间：`10:00` 到 `18:00` 每 2 小时
-- 范围：新增文档
-- 目的：持续刷新首页和 story 内容
+### Celery 队列
 
-## 7. 安全模型
+- `content`
+- `aggregation`
+- `scheduler`
 
-- Feishu 是唯一登录入口
-- 仅允许 allowlist 组织访问
-- 登录结果必须写审计记录
-- 权限控制必须在服务端生效，不能只依赖前端
+### 调度职责
 
-## 8. 迁移策略
+- `DailyRunCoordinatorService`：reclaim stale state、分发 content/aggregation task、收敛当日 run
+- `SchedulerService`：周期 tick、启动门槛控制、pipeline 完成后触发 RAG upsert
 
-迁移期间：
+### 时间语义
 
-- 现有前端继续存在
-- 静态 `feed-data.json` 可继续保留为兜底产物
-- 新 API 与旧数据路径并行存在
-- 只有在 API 对齐且稳定后，前端才切主数据源
+- business day：`Asia/Shanghai`
+- 首次启动门槛：`Australia/Sydney 09:00`
+
+这是当前代码中的混合实现，仍需后续统一。
+
+## 8. 遗留区域
+
+以下内容存在于仓库，但不是当前主运行路径：
+
+- 根目录 Node `build` 脚本引用的 `backend/server/index.ts`
+- `frontend/src/pages/Home.tsx` 老页面
+- `docs/task*.md` 历史任务记录
+
+这些内容不应再作为理解系统的起点。

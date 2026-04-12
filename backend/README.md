@@ -1,146 +1,231 @@
 # Backend
 
-## 目标
+## 当前定位
 
-当前后端只维护一条 digest runtime 主链路：
+后端当前维护的是一条以 `digest` 为公共输出的运行主链路：
 
-- 采集多语言时尚来源
-- 落地 `article` / `article_image` 真相源
-- 从已解析文章抽取 `article_event_frame`
-- 以 business day 为单位打包 `strict_story`
-- 生成唯一 public read model `digest`
-- 基于 `article` / `article_image` 构建检索副本
+`article -> article_event_frame -> story -> digest`
 
-旧 `story` 阅读模型已经退出当前运行时，不再属于任何生产链路。
+同时对外提供：
+
+- `auth`
+- `digests`
+- `chat`
+- `deep-research`
+- `memories`
+- `rag`
+
+旧的静态 feed 输出、Feishu 登录、Milvus 检索等描述都不再适用于当前代码。
+
+## 公开 API
+
+FastAPI 入口在 [backend/app/app_main.py](/home/czy/karl-fashion-feed/backend/app/app_main.py)。
+
+当前挂载路由：
+
+- `/api/v1/auth`
+- `/api/v1/chat`
+- `/api/v1/deep-research`
+- `/api/v1/memories`
+- `/api/v1/rag`
+- `/api/v1/digests`
+
+关键接口：
+
+- `POST /api/v1/auth/token`：本地账号登录，返回 JWT
+- `GET /api/v1/auth/me`：读取当前用户
+- `GET /api/v1/digests/feed`：Discover 卡片列表
+- `GET /api/v1/digests/{digest_key}`：Digest 详情
+- `POST /api/v1/chat/messages/stream`：普通聊天 SSE
+- `POST /api/v1/deep-research/messages/stream`：深度研究 SSE
+- `GET/POST/PATCH/DELETE /api/v1/memories`：长时记忆 CRUD
+- `POST /api/v1/rag/query`：单次 RAG 查询
 
 ## 核心不变量
 
-- `article` 是事实真相源。
-- `canonical_url` 归一化后是文章唯一去重键。
-- 同一 `canonical_url` 二次抓到时直接视为重复，不做补写。
-- `article` 主表只保存 metadata、摘要预览、Markdown 相对路径和主图引用。
-- 正文解析后写入本地 Markdown，数据库只存相对路径。
-- `article_image` 保存图片 URL、位置和来源文本真相，不保存二进制。
-- `article_event_frame` 是最小可回放事件单元。
-- `strict_story` 只服务内部 event packing，不是 public read model。
-- `digest` 是唯一 public read model。
-- `pipeline_run` / `source_run_state` 只承载运行态，不承载业务真相。
-- Redis 只负责 broker、锁和 rate limiting，不保存核心业务真相。
-- Qdrant 只是检索副本，回源与引用始终以 Postgres 为准。
+- `article` 是事实真相源
+- `canonical_url` 是文章唯一去重键
+- 正文写入本地 markdown，数据库只存相对路径
+- `article_image` 保存来源图片 URL 和来源文本，不保存二进制真相
+- `article_event_frame` 是最小可回放事件单元
+- `story` 是内部聚合层
+- `digest` 是唯一 public read model
+- Redis 只负责 broker / 锁 / 短期协调
+- Qdrant 只是检索副本，引用和回源必须回到 Postgres
 
-## Runtime 链路
+## 运行链路
+
+### 内容生产
 
 1. `NewsCollectionService`
-   抓取来源文章，解析 `canonical_url`，只产出 article seed。
+   从 `sources.yaml` 加载 RSS / web 信源，收集 article seed
 
 2. `ArticleCollectionService`
-   对 article seed 执行去重入库，写入 `article` 并标记 `parse_status=pending`。
+   执行 canonical URL 去重，写入 `article`
 
 3. `ArticleParseService`
-   解析详情页，落纯文本 Markdown 和 `article_image`，更新 `parse_*` 状态。
+   解析详情页，写正文 markdown 和 `article_image`
 
 4. `EventFrameExtractionService`
-   从已解析 Markdown 中抽取稀疏 `article_event_frame`，更新 `event_frame_*` 状态。
+   从正文抽取 `article_event_frame`
 
-5. `StrictStoryPackingService`
-   以 business day 为单位将 event frame 打包为 `strict_story`，必要时复用同日 key。
+5. `StoryClusteringService`
+   基于 business day 聚 story
 
-6. `DigestGenerationService`
-   选择当日 `strict_story` 组合，生成 `digest` 正文和 public feed 元数据。
+6. `StoryFacetAssignmentService`
+   给 story 分配运行时 facet
 
-7. `ArticleRagService`
-   基于全量 parse-complete 文章正文和图片来源文本构建 Qdrant 副本。
+7. `DigestPackagingService`
+   把 story 组合成 digest plan
 
-8. `DailyRunCoordinatorService` + Celery
-   协调 source collection、article stages、strict story packing 和 digest generation。
+8. `DigestReportWritingService`
+   调 LLM 生成最终中文 digest
 
-9. `DeepResearchGraphService` + `DeepResearchService`
-   按需编译带 Postgres checkpoint 的 LangGraph deep research runtime，并把 deep research 请求持久化到现有
-   `chat_session` / `chat_message` 视图层。
+9. `ArticleRagService`
+   将 article / article_image 写入共享 Qdrant collection
 
-## 关键实体
+### 在线问答
 
-### `article`
+- 普通 chat：`ChatWorkerService`
+- deep research：`DeepResearchService` + `DeepResearchGraphService`
+- retrieval：`RagAnswerService` + `RagTools` + `QueryService`
 
-- 原始来源 metadata
-- `markdown_rel_path`
-- `parse_*`
-- `event_frame_*`
+## 数据模型
 
-### `article_image`
+### 内容域
 
-- 来源图片 URL / normalized URL
-- 位置与角色
-- `alt_text` / `caption_raw` / `credit_raw` / `context_snippet`
-- 可选视觉分析结果字段
+- `article`
+- `article_image`
+- `article_event_frame`
+- `story`
+- `story_frame`
+- `story_article`
+- `story_facet`
+- `digest`
+- `digest_story`
+- `digest_article`
 
-### `article_event_frame`
+### 用户域
 
-- `event_type`
-- `subject_json`
-- `action_text`
-- `object_text`
-- `place_text`
-- `collection_text`
-- `season_text`
-- `show_context_text`
-- `evidence_json`
-- `signature_json`
+- `user`
+- `chat_session`
+- `chat_message`
+- `chat_attachment`
+- `long_term_memory`
 
-### `strict_story`
+### 运行态
 
-- `strict_story_key`
-- `business_date`
-- `synopsis_zh`
-- `signature_json`
-- `created_run_id`
+- `pipeline_run`
+- `source_run_state`
 
-### `digest`
+## 时间语义
 
-- `digest_key`
-- `business_date`
-- `facet`
-- `title_zh`
-- `dek_zh`
-- `body_markdown`
-- `hero_image_url`
-- `source_article_count`
-- `source_names_json`
+- `business_day` 使用 `Asia/Shanghai`
+- `utc_bounds_for_business_day()` 用上海自然日推导 UTC 窗口
+- `SchedulerService` 当前在“没有现有 run”时，会等到 `Australia/Sydney 09:00` 才启动当日 pipeline
 
-## 运行方式
+最后一条是当前实现事实，不代表最终产品目标。
 
-- Celery `content` queue 负责 source collection、article parse、event-frame extraction
-- Celery `aggregation` queue 负责 strict-story packing 和 digest generation
-- `DailyRunCoordinatorService` 负责当前 business day 的重扫、重试、stale reclaim 和 batch gating
-- 本地 review run 使用 `backend/app/scripts/dev_run_today_digest_pipeline.py`
-  - `--published-today-only`：仅保留 `published_at` 命中当天 business day 的文章用于本地 review
-  - `--llm-artifact-dir PATH`：仅本次 dev run 导出 `KARL_LLM_DEBUG_ARTIFACT_DIR`，用于 LLM 原始产物落盘
+## 本地启动
 
-脚本入口见 [backend/app/scripts/README.md](/root/karl-fashion-feed/backend/app/scripts/README.md)。
+### API
 
-## `sources.yaml`
+```bash
+backend/.venv/bin/uvicorn backend.app.app_main:app --reload --host 0.0.0.0 --port 8000
+```
 
-当前支持两类来源：
+### 初始化本地账号
 
-- `type: rss`
-- `type: web`
+```bash
+backend/.venv/bin/python backend/app/scripts/init_root_user.py
+```
 
-统一约定：
+### Celery worker
 
-- 所有来源必须显式声明 `type`
-- RSS 使用 `feed_url`
-- Web 使用 `start_urls + discovery`
-- `enabled: false` 的来源不会进入 runtime
+```bash
+backend/.venv/bin/python backend/app/scripts/run_celery_worker.py
+```
 
-## 当前边界
+### Coordinator loop
 
-- 当前 public API 暴露 auth / chat / memory / rag / digest，以及
-  `POST /api/v1/deep-research/messages/stream`
-- deep research 不单独引入 research session 表；继续复用 `chat_session` /
-  `chat_message` 作为用户可见持久化层，LangGraph thread continuity 走 Postgres checkpoint
-- 旧 `story` / `story_article` 表不允许出现在 runtime schema bootstrap 中
-- 旧 story-era prompt、schema、service 模块不再参与当前代码路径
+```bash
+backend/.venv/bin/python backend/app/scripts/run_daily_coordinator.py
+```
 
-## Scripts
+### 本地同步 review run
 
-脚本命令用法见 [backend/app/scripts/README.md](/root/karl-fashion-feed/backend/app/scripts/README.md)。
+```bash
+backend/.venv/bin/python backend/app/scripts/dev_run_today_digest_pipeline.py --skip-collect
+```
+
+可选参数：
+
+- `--source-name NAME`
+- `--limit-sources N`
+- `--published-today-only`
+- `--output-dir PATH`
+- `--llm-artifact-dir PATH`
+
+## 关键环境变量
+
+### 基础
+
+- `AUTH_JWT_SECRET`
+- `CORS_ALLOWED_ORIGINS`
+- `CHAT_ATTACHMENT_ROOT`
+
+### Postgres
+
+- `POSTGRES_HOST`
+- `POSTGRES_PORT`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DB`
+
+### Redis / Celery
+
+- `REDIS_HOST`
+- `REDIS_PORT`
+- `REDIS_PASSWORD`
+
+### LLM / Embedding
+
+- `OPENAI_API_KEY`
+- `OPENAI_BASE_URL`
+- `STORY_SUMMARIZATION_MODEL`
+- `RAG_MODEL` / `RAG_CHAT_MODEL`
+- `DENSE_EMBEDDING_MODEL`
+- `DENSE_EMBEDDING_DIMENSION`
+- `SPARSE_EMBEDDING_MODEL`
+- `RERANKER_MODEL`
+
+### Retrieval / Web Search
+
+- `QDRANT_URL`
+- `QDRANT_API_KEY`
+- `BRAVE_API_KEY`
+- `TAVILY_API_KEY`
+
+## 测试
+
+后端测试位于 [backend/tests](/home/czy/karl-fashion-feed/backend/tests)，覆盖：
+
+- auth
+- digest runtime
+- chat / deep research
+- rag answer
+- prompt / LLM contract
+- scheduler / celery config
+
+建议命令：
+
+```bash
+backend/.venv/bin/pytest backend/tests
+```
+
+## 明确不是当前真相的内容
+
+- 旧静态 feed-data.json 流程
+- Feishu 登录说明
+- Milvus 作为当前检索主库
+- “旧 story 已是唯一 public read model”的旧文档口径
