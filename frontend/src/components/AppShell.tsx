@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, Menu } from "lucide-react";
 import { Route, Switch, useLocation } from "wouter";
 import AppSidebar from "@/components/AppSidebar";
+import DevLoginScreen from "@/components/DevLoginScreen";
 import LoginScreen from "@/components/LoginScreen";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -10,6 +11,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useFeedData } from "@/hooks/useFeedData";
 import { useChatSessions } from "@/hooks/useChatSessions";
 import type { ChatUploadAttachment, StoryChatContext } from "@/lib/chat";
+import { shouldAutoStartFeishuClientLogin } from "@/lib/auth-flow";
+import { getUserDisplayAvatarUrl, getUserDisplayLabel } from "@/lib/auth-profile";
 import DiscoverPage from "@/pages/DiscoverPage";
 import ChatPage from "@/pages/ChatPage";
 import StoryPage from "@/pages/StoryPage";
@@ -19,13 +22,17 @@ export default function AppShell() {
   const [location, setLocation] = useLocation();
   const [sidebarExpanded, setSidebarExpanded] = useState(() => location.startsWith("/chat"));
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const autoClientLoginStartedRef = useRef(false);
   const {
     user,
     hydrated: authHydrated,
     isAuthenticated,
     isSubmitting: authSubmitting,
     error: authError,
-    login,
+    isLikelyFeishuClient,
+    supportsClientLogin,
+    beginFeishuLogin,
+    loginDev,
     logout,
   } = useAuth();
   const {
@@ -113,16 +120,45 @@ export default function AppShell() {
     setMobileSidebarOpen(false);
   };
 
+  const shouldAutoStartClientLogin = shouldAutoStartFeishuClientLogin({
+    locationPath: location,
+    isHydrated: authHydrated,
+    supportsClientLogin,
+    isAuthenticated,
+    isSubmitting: authSubmitting,
+    hasError: Boolean(authError),
+  });
+
+  useEffect(() => {
+    if (!shouldAutoStartClientLogin || autoClientLoginStartedRef.current) {
+      return;
+    }
+    autoClientLoginStartedRef.current = true;
+    void beginFeishuLogin();
+  }, [beginFeishuLogin, shouldAutoStartClientLogin]);
+
   if (!authHydrated) {
     return <LoadingSkeleton />;
   }
 
   if (!isAuthenticated) {
+    if (location === "/__dev/login") {
+      return (
+        <DevLoginScreen
+          isSubmitting={authSubmitting}
+          error={authError}
+          onSubmit={loginDev}
+        />
+      );
+    }
+
     return (
       <LoginScreen
         isSubmitting={authSubmitting}
         error={authError}
-        onSubmit={login}
+        isLikelyFeishuClient={isLikelyFeishuClient}
+        supportsClientLogin={supportsClientLogin}
+        onSubmit={beginFeishuLogin}
       />
     );
   }
@@ -152,7 +188,8 @@ export default function AppShell() {
         <AppSidebar
           expanded={sidebarExpanded}
           sessions={sessions}
-          currentUserLabel={user?.display_name || user?.login_name || "Local User"}
+          currentUserLabel={getUserDisplayLabel(user)}
+          currentUserAvatarUrl={getUserDisplayAvatarUrl(user)}
           activePath={location}
           onExpandedChange={setSidebarExpanded}
           onOpenDiscover={openDiscover}
@@ -169,7 +206,8 @@ export default function AppShell() {
             mobile
             expanded
             sessions={sessions}
-            currentUserLabel={user?.display_name || user?.login_name || "Local User"}
+            currentUserLabel={getUserDisplayLabel(user)}
+            currentUserAvatarUrl={getUserDisplayAvatarUrl(user)}
             activePath={location}
             onExpandedChange={setSidebarExpanded}
             onOpenDiscover={openDiscover}

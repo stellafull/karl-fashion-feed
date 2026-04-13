@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Compass, LogOut, Search, SquarePen } from "lucide-react";
 import type { ChatSession } from "@/lib/chat";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { formatChinaDateTimeShort } from "@/lib/time";
@@ -11,6 +12,7 @@ interface AppSidebarProps {
   mobile?: boolean;
   sessions: ChatSession[];
   currentUserLabel: string;
+  currentUserAvatarUrl?: string | null;
   activePath: string;
   onExpandedChange: (expanded: boolean) => void;
   onOpenDiscover: () => void;
@@ -66,6 +68,7 @@ export default function AppSidebar({
   mobile = false,
   sessions,
   currentUserLabel,
+  currentUserAvatarUrl,
   activePath,
   onExpandedChange,
   onOpenDiscover,
@@ -173,9 +176,14 @@ export default function AppSidebar({
 
         <div className="border-t border-[#e4dccf] px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex h-10 w-10 items-center justify-center rounded-[20px] border border-[#d9d1c5] bg-[#f7f3eb] text-sm font-medium text-[#1f1c18]">
-              {userInitials}
-            </div>
+            <Avatar className="h-10 w-10 rounded-[20px] border border-[#d9d1c5] bg-[#f7f3eb]">
+              {currentUserAvatarUrl ? (
+                <AvatarImage src={currentUserAvatarUrl} alt={currentUserLabel} />
+              ) : null}
+              <AvatarFallback className="rounded-[20px] bg-[#f7f3eb] text-sm font-medium text-[#1f1c18]">
+                {userInitials}
+              </AvatarFallback>
+            </Avatar>
             <Button
               variant="ghost"
               size="icon-sm"
@@ -345,9 +353,14 @@ export default function AppSidebar({
                 : "flex-col gap-2 px-0 py-2"
             )}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d9d1c5] bg-[#f7f3eb] text-sm font-medium">
-              {userInitials}
-            </div>
+            <Avatar className="h-10 w-10 rounded-2xl border border-[#d9d1c5] bg-[#f7f3eb]">
+              {currentUserAvatarUrl ? (
+                <AvatarImage src={currentUserAvatarUrl} alt={currentUserLabel} />
+              ) : null}
+              <AvatarFallback className="bg-[#f7f3eb] text-sm font-medium text-[#1f1c18]">
+                {userInitials}
+              </AvatarFallback>
+            </Avatar>
             <Button
               variant="ghost"
               size="icon-sm"

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
+from uuid import uuid4
 
 import bcrypt
 from jose import JWTError, jwt
@@ -14,9 +15,18 @@ from backend.app.config.auth_config import auth_settings
 class TokenPayload(BaseModel):
     """JWT token payload structure."""
 
-    sub: str  # user_id
-    login_name: str
+    sub: str
+    login_name: str | None
     is_admin: bool
+    iat: int
+    exp: int
+
+
+class BrowserStatePayload(BaseModel):
+    """Signed browser OAuth state payload."""
+
+    purpose: str
+    nonce: str
     iat: int
     exp: int
 
@@ -45,7 +55,7 @@ class JWTManager:
     @staticmethod
     def create_access_token(
         user_id: str,
-        login_name: str,
+        login_name: str | None,
         is_admin: bool = False,
     ) -> str:
         """Create a new access token."""
@@ -76,5 +86,39 @@ class JWTManager:
                 algorithms=[auth_settings.AUTH_JWT_ALGORITHM],
             )
             return TokenPayload(**payload)
-        except JWTError as e:
-            raise ValueError(f"Invalid token: {e}") from e
+        except JWTError as error:
+            raise ValueError(f"Invalid token: {error}") from error
+
+    @staticmethod
+    def create_browser_oauth_state() -> str:
+        """Create a signed browser OAuth state token with TTL."""
+        now = datetime.now(UTC)
+        expire = now + timedelta(seconds=auth_settings.AUTH_BROWSER_STATE_EXPIRE_SECONDS)
+        payload = {
+            "purpose": "feishu_browser_oauth_state",
+            "nonce": str(uuid4()),
+            "iat": int(now.timestamp()),
+            "exp": int(expire.timestamp()),
+        }
+        return jwt.encode(
+            payload,
+            auth_settings.AUTH_JWT_SECRET,
+            algorithm=auth_settings.AUTH_JWT_ALGORITHM,
+        )
+
+    @staticmethod
+    def decode_browser_oauth_state(state: str) -> BrowserStatePayload:
+        """Decode and validate a signed browser OAuth state token."""
+        try:
+            payload = jwt.decode(
+                state,
+                auth_settings.AUTH_JWT_SECRET,
+                algorithms=[auth_settings.AUTH_JWT_ALGORITHM],
+            )
+        except JWTError as error:
+            raise ValueError("Invalid browser auth state") from error
+
+        state_payload = BrowserStatePayload(**payload)
+        if state_payload.purpose != "feishu_browser_oauth_state":
+            raise ValueError("Invalid browser auth state")
+        return state_payload

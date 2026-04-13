@@ -1,17 +1,24 @@
-"""FastAPI router package."""
+"""FastAPI router package with lazy router loading."""
 
-from backend.app.router.auth_router import router as auth_router
-from backend.app.router.chat_router import router as chat_router
-from backend.app.router.deep_research_router import router as deep_research_router
-from backend.app.router.digest_router import router as digest_router
-from backend.app.router.memory_router import router as memory_router
-from backend.app.router.rag_router import router as rag_router
+from __future__ import annotations
 
-__all__ = [
-    "auth_router",
-    "chat_router",
-    "deep_research_router",
-    "digest_router",
-    "memory_router",
-    "rag_router",
-]
+from importlib import import_module
+
+_ROUTER_MODULES = {
+    "auth_router": "backend.app.router.auth_router",
+    "chat_router": "backend.app.router.chat_router",
+    "deep_research_router": "backend.app.router.deep_research_router",
+    "digest_router": "backend.app.router.digest_router",
+    "memory_router": "backend.app.router.memory_router",
+    "rag_router": "backend.app.router.rag_router",
+}
+
+__all__ = list(_ROUTER_MODULES)
+
+
+def __getattr__(name: str):
+    """Lazily resolve router objects to avoid importing heavy modules at package import time."""
+    module_path = _ROUTER_MODULES.get(name)
+    if not module_path:
+        raise AttributeError(name)
+    return import_module(module_path).router

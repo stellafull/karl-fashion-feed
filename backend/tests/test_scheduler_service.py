@@ -3,7 +3,6 @@ from __future__ import annotations
 import unittest
 from datetime import UTC, date, datetime, time
 from unittest.mock import MagicMock, patch
-from zoneinfo import ZoneInfo
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -11,17 +10,17 @@ from sqlalchemy.pool import StaticPool
 
 from backend.app.models import Article, PipelineRun, ensure_article_storage_schema
 from backend.app.service.scheduler_service import (
-    AUSTRALIA_SYDNEY,
-    PIPELINE_START_HOUR_SYDNEY,
+    ASIA_SHANGHAI,
+    PIPELINE_START_HOUR_SHANGHAI,
     SchedulerService,
 )
 
 BUSINESS_DAY = date(2026, 4, 7)
 
 
-def _sydney_datetime(hour: int, minute: int = 0) -> datetime:
-    """Build a UTC datetime that corresponds to the given Sydney local hour on BUSINESS_DAY."""
-    local = datetime.combine(BUSINESS_DAY, time(hour, minute), tzinfo=AUSTRALIA_SYDNEY)
+def _shanghai_datetime(hour: int, minute: int = 0) -> datetime:
+    """Build a UTC datetime that corresponds to the given Shanghai local hour on BUSINESS_DAY."""
+    local = datetime.combine(BUSINESS_DAY, time(hour, minute), tzinfo=ASIA_SHANGHAI)
     return local.astimezone(UTC)
 
 
@@ -73,7 +72,7 @@ class SchedulerServiceTest(unittest.TestCase):
                     original_url=f"https://example.com/{article_id}",
                     title_raw="Test Article",
                     summary_raw="summary",
-                    ingested_at=_sydney_datetime(10),
+                    ingested_at=_shanghai_datetime(10),
                     parse_status="done",
                     event_frame_status=event_frame_status,
                 )
@@ -81,8 +80,8 @@ class SchedulerServiceTest(unittest.TestCase):
             session.commit()
 
     @patch("backend.app.service.scheduler_service.datetime")
-    def test_skips_before_9am_sydney_when_no_existing_run(self, mock_dt):
-        mock_dt.now.return_value = _sydney_datetime(8, 30)
+    def test_skips_before_7am_shanghai_when_no_existing_run(self, mock_dt):
+        mock_dt.now.return_value = _shanghai_datetime(6, 30)
         mock_dt.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
         with self._patch_session_local():
@@ -93,8 +92,8 @@ class SchedulerServiceTest(unittest.TestCase):
 
     @patch("backend.app.service.scheduler_service.DailyRunCoordinatorService")
     @patch("backend.app.service.scheduler_service.datetime")
-    def test_starts_pipeline_after_9am_sydney(self, mock_dt, mock_coordinator_cls):
-        mock_dt.now.return_value = _sydney_datetime(9, 0)
+    def test_starts_pipeline_at_7am_shanghai(self, mock_dt, mock_coordinator_cls):
+        mock_dt.now.return_value = _shanghai_datetime(PIPELINE_START_HOUR_SHANGHAI, 0)
         mock_dt.side_effect = lambda *args, **kw: datetime(*args, **kw)
         mock_coordinator = MagicMock()
         mock_coordinator.tick.return_value = "run-new"
@@ -109,9 +108,9 @@ class SchedulerServiceTest(unittest.TestCase):
 
     @patch("backend.app.service.scheduler_service.DailyRunCoordinatorService")
     @patch("backend.app.service.scheduler_service.datetime")
-    def test_drives_existing_running_pipeline_even_before_9am(self, mock_dt, mock_coordinator_cls):
+    def test_drives_existing_running_pipeline_even_before_7am(self, mock_dt, mock_coordinator_cls):
         """If a pipeline is already running, tick drives it regardless of time."""
-        mock_dt.now.return_value = _sydney_datetime(7, 0)
+        mock_dt.now.return_value = _shanghai_datetime(5, 0)
         mock_dt.side_effect = lambda *args, **kw: datetime(*args, **kw)
         mock_coordinator = MagicMock()
         mock_coordinator.tick.return_value = "run-sched-test"
@@ -128,7 +127,7 @@ class SchedulerServiceTest(unittest.TestCase):
     @patch("backend.app.service.scheduler_service.ArticleRagService")
     @patch("backend.app.service.scheduler_service.datetime")
     def test_upserts_rag_when_pipeline_done(self, mock_dt, mock_rag_cls):
-        mock_dt.now.return_value = _sydney_datetime(12, 0)
+        mock_dt.now.return_value = _shanghai_datetime(12, 0)
         mock_dt.side_effect = lambda *args, **kw: datetime(*args, **kw)
         mock_rag = MagicMock()
         mock_rag.upsert_articles.return_value = MagicMock(
@@ -158,7 +157,7 @@ class SchedulerServiceTest(unittest.TestCase):
     @patch("backend.app.service.scheduler_service.ArticleRagService")
     @patch("backend.app.service.scheduler_service.datetime")
     def test_skips_rag_when_already_upserted(self, mock_dt, mock_rag_cls):
-        mock_dt.now.return_value = _sydney_datetime(12, 0)
+        mock_dt.now.return_value = _shanghai_datetime(12, 0)
         mock_dt.side_effect = lambda *args, **kw: datetime(*args, **kw)
         mock_rag = MagicMock()
         mock_rag_cls.return_value = mock_rag
@@ -174,7 +173,7 @@ class SchedulerServiceTest(unittest.TestCase):
     @patch("backend.app.service.scheduler_service.ArticleRagService")
     @patch("backend.app.service.scheduler_service.datetime")
     def test_skips_rag_when_pipeline_failed(self, mock_dt, mock_rag_cls):
-        mock_dt.now.return_value = _sydney_datetime(12, 0)
+        mock_dt.now.return_value = _shanghai_datetime(12, 0)
         mock_dt.side_effect = lambda *args, **kw: datetime(*args, **kw)
         mock_rag = MagicMock()
         mock_rag_cls.return_value = mock_rag

@@ -18,21 +18,18 @@ def _utcnow_naive() -> datetime:
 class User(Base):
     __tablename__ = "user"
 
-    # Primary identity
     user_id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
         default=lambda: str(uuid4()),
         comment="用户主键ID",
     )
-
-    # Authentication credentials
-    login_name: Mapped[str] = mapped_column(
+    login_name: Mapped[str | None] = mapped_column(
         String(64),
-        nullable=False,
+        nullable=True,
         unique=True,
         index=True,
-        comment="本地登录名",
+        comment="仅 dev-root 使用的本地登录名",
     )
     display_name: Mapped[str] = mapped_column(
         String(128),
@@ -49,29 +46,33 @@ class User(Base):
     password_hash: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,
-        comment="bcrypt哈希密码",
+        comment="仅本地调试账号使用的 bcrypt 哈希密码",
     )
-
-    # Authentication source
     auth_source: Mapped[str] = mapped_column(
         String(16),
         nullable=False,
-        comment="认证来源：local或sso",
+        comment="认证来源：feishu 或 local",
     )
-
-    # OAuth/SSO fields (future-ready)
-    sso_provider: Mapped[str | None] = mapped_column(
-        String(32),
+    feishu_user_id: Mapped[str | None] = mapped_column(
+        String(128),
         nullable=True,
-        comment="SSO提供商：google, github等",
+        comment="飞书组织内稳定 user_id",
     )
-    sso_subject: Mapped[str | None] = mapped_column(
-        String(255),
+    feishu_open_id: Mapped[str | None] = mapped_column(
+        String(128),
         nullable=True,
-        comment="SSO提供商的用户唯一标识",
+        comment="飞书 open_id，仅作诊断参考",
     )
-
-    # Account status
+    feishu_union_id: Mapped[str | None] = mapped_column(
+        String(128),
+        nullable=True,
+        comment="飞书 union_id，仅作诊断参考",
+    )
+    feishu_avatar_url: Mapped[str | None] = mapped_column(
+        String(512),
+        nullable=True,
+        comment="飞书头像 URL",
+    )
     is_active: Mapped[bool] = mapped_column(
         Boolean,
         nullable=False,
@@ -84,8 +85,6 @@ class User(Base):
         default=False,
         comment="是否为管理员",
     )
-
-    # Timestamps
     last_login_at: Mapped[datetime | None] = mapped_column(
         DateTime,
         nullable=True,
@@ -105,6 +104,11 @@ class User(Base):
         comment="账户最后更新时间",
     )
 
+    @property
+    def avatar_url(self) -> str | None:
+        """Expose the current avatar URL for auth/profile responses."""
+        return self.feishu_avatar_url
+
     __table_args__ = (
-        Index("ix_user_sso_lookup", "sso_provider", "sso_subject", unique=True),
+        Index("ix_user_feishu_user_id", "feishu_user_id", unique=True),
     )

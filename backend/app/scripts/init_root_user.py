@@ -1,4 +1,4 @@
-"""Initialize local authentication users for integration testing."""
+"""Initialize the dedicated local dev-root account for integration testing."""
 
 from __future__ import annotations
 
@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 from typing import TypedDict
 
-# Add project root to path
 project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
@@ -29,28 +28,16 @@ class LocalTestUserSpec(TypedDict):
 
 LOCAL_TEST_USERS: tuple[LocalTestUserSpec, ...] = (
     {
-        "login_name": "root",
-        "display_name": "Root User",
-        "password": "root",
-        "is_admin": True,
-    },
-    {
-        "login_name": "ROOT1",
-        "display_name": "ROOT1",
-        "password": "ROOT1",
-        "is_admin": True,
-    },
-    {
-        "login_name": "ROOT2",
-        "display_name": "ROOT2",
-        "password": "ROOT2",
+        "login_name": "dev-root",
+        "display_name": "Dev Root",
+        "password": "dev-root",
         "is_admin": True,
     },
 )
 
 
 def _validate_existing_user(existing: User, spec: LocalTestUserSpec) -> None:
-    """Fail fast when an existing account cannot serve as a local test user."""
+    """Fail fast when an existing account cannot serve as the dev user."""
     login_name = spec["login_name"]
     if existing.auth_source != "local":
         raise RuntimeError(f"User {login_name} already exists but is not a local account.")
@@ -69,7 +56,7 @@ def _validate_existing_user(existing: User, spec: LocalTestUserSpec) -> None:
 
 
 def _ensure_local_test_user(db: Session, spec: LocalTestUserSpec) -> bool:
-    """Create one local test user when it does not already exist."""
+    """Create the dev-root account when it does not already exist."""
     existing = db.execute(
         select(User).where(User.login_name == spec["login_name"])
     ).scalar_one_or_none()
@@ -93,8 +80,7 @@ def _ensure_local_test_user(db: Session, spec: LocalTestUserSpec) -> bool:
 
 
 def init_root_user() -> None:
-    """Ensure the default local integration-test users exist."""
-    # Ensure schema exists
+    """Ensure the dedicated dev-root account exists."""
     print("Ensuring auth/chat schema...")
     ensure_auth_chat_schema(engine)
 
@@ -108,9 +94,9 @@ def init_root_user() -> None:
         db.close()
 
     if created_count == 0:
-        print("All local test users already exist.")
+        print("dev-root already exists.")
     else:
-        print(f"Created {created_count} local test user(s).")
+        print("Created dev-root local test user.")
 
     print("Available login credentials:")
     for spec in LOCAL_TEST_USERS:

@@ -1,0 +1,1136 @@
+{
+  "run_started_at": "2026-04-13T07:48:20.837653+00:00",
+  "run_type": "demo_digest_init",
+  "target_business_days": [
+    "2026-04-06",
+    "2026-04-07",
+    "2026-04-08",
+    "2026-04-09",
+    "2026-04-10",
+    "2026-04-11",
+    "2026-04-12"
+  ],
+  "collection": {
+    "total_collected": 578,
+    "unique_candidates": 566,
+    "inserted": 566,
+    "skipped_existing": 0,
+    "skipped_in_batch": 12
+  },
+  "parse": {
+    "candidates": 457,
+    "parsed": 457,
+    "failed": 0,
+    "failed_article_ids": []
+  },
+  "event_frame_failed_article_ids": [
+    "6d9f23e0-531e-4097-977c-5cc48d77f83d",
+    "9f0489d7-86aa-44a8-8930-ead0710b396c"
+  ],
+  "days": [
+    {
+      "business_day": "2026-04-06",
+      "article_count": 1,
+      "parsed_count": 1,
+      "event_frame_ready_count": 1,
+      "story_count": 1,
+      "digest_count": 1,
+      "run_id": "2584fbf6-3e34-4b2d-9871-e6a6e7f3f536",
+      "digests": [
+        {
+          "digest_key": "72a50e17-b4c3-4dc8-a9c7-70f23af35ea4",
+          "business_date": "2026-04-06",
+          "facet": "brand_market",
+          "title_zh": "MAC 推出高色素唇油新品，Ulta Beauty 独家发售",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "2584fbf6-3e34-4b2d-9871-e6a6e7f3f536"
+        }
+      ]
+    },
+    {
+      "business_day": "2026-04-07",
+      "article_count": 7,
+      "parsed_count": 7,
+      "event_frame_ready_count": 7,
+      "story_count": 9,
+      "digest_count": 2,
+      "run_id": "c771abbf-08c4-4721-90d1-590d494b5462",
+      "digests": [
+        {
+          "digest_key": "12ea61f4-def4-47c0-b5d8-ba4271ddbb1d",
+          "business_date": "2026-04-07",
+          "facet": "brand_market",
+          "title_zh": "Tek Gear与Rhode的明星策略：运动专业性与美妆趣味性的两条路径",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "c771abbf-08c4-4721-90d1-590d494b5462"
+        },
+        {
+          "digest_key": "2b4d9ffb-9b8b-4077-80b8-f4f697ec5c0f",
+          "business_date": "2026-04-07",
+          "facet": "trend_summary",
+          "title_zh": "短头纱成新娘新宠：实用与个性兼具的婚礼趋势",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "c771abbf-08c4-4721-90d1-590d494b5462"
+        }
+      ]
+    },
+    {
+      "business_day": "2026-04-08",
+      "article_count": 27,
+      "parsed_count": 27,
+      "event_frame_ready_count": 27,
+      "story_count": 45,
+      "digest_count": 8,
+      "run_id": "f9d06548-49ef-4104-bd8b-e6833d84e31e",
+      "digests": [
+        {
+          "digest_key": "44e1671a-d33d-46de-871f-c3fcabef68b2",
+          "business_date": "2026-04-08",
+          "facet": "brand_market",
+          "title_zh": "泰勒·斯威夫特订婚戒指设计师推出限量婚嫁系列",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "f9d06548-49ef-4104-bd8b-e6833d84e31e"
+        },
+        {
+          "digest_key": "51fdaf46-c526-49a8-98ca-92277ce7ab90",
+          "business_date": "2026-04-08",
+          "facet": "brand_market",
+          "title_zh": "细高跟鞋强势回归：从男性凝视到权力宣言",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "f9d06548-49ef-4104-bd8b-e6833d84e31e"
+        },
+        {
+          "digest_key": "9170f0f4-5fe3-440d-80bd-7699d3a831d4",
+          "business_date": "2026-04-08",
+          "facet": "brand_market",
+          "title_zh": "New Balance携手SNOOPY打造春日乐游季",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "f9d06548-49ef-4104-bd8b-e6833d84e31e"
+        },
+        {
+          "digest_key": "2faeedc2-5f45-4b90-8f0f-1843cc455ff4",
+          "business_date": "2026-04-08",
+          "facet": "brand_market",
+          "title_zh": "江南布衣2026春夏预览：JNBY与速写双品牌艺术化表达",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "f9d06548-49ef-4104-bd8b-e6833d84e31e"
+        },
+        {
+          "digest_key": "c1b5e6ef-bc21-44fb-b735-e8fc31783b92",
+          "business_date": "2026-04-08",
+          "facet": "runway_series",
+          "title_zh": "2026春夏秀场：风衣与卡普里裤的复古回潮",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "f9d06548-49ef-4104-bd8b-e6833d84e31e"
+        },
+        {
+          "digest_key": "34b5040f-f60e-445f-939f-f0cec8603619",
+          "business_date": "2026-04-08",
+          "facet": "street_style",
+          "title_zh": "卡戴珊姐妹春日鞋履对决：高跟凉鞋vs芭蕾平底鞋",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "f9d06548-49ef-4104-bd8b-e6833d84e31e"
+        },
+        {
+          "digest_key": "d364ee50-99bb-4e23-bf29-05bc30969e7f",
+          "business_date": "2026-04-08",
+          "facet": "trend_summary",
+          "title_zh": "2026春夏系列趋势指南：戒指、裤装与外套新风向",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "f9d06548-49ef-4104-bd8b-e6833d84e31e"
+        },
+        {
+          "digest_key": "1814b1f3-da07-4be1-99b2-2d8d661e26f1",
+          "business_date": "2026-04-08",
+          "facet": "trend_summary",
+          "title_zh": "春季鞋履趋势：高跟鞋的自信回归",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "f9d06548-49ef-4104-bd8b-e6833d84e31e"
+        }
+      ]
+    },
+    {
+      "business_day": "2026-04-09",
+      "article_count": 62,
+      "parsed_count": 62,
+      "event_frame_ready_count": 61,
+      "story_count": 114,
+      "digest_count": 23,
+      "run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c",
+      "digests": [
+        {
+          "digest_key": "55432684-db9b-4a2f-af6d-fc4e0e563ab8",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "本季联名横跨童装、海滩与户外：品牌以品类跨界触达新客群",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "f0b3214d-c6aa-4dda-b5df-7294f20d4def",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "Zendaya与Kaia Gerber：明星从代言走向共创",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "8411b040-06de-4e19-945d-d6c15e9a1b93",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "Pamela Anderson的生活方式版图：从腌黄瓜到藤编家具",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "fdcd16c0-e6da-4ec6-a25e-673a5df5a739",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "Paris Hilton的美妆帝国：从香水到护肤的全线布局",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "86b62efc-cc50-48eb-98d5-19cdd9998029",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "OnlyFans进军时尚界：从Rick Owens到LGN的先锋实验",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "50c91299-66f9-45af-9da9-9cb3474c32b8",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "The Honest Company护手霜入选NASA Artemis II登月任务用品",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "fd0c3041-3208-43c7-8ec3-64c81b8ed551",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "Anne Hathaway制作公司推出Cerulean Collection：将电影台词转化为实体商品",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "1a548796-b7a3-42ca-99db-7bdac70da311",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "Loro Piana 2026春夏：Loom手袋的编织新生",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "987d4434-1f5b-4774-97da-14c2294dabca",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "Ganni Mini Hobo新季：True Whitaker演绎豹纹与红色",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "c40825df-b0e7-4fa3-8615-5f6b317ecdb6",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "干洗发新形态：粉扑与刷具的便携革命",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "1d78ba80-b1b0-4b19-a3c8-9656c1065ea4",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "K18任命新CMO：Glossier与Shark Beauty背景加持",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "6287de01-b001-4c89-a66a-8b06fa7ed6e5",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "Hugo Boss取代Ralph Lauren成为澳网新赞助商",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "1005d06a-c686-488a-8cb4-ed52792e1531",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "Hunza G：从明星追捧到档案传承",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "3349ff43-6458-40ef-8769-3711229d54ad",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "KATSEYE金发变身：科切拉首秀前的形象重塑",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "05908a71-6b0a-4533-a216-cc4f14249bdb",
+          "business_date": "2026-04-09",
+          "facet": "brand_market",
+          "title_zh": "By/Rosie Jane Rosie香水：玫瑰与麝香的肌肤之香",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "9336fbf9-5afd-4722-b362-105b06b0048c",
+          "business_date": "2026-04-09",
+          "facet": "runway_series",
+          "title_zh": "OnlyFans进军时尚界：情色平台能否成为品牌新阵地",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "b481fb6d-3e1d-4b0f-a2db-4024e79eedab",
+          "business_date": "2026-04-09",
+          "facet": "runway_series",
+          "title_zh": "2026春夏趋势解码：内衣外穿与复古风衣引领风潮",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "86d99f13-8b9e-4b5a-b80c-9430c56307aa",
+          "business_date": "2026-04-09",
+          "facet": "runway_series",
+          "title_zh": "COMME MOI 2026春夏：从庞贝壁画到游牧诗意的东方美学",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "b09e027f-4916-417c-87ef-db2ee41cbfab",
+          "business_date": "2026-04-09",
+          "facet": "runway_series",
+          "title_zh": "Uniform巴黎首秀：无Logo时代的系统化制服美学",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "f9863276-18fc-4a5a-a9d7-d702ea875803",
+          "business_date": "2026-04-09",
+          "facet": "street_style",
+          "title_zh": "明星街拍中的黑色平底鞋：春季过渡季的实用穿搭参考",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "ac4dd82a-3df8-4088-9ab4-17248e183f28",
+          "business_date": "2026-04-09",
+          "facet": "trend_summary",
+          "title_zh": "2026春夏趋势前瞻：极简主义回归与多元风格并存",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "ae42427f-f0d2-404a-8ad5-b8915e43618a",
+          "business_date": "2026-04-09",
+          "facet": "trend_summary",
+          "title_zh": "Gen Z重塑时尚消费：在数字时代追寻独特个人风格",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        },
+        {
+          "digest_key": "83880121-34fd-45fd-b051-d66dc8cccc48",
+          "business_date": "2026-04-09",
+          "facet": "trend_summary",
+          "title_zh": "2026音乐节时尚指南：Rachel Zoe亲授日夜造型秘诀",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "94847ca6-4433-4f78-8139-da8cb784ee2c"
+        }
+      ]
+    },
+    {
+      "business_day": "2026-04-10",
+      "article_count": 122,
+      "parsed_count": 122,
+      "event_frame_ready_count": 122,
+      "story_count": 203,
+      "digest_count": 41,
+      "run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3",
+      "digests": [
+        {
+          "digest_key": "ff629186-b8aa-478c-90cb-6e8ee95df99c",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "奢侈品Q1财报季：Brunello Cucinelli业绩超预期，行业复苏信号初现",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "be398b70-bf0e-495a-a4cf-cd0f6d7bfe8c",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Old Navy联名攻势：从设计师合作到电影IP复刻",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "a806201a-8c06-4834-9847-c79a503d5140",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Jil Sander × PUMA三十年合作再续：K-Street运动鞋发布",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "356c4cf9-b46a-4ebf-8d85-397ab59ccdb6",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "2026春夏鞋履：联名限量、pastel色系与波西米亚凉鞋的三重信号",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "aaac8b7d-0420-4c0b-b566-b1864816356e",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "2026年度腕表精选：Universal Genéve复兴、AP跳时创新与Rexhepi计时新布局",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "cb90ac09-b3ba-4b33-90cb-cef7f42374c0",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Zendaya联名On、Jennie出任Ray-Ban大使：明星营销进入深度共创阶段",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "2acf1fb8-7544-4893-9ded-b4100e520375",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Dolce & Gabbana高层震荡：创始人辞任董事长",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "48379849-4718-4d31-a741-597f795f0aac",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "John Galliano×Zara、Thom Browne×ASICS、LV×村上隆：联名策略如何成为品牌破圈核心手段",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "bbbd5cff-47e3-4f4e-b99d-0836fee8c1d9",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "《Laguna Beach》20周年：从真人秀到生活方式品牌",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "c93a0746-a237-40b4-b64e-c410520c6c41",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Nike击败Adidas拿下UEFA比赛用球赞助权",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "e3183927-e4f6-4d23-8913-a1199c39d8c0",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Barron Trump出任Sollos Yerba Mate董事，菠萝椰子口味马黛茶5月上市",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "5f72c7ac-cb78-45f6-8329-29c4d459034a",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Sephora春季大促：美妆新品与韩妆品牌入美",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "637afc0e-2897-4425-a295-c98677262d65",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "播broadcast发布2026夏季大片《风辞典》：倪妮演绎诗意美学",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "2e3ba076-68bf-44a5-8b98-7bb5ba287963",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Khaite × Judd Foundation：在Donald Judd工作室的年度晚宴",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "6f093355-3e0d-4d9f-8400-6afc4938ccee",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Prada资助法属波利尼西亚珊瑚修复：SEA BEYOND与UNESCO合作落地",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "30e77fbc-0298-431a-aa7d-38bfeffd3812",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "本田Super-ONE开启预约：BOOST模式输出70kW",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "52206fb2-ec72-4f68-a83b-fbe926da9b9a",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Jo Malone与Zara合作引发法律纠纷：雅诗兰黛起诉命名侵权",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "a992ec9b-15a9-4a4b-8fdd-f60dec51852c",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "SHEIN发布2026音乐节趋势系列：Z世代穿搭报告",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "081f8b99-cbcc-4703-8599-ef1a04fec813",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Adidas Originals × Asos第三次联名登陆美国",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "f142149d-13ad-4f12-b7c8-52f9a2ae4dd5",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "TMC × Adidas Harden Vol. 10：致敬Nipsey Hussle的联名球鞋",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "b5148fb6-2f59-41dd-b7bd-58726917fbc4",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "香奈儿连续第二年赞助牛津剑桥赛艇对抗赛",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "af981230-dd58-4e2d-857f-f7f996a445df",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "酒店嵌入式零售：MML Hospitality探索购物新场景",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "4f9a0ea3-bbde-43f0-be4a-1b781c593af8",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "南非Old School品牌携手NBA与曼城进军全球",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "5e4fec2e-b23e-4ddd-ad28-9f151e562c15",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Initio Parfums Privés推出功能性香水：香氛能否成为情绪补剂",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "11040e68-8b9d-4c3b-89e5-66b099e0d8fe",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Soft Services × Vacation：联名升级去角质磨砂皂",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "1f0b9351-c311-49eb-b31f-434ac6b633ba",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "卡地亚与国王基金会启动三年教育合作项目",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "7c26b3a4-d362-48dc-9bc6-b58b8cd1eacf",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Armani/Casa长野展览：光与空间的静谧优雅",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "73682d48-3221-48b8-aa86-ea2ade3b16b5",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "开云集团任命前香奈儿高管Marie-Hélène Chenut为董事",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "39fb49a5-782c-4ece-a809-6ea17c298cea",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Labubu股价暴跌30%后宣布与索尼影业合作开发电影",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "35a15e82-4ded-43cd-8ded-8fdb672ae76a",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Jill Stuart初夏限定：紫阳花灵感「Blue Hydrangea」系列",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "5ea32a53-bed5-45ac-8a05-4db5a5c77564",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "标致Rifter GT Cielo日本限定30台发售",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "b62d4041-d593-44d8-a801-f863c585097e",
+          "business_date": "2026-04-10",
+          "facet": "brand_market",
+          "title_zh": "Amazon春季男装促销：Wrangler牛仔裤$19起，Columbia、Casio等品牌低至65% off",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "e4eb39e0-f7df-4775-b37e-4a68b6d169d5",
+          "business_date": "2026-04-10",
+          "facet": "runway_series",
+          "title_zh": "FENDI与GUCCI创意总监首秀：米兰双雄的性感叙事与开衩裙趋势",
+          "source_article_count": 4,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "23354aa1-4679-4c36-b471-7cecc2e53ea3",
+          "business_date": "2026-04-10",
+          "facet": "runway_series",
+          "title_zh": "《穿普拉达的女王2》上海宣传：明星造型致敬经典",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "a45d39e9-45b3-4350-8f7a-9a1d851b877f",
+          "business_date": "2026-04-10",
+          "facet": "street_style",
+          "title_zh": "本周街拍精选：从秀智的麂皮背包到Dua Lipa的混搭美学",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "f51dd4cd-3c73-44c4-8a87-91bef868d542",
+          "business_date": "2026-04-10",
+          "facet": "trend_summary",
+          "title_zh": "2026春夏鞋履趋势全览：从极简手套高跟鞋到波西米亚凉鞋",
+          "source_article_count": 5,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "71b0e96d-2c0a-475c-9431-c849ebf4c5b8",
+          "business_date": "2026-04-10",
+          "facet": "trend_summary",
+          "title_zh": "法兰绒衬衫重返秀场：Chanel、Dior领衔2026春夏过渡季单品",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "91d4d924-afdb-4059-8dcf-9b6478c1e536",
+          "business_date": "2026-04-10",
+          "facet": "trend_summary",
+          "title_zh": "「Gen Z Pout」：Z世代自拍新趋势，从嘟嘴到不悦表情",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "60483864-ec20-494f-ab17-17ac19f6d7ef",
+          "business_date": "2026-04-10",
+          "facet": "trend_summary",
+          "title_zh": "2026-27秋冬趋势前瞻：开衩裙的性感回归",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "71fcb259-902e-4bba-b113-85d400622c72",
+          "business_date": "2026-04-10",
+          "facet": "trend_summary",
+          "title_zh": "复古球队球衣：运动休闲市场的新风口",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        },
+        {
+          "digest_key": "b8b1f68b-8750-4271-93ab-0e1e9aac6ca5",
+          "business_date": "2026-04-10",
+          "facet": "trend_summary",
+          "title_zh": "Labubu退潮：Pop Mart股价暴跌背后的潮玩泡沫",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "401f6916-05c9-4d82-886e-4d8ff402acd3"
+        }
+      ]
+    },
+    {
+      "business_day": "2026-04-11",
+      "article_count": 143,
+      "parsed_count": 143,
+      "event_frame_ready_count": 143,
+      "story_count": 208,
+      "digest_count": 22,
+      "run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d",
+      "digests": [
+        {
+          "digest_key": "31b0fd47-3f93-43ad-97f0-68599ec0760a",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "科切拉营销季：品牌如何在沙漠中制造声量",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "8970337e-ab89-4714-ae66-c2f9f1e5caa9",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "四月美妆新品季：防晒精华、古铜修容与中性眼影盘密集上架",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "09cb5c7b-96a8-4296-8cea-9836b16e9f5e",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "2026春夏男装外套趋势：当功能性遇见奢华感",
+          "source_article_count": 4,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "f274a193-61a9-4477-bb48-e93ca5c2b0ca",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "ASICS、New Balance、Nike 春夏球鞋新品密集发布：薄底科技、复古配色与影视曝光三重驱动",
+          "source_article_count": 4,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "0d9d4176-9c01-4230-99cf-9ce1c43a7e63",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "跨界联名新玩法：从快闪餐厅到女团联名",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "260d2601-96a1-4a3e-b044-95c1f232bc51",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "Chanel效应：老牌衬衫制造商的文艺复兴",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "46fd3506-da3d-4843-a5d6-e9d12e7aa605",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "Lauren Conrad风格进化：从Laguna Beach到尺码包容",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "fc5b1aaf-d6da-4594-a0cf-06d935d95e0c",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "Dolce & Gabbana的十字路口：债务危机与管理层洗牌",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "ebd9058a-d76d-49ec-a93e-e9408b2e655b",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "明星创始人商业版图扩张：从内容到美妆的多元布局",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "7a8af332-bf1b-4f47-9397-e8d75066c683",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "Hermès逆势扩产与博茨瓦纳争夺戴比尔斯控制权",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "7a284f9e-816d-4ca8-b6e1-9f6c31d18ed7",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "本周品牌快讯：太空香水、春夏折扣与持妆新品",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "c2719582-1f00-467a-b5f6-c0a4699e6316",
+          "business_date": "2026-04-11",
+          "facet": "brand_market",
+          "title_zh": "生活方式与独立文化：从树屋度假到实验出版",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "3d787376-68d8-4b3e-9329-2dfc58e23753",
+          "business_date": "2026-04-11",
+          "facet": "runway_series",
+          "title_zh": "2026春季宣言腰带：从功能性配件到造型核心",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "2a00e2aa-6e2d-4202-99c6-65f815400de8",
+          "business_date": "2026-04-11",
+          "facet": "runway_series",
+          "title_zh": "90年代裤装强势回归：从Calvin Klein翻边牛仔到Givenchy卡普里套装",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "0b1f5a4f-6e26-4803-9920-c6f8cf28b76b",
+          "business_date": "2026-04-11",
+          "facet": "runway_series",
+          "title_zh": "Chanel新任总监首秀：与百年衬衫工坊Charvet的匠心合作",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "77e1d765-ddcc-4930-9a5f-42fc66cba104",
+          "business_date": "2026-04-11",
+          "facet": "runway_series",
+          "title_zh": "Alaïa 2026春季：粉色兰花色调的浪漫演绎",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "d112bdaf-ff8b-4cb9-a0bc-c192cc9fea8f",
+          "business_date": "2026-04-11",
+          "facet": "street_style",
+          "title_zh": "科切拉音乐节穿搭指南：从乐队T恤到明星应援造型",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "ad743b17-cb5c-4dd3-a637-7990466fe984",
+          "business_date": "2026-04-11",
+          "facet": "street_style",
+          "title_zh": "Taylor Swift纽约街拍：从迷你裙到极简优雅的蜕变",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "99365771-8dea-4a66-b997-760aaee4c2e8",
+          "business_date": "2026-04-11",
+          "facet": "street_style",
+          "title_zh": "机场私服新法则：阔腿牛仔裤成明星长途飞行首选",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "75fa028b-c309-4fcb-bc6b-24de43e19b77",
+          "business_date": "2026-04-11",
+          "facet": "trend_summary",
+          "title_zh": "2026春夏趋势全览：90年代裤装复兴与配饰新玩法",
+          "source_article_count": 9,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "b545131e-34c7-4401-9fa1-f08f6ed4fb25",
+          "business_date": "2026-04-11",
+          "facet": "trend_summary",
+          "title_zh": "春季胶囊衣橱与机场穿搭：实用主义回潮下的造型公式",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        },
+        {
+          "digest_key": "ae6e8430-d1a3-4a31-96a1-6292fe3a6d07",
+          "business_date": "2026-04-11",
+          "facet": "trend_summary",
+          "title_zh": "春季美妆趋势：音乐节造型与波点美甲",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "2454ecbf-2a66-4ec5-8c41-d9f9dc81434d"
+        }
+      ]
+    },
+    {
+      "business_day": "2026-04-12",
+      "article_count": 95,
+      "parsed_count": 95,
+      "event_frame_ready_count": 94,
+      "story_count": 111,
+      "digest_count": 17,
+      "run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be",
+      "digests": [
+        {
+          "digest_key": "e73a698d-e359-4765-9a11-6059249cfee0",
+          "business_date": "2026-04-12",
+          "facet": "brand_market",
+          "title_zh": "奢侈品巨头财报周：LVMH、开云、爱马仕Q1业绩与战略新动向",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "6f9b2a3c-97e4-4ffb-b7e3-192d8bc9b78b",
+          "business_date": "2026-04-12",
+          "facet": "brand_market",
+          "title_zh": "Coachella 2026：品牌派对与明星造型的时尚盛宴",
+          "source_article_count": 9,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "650b2943-c553-4d0a-bae4-a7251f7fb40d",
+          "business_date": "2026-04-12",
+          "facet": "brand_market",
+          "title_zh": "Yohji Yamamoto与HUMAN MADE的海外扩张信号",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "f59eb094-09fe-4afb-9d94-be3f5f61f619",
+          "business_date": "2026-04-12",
+          "facet": "brand_market",
+          "title_zh": "2026春季外套趋势：The Row与Dolce & Gabbana的极简与华丽对话",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "0956a8ec-8a85-4163-993d-39858453a2a2",
+          "business_date": "2026-04-12",
+          "facet": "brand_market",
+          "title_zh": "本周新品：Nike Air Max 90黑白复刻、Big Yank藤原裕重塑系列与Paire旅行内衣",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "d3b54bde-3763-4629-af8e-09b3834cdf25",
+          "business_date": "2026-04-12",
+          "facet": "brand_market",
+          "title_zh": "爱马仕2026春夏美妆：太阳灵感与银座快闪",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "95741746-ec47-4bc2-86f9-191eea832450",
+          "business_date": "2026-04-12",
+          "facet": "runway_series",
+          "title_zh": "2026春夏秀场：斗篷叠穿与长裙轮廓的多元信号",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "1d612122-b0f0-4f10-a7c2-5ae17033a33a",
+          "business_date": "2026-04-12",
+          "facet": "runway_series",
+          "title_zh": "2026春夏日常穿搭灵感：复古丹宁、学院风与大胆色彩",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "0817586e-1489-484a-af2c-a9405cef9216",
+          "business_date": "2026-04-12",
+          "facet": "runway_series",
+          "title_zh": "Pucci西西里大秀与Tanner Fletcher纽约婚纱周双场活动",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "f603519b-1410-4f27-96d6-07edb6795ae9",
+          "business_date": "2026-04-12",
+          "facet": "runway_series",
+          "title_zh": "梅根公爵夫人以黄绿色缎面礼服演绎Prada、Valentino秀场趋势",
+          "source_article_count": 1,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "0322dbe1-8881-4099-9b74-68ddc5d8db64",
+          "business_date": "2026-04-12",
+          "facet": "street_style",
+          "title_zh": "明星街拍：从Rihanna的芭蕾鞋到Coachella复古风",
+          "source_article_count": 4,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "ff1b6e56-110c-42f5-a20a-c31e5be3ee97",
+          "business_date": "2026-04-12",
+          "facet": "street_style",
+          "title_zh": "90年代脚踝牛仔裤回潮与伦敦街头六大新趋势",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "d6be6a70-262d-4e3a-a912-5147c83c92f0",
+          "business_date": "2026-04-12",
+          "facet": "trend_summary",
+          "title_zh": "2026春夏鞋履：薄底运动鞋与芭蕾美学双轨并行",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "eb81a315-697c-4e93-aad3-f48491f290ad",
+          "business_date": "2026-04-12",
+          "facet": "trend_summary",
+          "title_zh": "2026春夏包袋：极简主义回归与编织元素升温",
+          "source_article_count": 2,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "b92b76cb-f8a4-4873-83f2-f1f98220d0b6",
+          "business_date": "2026-04-12",
+          "facet": "trend_summary",
+          "title_zh": "2026春夏外套与叠穿：乡村风格夹克与斗篷披风成焦点",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "8731c636-89b3-4a33-8d09-f8e04324a928",
+          "business_date": "2026-04-12",
+          "facet": "trend_summary",
+          "title_zh": "2026春夏色彩与搭配：黄色衬衫与中性色调并驾齐驱",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        },
+        {
+          "digest_key": "62a8d9a1-27ca-4c0b-897f-9f1cb5a21556",
+          "business_date": "2026-04-12",
+          "facet": "trend_summary",
+          "title_zh": "2026夏季裙装与裤装：长裙趋势与90年代复古回归",
+          "source_article_count": 3,
+          "generation_status": "done",
+          "created_run_id": "4ac26e4b-a77c-4c02-a030-0a94cbebc4be"
+        }
+      ]
+    }
+  ],
+  "total_digest_count": 114
+}

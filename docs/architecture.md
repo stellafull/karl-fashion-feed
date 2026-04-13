@@ -45,9 +45,30 @@ backend (FastAPI)
 
 状态组织：
 
-- `useAuth()`：JWT 登录态
+- `useAuth()`：飞书登录 / 浏览器回调 / 隐藏 dev 登录页的 JWT 会话态
 - `useFeedData()`：digest feed 读取与前端映射
 - `useChatSessions()`：session、message、SSE streaming、中断
+
+## 2.5 认证链路
+
+```text
+正常用户
+  Feishu client -> tt.requestAccess -> POST /auth/feishu/client/exchange
+  Browser      -> GET /auth/feishu/browser/start
+                -> Feishu authorize
+                -> GET /auth/feishu/browser/callback
+                -> 307 /auth/complete?token=...
+                -> 前端写入 localStorage 并清理 URL
+
+dev 调试
+  /__dev/login -> POST /auth/dev/token (only dev-root)
+```
+
+说明：
+
+- 本地 `user_id` 仍是 chat / memory / session 的真相外键
+- Feishu `user_id` 落到 `user.feishu_user_id`，作为当前唯一外部身份键
+- 首次飞书登录会自动创建本地 `user`；后续更新 display name、email、avatar
 
 ## 3. 后端架构
 
@@ -182,9 +203,7 @@ Qdrant 中使用单共享 collection，靠 `modality` 区分 text / image。
 ### 时间语义
 
 - business day：`Asia/Shanghai`
-- 首次启动门槛：`Australia/Sydney 09:00`
-
-这是当前代码中的混合实现，仍需后续统一。
+- 首次启动门槛：`Asia/Shanghai 07:00`
 
 ## 8. 遗留区域
 

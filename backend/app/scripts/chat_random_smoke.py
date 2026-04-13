@@ -19,12 +19,12 @@ from playwright.async_api import async_playwright
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_FRONTEND_BASE_URL = "http://127.0.0.1:3000"
 DEFAULT_API_BASE_URL = "http://127.0.0.1:8000/api/v1"
-DEFAULT_LOGIN_NAME = "ROOT1"
-DEFAULT_PASSWORD = "ROOT1"
+DEFAULT_LOGIN_NAME = "dev-root"
+DEFAULT_PASSWORD = "dev-root"
 DEFAULT_TIMEOUT_SECONDS = 180
 POLL_INTERVAL_SECONDS = 1.0
 AUTH_TOKEN_STORAGE_KEY = "auth_token"
-LOGIN_BUTTON_LABEL = "登录并开始联调"
+LOGIN_BUTTON_LABEL = "使用 dev-root 登录"
 LOGOUT_BUTTON_LABEL = "退出登录"
 CHAT_PLACEHOLDER = "Ask anything about fashion trends, brands, or recent signals..."
 OUTPUT_DIR = REPO_ROOT / "backend" / "runtime_reviews" / "chat_smoke"
@@ -186,11 +186,16 @@ async def ensure_http_ready(url: str) -> None:
 async def login_if_needed(
     *,
     page,
+    frontend_base_url: str,
     login_name: str,
     password: str,
     timeout_seconds: int,
 ) -> None:
-    """Log into the frontend if the login screen is still visible."""
+    """Log into the hidden dev page when the smoke run is not authenticated yet."""
+    await page.goto(
+        f"{frontend_base_url.rstrip('/')}/__dev/login",
+        wait_until="domcontentloaded",
+    )
     login_button = page.get_by_role("button", name=LOGIN_BUTTON_LABEL)
     try:
         await login_button.wait_for(state="visible", timeout=2_000)
@@ -334,6 +339,7 @@ async def run_smoke(args: argparse.Namespace) -> SmokeArtifact:
             await page.goto(args.frontend_base_url, wait_until="domcontentloaded")
             await login_if_needed(
                 page=page,
+                frontend_base_url=args.frontend_base_url,
                 login_name=args.login_name,
                 password=args.password,
                 timeout_seconds=args.timeout_seconds,

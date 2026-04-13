@@ -2,14 +2,16 @@
 
 KARL Fashion Feed 是一个面向中国区同事的时尚资讯平台。当前代码已经不是早期的“静态 RSS JSON 站点”，而是一个完整的前后端应用：
 
-- 前端：React 19 + Vite，提供登录、Discover、专题详情、Chat、Deep Research
-- 后端：FastAPI + PostgreSQL，提供鉴权、digest feed、chat、memory、RAG、deep research
+- 前端：React 19 + Vite，提供飞书组织登录、Discover、专题详情、Chat、Deep Research
+- 后端：FastAPI + PostgreSQL，提供飞书登录编排、digest feed、chat、memory、RAG、deep research
 - 内容链路：采集 article -> 解析正文/图片 -> 抽取 event frame -> 聚合 story -> 生成 public digest
 - 检索链路：基于 article / article_image 写入 Qdrant，共享 text/image retrieval collection
 
 ## 当前真实能力
 
-- 本地账号密码登录，JWT 鉴权
+- 普通用户走飞书组织登录；首次登录自动创建本地用户影子档案
+- 保留隐藏的 `dev-root` 调试登录入口：`/__dev/login`
+- 前端继续使用 JWT 维持会话，飞书头像会同步到侧边栏
 - Discover 页面读取 `GET /api/v1/digests/feed`
 - Digest 详情页读取 `GET /api/v1/digests/{digest_key}`
 - Chat 支持历史会话、图片上传、SSE 流式回答、中断
@@ -92,17 +94,17 @@ pnpm dev
 backend/.venv/bin/uvicorn backend.app.app_main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 初始化本地登录账号
+### 初始化本地调试账号
 
 ```bash
 backend/.venv/bin/python backend/app/scripts/init_root_user.py
 ```
 
-会确保以下账号存在：
+当前脚本只会确保以下账号存在：
 
-- `root / root`
-- `ROOT1 / ROOT1`
-- `ROOT2 / ROOT2`
+- `dev-root / dev-root`
+
+正常用户不再使用本地账号密码登录，统一走首页飞书登录。
 
 ### 启动内容 runtime
 
@@ -126,9 +128,99 @@ backend/.venv/bin/python backend/app/scripts/dev_run_today_digest_pipeline.py --
 - 用户手册：[docs/internal-user-guide.md](/home/czy/karl-fashion-feed/docs/internal-user-guide.md)
 - 后端约定：[backend/README.md](/home/czy/karl-fashion-feed/backend/README.md)
 
+## 部署（app-only compose）
+
+仓库当前提供的是 **应用层部署**，不会帮你拉起 Postgres / Redis / Qdrant。部署前需要先准备好外部基础设施，并把连接信息写入 `.env`。
+
+### 1. 准备环境变量
+
+```bash
+cp .env.example .env
+```
+
+至少要正确填写：
+
+- `POSTGRES_*`
+- `REDIS_*`
+- `QDRANT_URL`
+- `OPENAI_API_KEY`（以及你实际使用的 LLM / 搜索 provider key）
+- `FEISHU_APP_ID`
+- `FEISHU_APP_SECRET`
+- `FEISHU_BROWSER_REDIRECT_URI`
+- `FEISHU_FRONTEND_AUTH_COMPLETE_URL`
+- `VITE_FEISHU_APP_ID`
+
+### 2. 构建并启动应用服务
+
+```bash
+docker compose -f docker-compose.app.yml up --build -d backend worker scheduler frontend
+```
+
+对外默认端口：
+
+- frontend: `3000`
+- backend: `8000`
+
+### 3. 初始化调试账号
+
+```bash
+docker compose -f docker-compose.app.yml exec backend \
+  uv run --project backend python backend/app/scripts/init_root_user.py
+```
+
+### 4. 为空库注入 demo digest 数据
+
+仅当 runtime 还没有 `pipeline_run / story / digest` 时执行：
+
+```bash
+docker compose -f docker-compose.app.yml --profile init run --rm demo-init
+```
+
+这个脚本会：
+
+- 收集最近完整 business day 的内容
+- 生成可读的 demo digest
+- 写 review summary 到 `backend/runtime_reviews/`
+
+如果库里已经有 runtime 结果，它会 **failfast**，不会悄悄覆盖。
+
+### 4.5 直接恢复初始化 seed
+
+如果不想在服务器上重新跑一次采集 / 解析 / 聚合，也可以直接恢复仓库内导出的 Postgres seed：
+
+```bash
+export PGPASSWORD='your-postgres-password'
+pg_restore \
+  --host=your-postgres-host \
+  --port=5432 \
+  --username=karl \
+  --dbname=karlfeed \
+  --clean --if-exists --no-owner --no-privileges \
+  backend/seeds/init_seed_2026-04-13.dump
+```
+
+校验文件：
+
+```bash
+sha256sum -c backend/seeds/init_seed_2026-04-13.dump.sha256
+```
+
+### 5. 日更调度
+
+- `scheduler` 容器会长期运行
+- 当前新 run 的启动门槛是 `Asia/Shanghai 07:00`
+- `worker` 负责消费 content / aggregation 队列
+
+### 6. 服务器更新部署
+
+```bash
+git pull --ff-only
+docker compose -f docker-compose.app.yml up --build -d backend worker scheduler frontend
+```
+
 ## 当前遗留与风险
 
 - 根目录 `package.json` 仍保留旧的 Node bundling 脚本，`build` 指向缺失的 `backend/server/index.ts`，不是当前推荐运行路径
 - `docs/task*.md` 属于历史任务记录，不是当前系统说明
 - `frontend/src/pages/Home.tsx` 仍在仓库中，但当前路由实际使用的是 `DiscoverPage`
-- 调度器当前实现为“按 Asia/Shanghai 计算 business day，但首次开跑门槛是 Sydney 9 点”；这和顶层目标“北京时间 8 点”不一致，属于待收敛实现
+- 日更 scheduler 当前按 `Asia/Shanghai 07:00` 创建新 run；如果业务要求再次变化，需要同步更新代码与 runbook

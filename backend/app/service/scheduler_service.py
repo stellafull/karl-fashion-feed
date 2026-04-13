@@ -1,21 +1,24 @@
-"""Scheduler service — gates daily pipeline start to 9 AM Sydney and handles RAG upsert."""
+"""Scheduler service — gates daily pipeline start to 07:00 Asia/Shanghai and handles RAG upsert."""
 
 from __future__ import annotations
 
 import logging
 from datetime import UTC, date, datetime
-from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
 
 from backend.app.core.database import SessionLocal
 from backend.app.models import Article, ensure_article_storage_schema
-from backend.app.models.runtime import PipelineRun, business_day_for_runtime, utc_bounds_for_business_day
+from backend.app.models.runtime import (
+    ASIA_SHANGHAI,
+    PipelineRun,
+    business_day_for_runtime,
+    utc_bounds_for_business_day,
+)
 from backend.app.service.daily_run_coordinator_service import DailyRunCoordinatorService, RUN_TYPE_DAILY_DIGEST
 from backend.app.service.RAG.article_rag_service import ArticleRagService
 
-AUSTRALIA_SYDNEY = ZoneInfo("Australia/Sydney")
-PIPELINE_START_HOUR_SYDNEY = 9
+PIPELINE_START_HOUR_SHANGHAI = 7
 
 logger = logging.getLogger(__name__)
 
@@ -27,12 +30,12 @@ class SchedulerService:
         self._coordinator = DailyRunCoordinatorService()
 
     def tick(self) -> str | None:
-        """Periodic entry point: gate new runs to 9 AM Sydney, drive existing runs, upsert RAG.
+        """Periodic entry point: gate new runs to 07:00 Asia/Shanghai, drive runs, upsert RAG.
 
         Returns the pipeline run_id when work was done, or None if skipped.
         """
         now = datetime.now(UTC)
-        sydney_now = now.astimezone(AUSTRALIA_SYDNEY)
+        shanghai_now = now.astimezone(ASIA_SHANGHAI)
         business_day = business_day_for_runtime(now)
 
         with SessionLocal() as session:
@@ -44,12 +47,12 @@ class SchedulerService:
                 )
             )
 
-        # Don't create a new pipeline run before 9 AM Sydney
-        if existing_run is None and sydney_now.hour < PIPELINE_START_HOUR_SYDNEY:
+        # Don't create a new pipeline run before 07:00 Shanghai.
+        if existing_run is None and shanghai_now.hour < PIPELINE_START_HOUR_SHANGHAI:
             logger.debug(
-                "scheduler: skipping tick — before %d:00 Sydney (%s)",
-                PIPELINE_START_HOUR_SYDNEY,
-                sydney_now.strftime("%H:%M %Z"),
+                "scheduler: skipping tick — before %02d:00 Asia/Shanghai (%s)",
+                PIPELINE_START_HOUR_SHANGHAI,
+                shanghai_now.strftime("%H:%M %Z"),
             )
             return None
 

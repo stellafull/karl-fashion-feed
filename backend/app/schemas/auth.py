@@ -7,22 +7,30 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+class FeishuClientExchangeRequest(BaseModel):
+    """Client-side requestAccess code exchange payload."""
+
+    code: str
+
+
 class TokenResponse(BaseModel):
     """Token response after successful authentication."""
 
     access_token: str
     token_type: str
     expires_in: int
-    user: UserProfile
+    user: "UserProfile"
 
 
 class UserProfile(BaseModel):
     """User profile information."""
 
     user_id: str
-    login_name: str
+    login_name: str | None
     display_name: str
     email: str | None
+    avatar_url: str | None
+    auth_source: str
     is_admin: bool
     created_at: datetime
 

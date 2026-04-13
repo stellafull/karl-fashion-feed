@@ -10,7 +10,7 @@ from backend.app.core.database import get_db
 from backend.app.core.security import JWTManager
 from backend.app.models.user import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/dev/token")
 
 
 def get_current_user(
@@ -20,12 +20,12 @@ def get_current_user(
     """Get current authenticated user from JWT token."""
     try:
         payload = JWTManager.decode_token(token)
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(e),
+            detail=str(error),
             headers={"WWW-Authenticate": "Bearer"},
-        ) from e
+        ) from error
 
     user = db.get(User, payload.sub)
     if not user:
