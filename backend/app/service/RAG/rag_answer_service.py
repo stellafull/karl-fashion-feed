@@ -169,6 +169,46 @@ VISUAL_FOCUS_GROUPS = {
     "outerwear": ("夹克", "大衣", "外套", "jacket", "coat", "blazer"),
     "hat": ("帽", "hat", "cap", "beanie"),
 }
+LEADING_META_PREFIXES = (
+    "我理解用户的需求",
+    "根据检索结果",
+    "根据内部 rag 检索结果",
+    "根据内部rag检索结果",
+    "根据内部 r a g 检索结果",
+    "基于检索结果",
+    "我已经收集到了",
+    "我已经收集到足够",
+    "我已收集到",
+    "我已获取到",
+    "我找到了相关证据",
+    "让我再搜索",
+    "让我进行检索",
+    "检索已完成",
+    "由于这是一个",
+    "由于内部图片证据较弱",
+    "根据内部 rag 和外部搜索的综合结果",
+    "根据内部 rag 检索和外部搜索结果",
+)
+META_ONLY_HEADINGS = {
+    "检索结果摘要",
+    "检索结果总结",
+    "检索证据总结",
+    "主要发现",
+    "检索证据摘要",
+}
+AUDIT_BLOCK_MARKERS = (
+    "文本证据",
+    "图片证据",
+    "关键发现",
+)
+FORMAL_ANSWER_RESET_MARKERS = (
+    "让我为您整理",
+    "以下是近期",
+    "以下是最近",
+    "按品牌拆开看",
+    "按品牌来看",
+    "直接给结论",
+)
 
 
 class _RagAnswerToolArgs(BaseModel):
@@ -245,6 +285,7 @@ class RagAnswerService:
             state["answer"],
             state["citations"],
         )
+        answer = self._sanitize_answer_style(answer)
         image_results = self._filter_image_results_for_answer(
             answer=answer,
             image_results=state["image_results"],
@@ -285,6 +326,7 @@ class RagAnswerService:
             state["answer"],
             state["citations"],
         )
+        answer = self._sanitize_answer_style(answer)
         image_results = self._filter_image_results_for_answer(
             answer=answer,
             image_results=state["image_results"],
@@ -508,22 +550,28 @@ class RagAnswerService:
         state: _ChatRunState,
     ) -> StructuredTool:
         async def _run(query: str | None = None) -> tuple[str, dict[str, Any]]:
-            if state.rag_artifact is None:
-                effective_query = self._normalize_optional_query(query)
-                if effective_query is None:
-                    effective_query = request.query
-                state.rag_artifact = await self._run_rag_search(
-                    request=RagQueryRequest(
-                        query=effective_query,
-                        filters=request.filters,
-                        limit=request.limit,
-                    ),
-                    user_query=request.query,
-                    request_context=request_context,
-                    conversation_compact=conversation_compact,
-                    recent_messages=recent_messages,
-                    user_memories=user_memories,
+            if state.rag_artifact is not None:
+                return (
+                    "rag_search 已完成；不要重复调用。请基于现有内部证据直接回答，"
+                    "或者只在确实缺最新外部信息时调用一次 web_search。",
+                    state.rag_artifact.model_dump(mode="json"),
                 )
+
+            effective_query = self._normalize_optional_query(query)
+            if effective_query is None:
+                effective_query = request.query
+            state.rag_artifact = await self._run_rag_search(
+                request=RagQueryRequest(
+                    query=effective_query,
+                    filters=request.filters,
+                    limit=request.limit,
+                ),
+                user_query=request.query,
+                request_context=request_context,
+                conversation_compact=conversation_compact,
+                recent_messages=recent_messages,
+                user_memories=user_memories,
+            )
             return (
                 self._build_rag_search_summary(state.rag_artifact),
                 state.rag_artifact.model_dump(mode="json"),
@@ -550,6 +598,27 @@ class RagAnswerService:
         async def _run(query: str) -> tuple[str, dict[str, Any]]:
             if state.rag_artifact is None:
                 raise ValueError("web_search requires rag_search first")
+            if state.web_results:
+                return (
+                    "web_search 已完成；不要重复调用。请基于当前内外部证据直接回答。",
+                    {
+                        "web_results": [
+                            result.model_dump() for result in state.web_results
+                        ],
+                        "external_visual_results": [
+                            result.model_dump()
+                            for result in state.rag_artifact.external_visual_results
+                        ],
+                        "citations": [
+                            citation.model_dump()
+                            for citation in state.rag_artifact.citations
+                        ],
+                        "image_results": [
+                            result.model_dump()
+                            for result in state.rag_artifact.image_results
+                        ],
+                    },
+                )
 
             normalized_query = self._require_non_empty_query(query)
             rag_tools = self._tools_factory(request_context)
@@ -1116,6 +1185,115 @@ class RagAnswerService:
             )
         ]
         return filtered_results or image_results
+
+    def _sanitize_answer_style(self, answer: str) -> str:
+        normalized_answer = answer.strip()
+        if not normalized_answer:
+            return normalized_answer
+
+        lines = normalized_answer.splitlines()
+        sanitized_lines: list[str] = []
+        skipping_leading_meta = True
+
+        for line in lines:
+            stripped_line = line.strip()
+            lowered_line = stripped_line.casefold()
+
+            if skipping_leading_meta:
+                if not stripped_line:
+                    continue
+                if any(lowered_line.startswith(prefix) for prefix in LEADING_META_PREFIXES):
+                    continue
+                heading_text = stripped_line.lstrip("#").strip()
+                if heading_text in META_ONLY_HEADINGS:
+                    continue
+                if (
+                    "strong_image_hit_count" in lowered_line
+                    or "weak_image_hit_count" in lowered_line
+                    or "web_search" in lowered_line
+                    or "调用外部搜索" in stripped_line
+                ):
+                    continue
+                skipping_leading_meta = False
+
+            sanitized_lines.append(line)
+
+        sanitized_answer = "\n".join(sanitized_lines).strip()
+        if not sanitized_answer:
+            return normalized_answer
+
+        separator_matches = list(re.finditer(r"\n-{3,}\n", sanitized_answer))
+        if separator_matches:
+            separator_match = separator_matches[-1]
+            leading_block = sanitized_answer[: separator_match.start()]
+            if "检索结果" in leading_block or any(
+                marker in leading_block for marker in AUDIT_BLOCK_MARKERS
+            ):
+                sanitized_answer = sanitized_answer[separator_match.end() :].lstrip()
+
+        reset_offsets = [
+            sanitized_answer.rfind(marker) for marker in FORMAL_ANSWER_RESET_MARKERS
+        ]
+        reset_offset = (
+            max(offset for offset in reset_offsets if offset >= 0)
+            if any(offset >= 0 for offset in reset_offsets)
+            else -1
+        )
+        if reset_offset >= 0:
+            leading_block = sanitized_answer[:reset_offset]
+            if any(marker in leading_block for marker in AUDIT_BLOCK_MARKERS):
+                sanitized_answer = sanitized_answer[reset_offset:].lstrip()
+
+        sanitized_answer = re.sub(r"^(?:---\s*)+", "", sanitized_answer).lstrip()
+        sanitized_answer = re.sub(
+            r"^根据内部\s*r\s*a\s*g\s*检索结果[，,:：]\s*",
+            "",
+            sanitized_answer,
+            flags=re.IGNORECASE,
+        )
+        sanitized_answer = re.sub(
+            r"^根据内部\s*rag\s*检索结果[，,:：]\s*",
+            "",
+            sanitized_answer,
+            flags=re.IGNORECASE,
+        )
+        sanitized_answer = re.sub(
+            r"^根据检索结果[，,:：]\s*",
+            "",
+            sanitized_answer,
+            flags=re.IGNORECASE,
+        )
+        sanitized_answer = re.sub(
+            r"^根据内部时尚资料检索[，,:：]\s*",
+            "",
+            sanitized_answer,
+            flags=re.IGNORECASE,
+        )
+        sanitized_answer = re.sub(
+            r"^根据内部时尚资料[^：:\n]*[：:]\s*",
+            "",
+            sanitized_answer,
+            flags=re.IGNORECASE,
+        )
+        sanitized_answer = re.sub(
+            r"^让我为您整理[^：:\n]*[：:]\s*",
+            "",
+            sanitized_answer,
+            flags=re.IGNORECASE,
+        )
+        sanitized_answer = re.sub(
+            r"^以下是近期[^：:\n]*[：:]\s*",
+            "",
+            sanitized_answer,
+            flags=re.IGNORECASE,
+        )
+        sanitized_answer = re.sub(
+            r"^以下是最近[^：:\n]*[：:]\s*",
+            "",
+            sanitized_answer,
+            flags=re.IGNORECASE,
+        )
+        return sanitized_answer.strip()
 
     def _sort_external_visual_results(
         self,

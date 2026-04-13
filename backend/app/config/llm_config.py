@@ -113,7 +113,7 @@ class Configuration(BaseModel):
                 env_keys=("MAX_REACT_TOOL_CALLS",),
                 configurable=configurable,
                 configurable_keys=("max_react_tool_calls",),
-                default=3,
+                default=5,
             ),
         }
         return cls.model_validate(data)

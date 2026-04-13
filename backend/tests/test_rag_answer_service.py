@@ -462,7 +462,7 @@ class RagAnswerServiceTest(unittest.TestCase):
         self.assertEqual(1, len(response.image_results))
         self.assertEqual("rag", response.image_results[0].source_type)
         self.assertEqual({"rag_search", "web_search"}, set(created_chat_agents[0].tool_names))
-        self.assertEqual({"recursion_limit": 7}, research_call_log[0]["config"])
+        self.assertEqual({"recursion_limit": 11}, research_call_log[0]["config"])
         self.assertEqual(
             [
                 ("text_only", "silhouette", None),
@@ -471,7 +471,7 @@ class RagAnswerServiceTest(unittest.TestCase):
             query_service.calls,
         )
 
-    def test_answer_uses_three_iteration_recursion_limit(self) -> None:
+    def test_answer_uses_five_iteration_recursion_limit(self) -> None:
         research_call_log: list[dict[str, object]] = []
         service = RagAnswerService(
             tools_factory=lambda context: RagTools(
@@ -499,7 +499,7 @@ class RagAnswerServiceTest(unittest.TestCase):
         )
 
         self.assertEqual("无工具回答", response.answer)
-        self.assertEqual({"recursion_limit": 7}, research_call_log[0]["config"])
+        self.assertEqual({"recursion_limit": 11}, research_call_log[0]["config"])
 
     def test_answer_bypasses_react_loop_for_visual_text_query(self) -> None:
         article_result = _build_article_result()
@@ -1101,6 +1101,136 @@ class RagAnswerServiceTest(unittest.TestCase):
             "v2",
             chat_agent_holder["agent"].stream_payloads[0]["kwargs"]["version"],
         )
+
+    def test_answer_strips_leading_meta_preface_from_chat_agent_output(self) -> None:
+        article_result = _build_article_result()
+        query_service = _FakeQueryService(
+            {
+                ("text_only", "silhouette", None): article_result,
+            }
+        )
+        service = RagAnswerService(
+            tools_factory=lambda context: RagTools(
+                request_context=context,
+                query_service=query_service,
+                web_search_service=_FakeWebSearchService({}),
+            ),
+            research_agent_factory=lambda rag_tools: _ToolCallingResearchAgent(
+                rag_tools.build_langchain_tools(),
+                [("search_fashion_articles", {"query": "silhouette"})],
+            ),
+            chat_agent_factory=_build_chat_agent_factory(
+                [("rag_search", {"query": "给我一个结论"})],
+                answer=(
+                    "根据内部 RAG 检索结果：\n\n"
+                    "## 检索证据摘要\n\n"
+                    "直接结论 [c1]"
+                ),
+            ),
+        )
+
+        response = asyncio.run(
+            service.answer(
+                request=RagQueryRequest(query="给我一个结论"),
+                request_context=RagRequestContext(limit=5),
+            )
+        )
+
+        self.assertEqual("直接结论 [C1]", response.answer)
+        self.assertEqual(["C1"], [citation.marker for citation in response.citations])
+
+    def test_answer_drops_leading_audit_block_before_formal_answer(self) -> None:
+        article_result = _build_article_result()
+        query_service = _FakeQueryService(
+            {
+                ("text_only", "silhouette", None): article_result,
+            }
+        )
+        service = RagAnswerService(
+            tools_factory=lambda context: RagTools(
+                request_context=context,
+                query_service=query_service,
+                web_search_service=_FakeWebSearchService({}),
+            ),
+            research_agent_factory=lambda rag_tools: _ToolCallingResearchAgent(
+                rag_tools.build_langchain_tools(),
+                [("search_fashion_articles", {"query": "silhouette"})],
+            ),
+            chat_agent_factory=_build_chat_agent_factory(
+                [("rag_search", {"query": "给我一个结论"})],
+                answer=(
+                    "## 检索结果总结\n\n"
+                    "### 文本证据（Articles）\n\n"
+                    "1. 要点一\n\n"
+                    "### 图片证据（Images）\n\n"
+                    "1. 要点二\n\n"
+                    "### 关键发现\n\n"
+                    "这些证据表明趋势成立。\n\n"
+                    "---\n\n"
+                    "## 头部品牌\n\n"
+                    "直接可用的正式答案 [c1]"
+                ),
+            ),
+        )
+
+        response = asyncio.run(
+            service.answer(
+                request=RagQueryRequest(query="给我一个结论"),
+                request_context=RagRequestContext(limit=5),
+            )
+        )
+
+        self.assertEqual("## 头部品牌\n\n直接可用的正式答案 [C1]", response.answer)
+        self.assertEqual(["C1"], [citation.marker for citation in response.citations])
+
+    def test_answer_recovers_from_audit_preface_before_transition_sentence(self) -> None:
+        article_result = _build_article_result()
+        query_service = _FakeQueryService(
+            {
+                ("text_only", "silhouette", None): article_result,
+            }
+        )
+        service = RagAnswerService(
+            tools_factory=lambda context: RagTools(
+                request_context=context,
+                query_service=query_service,
+                web_search_service=_FakeWebSearchService({}),
+            ),
+            research_agent_factory=lambda rag_tools: _ToolCallingResearchAgent(
+                rag_tools.build_langchain_tools(),
+                [("search_fashion_articles", {"query": "silhouette"})],
+            ),
+            chat_agent_factory=_build_chat_agent_factory(
+                [("rag_search", {"query": "给我一个结论"})],
+                answer=(
+                    "---\n\n"
+                    "## 检索证据总结\n\n"
+                    "### 文本证据\n\n"
+                    "1. 要点一\n\n"
+                    "### 图片证据\n\n"
+                    "1. 要点二\n\n"
+                    "### 关键发现\n\n"
+                    "审计总结。\n\n"
+                    "根据内部RAG检索结果，我已经获取了相关品牌信息。"
+                    "让我为您整理这些品牌的运动时装化策略：\n\n"
+                    "## 运动元素时装化的主要品牌\n\n"
+                    "直接可用的正式答案 [c1]"
+                ),
+            ),
+        )
+
+        response = asyncio.run(
+            service.answer(
+                request=RagQueryRequest(query="给我一个结论"),
+                request_context=RagRequestContext(limit=5),
+            )
+        )
+
+        self.assertEqual(
+            "## 运动元素时装化的主要品牌\n\n直接可用的正式答案 [C1]",
+            response.answer,
+        )
+        self.assertEqual(["C1"], [citation.marker for citation in response.citations])
 
     def test_build_answer_tool_exposes_rag_answer_path_for_future_agents(self) -> None:
         service = RagAnswerService()

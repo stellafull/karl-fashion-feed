@@ -204,9 +204,11 @@ export default function ChatAnswerContent({
                   <p className="text-[11px] uppercase tracking-[0.16em] text-[#8a8378]">
                     {result.sourceName}
                   </p>
-                  <p className="line-clamp-2 text-xs leading-5 text-[#6f675d]">
-                    {result.snippet}
-                  </p>
+                  {!result.snippet.startsWith("点击查看") && (
+                    <p className="line-clamp-2 text-xs leading-5 text-[#6f675d]">
+                      {result.snippet}
+                    </p>
+                  )}
                 </div>
               </a>
             ))}
